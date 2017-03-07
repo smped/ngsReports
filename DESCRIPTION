@@ -9,3 +9,7 @@ License: LGPL (>= 2)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+Collate: 
+    'AllClasses.R'
+    'methods-FastqcFile.R'
+    'runFastQC.R'

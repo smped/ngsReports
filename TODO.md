@@ -1,0 +1,2 @@
+- Write `path` and `compress` methods for `FastqcFile` & `FastqcFileList` objects
+- Implement any other methods for the `FastqcFileList` objects
