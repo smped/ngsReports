@@ -37,8 +37,9 @@
 #' @seealso \code{\link{FastqFileList}}
 #'
 #' @import ShortRead
-#' @importFrom  parallel detectCores
-#' @importFrom  dplyr if_else
+#' @importFrom Rsamtools path
+#' @importFrom parallel detectCores
+#' @importFrom dplyr if_else
 #'
 #' @export
 runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
@@ -48,9 +49,10 @@ runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
 
   # Check the FastqFileList
   stopifnot(class(object) == "FastqFileList")
-  if (any(!grepl("(fastq|fastq.gz|fq|fq.gz)$", path(fqFiles)))) stop("Files can only contain the fasqt|fq suffix")
+  nm <- names(object)
+  if (any(!grepl("(fastq|fastq.gz|fq|fq.gz)$", Rsamtools::path(object)))) stop("Files can only contain the fasqt|fq suffix")
   # Make sure they are all of the same format
-  suffix <- gsub(".+(fastq|fastq.gz|fq|fq.gz)$", "\\1", names(object))
+  suffix <- gsub(".+(fastq|fastq.gz|fq|fq.gz)$", "\\1", nm)
   suffix <- paste0(".", unique(suffix))
   stopifnot(length(suffix) == 1)
 
@@ -65,7 +67,7 @@ runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
   stopifnot(file.exists(exec))
 
   # Set the expected output names
-  fqcNames <- file.path(outPath, gsub(suffix, "_fastqc", names(object)))
+  fqcNames <- file.path(outPath, gsub(suffix, "_fastqc", nm))
   if (!extract) fqcNames <- paste0(fqcNames, ".zip")
   if (!overWrite && all(file.exists(fqcNames))) {
     message("All reports exist and were not overwritten")
@@ -107,7 +109,7 @@ runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
 
   args <- paste("-o", outPath, threads, casava, extract, nogroup, contaminants, adapters, kmers)
   args <- gsub(" +", " ", args) #Remove any double spaces
-  files <- paste(path(object), collapse = " ")
+  files <- paste(Rsamtools::path(object), collapse = " ")
 
   # Run the command
   message("Executing the command '", paste(exec, args), "'")

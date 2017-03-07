@@ -4,16 +4,8 @@
 \alias{FastqcFile}
 \title{Define object classes}
 \usage{
-FastqcFile(path)
+FastqcFile(filePath)
 }
 \description{
 Define object classes
 }
-\section{Slots}{
-
-\describe{
-\item{\code{path}}{a character representation of a path to a single file/directory}
-
-\item{\code{compressed}}{logical. Is the FastQC file compressed as a zip file}
-}}
-

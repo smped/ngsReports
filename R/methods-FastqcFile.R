@@ -1,44 +1,36 @@
-#' Path to data from FastQC
+#' Path to FastQC data from a single fastq file
 #'
 #' @description Define a FastqcFile
 #'
 #' @details Checks the structure of a folder or zip file with the output from FastQC
 #'
-#' @param path The path to a single FastQC output zip file, or uncompressed folder
+#' @param filePath The path to a single FastQC output zip file, or uncompressed folder
+#' @param object An object of class \code{FastqcFile}
 #'
 #' @return An object of cass \code{FastqcFile}
 #'
 #' @include AllClasses.R
 #'
 #' @export
-#' @docType methods
-#' @rdname FastqcFile-methods
-setGeneric("FastqcFile",
-           function(path)
-             standardGeneric("FastqcFile"),
-           signature = "path")
-
 #' @rdname FastqcFile-methods
 #' @aliases FastqcFile,character-method
-setMethod(FastqcFile, "character",
-          function(path){
-            comp <- grepl("zip$", path)
-            new("FastqcFile", path = path, compressed = comp)
+setMethod("FastqcFile", "character",
+          function(filePath){
+            comp <- grepl("zip$", filePath)
+            new("FastqcFile", path = filePath, compressed = comp)
           })
 
 #' @export
 #' @rdname FastqcFile-methods
-#' @aliases FastqcFileList,character-method
-setGeneric("FastqcFileList",
-           function(path)
-             standardGeneric("FastqcFileList"),
-           signature="path")
+#' @aliases path,FastqcFile-method
+setMethod("path", "FastqcFile", function(object){object@path})
 
+#' @export
 #' @rdname FastqcFile-methods
-#' @aliases FastqcFileList,character-method
-setMethod(FastqcFileList, "character",
-          function(path)
-          {
-            fls <- lapply(path, FastqcFile)
-            class(fls) <- "FastqcFileList"
-          })
+#' @aliases isCompressed,FastqcFile-method
+setMethod("isCompressed", "FastqcFile", function(object){object@compressed})
+
+#' @export
+#' @rdname FastqcFile-methods
+#' @aliases names,FastqcFile-method
+setMethod("names", "FastqcFile", function(x){basename(x@path)})
