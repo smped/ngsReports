@@ -12,6 +12,7 @@ RoxygenNote: 6.0.1
 Collate: 
     'validationFunctions.R'
     'AllClasses.R'
+    'getSummary.R'
     'methods-FastqcFile.R'
     'methods-FastqcFileList.R'
     'runFastQC.R'

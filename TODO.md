@@ -1,2 +1,2 @@
-- Write `path` and `compress` methods for `FastqcFile` & `FastqcFileList` objects
-- Implement any other methods for the `FastqcFileList` objects
+- Write the `plotSummary` function
+- Extract the full set of information from the `fastqc_data.txt` file as a new S4 object
