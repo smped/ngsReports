@@ -50,6 +50,7 @@ setMethod("show", "FastqcFileList",
             l <- length(object)
             cmp <- sum(isCompressed(object))
             cat("FastqcFileList of", l, "file(s).\n")
+            cat("Located in:\n", paste(unique(dirname(path(object))), collapse = "\n"))
           })
 
 #' @export
