@@ -20,6 +20,9 @@ setMethod("getSummary", "FastqcFile",
               #Get the internal path within the zip archive
               if (!file.exists(path(object))) stop("The zip archive can not be found.")
               fl <- file.path( gsub(".zip$", "", names(object)), "summary.txt")
+              # Check the required file exists
+              allFiles <- unzip(path(object), list = TRUE)$Name
+              stopifnot(fl %in% allFiles)
               # Open the connection & read the 12 lines
               uz <- unz(path(object),fl)
               summaryData <- readLines(uz, 12L)

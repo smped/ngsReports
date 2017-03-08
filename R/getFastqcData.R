@@ -2,10 +2,9 @@
 #'
 #' @description Read the information from the \code{fastqc_data.txt} files in each FastqcFile
 #'
-#' @param object Can be a FastqcFile or FastqcFileList
+#' @param object Can be a FastqcFile or FastqcFileList. FASTQFILELIST IS NOT YET IMPLEMENTED
 #'
-#' @return A \code{tibble} will be returned when supplying a \code{FastqcFile} object,
-#' whilst a list of tibbles will be returned when supplying a \code{FastqcFileList} object
+#' @return An object of \code{FastqcData}
 #'
 #' @importFrom dplyr data_frame
 #' @importFrom dplyr as_data_frame
@@ -20,16 +19,16 @@
 setMethod("getFastqcData", "FastqcFile",
           function(object){
             if (isCompressed(object)){
-              # #Get the internal path within the zip archive
-              # if (!file.exists(path(object))) stop("The zip archive can not be found.")
-              # fl <- file.path( gsub(".zip$", "", names(object)), "fastqc_data.txt")
+              # Get the internal path within the zip archive
+              if (!file.exists(path(object))) stop("The zip archive can not be found.")
+              fl <- file.path( gsub(".zip$", "", names(object)), "fastqc_data.txt")
+              # Check the required file exists
+              allFiles <- unzip(path(object), list = TRUE)$Name
+              stopifnot(fl %in% allFiles)
               # # Open the connection & read the 12 lines
-              # uz <- unz(path(object),fl)
-              # fastqcData <- readLines(uz)
-              # close(uz)
-              # # Form the output
-              # fastqcData <- stringr::str_split_fixed(fastqcData, pattern = "\t", n = 3)
-              # fastqcData <- tibble::as_tibble(fastqcData)
+              uz <- unz(path(object),fl)
+              fastqcData <- readLines(uz)
+              close(uz)
             }
             else{
               # The existence of this file will have been checked at object instantion
@@ -51,52 +50,318 @@ setMethod("getFastqcData", "FastqcFile",
             modules <- gsub("(.+)\\t.+", "\\1", modules) # Grab the information before the \t
             modules <- gsub(" ", "_", modules) # Add underscores
 
-            # Check the modules are all present as required
+            # Check all required modules are present in the data
+            reqModules <- c("Basic_Statistics", "Per_base_sequence_quality",
+                            "Per_tile_sequence_quality", "Per_sequence_quality_scores",
+                            "Per_base_sequence_content", "Per_sequence_GC_content",
+                            "Per_base_N_content", "Sequence_Length_Distribution",
+                            "Sequence_Duplication_Levels", "Overrepresented_sequences",
+                            "Adapter_Content", "Kmer_Content")
+            stopifnot(reqModules %in% modules)
 
             # Split the data
             fastqcData <- split(fastqcData, cumsum(grepl("^>>", fastqcData)))[-1]
             names(fastqcData) <- modules
+
             # Define the output to have the same structure as fastqcData, except with
             # an additional slot to account for the changes in the Sequence Duplication Levels output
             out <- vector("list", length = length(modules) + 1)
             names(out) <- c(modules, "Total_Deduplicated_Percentage")
 
-            # Basic Statistics & Sequence_Length_Distribution need to be handled separately
-            # This structure is slightly changed from that as provided by FastQC output
-            # Sequence length will be separated into `Shortest Sequence` and `Longest Sequence`
-            if ("Basic_Statistics" %in% modules){
-              nm <- unlist(stringr::str_split(fastqcData$Basic_Statistics[2], pattern = "\t"))
-              mat <- stringr::str_split_fixed(fastqcData$Basic_Statistics[-(1:2)], pattern = "\t", n = length(nm))
-              v <- mat[,2]
-              names(v) <- mat[,1]
-              out$Basic_Statistics <- dplyr::as_data_frame(as.list(v))
-              out$Basic_Statistics <- dplyr::mutate(out$Basic_Statistics,
-                                                    `Total Sequences` = as.integer(`Total Sequences`),
-                                                    `Sequences flagged as poor quality` = as.integer(`Sequences flagged as poor quality`),
-                                                    `Shortest Sequence` = as.integer(gsub("(.*)-.*", "\\1", `Sequence length`)),
-                                                    `Longest Sequence` = as.integer(gsub(".*-(.*)", "\\1", `Sequence length`)))
-              out$Basic_Statistics <- dplyr::select(out$Basic_Statistics, -`Sequence length`)
-            }
-            if ("Sequence_Duplication_Levels" %in% modules){
-              tdp <- grepl("Total Deduplicated Percentage", fastqcData$Sequence_Duplication_Levels)
-              if (any(tdp)) {
-                out$Total_Deduplicated_Percentage <- as.numeric(gsub("Total Deduplicated Percentage\\t(.+)", "\\1",
-                                                                    fastqcData$Sequence_Duplication_Levels[tdp] ))
-              }
-              nm <- unlist(stringr::str_split(fastqcData$Sequence_Duplication_Levels[!tdp][2], pattern = "\t"))
-              out$Sequence_Duplication_Levels <- stringr::str_split_fixed(fastqcData$Sequence_Duplication_Levels[!tdp][-(1:2)],
-                                                                          pattern = "\t", n = length(nm))
-              colnames(out$Sequence_Duplication_Levels) <- nm
-              out$Sequence_Duplication_Levels <- dplyr::as_data_frame(out$Sequence_Duplication_Levels)
-              out$Sequence_Duplication_Levels$`Percentage of deduplicated` <- as.numeric(out$Sequence_Duplication_Levels$`Percentage of deduplicated`)
-              out$Sequence_Duplication_Levels$`Percentage of total` <- as.numeric(out$Sequence_Duplication_Levels$`Percentage of total`)
-            }
+            ## Get the Basic Statistics
+            Basic_Statistics <- getBasicStatistics(fastqcData)
+            stopifnot(is.data.frame(Basic_Statistics))
+            out[["Basic_Statistics"]] <- Basic_Statistics
 
-            # RUN THE REST OF THE MODULES
-            # sapply(setdiff(modules, "Sequence_Duplication_Levels"), function(x){
-            #   if (length(fastqcData[[x]]) == 1) return(data.frame())
-            #   nm <- unlist(stringr::str_split(fastqcData[[x]][2], pattern = "\t"))
-            #   nm
-            #   # df <- strsplit(fastqcData[[x]][-1], split = "\t")
-            # }, simplify = FALSE)
+            ## Get the Per Base Sequence Qualities
+            Per_base_sequence_quality <- getPerBaseSeqQuals(fastqcData)
+            stopifnot(is.data.frame(Per_base_sequence_quality))
+            out[["Per_base_sequence_quality"]] <- Per_base_sequence_quality
+
+            ## Get the Per Tile Sequence Qualities
+            Per_tile_sequence_quality <- getPerTileSeqQuals(fastqcData)
+            stopifnot(is.data.frame(Per_tile_sequence_quality))
+            out[["Per_tile_sequence_quality"]] <- Per_tile_sequence_quality
+
+            ## Get the Per Sequence Quality Scores
+            Per_sequence_quality_scores <- getPerSeqQualScores(fastqcData)
+            stopifnot(is.data.frame(Per_sequence_quality_scores))
+            out[["Per_sequence_quality_scores"]] <- Per_sequence_quality_scores
+
+            ## Get the Per Base Sequence Qualities
+            Per_base_sequence_content <- getPerBaseSeqContent(fastqcData)
+            stopifnot(is.data.frame(Per_base_sequence_content))
+            out[["Per_base_sequence_content"]] <- Per_base_sequence_content
+
+            ## Get the Per Sequence GC Content
+            Per_sequence_GC_content <- getPerSeqGcContent(fastqcData)
+            stopifnot(is.data.frame(Per_sequence_GC_content))
+            out[["Per_sequence_GC_content"]] <- Per_sequence_GC_content
+
+            ## Get the Per Base Sequence Qualities
+            Per_base_N_content <- getPerBaseNContent(fastqcData)
+            stopifnot(is.data.frame(Per_base_N_content))
+            out[["Per_base_N_content"]] <- Per_base_N_content
+
+            ## Get the Sequence Length Distribution
+            Sequence_Length_Distribution <- getSeqLengthDist(fastqcData)
+            stopifnot(is.data.frame(Sequence_Length_Distribution))
+            out[["Sequence_Length_Distribution"]] <- Sequence_Length_Distribution
+
+            # Get the Sequence Duplication Levels
+            Sequence_Duplication_Levels <- getSeqDuplicationLevels(fastqcData)
+            stopifnot(is.data.frame(Sequence_Duplication_Levels[["Sequence_Duplication_Levels"]]))
+            out[["Sequence_Duplication_Levels"]] <- Sequence_Duplication_Levels[["Sequence_Duplication_Levels"]]
+            out[["Total_Deduplicated_Percentage"]] <- Sequence_Duplication_Levels[["Total_Deduplicated_Percentage"]]
+
+            # Get the Overrepresented Sequences
+            Overrepresented_sequences <- getOverrepSeq(fastqcData)
+            stopifnot(is.data.frame(Overrepresented_sequences))
+            out[["Overrepresented_sequences"]] <- Overrepresented_sequences
+
+            # Get the Adapter Content
+            Adapter_Content <- getAdapterContent(fastqcData)
+            stopifnot(is.data.frame(Adapter_Content))
+            out[["Adapter_Content"]] <- Adapter_Content
+
+            # Get the Kmer Content
+            Kmer_Content <- getKmerContent(fastqcData)
+            stopifnot(is.data.frame(Kmer_Content))
+            out[["Kmer_Content"]] <- Kmer_Content
+
+            args <- c(list(Class = "FastqcData",
+                           path = path(object),
+                           Version = vers),
+                      out)
+
+            do.call("new", args)
+
           })
+
+# Define a series of functions for arranging the data
+# after splitting the input from readLines()
+getBasicStatistics <- function(fastqcData){
+
+  x <- fastqcData[["Basic_Statistics"]][-(1:2)]
+  vals <- gsub(".+\\t(.+)", "\\1", x)
+  names(vals) <- gsub("(.+)\\t.+", "\\1", x)
+  names(vals) <- gsub(" ", "_", names(vals))
+
+  # Check for the required values
+  reqVals <- c("Filename", "File_type", "Encoding", "Total_Sequences",
+               "Sequences_flagged_as_poor_quality", "Sequence_length", "%GC")
+  stopifnot(reqVals %in% names(vals))
+
+  df <- dplyr::as_data_frame(as.list(vals))
+  df <- dplyr::mutate(df,
+                      Total_Sequences = as.integer(Total_Sequences),
+                      Sequences_flagged_as_poor_quality = as.integer(Sequences_flagged_as_poor_quality),
+                      Shortest_sequence = as.integer(gsub("(.*)-.*", "\\1", Sequence_length)),
+                      Longest_sequence = as.integer(gsub(".*-(.*)", "\\1", Sequence_length)))
+  dplyr::select(df,
+                Filename, Total_Sequences,
+                dplyr::contains("quality"), dplyr::ends_with("sequence"),
+                `%GC`, File_type, Encoding)
+
+}
+
+getPerBaseSeqQuals <- function(fastqcData){
+
+  x <- fastqcData[["Per_base_sequence_quality"]][-1]
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Base", "Mean", "Median", "Lower_Quartile", "Upper_Quartile",
+               "10th_Percentile", "90th_Percentile")
+  stopifnot(reqVals %in% names(df))
+
+  # Change all columns except the positionto numeric values
+  df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
+  df
+
+}
+
+getPerTileSeqQuals <- function(fastqcData){
+
+  x <- fastqcData[["Per_tile_sequence_quality"]][-1]
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Tile", "Base", "Mean")
+  stopifnot(reqVals %in% names(df))
+
+  df[["Mean"]] <- as.numeric(df[["Mean"]])
+  df
+
+}
+
+getPerSeqQualScores <- function(fastqcData){
+
+  x <- fastqcData[["Per_sequence_quality_scores"]][-1]
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Quality", "Count")
+  stopifnot(reqVals %in% names(df))
+
+  dplyr::mutate(df, Quality = as.integer(Quality), Count = as.integer(Count))
+
+}
+
+getPerBaseSeqContent <- function(fastqcData){
+
+  x <- fastqcData[["Per_base_sequence_content"]][-1]
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Base", "G", "A", "T", "C")
+  stopifnot(reqVals %in% names(df))
+
+  df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
+  df
+
+}
+
+getPerSeqGcContent <- function(fastqcData){
+
+  x <- fastqcData[["Per_sequence_GC_content"]][-1]
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("GC_Content", "Count")
+  stopifnot(reqVals %in% names(df))
+
+  dplyr::mutate(df, GC_Content = as.integer(GC_Content), Count = as.numeric(Count))
+
+}
+
+getPerBaseNContent <- function(fastqcData){
+
+  x <- fastqcData[["Per_base_N_content"]][-1]
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Base", "N-Count")
+  stopifnot(reqVals %in% names(df))
+
+  dplyr::mutate(df, `N-Count` = as.numeric(`N-Count`))
+
+}
+
+getSeqLengthDist <- function(fastqcData){
+
+  x <- fastqcData[["Sequence_Length_Distribution"]][-1]
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Length", "Count")
+  stopifnot(reqVals %in% names(df))
+
+  df <- dplyr::mutate(df,
+                      Lower = as.integer(gsub("(.*)-.*", "\\1",Length)),
+                      Upper = as.integer(gsub(".*-(.*)", "\\1",Length)),
+                      Count = as.integer(Count))
+  dplyr::select(df, Length, Lower, Upper, Count)
+}
+
+getSeqDuplicationLevels <- function(fastqcData){
+
+  x <- fastqcData[["Sequence_Duplication_Levels"]][-1]
+
+  # Check for the presence of the Total Deduplicate Percentage value
+  hasTotDeDup <- grepl("Total Deduplicated Percentage", x)
+  Total_Deduplicated_Percentage <- NA_real_
+  if (any(hasTotDeDup)){
+    Total_Deduplicated_Percentage <- as.numeric(gsub(".+\\t(.*)", "\\1", x[hasTotDeDup]))
+    stopifnot(length(Total_Deduplicated_Percentage) == 1)
+  }
+
+  # Remove the Total value entry from the original object
+  x <- x[!hasTotDeDup]
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Duplication_Level", "Percentage_of_deduplicated", "Percentage_of_total")
+  stopifnot(reqVals %in% names(df))
+
+  # Convert to numeric
+  df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
+
+  # Return a list with both values
+  list(Total_Deduplicated_Percentage = Total_Deduplicated_Percentage,
+       Sequence_Duplication_Levels = df)
+
+}
+
+getOverrepSeq <- function(fastqcData){
+
+  x <- fastqcData[["Overrepresented_sequences"]][-1]
+  if (length(x) == 1) return(dplyr::data_frame())
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Sequence", "Count", "Percentage", "Possible_Source")
+  stopifnot(reqVals %in% names(df))
+
+  dplyr::mutate(df,
+                Count = as.integer(Count),
+                Percentage = as.numeric(Percentage))
+}
+
+getAdapterContent <- function(fastqcData){
+
+  x <- fastqcData[["Adapter_Content"]][-1]
+  if (length(x) == 1) return(dplyr::data_frame())
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Position", "Illumina_Universal_Adapter", "Illumina_Small_RNA_Adapter",
+               "Nextera_Transposase_Sequence")
+  stopifnot(reqVals %in% names(df))
+
+  df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
+  df
+
+}
+
+getKmerContent <- function(fastqcData){
+
+  x <- fastqcData[["Kmer_Content"]][-1]
+  if (length(x) == 1) return(dplyr::data_frame())
+  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
+  df <- dplyr::as_data_frame(mat[-1,])
+  names(df) <- gsub(" ", "_", mat[1,])
+
+  # Check for the required values
+  reqVals <- c("Sequence", "Count", "PValue", "Obs/Exp_Max", "Max_Obs/Exp_Position")
+  stopifnot(reqVals %in% names(df))
+
+  dplyr::mutate(df,
+                Count = as.integer(Count),
+                PValue = as.numeric(PValue),
+                `Obs/Exp_Max` = as.numeric(`Obs/Exp_Max`),
+                `Max_Obs/Exp_Position` = as.integer(`Max_Obs/Exp_Position`))
+
+}
+
+

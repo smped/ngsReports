@@ -29,3 +29,8 @@ validFastqcFile <- function(object){
   # If it checks out up to here, we're good to go
   TRUE
 }
+
+validFastqcFileList <- function(object){
+  cls <- vapply(object, class, character(1))
+  all(cls == "FastqcFile")
+}
