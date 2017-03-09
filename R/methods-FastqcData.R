@@ -87,6 +87,11 @@ setMethod("Total_Deduplicated_Percentage", "FastqcData", function(object){object
 #' @aliases Version,FastqcData-method
 setMethod("Version", "FastqcData", function(object){object@Version})
 
+#' @export
+#' @rdname FastqcData-methods
+#' @aliases Version,FastqcData-method
+setMethod("getSummary", "FastqcData", function(object){object@Summary})
+
 setMethod("show", "FastqcData",
           function(object){
             cat("FastqcData for", object@Basic_Statistics$Filename, "\n")

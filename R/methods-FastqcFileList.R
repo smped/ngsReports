@@ -57,3 +57,6 @@ setMethod("show", "FastqcFileList",
 #' @rdname FastqcFileList-methods
 #' @aliases names,FastqcFileList-method
 setMethod("names", "FastqcFileList", function(x){vapply(x, names, character(1))})
+
+# Define the subsetting method, to remain consistent with list behaviour
+setMethod("[", "FastqcFileList", function(x, i, j, ..., drop = TRUE){FastqcFileList(x@.Data[i])})
