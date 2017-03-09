@@ -129,9 +129,14 @@ setMethod("getFastqcData", "FastqcFile",
             stopifnot(is.data.frame(Kmer_Content))
             out[["Kmer_Content"]] <- Kmer_Content
 
+            #Get the summary
+            Summary <- getSummary(object)
+            stopifnot(is.data.frame(Summary))
+
             args <- c(list(Class = "FastqcData",
                            path = path(object),
-                           Version = vers),
+                           Version = vers,
+                           Summary = Summary),
                       out)
 
             do.call("new", args)

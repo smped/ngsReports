@@ -1,2 +1,6 @@
 - Write the `plotSummary` function
-- Extract the full set of information from the `fastqc_data.txt` file as a new S4 object
+- Include the capacity for selective overwriting in `runFastQC`
+- Implement all methods for the `FastqcFileList` class
+- Set character methods for `runFastQC` & redefine this function as a method for class `FastqFileList`
+- Set character methods for `getFastqcData` and `getSummary` for objects of class `character`
+- Test the output of `runFastQC` now it hs been changed to a `FastqcFileList`

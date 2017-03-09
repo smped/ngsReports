@@ -38,13 +38,7 @@ Refer to the \code{fastqc} help page for more details}
 \item{overWrite}{logical. Overwrite any existing reports}
 }
 \value{
-A \code{list} with components
-\describe{
-\item{fastqcFiles}{The paths to the output files containing the key information. Not the html files}
-\item{outPath}{The output path, as specified in the function call}
-\item{command}{The command as executed}
-\item{version}{The FastQC version number}
-}
+An object of class \code{FastqcFileList}
 }
 \description{
 Takes a FastqFileList

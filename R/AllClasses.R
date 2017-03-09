@@ -1,7 +1,8 @@
 # Define object classes
 FastqcFile <- setClass("FastqcFile", slots = c(path = "character", compressed = "logical"))
 FastqcFileList <- setClass("FastqcFileList", contains="list")
-FastqcData <- setClass("FastqcData", slots = c(Basic_Statistics = "data.frame",
+FastqcData <- setClass("FastqcData", slots = c(Summary = "data.frame",
+                                               Basic_Statistics = "data.frame",
                                                Per_base_sequence_quality = "data.frame",
                                                Per_tile_sequence_quality = "data.frame",
                                                Per_sequence_quality_scores = "data.frame",

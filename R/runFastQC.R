@@ -25,13 +25,7 @@
 #' @param kmers An integer between 2 and 10
 #' @param overWrite logical. Overwrite any existing reports
 #'
-#' @return A \code{list} with components
-#' \describe{
-#' \item{fastqcFiles}{The paths to the output files containing the key information. Not the html files}
-#' \item{outPath}{The output path, as specified in the function call}
-#' \item{command}{The command as executed}
-#' \item{version}{The FastQC version number}
-#' }
+#' @return An object of class \code{FastqcFileList}
 #'
 #' @author Steve Pederson <stephen.pederson@@adelaide.edu.au>
 #' @seealso \code{\link{FastqFileList}}
@@ -71,11 +65,12 @@ runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
   if (!extract) fqcNames <- paste0(fqcNames, ".zip")
   if (!overWrite && all(file.exists(fqcNames))) {
     message("All reports exist and were not overwritten")
-    return(list(fastqcFiles = fqcNames,
-                outPath = outPath,
-                command = c(),
-                version = c()))
+    return(FastqcFileList(fqcNames))
   }
+
+  # It might be worth addiing a section here to not overwrite any existing files,
+  # and to run fastQC on the remaining files
+  # The entire set would need to be kept for the final output though
 
   # Set the arguments to the function call
   maxCores <- parallel::detectCores()
@@ -121,8 +116,8 @@ runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
   # Get the version number for the output
   v <- system2(exec, "-v", stdout = TRUE)
 
-  list(fastqcFiles = fqcNames,
-       outPath = outPath,
-       command = paste(exec, args, files),
-       version = v)
+  # Return a FastqcFileList, until extracting the summary has been incorporated into the
+  # getFastqcData methods for a FastqcFileList
+  FastqcFileList(fqcNames)
+
 }
