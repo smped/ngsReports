@@ -17,6 +17,10 @@
 \alias{Kmer_Content,FastqcData-method}
 \alias{Total_Deduplicated_Percentage,FastqcData-method}
 \alias{Version,FastqcData-method}
+\alias{getSummary,FastqcData-method}
+\alias{names,FastqcData-method}
+\alias{fileNames,FastqcData-method}
+\alias{fileName,FastqcData-method}
 \title{Methods for an object of class FastqcData}
 \usage{
 \S4method{path}{FastqcData}(object)
@@ -48,6 +52,12 @@
 \S4method{Total_Deduplicated_Percentage}{FastqcData}(object)
 
 \S4method{Version}{FastqcData}(object)
+
+\S4method{getSummary}{FastqcData}(object)
+
+\S4method{names}{FastqcData}(x)
+
+\S4method{fileNames}{FastqcData}(object)
 }
 \arguments{
 \item{object}{An object of class \code{FastqcData}}
@@ -56,5 +66,5 @@
 Methods and Accessors for an object of class FastqcData
 }
 \details{
-Descrbes all methods for an object of class \code{FastqcData}
+Describes all methods for an object of class \code{FastqcData}
 }

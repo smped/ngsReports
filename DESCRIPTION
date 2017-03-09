@@ -15,6 +15,7 @@ Collate:
     'getFastqcData.R'
     'getSummary.R'
     'methods-FastqcData.R'
+    'methods-FastqcDataList.R'
     'methods-FastqcFile.R'
     'methods-FastqcFileList.R'
     'runFastQC.R'

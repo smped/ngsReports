@@ -153,6 +153,15 @@ setMethod("getFastqcData", "character",
               getFastqcData(object)
           })
 
+#' @export
+#' @rdname FastqcFileList-methods
+#' @aliases getFastqcData,FastqcFileList-methods
+setMethod("getFastqcData", "FastqcFileList",
+          function(object){
+             fqc <- lapply(object@.Data, getFastqcData)
+             new("FastqcDataList", fqc)
+          })
+
 # Define a series of functions for arranging the data
 # after splitting the input from readLines()
 getBasicStatistics <- function(fastqcData){
