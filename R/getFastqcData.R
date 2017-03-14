@@ -149,8 +149,13 @@ setMethod("getFastqcData", "FastqcFile",
 #' @aliases getFastqcData,character-methods
 setMethod("getFastqcData", "character",
           function(object){
-              object <- FastqcFile(object[1]) # Fix this once the list methods are implemented
-              getFastqcData(object)
+            if(length(object) ==1) {
+              object <- FastqcFile(object)
+            }
+            else{
+              object <- FastqcFileList(object)
+            }
+            getFastqcData(object)
           })
 
 #' @export
