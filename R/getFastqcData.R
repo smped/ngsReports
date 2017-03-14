@@ -193,7 +193,8 @@ getPerBaseSeqQuals <- function(fastqcData){
 
   x <- fastqcData[["Per_base_sequence_quality"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -211,7 +212,8 @@ getPerTileSeqQuals <- function(fastqcData){
 
   x <- fastqcData[["Per_tile_sequence_quality"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -227,7 +229,8 @@ getPerSeqQualScores <- function(fastqcData){
 
   x <- fastqcData[["Per_sequence_quality_scores"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -242,7 +245,8 @@ getPerBaseSeqContent <- function(fastqcData){
 
   x <- fastqcData[["Per_base_sequence_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -258,7 +262,8 @@ getPerSeqGcContent <- function(fastqcData){
 
   x <- fastqcData[["Per_sequence_GC_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -273,7 +278,8 @@ getPerBaseNContent <- function(fastqcData){
 
   x <- fastqcData[["Per_base_N_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -288,7 +294,8 @@ getSeqLengthDist <- function(fastqcData){
 
   x <- fastqcData[["Sequence_Length_Distribution"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -317,7 +324,8 @@ getSeqDuplicationLevels <- function(fastqcData){
   # Remove the Total value entry from the original object
   x <- x[!hasTotDeDup]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -336,9 +344,10 @@ getSeqDuplicationLevels <- function(fastqcData){
 getOverrepSeq <- function(fastqcData){
 
   x <- fastqcData[["Overrepresented_sequences"]][-1]
-  if (length(x) == 1) return(dplyr::data_frame())
+  if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -353,17 +362,18 @@ getOverrepSeq <- function(fastqcData){
 getAdapterContent <- function(fastqcData){
 
   x <- fastqcData[["Adapter_Content"]][-1]
-  if (length(x) == 1) return(dplyr::data_frame())
+  if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
-  reqVals <- c("Position", "Illumina_Universal_Adapter", "Illumina_Small_RNA_Adapter",
-               "Nextera_Transposase_Sequence")
+  reqVals <- "Position"
   stopifnot(reqVals %in% names(df))
+  stopifnot(ncol(df) > 1)
 
-  df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
+  df[!names(df) %in% reqVals] <- lapply(df[!names(df) %in% reqVals], as.numeric)
   df
 
 }
@@ -371,9 +381,10 @@ getAdapterContent <- function(fastqcData){
 getKmerContent <- function(fastqcData){
 
   x <- fastqcData[["Kmer_Content"]][-1]
-  if (length(x) == 1) return(dplyr::data_frame())
+  if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  df <- dplyr::as_data_frame(mat[-1,])
+  nc <- ncol(mat)
+  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
