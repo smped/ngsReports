@@ -6,8 +6,6 @@
 \alias{path,FastqcFile-method}
 \alias{isCompressed,FastqcFile-method}
 \alias{fileNames,FastqcFile-method}
-\alias{show,FastqcFile-method}
-\alias{show,FastqcFile-methods}
 \title{Path to FastQC data from a single fastq file}
 \usage{
 \S4method{FastqcFile}{character}(filePath)
@@ -17,8 +15,6 @@
 \S4method{isCompressed}{FastqcFile}(object)
 
 \S4method{fileNames}{FastqcFile}(object)
-
-\S4method{show}{FastqcFile}(object)
 }
 \arguments{
 \item{filePath}{The path to a single FastQC output zip file, or uncompressed folder}

@@ -43,7 +43,6 @@ setMethod("path", "FastqcFileList",
 setMethod("isCompressed", "FastqcFileList",
           function(object){vapply(object, isCompressed, logical(1))})
 
-
 #' @export
 #' @rdname FastqcFileList-methods
 #' @aliases fileNames,FastqcFileList-method

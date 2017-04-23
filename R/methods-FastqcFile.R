@@ -42,12 +42,3 @@ setMethod("isCompressed", "FastqcFile", function(object){object@compressed})
 #' @rdname FastqcFile-methods
 #' @aliases fileNames,FastqcFile-method
 setMethod("fileNames", "FastqcFile", function(object){basename(object@path)})
-
-#' @export
-#' @rdname FastqcFile-methods
-#' @aliases show,FastqcFile-methods
-setMethod("show", "FastqcFile",
-          function(object){
-            cat(names(object), "\n")
-            cat("Located in", dirname(path(object)), "\n")
-          })

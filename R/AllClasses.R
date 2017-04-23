@@ -47,7 +47,7 @@ setMethod("show", "FastqcFileList",
           })
 setMethod("show", "FastqcFile",
           function(object){
-            cat(names(object), "\n")
+            cat(fileNames(object), "\n")
             cat("Located in", dirname(path(object)), "\n")
           })
 
