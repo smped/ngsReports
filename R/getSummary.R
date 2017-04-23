@@ -11,6 +11,8 @@
 #' @importFrom stringr str_split_fixed
 #' @importFrom tibble as_tibble
 #'
+#' @include AllGenerics.R
+#'
 #' @export
 #' @rdname getSummary
 #' @aliases getSummary,FastqcFile-method
@@ -19,7 +21,7 @@ setMethod("getSummary", "FastqcFile",
             if (isCompressed(object)){
               #Get the internal path within the zip archive
               if (!file.exists(path(object))) stop("The zip archive can not be found.")
-              fl <- file.path( gsub(".zip$", "", names(object)), "summary.txt")
+              fl <- file.path( gsub(".zip$", "", fileNames(object)), "summary.txt")
               # Check the required file exists
               allFiles <- unzip(path(object), list = TRUE)$Name
               stopifnot(fl %in% allFiles)
@@ -48,6 +50,17 @@ setMethod("getSummary", "FastqcFile",
 setMethod("getSummary", "FastqcFileList",
           function(object){
             out <- lapply(object, getSummary)
-            names(out) <- names(object)
-            out
+            dplyr::bind_rows(out)
+          })
+
+#' @export
+setMethod("getSummary", "character",
+          function(object){
+            if(length(object) ==1) {
+              object <- FastqcFile(object)
+            }
+            else{
+              object <- FastqcFileList(object)
+            }
+            getSummary(object)
           })

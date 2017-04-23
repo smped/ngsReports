@@ -10,15 +10,21 @@
 #' @return An object of cass \code{FastqcFile}
 #'
 #' @include AllClasses.R
+#' @include AllGenerics.R
 #'
 #' @export
 #' @rdname FastqcFile-methods
 #' @aliases FastqcFile,character-method
 setMethod("FastqcFile", "character",
           function(filePath){
-            # Zipped files start with c(80, 75, 03, 04) in the first 4 bytes
+            # Read the first 4 bytes as hexadecimal values
             rw <- readBin(filePath, what = "raw", n = 4L)
-            comp <- sum(rw == as.raw(c(80, 75, 03, 04))) == 4
+            # Zipped files start with c(80, 75, 03, 04) in the first 4 bytes
+            zipBytes <- as.raw(c(80, 75, 03, 04))
+            # Comparison below will give 4 TRUE values for a zipped file
+            # If filePath is a directory, it will return raw(0)
+            # which gives logical(0) when compared to `zipBytes`, hence the sum == 4
+            comp <- sum(rw == zipBytes) == 4
             new("FastqcFile", path = filePath, compressed = comp)
           })
 

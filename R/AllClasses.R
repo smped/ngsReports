@@ -19,35 +19,12 @@ setClass("FastqcData", slots = c(Summary = "data.frame",
                                  path = "character"))
 setClass("FastqcDataList", contains="list")
 
-# Set the vailation functions for any object classes
+# Set the validation functions for any object classes
 #' @include validationFunctions.R
 setValidity("FastqcFile", validFastqcFile)
 setValidity("FastqcFileList", validFastqcFileList)
 # setValidity("FastqcData", validFastqcData) # Not written or defined yet
 # setValidity("FastqcDataList", validFastqcData) # Not written or defined yet
-
-# Set the Generics
-setGeneric("FastqcFile",function(filePath){standardGeneric("FastqcFile")})
-setGeneric("FastqcFileList", function(path){standardGeneric("FastqcFileList")})
-setGeneric("isCompressed", function(object){standardGeneric("isCompressed")})
-setGeneric("path", function(object){standardGeneric("path")})
-setGeneric("getSummary", function(object){standardGeneric("getSummary")})
-setGeneric("getFastqcData", function(object){standardGeneric("getFastqcData")})
-setGeneric("Basic_Statistics", function(object){standardGeneric("Basic_Statistics")})
-setGeneric("Per_base_sequence_quality", function(object){standardGeneric("Per_base_sequence_quality")})
-setGeneric("Per_tile_sequence_quality", function(object){standardGeneric("Per_tile_sequence_quality")})
-setGeneric("Per_sequence_quality_scores", function(object){standardGeneric("Per_sequence_quality_scores")})
-setGeneric("Per_base_sequence_content", function(object){standardGeneric("Per_base_sequence_content")})
-setGeneric("Per_sequence_GC_content", function(object){standardGeneric("Per_sequence_GC_content")})
-setGeneric("Per_base_N_content", function(object){standardGeneric("Per_base_N_content")})
-setGeneric("Sequence_Length_Distribution", function(object){standardGeneric("Sequence_Length_Distribution")})
-setGeneric("Sequence_Duplication_Levels", function(object){standardGeneric("Sequence_Duplication_Levels")})
-setGeneric("Overrepresented_sequences", function(object){standardGeneric("Overrepresented_sequences")})
-setGeneric("Adapter_Content", function(object){standardGeneric("Adapter_Content")})
-setGeneric("Kmer_Content", function(object){standardGeneric("Kmer_Content")})
-setGeneric("Total_Deduplicated_Percentage", function(object){standardGeneric("Total_Deduplicated_Percentage")})
-setGeneric("Version", function(object){standardGeneric("Version")})
-setGeneric("fileNames",function(object){standardGeneric("fileNames")})
 
 # Set the show methods that don't need exporting
 setMethod("show", "FastqcDataList",
@@ -74,3 +51,14 @@ setMethod("show", "FastqcFile",
             cat("Located in", dirname(path(object)), "\n")
           })
 
+# These are never set
+setMethod("names", "FastqcFile", NULL)
+setMethod("names", "FastqcFileList", NULL)
+setMethod("names<-", "FastqcFile", function(x){
+  warning("The names attribute cannot be set on a FastqcFile object")
+  x
+  })
+setMethod("names<-", "FastqcFileList", function(x){
+  warning("The names attribute cannot be set on a FastqcFile object")
+  x
+})

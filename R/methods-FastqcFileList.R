@@ -8,6 +8,7 @@
 #' @param object An object of class \code{FastqcFileList}
 #'
 #' @include AllClasses.R
+#' @include AllGenerics.R
 #'
 #' @export
 #' @rdname FastqcFileList-methods

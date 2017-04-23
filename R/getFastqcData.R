@@ -13,15 +13,16 @@
 #' @importFrom stringr str_split_fixed
 #' @importFrom stringr str_split
 #'
+#' @include AllGenerics.R
+#'
 #' @export
 #' @rdname getFastqcData
-#' @aliases getFastqcData,FastqcFile-method
 setMethod("getFastqcData", "FastqcFile",
           function(object){
             if (isCompressed(object)){
               # Get the internal path within the zip archive
               if (!file.exists(path(object))) stop("The zip archive can not be found.")
-              fl <- file.path( gsub(".zip$", "", names(object)), "fastqc_data.txt")
+              fl <- file.path( gsub(".zip$", "", fileNames(object)), "fastqc_data.txt")
               # Check the required file exists
               allFiles <- unzip(path(object), list = TRUE)$Name
               stopifnot(fl %in% allFiles)
@@ -145,8 +146,7 @@ setMethod("getFastqcData", "FastqcFile",
 
 
 #' @export
-#' @rdname FastqcFile-methods
-#' @aliases getFastqcData,character-methods
+# #' @rdname getFastqcData
 setMethod("getFastqcData", "character",
           function(object){
             if(length(object) ==1) {
@@ -159,8 +159,7 @@ setMethod("getFastqcData", "character",
           })
 
 #' @export
-#' @rdname FastqcFileList-methods
-#' @aliases getFastqcData,FastqcFileList-methods
+# #' @rdname getFastqcData
 setMethod("getFastqcData", "FastqcFileList",
           function(object){
              fqc <- lapply(object@.Data, getFastqcData)

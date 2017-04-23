@@ -6,17 +6,16 @@
 #' or simply a \code{character} vector of paths to fastqc files
 #'
 #' @include AllClasses.R
+#' @include AllGenerics.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
 #' @export
 #' @rdname Basic_Statistics
-#' @aliases Basic_Statistics,FastqcData-method
 setMethod("Basic_Statistics", "FastqcData", function(object){object@Basic_Statistics})
 #'
 #' @export
 #' @rdname Basic_Statistics
-#' @aliases Basic_Statistics,FastqcDataList-method
 setMethod("Basic_Statistics", "FastqcDataList",
           function(object){
             x <- lapply(object@.Data, Basic_Statistics)

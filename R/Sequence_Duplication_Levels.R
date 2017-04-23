@@ -6,6 +6,7 @@
 #' or simply a \code{character} vector of paths to fastqc files
 #'
 #' @include AllClasses.R
+#' @include AllGenerics.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'

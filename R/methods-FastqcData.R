@@ -7,6 +7,7 @@
 #' @param object An object of class \code{FastqcData}
 #'
 #' @include AllClasses.R
+#' @include AllGenerics.R
 #'
 #' @docType methods
 #'

@@ -10,6 +10,7 @@
 #' \code{fileNames}
 #'
 #' @include AllClasses.R
+#' @include AllGenerics.R
 #'
 #' @docType methods
 #'
