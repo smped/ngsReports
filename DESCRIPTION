@@ -32,4 +32,5 @@ Collate:
     'methods-FastqcDataList.R'
     'methods-FastqcFile.R'
     'methods-FastqcFileList.R'
+    'plotAdapterContent.R'
     'runFastQC.R'
