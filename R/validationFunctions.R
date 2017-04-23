@@ -1,3 +1,4 @@
+#' @importFrom checkmate testDirectoryExists
 validFastqcFile <- function(object){
 
   if (length(object@path) != 1) {
@@ -11,19 +12,20 @@ validFastqcFile <- function(object){
   }
 
   if (object@compressed){
-    # Check the file is actually compressed
-    if(!grepl("zip$", object@path)) {
-      warning("Path does not point to a compressed file")
-      return(FALSE)
-    }
     # List the files
     subFiles <- basename(unzip(object@path, list = TRUE)$Name)
   }
   else{
+    # Check the file is a directory
+    chk <- checkmate::testDirectoryExists(object@path)
+    if (!chk){
+      warning("The supplied file is not a directory")
+      return(FALSE)
+    }
     subFiles <- list.files(object@path)
   }
   if (any(!c("fastqc_data.txt", "summary.txt") %in% subFiles)) {
-    warning("The required files are missing from the supplied path")
+    warning("The required files are missing from the supplied path/file")
     return(FALSE)
   }
   # If it checks out up to here, we're good to go

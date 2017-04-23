@@ -10,7 +10,7 @@
 \alias{isCompressed,FastqcFileList-method}
 \alias{show,FastqcFileList-method}
 \alias{show,FastqcFileList-methods}
-\alias{names,FastqcFileList-method}
+\alias{fileNames,FastqcFileList-method}
 \title{Path to FastQC data a vector of fastq files}
 \usage{
 \S4method{getFastqcData}{FastqcFileList}(object)
@@ -25,7 +25,7 @@
 
 \S4method{show}{FastqcFileList}(object)
 
-\S4method{names}{FastqcFileList}(x)
+\S4method{fileNames}{FastqcFileList}(object)
 }
 \arguments{
 \item{object}{An object of class \code{FastqcFileList}}

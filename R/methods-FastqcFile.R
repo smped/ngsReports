@@ -16,7 +16,9 @@
 #' @aliases FastqcFile,character-method
 setMethod("FastqcFile", "character",
           function(filePath){
-            comp <- grepl("zip$", filePath)
+            # Zipped files start with c(80, 75, 03, 04) in the first 4 bytes
+            rw <- readBin(filePath, what = "raw", n = 4L)
+            comp <- sum(rw == as.raw(c(80, 75, 03, 04))) == 4
             new("FastqcFile", path = filePath, compressed = comp)
           })
 
@@ -32,8 +34,8 @@ setMethod("isCompressed", "FastqcFile", function(object){object@compressed})
 
 #' @export
 #' @rdname FastqcFile-methods
-#' @aliases names,FastqcFile-method
-setMethod("names", "FastqcFile", function(x){basename(x@path)})
+#' @aliases fileNames,FastqcFile-method
+setMethod("fileNames", "FastqcFile", function(object){basename(object@path)})
 
 #' @export
 #' @rdname FastqcFile-methods
