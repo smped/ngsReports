@@ -49,3 +49,28 @@ setGeneric("Total_Deduplicated_Percentage", function(object){standardGeneric("To
 setGeneric("Version", function(object){standardGeneric("Version")})
 setGeneric("fileNames",function(object){standardGeneric("fileNames")})
 
+# Set the show methods that don't need exporting
+setMethod("show", "FastqcDataList",
+          function(object){
+            l <- length(object)
+            cat("FastqcDataList for", l, "file(s).\n")
+          })
+setMethod("show", "FastqcData",
+          function(object){
+            cat("FastqcData for", object@Basic_Statistics$Filename, "\n")
+            cat("Source Fastq file contains", scales::comma(object@Basic_Statistics$Total_Sequences), "reads.\n")
+            cat("Source FastQC file is located in", object@path)
+          })
+setMethod("show", "FastqcFileList",
+          function(object){
+            l <- length(object)
+            cmp <- sum(isCompressed(object))
+            cat("FastqcFileList of", l, "file(s).\n")
+            cat("Located in:\n", paste(unique(dirname(path(object))), collapse = "\n"))
+          })
+setMethod("show", "FastqcFile",
+          function(object){
+            cat(names(object), "\n")
+            cat("Located in", dirname(path(object)), "\n")
+          })
+

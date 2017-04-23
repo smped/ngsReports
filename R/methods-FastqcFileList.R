@@ -42,16 +42,6 @@ setMethod("path", "FastqcFileList",
 setMethod("isCompressed", "FastqcFileList",
           function(object){vapply(object, isCompressed, logical(1))})
 
-#' @export
-#' @rdname FastqcFileList-methods
-#' @aliases show,FastqcFileList-methods
-setMethod("show", "FastqcFileList",
-          function(object){
-            l <- length(object)
-            cmp <- sum(isCompressed(object))
-            cat("FastqcFileList of", l, "file(s).\n")
-            cat("Located in:\n", paste(unique(dirname(path(object))), collapse = "\n"))
-          })
 
 #' @export
 #' @rdname FastqcFileList-methods

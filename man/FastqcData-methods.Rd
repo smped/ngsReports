@@ -3,19 +3,6 @@
 \docType{methods}
 \name{path,FastqcData-method}
 \alias{path,FastqcData-method}
-\alias{Basic_Statistics,FastqcData-method}
-\alias{Per_base_sequence_quality,FastqcData-method}
-\alias{Per_tile_sequence_quality,FastqcData-method}
-\alias{Per_sequence_quality_scores,FastqcData-method}
-\alias{Per_base_sequence_content,FastqcData-method}
-\alias{Per_sequence_GC_content,FastqcData-method}
-\alias{Per_base_N_content,FastqcData-method}
-\alias{Sequence_Length_Distribution,FastqcData-method}
-\alias{Sequence_Duplication_Levels,FastqcData-method}
-\alias{Overrepresented_sequences,FastqcData-method}
-\alias{Adapter_Content,FastqcData-method}
-\alias{Kmer_Content,FastqcData-method}
-\alias{Total_Deduplicated_Percentage,FastqcData-method}
 \alias{Version,FastqcData-method}
 \alias{getSummary,FastqcData-method}
 \alias{names,FastqcData-method}
@@ -24,32 +11,6 @@
 \title{Methods for an object of class FastqcData}
 \usage{
 \S4method{path}{FastqcData}(object)
-
-\S4method{Basic_Statistics}{FastqcData}(object)
-
-\S4method{Per_base_sequence_quality}{FastqcData}(object)
-
-\S4method{Per_tile_sequence_quality}{FastqcData}(object)
-
-\S4method{Per_sequence_quality_scores}{FastqcData}(object)
-
-\S4method{Per_base_sequence_content}{FastqcData}(object)
-
-\S4method{Per_sequence_GC_content}{FastqcData}(object)
-
-\S4method{Per_base_N_content}{FastqcData}(object)
-
-\S4method{Sequence_Length_Distribution}{FastqcData}(object)
-
-\S4method{Sequence_Duplication_Levels}{FastqcData}(object)
-
-\S4method{Overrepresented_sequences}{FastqcData}(object)
-
-\S4method{Adapter_Content}{FastqcData}(object)
-
-\S4method{Kmer_Content}{FastqcData}(object)
-
-\S4method{Total_Deduplicated_Percentage}{FastqcData}(object)
 
 \S4method{Version}{FastqcData}(object)
 

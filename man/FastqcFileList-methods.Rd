@@ -8,8 +8,6 @@
 \alias{FastqcFileList,list-method}
 \alias{path,FastqcFileList-method}
 \alias{isCompressed,FastqcFileList-method}
-\alias{show,FastqcFileList-method}
-\alias{show,FastqcFileList-methods}
 \alias{fileNames,FastqcFileList-method}
 \title{Path to FastQC data a vector of fastq files}
 \usage{
@@ -22,8 +20,6 @@
 \S4method{path}{FastqcFileList}(object)
 
 \S4method{isCompressed}{FastqcFileList}(object)
-
-\S4method{show}{FastqcFileList}(object)
 
 \S4method{fileNames}{FastqcFileList}(object)
 }
