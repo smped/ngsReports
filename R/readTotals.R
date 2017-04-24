@@ -8,10 +8,15 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful for only return totals from R1 files, or any other subset
-#' @param trimNames \code{logical}. Remove the suffix from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param pattern \code{character}.
+#' Contains a regular expression which will be captured from fileNames when \code{trimNames = TRUE}.
+#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#'
+#' @importFrom stringr str_detect
 #'
 #' @export
-readTotals <- function(x, subset, trimNames = TRUE){
+readTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -26,7 +31,11 @@ readTotals <- function(x, subset, trimNames = TRUE){
   x <- x[subset]
   df <-  tryCatch(Basic_Statistics(x))
   df <- df[c("Filename", "Total_Sequences")]
-  if (trimNames)  df$Filename <- gsub("\\.(fastq|fq).*", "", df$Filename)
+
+  # Check the pattern contains a capture
+  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
+  }
 
   # Return the data
   df

@@ -4,7 +4,7 @@
 \alias{readTotals}
 \title{Get the read totals}
 \usage{
-readTotals(x, subset, trimNames = TRUE)
+readTotals(x, subset, trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -13,7 +13,11 @@ readTotals(x, subset, trimNames = TRUE)
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful for only return totals from R1 files, or any other subset}
 
-\item{trimNames}{\code{logical}. Remove the suffix from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+
+\item{pattern}{\code{character}.
+Contains a regular expression which will be captured from fileNames when \code{trimNames = TRUE}.
+The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{
 A \code{data_frame} with the columns \code{Filename} and \code{Total_Sequences}

@@ -23,7 +23,10 @@
 #' Defaults to \code{ylim = c(0, 100)}
 #' @param th A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}
 #' @param trimNames \code{logical}. Remove the file suffix from the names displyed in the legend.
-#' @param pattern A regular expression used to filter which adapter(s) are plotted
+#' @param pattern \code{character}.
+#' Contains a regular expression which will be captured from fileNames.
+#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param type A regular expression used to filter which adapter(s) are plotted
 #' @param ... Not used
 #'
 #' @return A standard ggplot2 object
@@ -33,9 +36,11 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr filter
 #' @importFrom reshape2 melt
+#' @importFrom stringr str_detect
 #'
 #' @export
-plotAdapterContent <- function(x, facet = TRUE, nc, ylim, th, trimNames = TRUE, pattern, ...){
+plotAdapterContent <- function(x, facet = TRUE, nc, ylim, th,
+                               trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*", type, ...){
 
   # Get the AdapterContent
   ac <- tryCatch(Adapter_Content(x))
@@ -58,7 +63,10 @@ plotAdapterContent <- function(x, facet = TRUE, nc, ylim, th, trimNames = TRUE, 
   #     ac$Filename <- altNames[ac$Filename]
   #   }
   # }
-  if (trimNames) ac$Filename <- gsub("(.+)\\.(fastq|fq).*", "\\1", ac$Filename)
+  # Check the pattern contains a capture
+  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+    ac$Filename <- gsub(pattern[1], "\\1", ac$Filename)
+  }
 
   # Find the average of the positions
   # This saves problems with non-numeric ordering
@@ -76,17 +84,18 @@ plotAdapterContent <- function(x, facet = TRUE, nc, ylim, th, trimNames = TRUE, 
                        value.name = "Percent", variable.name = "Type")
   ac <- mutate(ac, Type = gsub("_", " ", Type))
 
-  # Restrict to a given pattern if requested
-  if (!missing(pattern)) {
-    ac <- dplyr::filter(ac, grepl(pattern, Type))
-    if(nrow(ac) == 0) stop("No adapters matching the supplied pattern were found")
+  # Restrict to a given type if requested
+  if (!missing(type)) {
+    ac <- dplyr::filter(ac, grepl(type, Type))
+    if(nrow(ac) == 0) stop("No adapters matching the supplied type were found")
   }
 
   # Create the basic plot
   acPlot <- ggplot2::ggplot(ac, ggplot2::aes(x = Position, y = Percent, colour = Filename)) +
     ggplot2::geom_line() +
     ggplot2::scale_y_continuous(limits = ylim) +
-    ggplot2::labs(x = "Position in read (bp)")
+    ggplot2::labs(x = "Position in read (bp)",
+                  y = "Percent (%)")
 
   # Add the basic customisations
   if (facet) {

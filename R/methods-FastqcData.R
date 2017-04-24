@@ -39,4 +39,4 @@ setMethod("names", "FastqcData", function(x){basename(x@path)})
 #' @export
 #' @rdname FastqcData-methods
 #' @aliases fileName,FastqcData-method
-setMethod("fileNames", "FastqcData", function(object){object@Summary$FastqFile[1]})
+setMethod("fileNames", "FastqcData", function(object){object@Summary$Filename[1]})

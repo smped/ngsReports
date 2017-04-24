@@ -8,7 +8,7 @@
 \S4method{getFastqcData}{FastqcFile}(object)
 }
 \arguments{
-\item{object}{Can be a FastqcFile or FastqcFileList. FASTQFILELIST IS NOT YET IMPLEMENTED}
+\item{object}{Can be a FastqcFile or FastqcFileList.}
 }
 \value{
 An object of \code{FastqcData}

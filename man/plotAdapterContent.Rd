@@ -4,8 +4,8 @@
 \alias{plotAdapterContent}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, facet = TRUE, nc, ylim, th, trimNames = TRUE, pattern,
-  ...)
+plotAdapterContent(x, facet = TRUE, nc, ylim, th, trimNames = TRUE,
+  pattern = "(.+)\\\\.(fastq|fq).*", type, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -22,7 +22,11 @@ Defaults to \code{ylim = c(0, 100)}}
 
 \item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
 
-\item{pattern}{A regular expression used to filter which adapter(s) are plotted}
+\item{pattern}{\code{character}.
+Contains a regular expression which will be captured from fileNames.
+The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+
+\item{type}{A regular expression used to filter which adapter(s) are plotted}
 
 \item{...}{Not used}
 }

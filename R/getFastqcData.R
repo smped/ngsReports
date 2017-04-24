@@ -2,7 +2,7 @@
 #'
 #' @description Read the information from the \code{fastqc_data.txt} files in each FastqcFile
 #'
-#' @param object Can be a FastqcFile or FastqcFileList. FASTQFILELIST IS NOT YET IMPLEMENTED
+#' @param object Can be a FastqcFile or FastqcFileList.
 #'
 #' @return An object of \code{FastqcData}
 #'
