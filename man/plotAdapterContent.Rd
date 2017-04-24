@@ -4,7 +4,8 @@
 \alias{plotAdapterContent}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, facet = TRUE, nc, ylim, th, trimNames = TRUE, ...)
+plotAdapterContent(x, facet = TRUE, nc, ylim, th, trimNames = TRUE, pattern,
+  ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -15,11 +16,14 @@ plotAdapterContent(x, facet = TRUE, nc, ylim, th, trimNames = TRUE, ...)
 \item{nc}{Number of columns to use when faceting by Adapter Type.
 Must be supplied if using facets.}
 
-\item{ylim}{A vector providing limits for the y-axis. Defaults to \code{ylim = c(0, 100)}}
+\item{ylim}{A \code{numeric vector} providing limits for the y-axis.
+Defaults to \code{ylim = c(0, 100)}}
 
-\item{th}{A ggplot2 theme object. Defaults to \code{theme_bw()}}
+\item{th}{A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}}
 
-\item{trimNames}{logical. Remove the file suffix from the legend.}
+\item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
+
+\item{pattern}{A regular expression used to filter which adapter(s) are plotted}
 
 \item{...}{Not used}
 }
@@ -33,4 +37,7 @@ Draw an Adapter Content Plot across one or more FASTQC reports
 This extracts the Adapter_Content from the supplied object and generates a ggplot2 object,
 with a set of minimal defaults.
 The output of this function can be further modified using the standard ggplot2 methods.
+
+TOset the faceting outside the function, simply set \code{facet = FALSE}
+and apply \code{facet_wrap()} after the call to \code{plotAdapterContent}
 }
