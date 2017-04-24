@@ -13,8 +13,7 @@ plotAdapterContent(x, facet = TRUE, nc, ylim, th, trimNames = TRUE, pattern,
 
 \item{facet}{logical. Determines whether to use \code{facet_wrap()} or not}
 
-\item{nc}{Number of columns to use when faceting by Adapter Type.
-Must be supplied if using facets.}
+\item{nc}{Number of columns to use when faceting by Adapter Type.}
 
 \item{ylim}{A \code{numeric vector} providing limits for the y-axis.
 Defaults to \code{ylim = c(0, 100)}}
@@ -38,6 +37,11 @@ This extracts the Adapter_Content from the supplied object and generates a ggplo
 with a set of minimal defaults.
 The output of this function can be further modified using the standard ggplot2 methods.
 
-TOset the faceting outside the function, simply set \code{facet = FALSE}
-and apply \code{facet_wrap()} after the call to \code{plotAdapterContent}
+To set any faceting parameters outside the function, such as \code{scales = "free_y"}, simply set \code{facet = FALSE}
+and apply \code{facet_wrap()} after the call to \code{plotAdapterContent}.
+However, the only column available for faceting with be \code{Type},
+so the formula \code{~Type} will still need to be applied.
+
+Preset axis limits can also be overwritten easily by adding a call to \code{scale_y_continuous()}
+after the call to \code{plotAdapterContent}.
 }
