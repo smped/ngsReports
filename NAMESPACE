@@ -2,6 +2,7 @@
 
 export(maxAdapterContent)
 export(plotAdapterContent)
+export(plotSummary)
 export(readTotals)
 export(runFastQC)
 exportMethods(Adapter_Content)

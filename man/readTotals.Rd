@@ -13,10 +13,10 @@ readTotals(x, subset, trimNames = TRUE)
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful for only return totals from R1 files, or any other subset}
 
-\item{trimName}{\code{logical}. Remove the suffix from fileNames}
+\item{trimNames}{\code{logical}. Remove the suffix from fileNames}
 }
 \value{
-A \code{data_frame} with two columns only
+A \code{data_frame} with the columns \code{Filename} and \code{Total_Sequences}
 }
 \description{
 Get the read totals from one or more FASTQC reports

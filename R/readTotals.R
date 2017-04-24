@@ -2,13 +2,13 @@
 #'
 #' @description Get the read totals from one or more FASTQC reports
 #'
-#' @return A \code{data_frame} with two columns only
+#' @return A \code{data_frame} with the columns \code{Filename} and \code{Total_Sequences}
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful for only return totals from R1 files, or any other subset
-#' @param trimName \code{logical}. Remove the suffix from fileNames
+#' @param trimNames \code{logical}. Remove the suffix from fileNames
 #'
 #' @export
 readTotals <- function(x, subset, trimNames = TRUE){

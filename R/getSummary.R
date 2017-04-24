@@ -40,7 +40,7 @@ setMethod("getSummary", "FastqcFile",
               if (!file.exists(fl)) stop("'summary.txt' could not be found.")
               summaryData <- readr::read_delim(fl, delim = "\t", col_names = FALSE)
             }
-            colnames(summaryData) <- c("Status", "Category", "FastqFile")
+            colnames(summaryData) <- c("Status", "Category", "Filename")
             summaryData
           })
 
