@@ -34,6 +34,7 @@ Collate:
     'methods-FastqcFile.R'
     'methods-FastqcFileList.R'
     'plotAdapterContent.R'
+    'plotCombinedBaseQualities.R'
     'plotReadTotals.R'
     'plotSummary.R'
     'readTotals.R'

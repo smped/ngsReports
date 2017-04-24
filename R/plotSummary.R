@@ -35,10 +35,14 @@ plotSummary <- function(x, subset, col = c(FAIL="red", WARN = "yellow", PASS="gr
 
   x <- x[subset]
   df <- tryCatch(getSummary(x))
+
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
     df$Filename <- gsub(pattern[1], "\\1", df$Filename)
+    # These need to be checked to ensure non-duplicated names
+    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
   }
+
   df$Category <- factor(df$Category, levels = rev(unique(df$Category)))
   df$Status <- factor(df$Status, levels = c("PASS", "WARN", "FAIL"))
 

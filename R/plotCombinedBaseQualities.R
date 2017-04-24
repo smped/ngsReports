@@ -1,0 +1,99 @@
+#' @title Plot the combined Per_base_sequence_quality information
+#'
+#' @description Plot the Per_base_sequence_quality information for a set of FASTQC reports
+#'
+#' @details This enables plotting of any of the supplied values (i.e. Mean, Median etc) across
+#' a set of FASTQC reports.
+#' By default only the Mean will be plotted,
+#' however any number of the supplied values can be added to the plot,
+#' and these will be separated by linetype.
+#'
+#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
+#' \code{FastqcDataList} or path
+#' @param subset \code{logical}. Return the values for a subset of files.
+#' May be useful to only return totals from R1 files, or any other subset
+#' @param value \code{character}. Specify which value whould be plotted.
+#' Can be any of the columns returned by \code{\link{Per_base_sequence_quality}},
+#' except Filename and Base.
+#' Defaults to \code{value = "Mean"}.
+#' @param th A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param pattern \code{character}.
+#' Contains a regular expression which will be captured from fileNames.
+#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#'
+#' @return A standard ggplot2 object
+#'
+#' @import ggplot2
+#' @importFrom stringr str_detect
+#' @importFrom dplyr mutate
+#' @importFrom dplyr select
+#' @importFrom dplyr one_of
+#' @importFrom reshape2 melt
+#'
+#' @export
+plotCombinedBaseQualities <- function(x, subset, value = "Mean", th,
+                                      trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+
+  stopifnot(grepl("(Fastqc|character)", class(x)))
+
+  if (missing(subset)){
+    subset <- rep(TRUE, length(x))
+  }
+  stopifnot(is.logical(subset))
+  stopifnot(length(subset) == length(x))
+  stopifnot(is.logical(trimNames))
+
+  x <- x[subset]
+  df <- tryCatch(Per_base_sequence_quality(x))
+
+  # Check for valid columns
+  value <- intersect(value, colnames(df)[-c(1:2)])
+  if (length(value) == 0) stop("The specified value could not be found in the output from Per_base_sequence_quality")
+
+  # Check the pattern contains a capture
+  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
+    # These need to be checked to ensure non-duplicated names
+    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+  }
+
+  # Find the central position for each base as some may be grouped
+  df <- dplyr::mutate(df,
+                      Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
+                      Start = as.integer(Start),
+                      End = gsub("[0-9]*-([0-9]*)", "\\1", Base),
+                      End = as.integer(End),
+                      Base = 0.5*(Start + End))
+  df <- dplyr::select(df, Filename, Base, dplyr::one_of(value))
+  df <- reshape2::melt(df, id.vars = c("Filename", "Base"),
+                       variable.name = "Value", value.name = "Score")
+
+  # Make basic plot, adding the shaded background colours
+  qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Base, y = Score, colour = Filename)) +
+    ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = 30, ymax = Inf,
+                      fill = rgb(0, 0.9, 0.6), alpha = 0.3) +
+    ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = 20, ymax = 30,
+                      fill = rgb(0.9, 0.9, 0.7), alpha = 0.5) +
+    ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = 0, ymax = 20,
+                      fill = rgb(0.8, 0.4, 0.5), alpha = 0.5) +
+    ggplot2::geom_line(ggplot2::aes(linetype = Value)) +
+    ggplot2::scale_x_continuous(expand = c(0, 0)) +
+    ggplot2::scale_y_continuous(expand = c(0, 0))
+
+  # Apply theme_bw() if missing, or an invalid theme is supplied
+  if (missing(th)) {
+    th <- ggplot2::theme_bw()
+  }
+  else{
+    if (!ggplot2::is.theme(th)) {
+      warning("Theme supplied as 'th' is not a ggplot theme and will be ignored")
+      th <- ggplot2::theme_bw()
+    }
+  }
+  qualPlot <- qualPlot + th
+
+  # Draw the plot
+  qualPlot
+
+}

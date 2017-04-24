@@ -35,6 +35,8 @@ readTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq)
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
     df$Filename <- gsub(pattern[1], "\\1", df$Filename)
+    # These need to be checked to ensure non-duplicated names
+    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
   }
 
   # Return the data

@@ -206,7 +206,7 @@ getPerBaseSeqQuals <- function(fastqcData){
                "10th_Percentile", "90th_Percentile")
   stopifnot(reqVals %in% names(df))
 
-  # Change all columns except the positionto numeric values
+  # Change all columns except the position to numeric values
   df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
   df
 

@@ -22,9 +22,14 @@ The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
 \item{th}{A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}}
 }
+\value{
+Returns a ggplot object.
+}
 \description{
 Draw a barplot of read totals
 }
 \details{
-Draw a barplot of read totals using the standard ggplot2 syntax
+Draw a barplot of read totals using the standard ggplot2 syntax.
+Read totals will be plotted in millions as this is the most common.
+The raw data from \code{\link{readTotals}} can otherwise be used to manually create a plot.
 }

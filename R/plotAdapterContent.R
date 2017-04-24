@@ -66,6 +66,8 @@ plotAdapterContent <- function(x, facet = TRUE, nc, ylim, th,
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
     ac$Filename <- gsub(pattern[1], "\\1", ac$Filename)
+    # These need to be checked to ensure non-duplicated names
+    if (length(unique(ac$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
   }
 
   # Find the average of the positions

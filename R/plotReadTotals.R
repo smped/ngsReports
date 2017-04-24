@@ -2,7 +2,9 @@
 #'
 #' @description Draw a barplot of read totals
 #'
-#' @details Draw a barplot of read totals using the standard ggplot2 syntax
+#' @details Draw a barplot of read totals using the standard ggplot2 syntax.
+#' Read totals will be plotted in millions as this is the most common.
+#' The raw data from \code{\link{readTotals}} can otherwise be used to manually create a plot.
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
@@ -13,6 +15,8 @@
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param th A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}
+#'
+#' @return Returns a ggplot object.
 #'
 #' @import ggplot2
 #' @importFrom stringr str_detect
@@ -31,7 +35,7 @@ plotReadTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq
 
   df <- readTotals(x, subset = subset, trimNames = trimNames, pattern = pattern)
 
-  rtPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Total_Sequences)) +
+  rtPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Total_Sequences/1e06)) +
     ggplot2::geom_bar(stat = "identity")
 
   # Apply theme_bw() if missing, or an invalid theme is supplied
@@ -47,6 +51,7 @@ plotReadTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq
 
   rtPlot +
     th +
+    labs(y = "Total Reads (millions)") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 }
