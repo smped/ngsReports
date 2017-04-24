@@ -4,7 +4,7 @@
 \alias{plotAdapterContent}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, facet = TRUE, nc, ylim, th, trimNames = TRUE,
+plotAdapterContent(x, facet = TRUE, nc, ylim, trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*", type, ...)
 }
 \arguments{
@@ -17,8 +17,6 @@ plotAdapterContent(x, facet = TRUE, nc, ylim, th, trimNames = TRUE,
 
 \item{ylim}{A \code{numeric vector} providing limits for the y-axis.
 Defaults to \code{ylim = c(0, 100)}}
-
-\item{th}{A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}}
 
 \item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
 

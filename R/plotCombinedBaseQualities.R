@@ -16,7 +16,6 @@
 #' Can be any of the columns returned by \code{\link{Per_base_sequence_quality}},
 #' except Filename and Base.
 #' Defaults to \code{value = "Mean"}.
-#' @param th A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -32,7 +31,7 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plotCombinedBaseQualities <- function(x, subset, value = "Mean", th,
+plotCombinedBaseQualities <- function(x, subset, value = "Mean",
                                       trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
@@ -79,19 +78,8 @@ plotCombinedBaseQualities <- function(x, subset, value = "Mean", th,
                       fill = rgb(0.8, 0.4, 0.5), alpha = 0.5) +
     ggplot2::geom_line(ggplot2::aes(linetype = Value)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
-    ggplot2::scale_y_continuous(expand = c(0, 0))
-
-  # Apply theme_bw() if missing, or an invalid theme is supplied
-  if (missing(th)) {
-    th <- ggplot2::theme_bw()
-  }
-  else{
-    if (!ggplot2::is.theme(th)) {
-      warning("Theme supplied as 'th' is not a ggplot theme and will be ignored")
-      th <- ggplot2::theme_bw()
-    }
-  }
-  qualPlot <- qualPlot + th
+    ggplot2::scale_y_continuous(expand = c(0, 0)) +
+    ggplot2::theme_bw()
 
   # Draw the plot
   qualPlot

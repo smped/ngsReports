@@ -14,7 +14,6 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
-#' @param th A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}
 #'
 #' @return Returns a ggplot object.
 #'
@@ -22,7 +21,7 @@
 #' @importFrom stringr str_detect
 #'
 #' @export
-plotReadTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*", th){
+plotReadTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -36,22 +35,11 @@ plotReadTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq
   df <- readTotals(x, subset = subset, trimNames = trimNames, pattern = pattern)
 
   rtPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Total_Sequences/1e06)) +
-    ggplot2::geom_bar(stat = "identity")
+    ggplot2::geom_bar(stat = "identity") +
+    ggplot2::theme_bw() +
+    ggplot2::labs(y = "Total Reads (millions)") +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
 
-  # Apply theme_bw() if missing, or an invalid theme is supplied
-  if (missing(th)) {
-    th <- ggplot2::theme_bw()
-  }
-  else{
-    if (!ggplot2::is.theme(th)) {
-      warning("Theme supplied as th is not a ggplot theme and will be ignored")
-      th <- ggplot2::theme_bw()
-    }
-  }
-
-  rtPlot +
-    th +
-    labs(y = "Total Reads (millions)") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+  rtPlot
 
 }

@@ -5,7 +5,7 @@
 \title{Draw a barplot of read totals}
 \usage{
 plotReadTotals(x, subset, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*", th)
+  pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -19,8 +19,6 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{pattern}{\code{character}.
 Contains a regular expression which will be captured from fileNames.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
-
-\item{th}{A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}}
 }
 \value{
 Returns a ggplot object.

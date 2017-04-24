@@ -21,7 +21,6 @@
 #' @param nc Number of columns to use when faceting by Adapter Type.
 #' @param ylim A \code{numeric vector} providing limits for the y-axis.
 #' Defaults to \code{ylim = c(0, 100)}
-#' @param th A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}
 #' @param trimNames \code{logical}. Remove the file suffix from the names displyed in the legend.
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -39,7 +38,7 @@
 #' @importFrom stringr str_detect
 #'
 #' @export
-plotAdapterContent <- function(x, facet = TRUE, nc, ylim, th,
+plotAdapterContent <- function(x, facet = TRUE, nc, ylim,
                                trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*", type, ...){
 
   # Get the AdapterContent
@@ -97,7 +96,8 @@ plotAdapterContent <- function(x, facet = TRUE, nc, ylim, th,
     ggplot2::geom_line() +
     ggplot2::scale_y_continuous(limits = ylim) +
     ggplot2::labs(x = "Position in read (bp)",
-                  y = "Percent (%)")
+                  y = "Percent (%)") +
+    ggplot2::theme_bw()
 
   # Add the basic customisations
   if (facet) {
@@ -107,17 +107,6 @@ plotAdapterContent <- function(x, facet = TRUE, nc, ylim, th,
     }
     acPlot <- acPlot + ggplot2::facet_wrap(~Type, ncol = nc)
   }
-  # Apply theme_bw() if missing, or an invalid theme is supplied
-  if (missing(th)) {
-    th <- ggplot2::theme_bw()
-  }
-  else{
-    if (!ggplot2::is.theme(th)) {
-      warning("Theme supplied as th is not a ggplot theme and will be ignored")
-      th <- ggplot2::theme_bw()
-    }
-  }
-  acPlot <- acPlot + th
 
   # And draw the plot
   acPlot

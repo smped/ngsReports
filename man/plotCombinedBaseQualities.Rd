@@ -4,7 +4,7 @@
 \alias{plotCombinedBaseQualities}
 \title{Plot the combined Per_base_sequence_quality information}
 \usage{
-plotCombinedBaseQualities(x, subset, value = "Mean", th, trimNames = TRUE,
+plotCombinedBaseQualities(x, subset, value = "Mean", trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
@@ -18,8 +18,6 @@ May be useful to only return totals from R1 files, or any other subset}
 Can be any of the columns returned by \code{\link{Per_base_sequence_quality}},
 except Filename and Base.
 Defaults to \code{value = "Mean"}.}
-
-\item{th}{A \code{ggplot2 theme} object. Defaults to \code{theme_bw()}}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 
