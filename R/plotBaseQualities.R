@@ -2,6 +2,11 @@
 #'
 #' @description Plot the Base Qualities for each file as separate plots
 #'
+#' @details This replicates the \code{Per base sequence quality} plots from FASTQC,
+#' using facets to plce them all in a single ggplot2 object.
+#'
+#' For large datasets, subsetting by R1 or R2 reads may be helpful
+#'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
@@ -22,6 +27,7 @@
 plotBaseQualities <- function(x, subset, nc = 2,
                               trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
+  # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if (missing(subset)){

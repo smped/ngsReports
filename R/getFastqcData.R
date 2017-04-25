@@ -399,7 +399,7 @@ getKmerContent <- function(fastqcData){
                 Count = as.integer(Count),
                 PValue = as.numeric(PValue),
                 `Obs/Exp_Max` = as.numeric(`Obs/Exp_Max`),
-                `Max_Obs/Exp_Position` = as.integer(`Max_Obs/Exp_Position`))
+                `Max_Obs/Exp_Position` = as.character(`Max_Obs/Exp_Position`))
 
 }
 

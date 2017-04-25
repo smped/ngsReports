@@ -34,6 +34,7 @@
 plotCombinedBaseQualities <- function(x, subset, value = "Mean",
                                       trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
+  # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if (missing(subset)){
