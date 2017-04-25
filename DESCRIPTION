@@ -37,6 +37,7 @@ Collate:
     'plotBaseQualities.R'
     'plotCombinedBaseQualities.R'
     'plotDuplicationLevels.R'
+    'plotKmerHeatmap.R'
     'plotKmers.R'
     'plotReadTotals.R'
     'plotSummary.R'

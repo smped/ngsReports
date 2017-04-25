@@ -2,6 +2,12 @@
 #'
 #' @description Plot Overrepresented Kmers across an entire library
 #'
+#' @details This plots the top overrepresented Kmers for one or more FASTQC reports.
+#' Sequences are coloured in order of first appearance from left to right for easy
+#' identification of larger sequences.
+#'
+#' Returned plots can be easily modified using the standard ggplot2 methods
+#'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
@@ -47,6 +53,7 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6,
   stopifnot(length(subset) == length(x))
   stopifnot(is.logical(trimNames))
   stopifnot(is.numeric(nc))
+  stopifnot(is.numeric(nKmers))
 
   x <- x[subset]
   df <- tryCatch(Kmer_Content(x))
@@ -64,7 +71,7 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6,
     dplyr::summarise(maxVal = max(`Obs/Exp_Max`)) %>%
     dplyr::arrange(desc(maxVal)) %>%
     dplyr::slice(1:nKmers) %>%
-    extract2("Sequence")
+    magrittr::extract2("Sequence")
 
   df %<>%
     dplyr::filter(Sequence %in% topKmers) %>%
@@ -92,8 +99,8 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6,
                                  Start = seq(0, max(Start) + 0.5, by = 0.5)),
                             stringsAsFactors = FALSE))
 
-  # After the bind_rows, duplicate values will now exist at some positions
-  # and the spurious zeros need to be removed
+  # After the bind_rows, duplicate values will exist at some positions
+  # Spuriously introduced zeros need to be removed
   df %<>%
     dplyr::bind_rows(zeros) %>%
     dplyr::arrange(Filename, Sequence, Start, desc(`Obs/Exp_Max`)) %>%
@@ -104,15 +111,17 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6,
   kMerLevels <- df %>%
     dplyr::filter(`Obs/Exp_Max` != 0) %>%
     dplyr::arrange(Start) %>%
-    dplyr::distinct(Sequence)
-  df$Sequence <- factor(df$Sequence, levels = kMerLevels$Sequence)
+    dplyr::distinct(Sequence) %>%
+    magrittr::extract2("Sequence")
+  df$Sequence <- factor(df$Sequence, levels = kMerLevels)
 
+  # Now draw the basic plots
   kMerPlot <- ggplot2::ggplot(df,
                               ggplot2::aes(x = Start, y = `Obs/Exp_Max`, colour = Sequence)) +
     ggplot2::geom_line() +
     ggplot2::facet_wrap(~Filename, ncol = nc) +
-    scale_x_continuous(breaks = refForX$Start,
-                       labels = refForX$Base) +
+    ggplot2::scale_x_continuous(breaks = refForX$Start,
+                                labels = refForX$Base) +
     ggplot2::theme_bw() +
     ggplot2::ylab(expression(paste(log[2], " Obs/Exp"))) +
     ggplot2::xlab("Position in read (bp)")
@@ -121,8 +130,8 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6,
   # This should be clear if there are more than 2 characters in the plotted labels
   binned <- max(nchar(dplyr::filter(refForX, Start %in% df$Start)$Base)) > 2
   if (binned) {
-    kMerPlot +
-      ggplot2::theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+    kMerPlot <- kMerPlot +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
   }
 
   # Draw the plot
