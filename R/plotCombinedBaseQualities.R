@@ -23,6 +23,26 @@
 #'
 #' @return A standard ggplot2 object
 #'
+#' @examples
+#'
+#' # Get the files included with the package
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+#' fileList <- system.file("extdata", fileList, package = "fastqcReports")
+#'
+#' # Load the FASTQC data as a FastqcDataList
+#' fdl <- getFastqcData(fileList)
+#'
+#' # Find the R1 files
+#' r1 <- grepl("R1", fileNames(fdl))
+#'
+#' # The default plot using the Mean only
+#' plotCombinedBaseQualities(fdl)
+#'
+#' # Plot the R1 files showing the Mean and Lower_Quartile
+#' plotCombinedBaseQualities(fdl, subset = r1, value = c("Mean", "Lower_Quartile"))
+#'
 #' @import ggplot2
 #' @importFrom stringr str_detect
 #' @importFrom dplyr mutate

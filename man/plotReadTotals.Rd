@@ -33,3 +33,21 @@ Draw a barplot of read totals using the standard ggplot2 syntax.
 Read totals will be plotted in millions as this is the most common.
 The raw data from \code{\link{readTotals}} can otherwise be used to manually create a plot.
 }
+\examples{
+
+# Get the files included with the package
+fileList <- paste(rep(c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG"), each = 2), rep(c("R1_fastqc.zip", "R2_fastqc.zip"), times = 5), sep = "_")
+fileList <- system.file("extdata", fileList, package = "fastqcReports")
+
+# Load the FASTQC data as a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Plot the Read Totals
+plotReadTotals(fdl)
+
+# Change the scale so it is not in millions
+# Also subset the reads to just the R1 files
+r1 <- grepl("R1", fileNames(fdl))
+plotReadTotals(fdl, subset = r1, millions = FALSE)
+
+}

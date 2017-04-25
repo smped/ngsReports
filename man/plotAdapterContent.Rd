@@ -48,3 +48,26 @@ so the formula \code{~Type} will still need to be applied.
 Preset axis limits can also be overwritten easily by adding a call to \code{scale_y_continuous()}
 after the call to \code{plotAdapterContent}.
 }
+\examples{
+
+# Get the files included with the package
+fileList <- paste(rep(c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG"), each = 2), rep(c("R1_fastqc.zip", "R2_fastqc.zip"), times = 5), sep = "_")
+fileList <- system.file("extdata", fileList, package = "fastqcReports")
+
+# Load the FASTQC data as a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# The default plot
+plotAdapterContent(fdl)
+
+# Also subset the reads to just the R1 files
+r1 <- grepl("R1", fileNames(fdl))
+plotAdapterContent(fdl, subset = r1)
+
+# Plot just the Universal Adapter, and change the y-axis
+plotAdapterContent(fdl, facet = FALSE, type ="Universal") +
+facet_wrap(~Type, scales = "free_y") +
+scale_y_continuous()
+
+
+}
