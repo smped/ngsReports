@@ -4,8 +4,8 @@
 \alias{plotKmerHeatmap}
 \title{Plot Overrepresented Kmers As a Heatmap}
 \usage{
-plotKmerHeatmap(x, subset, nKmers = 12, low = rgb(0.2, 0, 0.2),
-  mid = rgb(1, 0, 0), high = rgb(1, 1, 0), naCol = "grey80",
+plotKmerHeatmap(x, subset, nKmers = 12, method = "overall", low = rgb(0.2,
+  0, 0.2), mid = rgb(1, 0, 0), high = rgb(1, 1, 0), naCol = "grey80",
   flip = TRUE, trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
@@ -15,9 +15,11 @@ plotKmerHeatmap(x, subset, nKmers = 12, low = rgb(0.2, 0, 0.2),
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful to only return totals from R1 files, or any other subset}
 
-\item{nKmers}{\code{numeric}.
-The number of Kmers to show.
-Kmers are sorted by \code{max(Obs/Exp_Max)} across all files during selection}
+\item{nKmers}{\code{numeric}. The number of Kmers to show.}
+
+\item{method}{Can only take the values \code{"overall"} or \code{"individual"}.
+Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
+or whether the top nKmers are selected from each individual file.}
 
 \item{low}{colour used as the low colour in the heatmap}
 

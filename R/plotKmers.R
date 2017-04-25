@@ -13,9 +13,10 @@
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param nc \code{numeric}. The number of columns to create in the plot layout
-#' @param nKmers \code{numeric}.
-#' The number of Kmers to show.
-#' Kmers are sorted by \code{max(Obs/Exp_Max)} acros all files to select these
+#' @param nKmers \code{numeric}. The number of Kmers to show.
+#' @param method Can only take the values \code{"overall"} or \code{"individual"}.
+#' Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
+#' or whether the top nKmers are selected from each individual file.
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -40,7 +41,7 @@
 #' @importFrom magrittr %<>%
 #'
 #' @export
-plotKmers <- function(x, subset, nc = 2, nKmers = 6,
+plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
                       trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   # A basic cautionary check
@@ -54,6 +55,7 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6,
   stopifnot(is.logical(trimNames))
   stopifnot(is.numeric(nc))
   stopifnot(is.numeric(nKmers))
+  stopifnot(method %in% c("overall", "individual"))
 
   x <- x[subset]
   df <- tryCatch(Kmer_Content(x))
@@ -65,13 +67,24 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6,
     if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
   }
 
-  # Get the top kMers
+  # Get the top kMers from each file, or from the overall list
   nKmers <- as.integer(nKmers)
-  topKmers <- dplyr::group_by(df, Sequence) %>%
-    dplyr::summarise(maxVal = max(`Obs/Exp_Max`)) %>%
-    dplyr::arrange(desc(maxVal)) %>%
-    dplyr::slice(1:nKmers) %>%
-    magrittr::extract2("Sequence")
+  if (method == "individual"){
+    topKmers <- df %>%
+      split(f = .$Filename) %>%
+      lapply(dplyr::arrange, desc(`Obs/Exp_Max`)) %>%
+      lapply(dplyr::slice, 1:nKmers) %>%
+      dplyr::bind_rows() %>%
+      magrittr::extract2("Sequence") %>%
+      unique()
+  }
+  if (method == "overall"){
+    topKmers <- df %>%
+      dplyr::arrange(desc(`Obs/Exp_Max`)) %>%
+      dplyr::distinct(Sequence) %>%
+      dplyr::slice(1:nKmers) %>%
+      magrittr::extract2("Sequence")
+  }
 
   df %<>%
     dplyr::filter(Sequence %in% topKmers) %>%
@@ -92,8 +105,10 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6,
 
   # In order to get a line plot, zero values need to be added to the missing positions
   # The above reference scale for X will be used to label the missing values
+  # Include all files to ensure all appear in the final plot
+  if (trimNames) allNames <- gsub(pattern[1], "\\1", fileNames(x))
   zeros <- with(df,
-                expand.grid(list(Filename = unique(Filename),
+                expand.grid(list(Filename = allNames,
                                  Sequence = unique(Sequence),
                                  `Obs/Exp_Max` = 0,
                                  Start = seq(0, max(Start) + 0.5, by = 0.5)),

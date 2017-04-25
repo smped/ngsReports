@@ -10,6 +10,7 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
+#' @param millions \code{logical} Use Millions of reads as the scale for the y-axis
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -21,7 +22,8 @@
 #' @importFrom stringr str_detect
 #'
 #' @export
-plotReadTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+plotReadTotals <- function(x, subset, millions = TRUE,
+                           trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -34,12 +36,23 @@ plotReadTotals <- function(x, subset, trimNames = TRUE, pattern = "(.+)\\.(fastq
 
   df <- readTotals(x, subset = subset, trimNames = trimNames, pattern = pattern)
 
-  rtPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Total_Sequences/1e06)) +
+  # Setup the basic plot in millions or not
+  if (millions){
+    rtPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Total_Sequences/1e06)) +
+      ggplot2::labs(y = "Total Reads (millions)")
+  }
+  else{
+    rtPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Total_Sequences)) +
+      ggplot2::labs(y = "Total Reads")
+  }
+
+  # Add the rest of the parameters
+  rtPlot <- rtPlot +
     ggplot2::geom_bar(stat = "identity") +
     ggplot2::theme_bw() +
-    ggplot2::labs(y = "Total Reads (millions)") +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
 
+  # Draw the plot
   rtPlot
 
 }

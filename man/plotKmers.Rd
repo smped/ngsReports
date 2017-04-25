@@ -4,8 +4,8 @@
 \alias{plotKmers}
 \title{Plot Overrepresented Kmers}
 \usage{
-plotKmers(x, subset, nc = 2, nKmers = 6, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+plotKmers(x, subset, nc = 2, nKmers = 6, method = "overall",
+  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -16,9 +16,11 @@ May be useful to only return totals from R1 files, or any other subset}
 
 \item{nc}{\code{numeric}. The number of columns to create in the plot layout}
 
-\item{nKmers}{\code{numeric}.
-The number of Kmers to show.
-Kmers are sorted by \code{max(Obs/Exp_Max)} acros all files to select these}
+\item{nKmers}{\code{numeric}. The number of Kmers to show.}
+
+\item{method}{Can only take the values \code{"overall"} or \code{"individual"}.
+Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
+or whether the top nKmers are selected from each individual file.}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 

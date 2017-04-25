@@ -46,8 +46,7 @@ plotOverrepresentedHeatmap <- function(x, subset, nSeq = 20,
   stopifnot(is.logical(subset))
   stopifnot(length(subset) == length(x))
   stopifnot(is.logical(trimNames))
-  stopifnot(is.numeric(nKmers))
-  stopifnot(is.numeric(infReplace))
+  stopifnot(is.numeric(nSeq))
 
   x <- x[subset]
   df <- tryCatch(Overrepresented_sequences(x))

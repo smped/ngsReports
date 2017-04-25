@@ -4,8 +4,8 @@
 \alias{plotAdapterContent}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, facet = TRUE, nc, ylim, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*", type, ...)
+plotAdapterContent(x, subset, facet = TRUE, nc = 2, ylim = c(0, 100),
+  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*", type, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -26,7 +26,8 @@ The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
 \item{type}{A regular expression used to filter which adapter(s) are plotted}
 
-\item{...}{Not used}
+\item{...}{Used to pass additional arguments, such as \code{invert} or \code{ignore.case},
+to \code{grep} when selecting Adapter \code{type}}
 }
 \value{
 A standard ggplot2 object
@@ -39,9 +40,9 @@ This extracts the Adapter_Content from the supplied object and generates a ggplo
 with a set of minimal defaults.
 The output of this function can be further modified using the standard ggplot2 methods.
 
-To set any faceting parameters outside the function, such as \code{scales = "free_y"}, simply set \code{facet = FALSE}
-and apply \code{facet_wrap()} after the call to \code{plotAdapterContent}.
-However, the only column available for faceting with be \code{Type},
+To set any faceting parameters outside the function, such as \code{scales = "free_y"},
+set \code{facet = FALSE} and apply \code{facet_wrap()} after the call to \code{plotAdapterContent}.
+Note that the only column available for faceting with be \code{Type},
 so the formula \code{~Type} will still need to be applied.
 
 Preset axis limits can also be overwritten easily by adding a call to \code{scale_y_continuous()}

@@ -7,9 +7,9 @@
 #' with a set of minimal defaults.
 #' The output of this function can be further modified using the standard ggplot2 methods.
 #'
-#' To set any faceting parameters outside the function, such as \code{scales = "free_y"}, simply set \code{facet = FALSE}
-#' and apply \code{facet_wrap()} after the call to \code{plotAdapterContent}.
-#' However, the only column available for faceting with be \code{Type},
+#' To set any faceting parameters outside the function, such as \code{scales = "free_y"},
+#' set \code{facet = FALSE} and apply \code{facet_wrap()} after the call to \code{plotAdapterContent}.
+#' Note that the only column available for faceting with be \code{Type},
 #' so the formula \code{~Type} will still need to be applied.
 #'
 #' Preset axis limits can also be overwritten easily by adding a call to \code{scale_y_continuous()}
@@ -26,73 +26,71 @@
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param type A regular expression used to filter which adapter(s) are plotted
-#' @param ... Not used
+#' @param ... Used to pass additional arguments, such as \code{invert} or \code{ignore.case},
+#' to \code{grep} when selecting Adapter \code{type}
 #'
 #' @return A standard ggplot2 object
 #'
 #' @import ggplot2
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
-#' @importFrom dplyr filter
 #' @importFrom reshape2 melt
 #' @importFrom stringr str_detect
 #'
 #' @export
-plotAdapterContent <- function(x, facet = TRUE, nc, ylim,
+plotAdapterContent <- function(x, subset,
+                               facet = TRUE, nc = 2, ylim = c(0, 100),
                                trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*", type, ...){
 
-  # Get the AdapterContent
-  ac <- tryCatch(Adapter_Content(x))
+  # A basic cautionary check
+  stopifnot(grepl("(Fastqc|character)", class(x)))
 
-  if (missing(ylim)) {
-    message("The 'ylim' argument was not specified. The default of (0, 100) will be applied.")
-    ylim <- c(0, 100)
+  if (missing(subset)){
+    subset <- rep(TRUE, length(x))
   }
-  else {
-    if (any(length(ylim) != 2, !is.numeric(ylim))) stop("The argument ylim must be a numeric vector of length 2")
-  }
+  stopifnot(is.logical(subset))
+  stopifnot(length(subset) == length(x))
+  stopifnot(is.logical(trimNames))
+  stopifnot(is.numeric(ylim))
+  stopifnot(length(ylim) == 2)
   stopifnot(is.logical(facet))
 
-  # # Check the alternate names
-  # if (!missing(altNames)) {
-  #   if (any(!ac$Filename %in% names(altNames))) {
-  #     warning("Supplied vector of alternate names does not match and will be ignored.")
-  #   }
-  #   else{
-  #     ac$Filename <- altNames[ac$Filename]
-  #   }
-  # }
+  # Get the AdapterContent
+  x <- x[subset]
+  df <- tryCatch(Adapter_Content(x))
+
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    ac$Filename <- gsub(pattern[1], "\\1", ac$Filename)
+    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
     # These need to be checked to ensure non-duplicated names
-    if (length(unique(ac$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
   }
 
   # Find the average of the positions
   # This saves problems with non-numeric ordering
   # as well as dealing with potential conflicts in fastqc files themselves
-  ac <- dplyr::mutate(ac,
+  df <- dplyr::mutate(df,
                       Start = gsub("([0-9]*)-[0-9]*", "\\1", Position),
                       Start = as.integer(Start),
                       End = gsub("[0-9]*-([0-9]*)", "\\1", Position),
                       End = as.integer(End),
                       Position = 0.5*(Start + End))
-  ac <- dplyr::select(ac, -Start, -End)
+  df <- dplyr::select(df, -Start, -End)
 
   # Change to long form and remove the _ symbols between words
-  ac <- reshape2::melt(ac, id.vars = c("Filename", "Position"),
+  df <- reshape2::melt(df, id.vars = c("Filename", "Position"),
                        value.name = "Percent", variable.name = "Type")
-  ac <- mutate(ac, Type = gsub("_", " ", Type))
+  df <- mutate(df, Type = gsub("_", " ", Type))
 
   # Restrict to a given type if requested
   if (!missing(type)) {
-    ac <- dplyr::filter(ac, grepl(type, Type))
-    if(nrow(ac) == 0) stop("No adapters matching the supplied type were found")
+    keep <- grep(pattern = type, x = df$Type, ...)
+    df <- df[keep,]
+    if(nrow(df) == 0) stop("No adapters matching the supplied type were found")
   }
 
   # Create the basic plot
-  acPlot <- ggplot2::ggplot(ac, ggplot2::aes(x = Position, y = Percent, colour = Filename)) +
+  acPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Position, y = Percent, colour = Filename)) +
     ggplot2::geom_line() +
     ggplot2::scale_y_continuous(limits = ylim) +
     ggplot2::labs(x = "Position in read (bp)",
@@ -101,11 +99,11 @@ plotAdapterContent <- function(x, facet = TRUE, nc, ylim,
 
   # Add the basic customisations
   if (facet) {
-    if (missing(nc)){
-      message("The argument nc was not supplied. Using the default of nc = 2")
+    if (!is.numeric(nc)){
+      message("The argument nc was not supplied correctly. Using the default of nc = 2")
       nc <- 2
     }
-    acPlot <- acPlot + ggplot2::facet_wrap(~Type, ncol = nc)
+    acPlot <- acPlot + ggplot2::facet_wrap(~Type, ncol = nc[1])
   }
 
   # And draw the plot

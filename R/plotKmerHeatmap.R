@@ -15,9 +15,10 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param nKmers \code{numeric}.
-#' The number of Kmers to show.
-#' Kmers are sorted by \code{max(Obs/Exp_Max)} across all files during selection
+#' @param nKmers \code{numeric}. The number of Kmers to show.
+#' @param method Can only take the values \code{"overall"} or \code{"individual"}.
+#' Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
+#' or whether the top nKmers are selected from each individual file.
 #' @param low colour used as the low colour in the heatmap
 #' @param mid colour used as the mid colour in the heatmap
 #' @param high colour used as thehigh colour in the heatmap
@@ -47,7 +48,7 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plotKmerHeatmap <- function(x, subset, nKmers = 12,
+plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
                             low = rgb(0.2, 0, 0.2), mid = rgb(1, 0, 0), high = rgb(1, 1, 0),
                             naCol = "grey80", flip = TRUE,
                             trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
@@ -62,7 +63,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12,
   stopifnot(length(subset) == length(x))
   stopifnot(is.logical(trimNames))
   stopifnot(is.numeric(nKmers))
-  stopifnot(is.numeric(infReplace))
+  stopifnot(method %in% c("overall", "individual"))
 
   x <- x[subset]
   df <- tryCatch(Kmer_Content(x))
@@ -76,11 +77,22 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12,
 
   # Get the top kMers
   nKmers <- as.integer(nKmers)
-  topKmers <- dplyr::group_by(df, Sequence) %>%
-    dplyr::summarise(maxVal = max(`Obs/Exp_Max`)) %>%
-    dplyr::arrange(desc(maxVal)) %>%
-    dplyr::slice(1:nKmers) %>%
-    magrittr::extract2("Sequence")
+  if (method == "individual"){
+    topKmers <- df %>%
+      split(f = .$Filename) %>%
+      lapply(dplyr::arrange, desc(`Obs/Exp_Max`)) %>%
+      lapply(dplyr::slice, 1:nKmers) %>%
+      dplyr::bind_rows() %>%
+      magrittr::extract2("Sequence") %>%
+      unique()
+  }
+  if (method == "overall"){
+    topKmers <- df %>%
+      dplyr::arrange(desc(`Obs/Exp_Max`)) %>%
+      dplyr::distinct(Sequence) %>%
+      dplyr::slice(1:nKmers) %>%
+      magrittr::extract2("Sequence")
+  }
   df <- dplyr::filter(df, Sequence %in% topKmers)
 
   # Set the Sequence as a factor based on the first position it appears
@@ -110,14 +122,24 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12,
     # just add 1 to the the infinite ones
     df$PValue[is.infinite(df$PValue)] <- max(df$PValue[is.finite(df$PValue)]) + 1
   }
-  df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+  # Ensure that all files are included on the plot
+  if (trimNames){
+    allNames <- gsub(pattern[1], "\\1", fileNames(x))
+  }
+  else{
+    allNames <- fileNames(x)
+  }
+  df$Filename <- factor(df$Filename, levels = rev(allNames))
 
+  # The inclusion of files without values needs to be worked on
+  # Maybe columns should be added during a dcast somewhere
   if (allInf) {
     # First change the missing values to ">0" as this is all the information we have
     # This is done by gaining explicit NA values, then transforming
     heatPlot <- df %>%
       reshape2::dcast(Filename~Sequence, value.var = "PValue") %>%
       reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
+      dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
       dplyr::mutate(PValue = dplyr::if_else(is.na(PValue), ">0", "=0")) %>%
       ggplot2::ggplot(ggplot2::aes(x =Filename, y = Sequence, fill = PValue)) +
       ggplot2::geom_tile(colour = "grey30", alpha = 0.9) +
@@ -129,6 +151,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12,
     heatPlot <- df %>%
       reshape2::dcast(Filename~Sequence, value.var = "PValue") %>%
       reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
+      dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
       ggplot2::ggplot(ggplot2::aes(x =Filename, y = Sequence, fill = PValue)) +
       ggplot2::geom_tile(colour = "grey30", alpha = 0.9) +
       ggplot2::scale_fill_gradient2(low = low,
