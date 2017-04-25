@@ -5,8 +5,8 @@
 \title{Plot Overrepresented Kmers As a Heatmap}
 \usage{
 plotKmerHeatmap(x, subset, nKmers = 12, low = rgb(0.2, 0, 0.2),
-  mid = rgb(1, 0, 0), high = rgb(1, 1, 0), trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+  mid = rgb(1, 0, 0), high = rgb(1, 1, 0), naCol = "grey80",
+  flip = TRUE, trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -17,13 +17,17 @@ May be useful to only return totals from R1 files, or any other subset}
 
 \item{nKmers}{\code{numeric}.
 The number of Kmers to show.
-Kmers are sorted by \code{max(Obs/Exp_Max)} acros all files to select these}
+Kmers are sorted by \code{max(Obs/Exp_Max)} across all files during selection}
 
 \item{low}{colour used as the low colour in the heatmap}
 
 \item{mid}{colour used as the mid colour in the heatmap}
 
 \item{high}{colour used as thehigh colour in the heatmap}
+
+\item{naCol}{colour used for missing values}
+
+\item{flip}{\code{logical}. Enable a call to \code{coord_flip} to determine the best direction}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 
@@ -36,4 +40,14 @@ A standard ggplot2 object
 }
 \description{
 Plot Overrepresented Kmers across an entire library
+}
+\details{
+Plots the over-represented Kmers as a heatmap.
+Colours will correspond to the p-values.
+In the presence of only zero-valued p-values the heatmap will be filled in a single colour,
+with missing values defined simply as p < 0.
+
+If non-zero p-values are present, colours will denote -log10 transformed values.
+In this case zero values will be transformed using -log10(q) + 1,
+where q is the minimum of the non-zero p-values.
 }

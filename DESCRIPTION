@@ -39,6 +39,7 @@ Collate:
     'plotDuplicationLevels.R'
     'plotKmerHeatmap.R'
     'plotKmers.R'
+    'plotOverrepresentedHeatmap.R'
     'plotReadTotals.R'
     'plotSummary.R'
     'readTotals.R'

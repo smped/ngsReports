@@ -1,7 +1,5 @@
 - Include the capacity for selective overwriting in `runFastQC`
 - Set character methods for `runFastQC` & redefine this function as a method for class `FastqFileList`
 - Test the output of `runFastQC` now it hs been changed to a `FastqcFileList`
-- `plotKmers`: Heatmap using the $p$-values to fill
-- `plotOverrepresented`: Another heatmap
 - Validation Functions for `fastqcData` and `fastqcDataLists` objects
 - Figure out errors in roxygen build

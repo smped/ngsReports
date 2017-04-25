@@ -2,16 +2,27 @@
 #'
 #' @description Plot Overrepresented Kmers across an entire library
 #'
+#' @details Plots the over-represented Kmers as a heatmap.
+#' Colours will correspond to the p-values.
+#' In the presence of only zero-valued p-values the heatmap will be filled in a single colour,
+#' with missing values defined simply as p < 0.
+#'
+#' If non-zero p-values are present, colours will denote -log10 transformed values.
+#' In this case zero values will be transformed using -log10(q) + 1,
+#' where q is the minimum of the non-zero p-values.
+#'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param nKmers \code{numeric}.
 #' The number of Kmers to show.
-#' Kmers are sorted by \code{max(Obs/Exp_Max)} acros all files to select these
+#' Kmers are sorted by \code{max(Obs/Exp_Max)} across all files during selection
 #' @param low colour used as the low colour in the heatmap
 #' @param mid colour used as the mid colour in the heatmap
 #' @param high colour used as thehigh colour in the heatmap
+#' @param naCol colour used for missing values
+#' @param flip \code{logical}. Enable a call to \code{coord_flip} to determine the best direction
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -38,6 +49,7 @@
 #' @export
 plotKmerHeatmap <- function(x, subset, nKmers = 12,
                             low = rgb(0.2, 0, 0.2), mid = rgb(1, 0, 0), high = rgb(1, 1, 0),
+                            naCol = "grey80", flip = TRUE,
                             trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   # A basic cautionary check
@@ -80,8 +92,9 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12,
   df$Sequence <- factor(df$Sequence, levels = rev(kMerLevels))
 
   if (length(kMerLevels) < nKmers) {
-    message(paste("There is only data in the FASTQC report for the top",
+    message(paste("There is only data in the FASTQC reports for the top",
                   length(kMerLevels),"Kmers."))
+    nKmers <- length(kMerLevels)
   }
 
   # Set the p-values to the -log10 scale
@@ -105,10 +118,10 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12,
     heatPlot <- df %>%
       reshape2::dcast(Filename~Sequence, value.var = "PValue") %>%
       reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
-      dplyr::mutate(PValue = dplyr::if_else(is.na(PValue), ">0", "0")) %>%
+      dplyr::mutate(PValue = dplyr::if_else(is.na(PValue), ">0", "=0")) %>%
       ggplot2::ggplot(ggplot2::aes(x =Filename, y = Sequence, fill = PValue)) +
       ggplot2::geom_tile(colour = "grey30", alpha = 0.9) +
-      ggplot2::scale_fill_manual(values = c(`0` = "red", `>0` = "grey50")) +
+      ggplot2::scale_fill_manual(values = c(`=0` = mid, `>0` = naCol)) +
       ggplot2::labs(fill = "PValue")
   }
   else{
@@ -121,7 +134,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12,
       ggplot2::scale_fill_gradient2(low = low,
                                     mid = mid,
                                     high = high,
-                                    na.value = "grey80",
+                                    na.value = naCol,
                                     midpoint = max(df$PValue)/2) +
       ggplot2::labs(fill = expression(paste(-log[10], "PValue")))
   }
@@ -133,6 +146,11 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12,
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
                      panel.grid = ggplot2::element_blank())
 
+  if (nKmers > length(x) && flip){
+    heatPlot <- heatPlot + ggplot2::coord_flip()
+  }
+
   # Draw the plot
   heatPlot
+
 }
