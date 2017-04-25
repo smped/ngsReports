@@ -24,41 +24,22 @@ setClass("FastqcDataList", contains="list")
 setValidity("FastqcFile", validFastqcFile)
 setValidity("FastqcFileList", validFastqcFileList)
 # setValidity("FastqcData", validFastqcData) # Not written or defined yet
-# setValidity("FastqcDataList", validFastqcData) # Not written or defined yet
-
-# Set the show methods that don't need exporting
-setMethod("show", "FastqcDataList",
-          function(object){
-            l <- length(object)
-            cat("FastqcDataList for", l, "file(s).\n")
-          })
-setMethod("show", "FastqcData",
-          function(object){
-            cat("FastqcData for", object@Basic_Statistics$Filename, "\n")
-            cat("Source Fastq file contains", scales::comma(object@Basic_Statistics$Total_Sequences), "reads.\n")
-            cat("Source FastQC file is located in", object@path)
-          })
-setMethod("show", "FastqcFileList",
-          function(object){
-            l <- length(object)
-            cmp <- sum(isCompressed(object))
-            cat("FastqcFileList of", l, "file(s).\n")
-            cat("Located in:\n", paste(unique(dirname(path(object))), collapse = "\n"))
-          })
-setMethod("show", "FastqcFile",
-          function(object){
-            cat(fileNames(object), "\n")
-            cat("Located in", dirname(path(object)), "\n")
-          })
+setValidity("FastqcDataList", validFastqcDataList) # Not written or defined yet
 
 # These are never set
-setMethod("names", "FastqcFile", NULL)
-setMethod("names", "FastqcFileList", NULL)
 setMethod("names<-", "FastqcFile", function(x){
   warning("The names attribute cannot be set on a FastqcFile object")
   x
   })
 setMethod("names<-", "FastqcFileList", function(x){
-  warning("The names attribute cannot be set on a FastqcFile object")
+  warning("The names attribute cannot be set on a FastqcFileList object")
+  x
+})
+setMethod("names<-", "FastqcData", function(x){
+  warning("The names attribute cannot be set on a FastqcData object")
+  x
+})
+setMethod("names<-", "FastqcDataList", function(x){
+  warning("The names attribute cannot be set on a FastqcDataList object")
   x
 })

@@ -5,7 +5,6 @@
 \alias{path,FastqcData-method}
 \alias{Version,FastqcData-method}
 \alias{getSummary,FastqcData-method}
-\alias{names,FastqcData-method}
 \alias{fileNames,FastqcData-method}
 \alias{fileName,FastqcData-method}
 \title{Methods for an object of class FastqcData}
@@ -15,8 +14,6 @@
 \S4method{Version}{FastqcData}(object)
 
 \S4method{getSummary}{FastqcData}(object)
-
-\S4method{names}{FastqcData}(x)
 
 \S4method{fileNames}{FastqcData}(object)
 }

@@ -4,14 +4,10 @@
 \name{path,FastqcDataList-method}
 \alias{path,FastqcDataList-method}
 \alias{path,FastqcDataList-methods}
-\alias{names,FastqcDataList-method}
-\alias{names,FastqcDataList-methods}
 \alias{fileNames,FastqcDataList-method}
 \title{Methods for an object of class FastqcDataList}
 \usage{
 \S4method{path}{FastqcDataList}(object)
-
-\S4method{names}{FastqcDataList}(x)
 
 \S4method{fileNames}{FastqcDataList}(object)
 }

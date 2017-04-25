@@ -50,3 +50,12 @@ setMethod("fileNames", "FastqcFileList", function(object){vapply(object, fileNam
 
 # Define the subsetting method, to remain consistent with list behaviour
 setMethod("[", "FastqcFileList", function(x, i, j, ..., drop = TRUE){FastqcFileList(x@.Data[i])})
+
+# The show method doesn't need exporting
+setMethod("show", "FastqcFileList",
+          function(object){
+            l <- length(object)
+            cmp <- sum(isCompressed(object))
+            cat("FastqcFileList of", l, "file(s).\n")
+            cat("Located in:\n", paste(unique(dirname(path(object))), collapse = "\n"))
+          })

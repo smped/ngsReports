@@ -1,6 +1,8 @@
-- Write the `plotSummary` function
 - Include the capacity for selective overwriting in `runFastQC`
-- Implement all methods for the `FastqcFileList` class
 - Set character methods for `runFastQC` & redefine this function as a method for class `FastqFileList`
-- Set character methods for `getFastqcData` and `getSummary` for objects of class `character`
 - Test the output of `runFastQC` now it hs been changed to a `FastqcFileList`
+- `plotBaseQualities`: Plot the complete library using facets
+- `plotKmers`: Heatmap using the $p$-values to fill
+- `plotOverrepresented`: Another heatmap
+- Validation Functions for `fastqcData` and `fastqcDataLists` objects
+- Figure out errors in roxygen build

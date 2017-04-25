@@ -33,10 +33,13 @@ setMethod("getSummary", "FastqcData", function(object){object@Summary})
 
 #' @export
 #' @rdname FastqcData-methods
-#' @aliases names,FastqcData-method
-setMethod("names", "FastqcData", function(x){basename(x@path)})
-
-#' @export
-#' @rdname FastqcData-methods
 #' @aliases fileName,FastqcData-method
 setMethod("fileNames", "FastqcData", function(object){object@Summary$Filename[1]})
+
+# The show method doesn't need exporting
+setMethod("show", "FastqcData",
+          function(object){
+            cat("FastqcData for", object@Basic_Statistics$Filename, "\n")
+            cat("Source Fastq file contains", scales::comma(object@Basic_Statistics$Total_Sequences), "reads.\n")
+            cat("Source FastQC file is located in", object@path)
+          })

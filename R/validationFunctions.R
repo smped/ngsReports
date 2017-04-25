@@ -34,5 +34,11 @@ validFastqcFile <- function(object){
 
 validFastqcFileList <- function(object){
   cls <- vapply(object, class, character(1))
-  all(cls == "FastqcFile")
+  if (!all(cls == "FastqcFile")) return(FALSE)
+}
+
+validFastqcDataList <- function(object){
+  # This is very rudimentary & may need more thought
+  cls <- vapply(object, class, character(1))
+  if (!all(cls == "FastqcData")) return(FALSE)
 }

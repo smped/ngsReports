@@ -21,10 +21,6 @@
 #' @aliases path,FastqcDataList-methods
 setMethod("path", "FastqcDataList", function(object){vapply(object@.Data, path, character(1))})
 
-#' @rdname FastqcDataList-methods
-#' @aliases names,FastqcDataList-methods
-setMethod("names", "FastqcDataList", function(x){vapply(x@.Data, names, character(1))})
-
 #' @export
 #' @rdname FastqcDataList-methods
 #' @aliases fileNames,FastqcDataList-method
@@ -47,3 +43,15 @@ setMethod("Version", "FastqcDataList",
                        Version = vapply(object@.Data, Version, character(1)))
           })
 
+# Define the subsetting method, to remain consistent with list behaviour
+setMethod("[", "FastqcDataList",
+          function(x, i, j, ..., drop = TRUE){
+            new("FastqcDataList", x@.Data[i])
+          })
+
+# The show method doesn't need exporting
+setMethod("show", "FastqcDataList",
+          function(object){
+            l <- length(object)
+            cat("FastqcDataList for", l, "file(s).\n")
+          })
