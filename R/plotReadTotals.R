@@ -58,7 +58,7 @@ plotReadTotals <- function(x, subset, millions,
 
   # Automatically determine whether to convert to millions
   if (missing(millions)) {
-    millions <- ifelse(max(joinedDf$Total) > 2e06, TRUE, FALSE)
+    millions <- ifelse(max(df$Total_Sequences) > 2e06, TRUE, FALSE)
   }
   stopifnot(is.logical(millions))
 
