@@ -9,6 +9,10 @@
 #' @param nSeq \code{numeric}.
 #' The number of Sequences to show.
 #' Sequences are sorted by \code{max(Percentage)} across all files during selection
+#' @param type A regular expression used to subset based on the Possible_Source column
+#' @param method Can only take the values \code{"overall"} or \code{"individual"}.
+#' Determines whether the top Sequences are selected by the overall ranking (based on Percentage),
+#' or whether the top nKmers are selected from each individual file.
 #' @param low colour used as the low colour in the heatmap
 #' @param high colour used as the high colour in the heatmap
 #' @param naCol colour used for missing values
@@ -19,6 +23,26 @@
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #'
 #' @return A standard ggplot2 object
+#'
+#' @examples
+#'
+#' # Get the files included with the package
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+#' fileList <- system.file("extdata", fileList, package = "fastqcReports")
+#'
+#' # Load the FASTQC data as a FastqcDataList
+#' fdl <- getFastqcData(fileList)
+#'
+#' # Another example which isn't ideal
+#' plotOverrepresentedHeatmap(fdl)
+#'
+#' # Dig a bit deeper
+#' plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
+#'
+#' # Check the top 2 sequences with No Hit from each R1 file
+#' plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 #'
 #' @import ggplot2
 #' @importFrom stringr str_detect
@@ -33,7 +57,7 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plotOverrepresentedHeatmap <- function(x, subset, nSeq = 20,
+plotOverrepresentedHeatmap <- function(x, subset, nSeq = 20, type = ".+", method = "overall",
                                        low = rgb(0.2, 0, 0.2), high = rgb(1, 0, 0),
                                        naCol = "grey80", flip = TRUE,
                                        trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
@@ -60,12 +84,32 @@ plotOverrepresentedHeatmap <- function(x, subset, nSeq = 20,
 
   # Get the top Overrepresented Sequences
   nSeq <- as.integer(nSeq)
-  topSeq <- dplyr::group_by(df, Sequence) %>%
-    dplyr::summarise(maxVal = max(Percentage)) %>%
-    dplyr::arrange(desc(maxVal)) %>%
-    dplyr::slice(1:nSeq) %>%
-    magrittr::extract2("Sequence")
+  if (sum(grepl(type, df$Possible_Source)) == 0){
+    warning("No matches to the supplied 'type' could be found. This will be ignored.")
+    type <- ".+"
+  }
+
+  if (method == "individual"){
+    topSeq <- df %>%
+      dplyr::filter(grepl(type, Possible_Source)) %>%
+      split(f = .$Filename) %>%
+      lapply(dplyr::arrange, desc(Percentage)) %>%
+      lapply(dplyr::slice, 1:nSeq) %>%
+      dplyr::bind_rows() %>%
+      magrittr::extract2("Sequence") %>%
+      unique()
+  }
+  if (method == "overall"){
+    topSeq <- df %>%
+      dplyr::filter(grepl(type, Possible_Source)) %>%
+      dplyr::group_by(Sequence) %>%
+      dplyr::summarise(maxVal = max(Percentage)) %>%
+      dplyr::arrange(desc(maxVal)) %>%
+      dplyr::slice(1:nSeq) %>%
+      magrittr::extract2("Sequence")
+  }
   df <- dplyr::filter(df, Sequence %in% topSeq)
+
 
   # Create a column which merges the Sequnce & Possible_Source
   df$Seq_Source <- with(df,

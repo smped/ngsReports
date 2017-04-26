@@ -32,3 +32,18 @@ Extract the PASS/WARN/FAIL summaries and plot them
 This uses the standard ggplot2 syntax to create a three colour plot.
 The output of this function can be further modified using the standard ggplot2 methods.
 }
+\examples{
+
+# Get the files included with the package
+barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+fileList <- system.file("extdata", fileList, package = "fastqcReports")
+
+# Load the FASTQC data as a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Check the overall PASS/WARN/FAIL status
+plotSummary(fdl)
+
+}

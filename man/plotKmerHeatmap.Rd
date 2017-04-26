@@ -53,3 +53,22 @@ If non-zero p-values are present, colours will denote -log10 transformed values.
 In this case zero values will be transformed using -log10(q) + 1,
 where q is the minimum of the non-zero p-values.
 }
+\examples{
+
+# Get the files included with the package
+barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+fileList <- system.file("extdata", fileList, package = "fastqcReports")
+
+# Load the FASTQC data as a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Not a great example
+plotKmerHeatmap(fdl)
+
+# Find the R1 files with CC barcodes & just plot these
+ccR1 <- grepl("CC.+R1", fileNames(fdl))
+plotKmerHeatmap(fdl, subset = ccR1, method = "individual", nKmers = 3)
+
+}

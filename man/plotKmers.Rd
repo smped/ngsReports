@@ -41,3 +41,22 @@ identification of larger sequences.
 
 Returned plots can be easily modified using the standard ggplot2 methods
 }
+\examples{
+
+# Get the files included with the package
+barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+fileList <- system.file("extdata", fileList, package = "fastqcReports")
+
+# Load the FASTQC data as a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Not a great example
+plotKmers(fdl)
+
+# Try digging a bit deeper
+ccR1 <- grepl("CC.+R1", fileNames(fdl))
+plotKmers(fdl, subset = ccR1, nc = 1, method = "individual", nKmers = 4)
+
+}

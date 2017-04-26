@@ -4,8 +4,9 @@
 \alias{plotOverrepresentedHeatmap}
 \title{Plot Overrepresented Sequnces As a Heatmap}
 \usage{
-plotOverrepresentedHeatmap(x, subset, nSeq = 20, low = rgb(0.2, 0, 0.2),
-  high = rgb(1, 0, 0), naCol = "grey80", flip = TRUE, trimNames = TRUE,
+plotOverrepresentedHeatmap(x, subset, nSeq = 20, type = ".+",
+  method = "overall", low = rgb(0.2, 0, 0.2), high = rgb(1, 0, 0),
+  naCol = "grey80", flip = TRUE, trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
@@ -18,6 +19,12 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{nSeq}{\code{numeric}.
 The number of Sequences to show.
 Sequences are sorted by \code{max(Percentage)} across all files during selection}
+
+\item{type}{A regular expression used to subset based on the Possible_Source column}
+
+\item{method}{Can only take the values \code{"overall"} or \code{"individual"}.
+Determines whether the top Sequences are selected by the overall ranking (based on Percentage),
+or whether the top nKmers are selected from each individual file.}
 
 \item{low}{colour used as the low colour in the heatmap}
 
@@ -38,4 +45,25 @@ A standard ggplot2 object
 }
 \description{
 Plot Overrepresented Sequences across an entire library
+}
+\examples{
+
+# Get the files included with the package
+barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+fileList <- system.file("extdata", fileList, package = "fastqcReports")
+
+# Load the FASTQC data as a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Another example which isn't ideal
+plotOverrepresentedHeatmap(fdl)
+
+# Dig a bit deeper
+plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
+
+# Check the top 2 sequences with No Hit from each R1 file
+plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
+
 }
