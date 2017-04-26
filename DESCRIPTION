@@ -36,6 +36,7 @@ Collate:
     'plotAdapterContent.R'
     'plotBaseQualities.R'
     'plotCombinedBaseQualities.R'
+    'plotDeduplicatedTotals.R'
     'plotDuplicationLevels.R'
     'plotKmerHeatmap.R'
     'plotKmers.R'

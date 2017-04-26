@@ -4,7 +4,7 @@
 \alias{plotReadTotals}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(x, subset, millions = TRUE, trimNames = TRUE,
+plotReadTotals(x, subset, millions, trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
@@ -14,7 +14,8 @@ plotReadTotals(x, subset, millions = TRUE, trimNames = TRUE,
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful to only return totals from R1 files, or any other subset}
 
-\item{millions}{\code{logical} Use Millions of reads as the scale for the y-axis}
+\item{millions}{\code{logical}. Use Millions of reads as the scale for the y-axis.
+Unless specified, will be set as TRUE automatically if the highest total is > 2e06.}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 

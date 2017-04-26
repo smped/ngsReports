@@ -10,7 +10,8 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param millions \code{logical} Use Millions of reads as the scale for the y-axis
+#' @param millions \code{logical}. Use Millions of reads as the scale for the y-axis.
+#' Unless specified, will be set as TRUE automatically if the highest total is > 2e06.
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -39,7 +40,7 @@
 #' @importFrom stringr str_detect
 #'
 #' @export
-plotReadTotals <- function(x, subset, millions = TRUE,
+plotReadTotals <- function(x, subset, millions,
                            trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
@@ -52,6 +53,12 @@ plotReadTotals <- function(x, subset, millions = TRUE,
   stopifnot(is.logical(trimNames))
 
   df <- readTotals(x, subset = subset, trimNames = trimNames, pattern = pattern)
+
+  # Automatically determine whether to convert to millions
+  if (missing(millions)) {
+    millions <- ifelse(max(joinedDf$Total) > 2e06, TRUE, FALSE)
+  }
+  stopifnot(is.logical(millions))
 
   # Setup the basic plot in millions or not
   if (millions){
