@@ -1,15 +1,17 @@
-#' @title Plot the PASS/WARN/FAIL information
+#' @title Plot a summary of OVer-represented Sequences
 #'
-#' @description Extract the PASS/WARN/FAIL summaries and plot them
-#'
-#' @details This uses the standard ggplot2 syntax to create a three colour plot.
-#' The output of this function can be further modified using the standard ggplot2 methods.
+#' @description Plot a summary of OVer-represented Sequences for a set of FASTQC reports
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param col \code{character vector} of colours
+#' @param source A regular expression used to group the possible source into those
+#' matching the pattern, and "Other".
+#' Those matching will be classified using the pattern itself, without any supplied braces.
+#' Defaults to \code{source = "(Primer|Adapter)"}
+#' @param col1 The colour to use for the Total values
+#' @param col2 The colour to use for the Deduplicated values
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -28,16 +30,21 @@
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
 #'
-#' # Check the overall PASS/WARN/FAIL status
-#' plotSummary(fdl)
+#' # Another example which isn't ideal
+#' plotOverrepresentedSummary(fdl)
 #'
 #' @import ggplot2
 #' @importFrom stringr str_detect
+#' @importFrom dplyr mutate
+#' @importFrom dplyr group_by
+#' @importFrom dplyr summarise
+#' @importFrom magrittr %>%
 #'
 #' @export
-plotSummary <- function(x, subset, col = c(FAIL="red", WARN = "yellow", PASS="green"),
-                        trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
-
+plotOverrepresentedSummary <- function(x, subset, source = "(Primer|Adapter)",
+                                       col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2),
+                                       trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+  # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if (missing(subset)){
@@ -48,7 +55,7 @@ plotSummary <- function(x, subset, col = c(FAIL="red", WARN = "yellow", PASS="gr
   stopifnot(is.logical(trimNames))
 
   x <- x[subset]
-  df <- tryCatch(getSummary(x))
+  df <- tryCatch(Overrepresented_sequences(x))
 
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
@@ -57,15 +64,17 @@ plotSummary <- function(x, subset, col = c(FAIL="red", WARN = "yellow", PASS="gr
     if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
   }
 
-  df$Category <- factor(df$Category, levels = rev(unique(df$Category)))
-  df$Status <- factor(df$Status, levels = c("PASS", "WARN", "FAIL"))
+  df <- dplyr::mutate(df,
+                      Type = dplyr::if_else(grepl(source, Possible_Source), source, "Other"),
+                      Type = gsub("[\\(\\)]", "", Type)) %>%
+    dplyr::group_by(Filename, Type) %>%
+    dplyr::summarise(Percentage = sum(Percentage))
 
-  ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Category, fill = Status)) +
-    ggplot2::geom_tile(colour = "black") +
-    ggplot2::scale_fill_manual(values = col) +
-    ggplot2::labs(x="Filename", y="QC Category") +
-    ggplot2::scale_x_discrete(expand=c(0,0)) +
-    ggplot2::scale_y_discrete(expand=c(0,0)) +
+  ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Percentage, fill = Type)) +
+    ggplot2::geom_bar(stat = "identity") +
+    ggplot2::ylab("Overrepresented Sequences (% of Total)") +
+    ggplot2::scale_fill_manual(values = c(col1, col2)) +
+    ggplot2::theme_bw() +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 }

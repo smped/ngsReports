@@ -37,7 +37,9 @@ The raw data from \code{\link{readTotals}} can otherwise be used to manually cre
 \examples{
 
 # Get the files included with the package
-fileList <- paste(rep(c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG"), each = 2), rep(c("R1_fastqc.zip", "R2_fastqc.zip"), times = 5), sep = "_")
+barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
+suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
 fileList <- system.file("extdata", fileList, package = "fastqcReports")
 
 # Load the FASTQC data as a FastqcDataList

@@ -19,9 +19,9 @@
 #' @param method Can only take the values \code{"overall"} or \code{"individual"}.
 #' Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
 #' or whether the top nKmers are selected from each individual file.
-#' @param low colour used as the low colour in the heatmap
-#' @param mid colour used as the mid colour in the heatmap
-#' @param high colour used as thehigh colour in the heatmap
+#' @param pass colour used as the PASS colour in the heatmap
+#' @param warn colour used as the WARN colour in the heatmap
+#' @param fail colour used as the FAIL colour in the heatmap
 #' @param naCol colour used for missing values
 #' @param flip \code{logical}. Enable a call to \code{coord_flip} to determine the best direction
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
@@ -34,7 +34,7 @@
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 #' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 #' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
 #' fileList <- system.file("extdata", fileList, package = "fastqcReports")
@@ -67,7 +67,7 @@
 #'
 #' @export
 plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
-                            low = rgb(0.2, 0, 0.2), mid = rgb(1, 0, 0), high = rgb(1, 1, 0),
+                            pass = rgb(0.2, 0, 0.2), warn = rgb(1, 0, 0), fail = rgb(1, 1, 0),
                             naCol = "grey80", flip = TRUE,
                             trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
@@ -161,7 +161,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       dplyr::mutate(PValue = dplyr::if_else(is.na(PValue), ">0", "=0")) %>%
       ggplot2::ggplot(ggplot2::aes(x =Filename, y = Sequence, fill = PValue)) +
       ggplot2::geom_tile(colour = "grey30", alpha = 0.9) +
-      ggplot2::scale_fill_manual(values = c(`=0` = mid, `>0` = naCol)) +
+      ggplot2::scale_fill_manual(values = c(`=0` = warn, `>0` = naCol)) +
       ggplot2::labs(fill = "PValue")
   }
   else{
@@ -172,9 +172,9 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
       ggplot2::ggplot(ggplot2::aes(x =Filename, y = Sequence, fill = PValue)) +
       ggplot2::geom_tile(colour = "grey30", alpha = 0.9) +
-      ggplot2::scale_fill_gradient2(low = low,
-                                    mid = mid,
-                                    high = high,
+      ggplot2::scale_fill_gradient2(low = pass,
+                                    mid = warn,
+                                    high = fail,
                                     na.value = naCol,
                                     midpoint = max(df$PValue)/2) +
       ggplot2::labs(fill = expression(paste(-log[10], "PValue")))

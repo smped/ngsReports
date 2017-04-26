@@ -4,19 +4,26 @@
 \alias{plotAdapterContent}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, subset, facet = TRUE, nc = 2, ylim = c(0, 100),
-  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*", type, ...)
+plotAdapterContent(x, subset, adapterType, plotType = "heatmap", nc,
+  pass = rgb(0, 0.8, 0), warn = rgb(0.9, 0.9, 0.2), fail = rgb(0.8, 0.2,
+  0.2), trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*", ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{facet}{logical. Determines whether to use \code{facet_wrap()} or not}
+\item{adapterType}{A regular expression used to filter which adapter(s) are plotted}
+
+\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
+or \code{plotType = "line"}}
 
 \item{nc}{Number of columns to use when faceting by Adapter Type.}
 
-\item{ylim}{A \code{numeric vector} providing limits for the y-axis.
-Defaults to \code{ylim = c(0, 100)}}
+\item{pass}{The colour for percentages considered as a PASS}
+
+\item{warn}{The colour for percentages consider as a WARN}
+
+\item{fail}{The colour for percentages consider as a FAIL}
 
 \item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
 
@@ -24,10 +31,8 @@ Defaults to \code{ylim = c(0, 100)}}
 Contains a regular expression which will be captured from fileNames.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
-\item{type}{A regular expression used to filter which adapter(s) are plotted}
-
 \item{...}{Used to pass additional arguments, such as \code{invert} or \code{ignore.case},
-to \code{grep} when selecting Adapter \code{type}}
+to \code{grep} when selecting Adapter \code{adapterType}}
 }
 \value{
 A standard ggplot2 object
@@ -40,18 +45,16 @@ This extracts the Adapter_Content from the supplied object and generates a ggplo
 with a set of minimal defaults.
 The output of this function can be further modified using the standard ggplot2 methods.
 
-To set any faceting parameters outside the function, such as \code{scales = "free_y"},
-set \code{facet = FALSE} and apply \code{facet_wrap()} after the call to \code{plotAdapterContent}.
-Note that the only column available for faceting with be \code{Type},
-so the formula \code{~Type} will still need to be applied.
 
-Preset axis limits can also be overwritten easily by adding a call to \code{scale_y_continuous()}
+Preset axis limits can also be overwritten easily by adding a call to \code{scale_y_continuous}
 after the call to \code{plotAdapterContent}.
 }
 \examples{
 
 # Get the files included with the package
-fileList <- paste(rep(c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG"), each = 2), rep(c("R1_fastqc.zip", "R2_fastqc.zip"), times = 5), sep = "_")
+barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
+suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
 fileList <- system.file("extdata", fileList, package = "fastqcReports")
 
 # Load the FASTQC data as a FastqcDataList
@@ -65,8 +68,7 @@ r1 <- grepl("R1", fileNames(fdl))
 plotAdapterContent(fdl, subset = r1)
 
 # Plot just the Universal Adapter, and change the y-axis
-plotAdapterContent(fdl, facet = FALSE, type ="Universal") +
-facet_wrap(~Type, scales = "free_y") +
+plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
 scale_y_continuous()
 
 

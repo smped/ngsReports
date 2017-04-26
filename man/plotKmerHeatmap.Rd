@@ -4,9 +4,10 @@
 \alias{plotKmerHeatmap}
 \title{Plot Overrepresented Kmers As a Heatmap}
 \usage{
-plotKmerHeatmap(x, subset, nKmers = 12, method = "overall", low = rgb(0.2,
-  0, 0.2), mid = rgb(1, 0, 0), high = rgb(1, 1, 0), naCol = "grey80",
-  flip = TRUE, trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
+plotKmerHeatmap(x, subset, nKmers = 12, method = "overall",
+  pass = rgb(0.2, 0, 0.2), warn = rgb(1, 0, 0), fail = rgb(1, 1, 0),
+  naCol = "grey80", flip = TRUE, trimNames = TRUE,
+  pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -21,11 +22,11 @@ May be useful to only return totals from R1 files, or any other subset}
 Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
 or whether the top nKmers are selected from each individual file.}
 
-\item{low}{colour used as the low colour in the heatmap}
+\item{pass}{colour used as the PASS colour in the heatmap}
 
-\item{mid}{colour used as the mid colour in the heatmap}
+\item{warn}{colour used as the WARN colour in the heatmap}
 
-\item{high}{colour used as thehigh colour in the heatmap}
+\item{fail}{colour used as the FAIL colour in the heatmap}
 
 \item{naCol}{colour used for missing values}
 
@@ -56,7 +57,7 @@ where q is the minimum of the non-zero p-values.
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
 fileList <- system.file("extdata", fileList, package = "fastqcReports")

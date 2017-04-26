@@ -21,6 +21,24 @@
 #'
 #' @return A standard ggplot2 object
 #'
+#' @examples
+#'
+#' # Get the files included with the package
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
+#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+#' fileList <- system.file("extdata", fileList, package = "fastqcReports")
+#'
+#' # Load the FASTQC data as a FastqcDataList
+#' fdl <- getFastqcData(fileList)
+#'
+#' # Draw the default plot
+#' plotDuplicationLevels(fdl)
+#'
+#' # Plot the % Total Sequences for the R1 files only
+#' r1 <- grepl("R1", fileNames(fdl))
+#' plotDuplicationLevels(fdl, subset = r1, type = "Total")
+#'
 #' @import ggplot2
 #' @importFrom stringr str_detect
 #' @importFrom stringr str_to_title
@@ -28,8 +46,8 @@
 #' @importFrom dplyr filter
 #'
 #' @export
-plotDuplicationLevels <- function(x, subset, value = "Mean",
-                                  trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*", type){
+plotDuplicationLevels <- function(x, subset, type = ".+",
+                                  trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -39,6 +57,7 @@ plotDuplicationLevels <- function(x, subset, value = "Mean",
   stopifnot(is.logical(subset))
   stopifnot(length(subset) == length(x))
   stopifnot(is.logical(trimNames))
+  stopifnot(is.character(type))
 
   x <- x[subset]
   df <- tryCatch(Sequence_Duplication_Levels(x))
@@ -64,10 +83,8 @@ plotDuplicationLevels <- function(x, subset, value = "Mean",
   df$Type <- paste(df$Type, "sequences")
 
   # Restrict to a given type if requested
-  if (!missing(type)) {
-    df <- dplyr::filter(df, grepl(type, Type))
-    if(nrow(df) == 0) stop("Invalid type selected")
-  }
+  df <- dplyr::filter(df, grepl(type, Type))
+  if(nrow(df) == 0) stop("Invalid type selected")
 
   dupPlot <- ggplot2::ggplot(df, ggplot2::aes(x = as.integer(Duplication_Level), y = Percent)) +
     ggplot2::annotate("rect",

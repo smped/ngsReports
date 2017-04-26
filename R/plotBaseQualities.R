@@ -22,7 +22,7 @@
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "CAGG", "TTAT", "TTGG")
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 #' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 #' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
 #' fileList <- system.file("extdata", fileList, package = "fastqcReports")
@@ -96,8 +96,8 @@ plotBaseQualities <- function(x, subset, nc = 2,
     ggplot2::ylab(paste0("Quality Scores (", enc, " encoding)")) +
     ggplot2::facet_wrap(~Filename, ncol = nc) +
     ggplot2::theme_bw() +
-    ggplot2::theme(panel.grid.minor = element_blank(),
-                   axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+    ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                   axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
 
   # Draw the plot
   qualPlot
