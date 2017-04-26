@@ -48,5 +48,6 @@ Collate:
     'plotReadTotals.R'
     'plotSequenceQualities.R'
     'plotSummary.R'
+    'pwf.R'
     'readTotals.R'
     'runFastQC.R'
