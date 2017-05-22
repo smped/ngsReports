@@ -4,7 +4,7 @@
 - Validation Functions for `fastqcData` and `fastqcDataLists` objects
 - Add the theoretical GC distribution using hg19/mm10 etc
 - *Convert everything to heatmaps*
-- Define `pwfCols` and `validPwf()` **DONE**
+- Define `pwfCols` and `isValidPwf()` **DONE**
 - Re-define `isCompressed()`& change structure of `FastqcFile` **DONE**
 - Calculate Ranks on each module and summarise
 - Add a function to merge kMers
