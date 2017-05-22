@@ -18,6 +18,10 @@ setClass("FastqcData", slots = c(Summary = "data.frame",
                                  Version = "character",
                                  path = "character"))
 setClass("FastqcDataList", contains="list")
+setClass("PwfCols", slots = c(PASS = "character",
+                              WARN = "character",
+                              FAIL = "character",
+                              MAX = "character"))
 
 # Set the validation functions for any object classes
 #' @include validationFunctions.R
@@ -25,6 +29,7 @@ setValidity("FastqcFile", isValidFastqcFile)
 setValidity("FastqcFileList", isValidFastqcFileList)
 # setValidity("FastqcData", isValidFastqcData) # Not written or defined yet
 setValidity("FastqcDataList", isValidFastqcDataList) # Not written or defined yet
+setValidity("PwfCols", isValidPwf)
 
 # These are never set
 setMethod("names<-", "FastqcFile", function(x){
@@ -41,5 +46,9 @@ setMethod("names<-", "FastqcData", function(x){
 })
 setMethod("names<-", "FastqcDataList", function(x){
   warning("The names attribute cannot be set on a FastqcDataList object")
+  x
+})
+setMethod("names<-", "PwfCols", function(x){
+  warning("The names attribute cannot be set on a PwfCols object")
   x
 })
