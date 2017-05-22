@@ -5,7 +5,6 @@
 \alias{FastqcFileList,character-method}
 \alias{FastqcFileList,list-method}
 \alias{path,FastqcFileList-method}
-\alias{isCompressed,FastqcFileList-method}
 \alias{fileNames,FastqcFileList-method}
 \title{Path to FastQC data a vector of fastq files}
 \usage{
@@ -14,8 +13,6 @@
 \S4method{FastqcFileList}{list}(path)
 
 \S4method{path}{FastqcFileList}(object)
-
-\S4method{isCompressed}{FastqcFileList}(object)
 
 \S4method{fileNames}{FastqcFileList}(object)
 }
@@ -26,6 +23,12 @@
 }
 \description{
 Define a FastqcFileList
+
+#' @export
+#' @rdname FastqcFileList-methods
+#' @aliases isCompressed,FastqcFileList-method
+setMethod("isCompressed", "FastqcFileList",
+          function(object){vapply(object, isCompressed, logical(1))})
 }
 \details{
 Checks the structure of a folder or zip file with the output from FastQC

@@ -28,6 +28,7 @@ Collate:
     'Total_Deduplicated_Percentage.R'
     'getFastqcData.R'
     'getSummary.R'
+    'isCompressed.R'
     'maxAdapterContent.R'
     'methods-FastqcData.R'
     'methods-FastqcDataList.R'

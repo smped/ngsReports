@@ -18,15 +18,16 @@
 #' @aliases getSummary,FastqcFile-method
 setMethod("getSummary", "FastqcFile",
           function(object){
-            if (isCompressed(object)){
+            path <- path(object)
+            if (isCompressed(path, type = "zip")){
               #Get the internal path within the zip archive
-              if (!file.exists(path(object))) stop("The zip archive can not be found.")
+              if (!file.exists(path)) stop("The zip archive can not be found.")
               fl <- file.path( gsub(".zip$", "", fileNames(object)), "summary.txt")
               # Check the required file exists
-              allFiles <- unzip(path(object), list = TRUE)$Name
+              allFiles <- unzip(path, list = TRUE)$Name
               stopifnot(fl %in% allFiles)
               # Open the connection & read the 12 lines
-              uz <- unz(path(object),fl)
+              uz <- unz(path,fl)
               summaryData <- readLines(uz, 12L)
               close(uz)
               # Form the output
@@ -36,7 +37,7 @@ setMethod("getSummary", "FastqcFile",
             else{
               # The existence of this file will have been checked at object instantion
               # Check in case it has been deleted post-instantiation though
-              fl <- file.path(path(object), "summary.txt")
+              fl <- file.path(path, "summary.txt")
               if (!file.exists(fl)) stop("'summary.txt' could not be found.")
               summaryData <- readr::read_delim(fl, delim = "\t", col_names = FALSE)
             }

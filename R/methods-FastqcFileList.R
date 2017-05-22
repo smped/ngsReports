@@ -37,11 +37,11 @@ setMethod("FastqcFileList", "list",
 setMethod("path", "FastqcFileList",
           function(object){vapply(object, path, character(1))})
 
-#' @export
-#' @rdname FastqcFileList-methods
-#' @aliases isCompressed,FastqcFileList-method
-setMethod("isCompressed", "FastqcFileList",
-          function(object){vapply(object, isCompressed, logical(1))})
+#' #' @export
+#' #' @rdname FastqcFileList-methods
+#' #' @aliases isCompressed,FastqcFileList-method
+#' setMethod("isCompressed", "FastqcFileList",
+#'           function(object){vapply(object, isCompressed, logical(1))})
 
 #' @export
 #' @rdname FastqcFileList-methods
@@ -55,7 +55,7 @@ setMethod("[", "FastqcFileList", function(x, i, j, ..., drop = TRUE){FastqcFileL
 setMethod("show", "FastqcFileList",
           function(object){
             l <- length(object)
-            cmp <- sum(isCompressed(object))
+            # cmp <- sum(isCompressed(object))
             cat("FastqcFileList of", l, "file(s).\n")
             cat("Located in:\n", paste(unique(dirname(path(object))), collapse = "\n"))
           })

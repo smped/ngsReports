@@ -1,28 +1,25 @@
 #' @importFrom checkmate testDirectoryExists
-validFastqcFile <- function(object){
+isValidFastqcFile <- function(object){
 
-  if (length(object@path) != 1) {
+  path <- path(object)
+  if (length(path) != 1) {
     warning("Only a single path can be specified")
     return(FALSE)
   }
 
-  if (!file.exists(object@path)) {
-    warning("Supplied path not found")
-    return(FALSE)
-  }
-
-  if (object@compressed){
+  comp <- isCompressed(path, type = "zip") # This includes a file.exists step
+  if (comp){
     # List the files
-    subFiles <- basename(unzip(object@path, list = TRUE)$Name)
+    subFiles <- basename(unzip(path, list = TRUE)$Name)
   }
   else{
     # Check the file is a directory
-    chk <- checkmate::testDirectoryExists(object@path)
+    chk <- checkmate::testDirectoryExists(path)
     if (!chk){
       warning("The supplied file is not a directory")
       return(FALSE)
     }
-    subFiles <- list.files(object@path)
+    subFiles <- list.files(path)
   }
   if (any(!c("fastqc_data.txt", "summary.txt") %in% subFiles)) {
     warning("The required files are missing from the supplied path/file")
@@ -32,12 +29,12 @@ validFastqcFile <- function(object){
   TRUE
 }
 
-validFastqcFileList <- function(object){
+isValidFastqcFileList <- function(object){
   cls <- vapply(object, class, character(1))
   if (!all(cls == "FastqcFile")) return(FALSE)
 }
 
-validFastqcDataList <- function(object){
+isValidFastqcDataList <- function(object){
   # This is very rudimentary & may need more thought
   cls <- vapply(object, class, character(1))
   if (!all(cls == "FastqcData")) return(FALSE)

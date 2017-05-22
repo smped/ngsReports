@@ -4,15 +4,12 @@
 \name{FastqcFile,character-method}
 \alias{FastqcFile,character-method}
 \alias{path,FastqcFile-method}
-\alias{isCompressed,FastqcFile-method}
 \alias{fileNames,FastqcFile-method}
 \title{Path to FastQC data from a single fastq file}
 \usage{
 \S4method{FastqcFile}{character}(filePath)
 
 \S4method{path}{FastqcFile}(object)
-
-\S4method{isCompressed}{FastqcFile}(object)
 
 \S4method{fileNames}{FastqcFile}(object)
 }

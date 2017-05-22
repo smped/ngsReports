@@ -1,5 +1,5 @@
 # Define object classes
-setClass("FastqcFile", slots = c(path = "character", compressed = "logical"))
+setClass("FastqcFile", slots = c(path = "character"))
 setClass("FastqcFileList", contains="list")
 setClass("FastqcData", slots = c(Summary = "data.frame",
                                  Basic_Statistics = "data.frame",
@@ -21,10 +21,10 @@ setClass("FastqcDataList", contains="list")
 
 # Set the validation functions for any object classes
 #' @include validationFunctions.R
-setValidity("FastqcFile", validFastqcFile)
-setValidity("FastqcFileList", validFastqcFileList)
-# setValidity("FastqcData", validFastqcData) # Not written or defined yet
-setValidity("FastqcDataList", validFastqcDataList) # Not written or defined yet
+setValidity("FastqcFile", isValidFastqcFile)
+setValidity("FastqcFileList", isValidFastqcFileList)
+# setValidity("FastqcData", isValidFastqcData) # Not written or defined yet
+setValidity("FastqcDataList", isValidFastqcDataList) # Not written or defined yet
 
 # These are never set
 setMethod("names<-", "FastqcFile", function(x){

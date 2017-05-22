@@ -19,22 +19,23 @@
 #' @rdname getFastqcData
 setMethod("getFastqcData", "FastqcFile",
           function(object){
-            if (isCompressed(object)){
+            path <- path(object)
+            if (isCompressed(path, type = "zip")){
               # Get the internal path within the zip archive
-              if (!file.exists(path(object))) stop("The zip archive can not be found.")
+              if (!file.exists(path)) stop("The zip archive can not be found.")
               fl <- file.path( gsub(".zip$", "", fileNames(object)), "fastqc_data.txt")
               # Check the required file exists
-              allFiles <- unzip(path(object), list = TRUE)$Name
+              allFiles <- unzip(path, list = TRUE)$Name
               stopifnot(fl %in% allFiles)
               # # Open the connection & read the 12 lines
-              uz <- unz(path(object),fl)
+              uz <- unz(path, fl)
               fastqcData <- readLines(uz)
               close(uz)
             }
             else{
               # The existence of this file will have been checked at object instantion
               # Check in case it has been deleted post-instantiation though
-              fl <- file.path(path(object), "fastqc_data.txt")
+              fl <- file.path(path, "fastqc_data.txt")
               if (!file.exists(fl)) stop("'fastqc_data.txt' could not be found.")
               fastqcData <- readLines(fl)
             }
