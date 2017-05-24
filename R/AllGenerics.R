@@ -20,4 +20,7 @@ setGeneric("Total_Deduplicated_Percentage", function(object){standardGeneric("To
 setGeneric("Version", function(object){standardGeneric("Version")})
 setGeneric("fileNames",function(object){standardGeneric("fileNames")})
 setGeneric("getColours", function(object){standardGeneric("getColours")})
+setGeneric("getColors", function(object){standardGeneric("getColors")})
 setGeneric("setColours", function(object, ...){standardGeneric("setColours")})
+setGeneric("setColors", function(object, ...){standardGeneric("setColors")})
+setGeneric("setAlpha", function(object, ...){standardGeneric("setAlpha")})

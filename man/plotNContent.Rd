@@ -4,8 +4,7 @@
 \alias{plotNContent}
 \title{Plot the Per Base N Content}
 \usage{
-plotNContent(x, subset, pass = rgb(0, 0.8, 0), warn = rgb(0.9, 0.9, 0.2),
-  fail = rgb(0.8, 0.2, 0.2), trimNames = TRUE,
+plotNContent(x, subset, pwfCols, trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
@@ -15,11 +14,7 @@ plotNContent(x, subset, pass = rgb(0, 0.8, 0), warn = rgb(0.9, 0.9, 0.2),
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful to only return totals from R1 files, or any other subset}
 
-\item{pass}{The colour to use for low percentages}
-
-\item{warn}{The colour to use at the WARN threshold}
-
-\item{fail}{The colour to use at the FAIL threshold}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
 

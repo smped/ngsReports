@@ -19,9 +19,7 @@
 #' @param method Can only take the values \code{"overall"} or \code{"individual"}.
 #' Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
 #' or whether the top nKmers are selected from each individual file.
-#' @param pass colour used as the PASS colour in the heatmap
-#' @param warn colour used as the WARN colour in the heatmap
-#' @param fail colour used as the FAIL colour in the heatmap
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param naCol colour used for missing values
 #' @param flip \code{logical}. Enable a call to \code{coord_flip} to determine the best direction
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
@@ -67,23 +65,24 @@
 #'
 #' @export
 plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
-                            pass = rgb(0.2, 0, 0.2), warn = rgb(1, 0, 0), fail = rgb(1, 1, 0),
-                            naCol = "grey80", flip = TRUE,
+                            pwfCols, naCol = "grey80", flip = TRUE,
                             trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
-
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
   stopifnot(is.logical(trimNames))
   stopifnot(is.numeric(nKmers))
   stopifnot(method %in% c("overall", "individual"))
 
-  x <- x[subset]
+  # Sort out the colours
+  if (missing(pwfCols)) pwfCols <- fastqcReports::pwf
+  stopifnot(isValidPwf(pwfCols))
+
+  if (missing(subset)){
+    subset <- rep(TRUE, length(x))
+  }
+
+  x <- tryCatch(x[subset])
   df <- tryCatch(Kmer_Content(x))
 
   # Check the pattern contains a capture
@@ -172,12 +171,12 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
       ggplot2::ggplot(ggplot2::aes(x =Filename, y = Sequence, fill = PValue)) +
       ggplot2::geom_tile(colour = "grey30", alpha = 0.9) +
-      ggplot2::scale_fill_gradient2(low = pass,
-                                    mid = warn,
-                                    high = fail,
+      ggplot2::scale_fill_gradient2(low = getColours(pwfCols)["PASS"],
+                                    mid = getColours(pwfCols)["WARN"],
+                                    high = getColours(pwfCols)["FAIL"],
                                     na.value = naCol,
                                     midpoint = max(df$PValue)/2) +
-      ggplot2::labs(fill = expression(paste(-log[10], "PValue")))
+      ggplot2::labs(fill = expression(paste(-log[10], "P")))
   }
 
   heatPlot <- heatPlot +

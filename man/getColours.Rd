@@ -3,13 +3,23 @@
 \docType{methods}
 \name{getColours,PwfCols-method}
 \alias{getColours,PwfCols-method}
+\alias{getColors,PwfCols-method}
 \alias{setColours,PwfCols-method}
 \alias{setColours}
+\alias{setColors,PwfCols-method}
+\alias{setColours}
+\alias{setAlpha,PwfCols-method}
 \title{Get or set the colours in a PwfCols object}
 \usage{
 \S4method{getColours}{PwfCols}(object)
 
+\S4method{getColors}{PwfCols}(object)
+
 \S4method{setColours}{PwfCols}(object, PASS, WARN, FAIL, MAX)
+
+\S4method{setColors}{PwfCols}(object, PASS, WARN, FAIL, MAX)
+
+\S4method{setAlpha}{PwfCols}(object, alpha)
 }
 \arguments{
 \item{object}{An object of class PwfCols}
@@ -21,13 +31,20 @@
 \item{FAIL}{The colour used to signify a FAIL}
 
 \item{MAX}{The colour used as an extreme FAIL}
+
+\item{alpha}{Either a value between 0 and 1, or in the range [0, 255].
+See \code{\link{col2rgb}}}
 }
 \value{
 An object of class \code{PwfCols}
 }
 \description{
-Get or set the colours in a PwfCols object
+Get or set the colours in a PwfCols object.
+\code{getColors()} and \code{setColors()} are the same functions as with the non-US spelling
 }
 \details{
 All colours must be specified in rgb format.
+
+Calling the function \code{plot()} on an object of class \code{PwfCols} will draw a pie chart
+showing the assigned colours.
 }

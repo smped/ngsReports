@@ -45,7 +45,7 @@ isValidPwf <- function(object){
   vals <- getColours(object)
   if (length(vals) != 4) return(FALSE) # Ensure all have been set
   if (any(substr(vals, 1, 1) != "#")) return(FALSE) # Start with #
-  if (any(nchar(vals) != rep(7, 4))) return(FALSE) # RGB length 7
+  if (any(!nchar(vals) %in% c(7, 9))) return(FALSE) # RGB length 7 or 9
   if (any(grepl("[G-Z]", vals))) return(FALSE) # Invald Hex values
 
   TRUE

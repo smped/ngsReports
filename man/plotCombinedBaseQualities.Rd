@@ -4,8 +4,8 @@
 \alias{plotCombinedBaseQualities}
 \title{Plot the combined Per_base_sequence_quality information}
 \usage{
-plotCombinedBaseQualities(x, subset, value = "Mean", trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+plotCombinedBaseQualities(x, subset, value = "Mean", pwfCols,
+  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -18,6 +18,8 @@ May be useful to only return totals from R1 files, or any other subset}
 Can be any of the columns returned by \code{\link{Per_base_sequence_quality}}.
 Defaults to \code{value = "Mean"}.
 Can additionally set to "all" to plot all available quantities}
+
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 

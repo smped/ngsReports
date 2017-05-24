@@ -4,8 +4,8 @@
 \alias{plotSummary}
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
-plotSummary(x, subset, col = c(FAIL = "red", WARN = "yellow", PASS = "green"),
-  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
+plotSummary(x, subset, pwfCols, trimNames = TRUE,
+  pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -14,7 +14,7 @@ plotSummary(x, subset, col = c(FAIL = "red", WARN = "yellow", PASS = "green"),
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful to only return totals from R1 files, or any other subset}
 
-\item{col}{\code{character vector} of colours}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 

@@ -58,7 +58,7 @@
 #' @importFrom magrittr %>%
 #'
 #' @export
-plotDeduplicatedTotals <- function(x, subset, millions, bars = "adjacent",
+plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
                                    col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2),
                                    trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 

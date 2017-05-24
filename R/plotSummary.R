@@ -9,7 +9,7 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param col \code{character vector} of colours
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -35,19 +35,21 @@
 #' @importFrom stringr str_detect
 #'
 #' @export
-plotSummary <- function(x, subset, col = c(FAIL="red", WARN = "yellow", PASS="green"),
-                        trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
+
+  if (missing(pwfCols)) pwfCols <- setAlpha(fastqcReports::pwf,alpha = 0.8)
+  stopifnot(isValidPwf(pwfCols))
+  col <- getColours(pwfCols)
+
+  stopifnot(is.logical(trimNames))
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
   }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-  stopifnot(is.logical(trimNames))
+  x <- tryCatch(x[subset])
 
-  x <- x[subset]
   df <- tryCatch(getSummary(x))
 
   # Check the pattern contains a capture
@@ -66,6 +68,7 @@ plotSummary <- function(x, subset, col = c(FAIL="red", WARN = "yellow", PASS="gr
     ggplot2::labs(x="Filename", y="QC Category") +
     ggplot2::scale_x_discrete(expand=c(0,0)) +
     ggplot2::scale_y_discrete(expand=c(0,0)) +
+    ggplot2::theme_bw() +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 }

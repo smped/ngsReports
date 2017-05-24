@@ -4,7 +4,7 @@
 \alias{plotSequenceQualities}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
-plotSequenceQualities(x, subset, counts = FALSE, trimNames = TRUE,
+plotSequenceQualities(x, subset, counts = FALSE, pwfCols, trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
@@ -16,6 +16,8 @@ May be useful to only return totals from R1 files, or any other subset}
 
 \item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
 If \code{counts = FALSE} the frequencies will be plotted}
+
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 

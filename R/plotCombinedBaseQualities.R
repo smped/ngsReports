@@ -16,6 +16,7 @@
 #' Can be any of the columns returned by \code{\link{Per_base_sequence_quality}}.
 #' Defaults to \code{value = "Mean"}.
 #' Can additionally set to "all" to plot all available quantities
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -51,7 +52,7 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plotCombinedBaseQualities <- function(x, subset, value = "Mean",
+plotCombinedBaseQualities <- function(x, subset, value = "Mean", pwfCols,
                                       trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   # A basic cautionary check
@@ -60,12 +61,10 @@ plotCombinedBaseQualities <- function(x, subset, value = "Mean",
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
   }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
   stopifnot(is.logical(trimNames))
   stopifnot(is.character(value))
 
-  x <- x[subset]
+  x <- tryCatch(x[subset])
   df <- tryCatch(Per_base_sequence_quality(x))
 
   # Check for valid columns
@@ -106,11 +105,11 @@ plotCombinedBaseQualities <- function(x, subset, value = "Mean",
   # Make basic plot, adding the shaded background colours
   qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Base, y = Score, colour = Filename)) +
     ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = 30, ymax = Inf,
-                      fill = rgb(0, 0.9, 0.6), alpha = 0.3) +
+                      fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
     ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = 20, ymax = 30,
-                      fill = rgb(0.9, 0.9, 0.7), alpha = 0.5) +
-    ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = 0, ymax = 20,
-                      fill = rgb(0.8, 0.4, 0.5), alpha = 0.5) +
+                      fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
+    ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = -Inf, ymax = 20,
+                      fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
     ggplot2::geom_line(ggplot2::aes(linetype = Value)) +
     ggplot2::scale_x_continuous(expand = c(0, 0)) +
     ggplot2::scale_y_continuous(expand = c(0, 0)) +

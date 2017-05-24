@@ -4,8 +4,7 @@
 \alias{plotKmerHeatmap}
 \title{Plot Overrepresented Kmers As a Heatmap}
 \usage{
-plotKmerHeatmap(x, subset, nKmers = 12, method = "overall",
-  pass = rgb(0.2, 0, 0.2), warn = rgb(1, 0, 0), fail = rgb(1, 1, 0),
+plotKmerHeatmap(x, subset, nKmers = 12, method = "overall", pwfCols,
   naCol = "grey80", flip = TRUE, trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*")
 }
@@ -22,11 +21,7 @@ May be useful to only return totals from R1 files, or any other subset}
 Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
 or whether the top nKmers are selected from each individual file.}
 
-\item{pass}{colour used as the PASS colour in the heatmap}
-
-\item{warn}{colour used as the WARN colour in the heatmap}
-
-\item{fail}{colour used as the FAIL colour in the heatmap}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{naCol}{colour used for missing values}
 

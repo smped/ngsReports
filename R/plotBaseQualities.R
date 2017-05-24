@@ -12,6 +12,7 @@
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param nc \code{numeric}. The number of columns to create in the plot layout
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -40,20 +41,22 @@
 #' @importFrom dplyr mutate
 #'
 #' @export
-plotBaseQualities <- function(x, subset, nc = 2,
+plotBaseQualities <- function(x, subset, nc = 2, pwfCols,
                               trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
+  stopifnot(is.logical(trimNames))
+
+  # Sort out the colours
+  if (missing(pwfCols)) pwfCols <- fastqcReports::pwf
+  stopifnot(isValidPwf(pwfCols))
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
   }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-  stopifnot(is.logical(trimNames))
+  x <- tryCatch(x[subset])
 
-  x <- x[subset]
   df <- tryCatch(Per_base_sequence_quality(x))
   df <- dplyr::mutate(df,
                       Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
@@ -76,11 +79,11 @@ plotBaseQualities <- function(x, subset, nc = 2,
 
   qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = as.integer(Start), y = Median)) +
     ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 30, ymax = Inf,
-                      fill = rgb(0, 0.9, 0.6), alpha = 0.3) +
+                      fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
     ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 20, ymax = 30,
-                      fill = rgb(0.9, 0.9, 0.7), alpha = 0.5) +
-    ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 0, ymax = 20,
-                      fill = rgb(0.8, 0.4, 0.5), alpha = 0.5) +
+                      fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
+    ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 20,
+                      fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
     ggplot2::geom_crossbar(ggplot2::aes(ymin = Lower_Quartile, ymax = Upper_Quartile),
                            fill = "yellow", width = 0.8, size = 0.2) +
     ggplot2::geom_segment(ggplot2::aes(x = as.integer(Start)-0.4, xend = as.integer(Start) + 0.4,

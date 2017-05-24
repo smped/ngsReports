@@ -17,9 +17,7 @@
 #' @param plotType \code{character}. Can only take the values \code{plotType = "heatmap"}
 #' or \code{plotType = "line"}
 #' @param nc Number of columns to use when faceting by Adapter Type.
-#' @param pass The colour for percentages considered as a PASS
-#' @param warn The colour for percentages consider as a WARN
-#' @param fail The colour for percentages consider as a FAIL
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param trimNames \code{logical}. Remove the file suffix from the names displyed in the legend.
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -61,23 +59,24 @@
 #' @export
 plotAdapterContent <- function(x, subset,
                                adapterType, plotType = "heatmap", nc,
-                               pass = rgb(0, 0.8,0), warn = rgb(0.9, 0.9, 0.2),
-                               fail = rgb(0.8, 0.2, 0.2),
+                               pwfCols,
                                trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",  ...){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
+  # Sort out the colours
+  if (missing(pwfCols)) pwfCols <- fastqcReports::pwf
+  stopifnot(isValidPwf(pwfCols))
+
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
   }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
   stopifnot(is.logical(trimNames))
   stopifnot(plotType %in% c("line", "heatmap"))
 
   # Get the AdapterContent
-  x <- x[subset]
+  x <- tryCatch(x[subset])
   df <- tryCatch(Adapter_Content(x))
 
   # Check the pattern contains a capture
@@ -120,7 +119,7 @@ plotAdapterContent <- function(x, subset,
     # Define the colour palette
     upr <- max(df$Percent)
     nCols <- findInterval(upr, c(0, 5, 10, Inf)) + 1
-    gradCols <- c(pass, warn, fail, rgb(1,1,1))[1:nCols]
+    gradCols <- getColours(pwfCols)[1:nCols]
     breaks <- c(0, 5, 10, upr)[1:nCols]
 
     # Add them to the initial plot
@@ -132,12 +131,12 @@ plotAdapterContent <- function(x, subset,
     # Create the basic plot
     acPlot <- ggplot2::ggplot(df,
                               ggplot2::aes(x = as.integer(Position), y = Percent, colour = Filename)) +
-      ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 0, ymax = 5,
-                        fill = pass, alpha = 0.3) +
+      ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 5,
+                        fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
       ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 5, ymax = 10,
-                        fill = warn, alpha = 0.3) +
+                        fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
       ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 10, ymax = Inf,
-                        fill = fail, alpha = 0.3) +
+                        fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
       ggplot2::geom_line() +
       ggplot2::scale_y_continuous(limits = c(0, 100)) +
       ggplot2::scale_x_continuous(breaks = seq_along(levels(df$Position)),

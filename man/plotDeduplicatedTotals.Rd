@@ -4,7 +4,7 @@
 \alias{plotDeduplicatedTotals}
 \title{Plot the read totals after de-duplication}
 \usage{
-plotDeduplicatedTotals(x, subset, millions, bars = "adjacent",
+plotDeduplicatedTotals(x, subset, millions, bars = "stacked",
   col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2), trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*")
 }

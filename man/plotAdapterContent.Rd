@@ -4,9 +4,8 @@
 \alias{plotAdapterContent}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, subset, adapterType, plotType = "heatmap", nc,
-  pass = rgb(0, 0.8, 0), warn = rgb(0.9, 0.9, 0.2), fail = rgb(0.8, 0.2,
-  0.2), trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*", ...)
+plotAdapterContent(x, subset, adapterType, plotType = "heatmap", nc, pwfCols,
+  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*", ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -19,11 +18,7 @@ or \code{plotType = "line"}}
 
 \item{nc}{Number of columns to use when faceting by Adapter Type.}
 
-\item{pass}{The colour for percentages considered as a PASS}
-
-\item{warn}{The colour for percentages consider as a WARN}
-
-\item{fail}{The colour for percentages consider as a FAIL}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
 

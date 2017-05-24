@@ -14,6 +14,7 @@
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
 #' If \code{counts = FALSE} the frequencies will be plotted
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -49,19 +50,20 @@
 #' @importFrom dplyr ungroup
 #'
 #' @export
-plotSequenceQualities <- function(x, subset, counts = FALSE,
+plotSequenceQualities <- function(x, subset, counts = FALSE, pwfCols,
                                   trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
+  stopifnot(is.logical(trimNames))
+
+  # Sort out the colours
+  if (missing(pwfCols)) pwfCols <- fastqcReports::pwf
+  stopifnot(isValidPwf(pwfCols))
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
   }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-  stopifnot(is.logical(trimNames))
-
-  x <- x[subset]
+  x <- tryCatch(x[subset])
   df <- tryCatch(Per_sequence_quality_scores(x))
 
   # Check the pattern contains a capture
@@ -92,11 +94,11 @@ plotSequenceQualities <- function(x, subset, counts = FALSE,
 
   qualPlot <- qualPlot +
     ggplot2::annotate("rect", xmin = 30, xmax = Inf, ymin = -Inf, ymax = Inf,
-                      fill = rgb(0, 0.9, 0.6), alpha = 0.3) +
+                      fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
     ggplot2::annotate("rect", xmin = 20, xmax = 30, ymin = -Inf, ymax = Inf,
-                      fill = rgb(0.9, 0.9, 0.7), alpha = 0.5) +
-    ggplot2::annotate("rect", xmin = 0, xmax = 20,, ymin = -Inf, ymax = Inf,
-                      fill = rgb(0.8, 0.4, 0.5), alpha = 0.5) +
+                      fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
+    ggplot2::annotate("rect", xmin = -Inf, xmax = 20,, ymin = -Inf, ymax = Inf,
+                      fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
     ggplot2::scale_x_continuous(limits = c(0, 41), expand = c(0, 0), breaks = seq(0, 40, by = 10)) +
     ggplot2::geom_line() +
     ggplot2::xlab("Mean Sequence Quality Per Read (Phred Score)") +

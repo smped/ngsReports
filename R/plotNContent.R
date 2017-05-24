@@ -11,9 +11,7 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param pass The colour to use for low percentages
-#' @param warn The colour to use at the WARN threshold
-#' @param fail The colour to use at the FAIL threshold
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param trimNames \code{logical}. Remove the file suffix from the names displyed in the legend.
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -44,23 +42,23 @@
 #' @importFrom dplyr mutate
 #'
 #' @export
-plotNContent <- function(x, subset,
-                         pass = rgb(0, 0.8, 0), warn = rgb(0.9, 0.9, 0.2),
-                         fail = rgb(0.8, 0.2, 0.2),
+plotNContent <- function(x, subset, pwfCols,
                          trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
+  stopifnot(is.logical(trimNames))
+
+  # Sort out the colours
+  if (missing(pwfCols)) pwfCols <- fastqcReports::pwf
+  stopifnot(isValidPwf(pwfCols))
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
   }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-  stopifnot(is.logical(trimNames))
 
   # Get the NContent
-  x <- x[subset]
+  x <- tryCatch(x[subset])
   df <- tryCatch(Per_base_N_content(x))
 
   # Check the pattern contains a capture
@@ -76,7 +74,7 @@ plotNContent <- function(x, subset,
   # Define the colour palette
   upr <- max(df$Percentage)
   nCols <- findInterval(upr, c(0, 5, 20, Inf)) + 1
-  gradCols <- c(pass, warn, fail, rgb(1,1,1))[1:nCols]
+  gradCols <- getColours(pwfCols)[1:nCols]
   breaks <- c(0, 5, 20, upr)[1:nCols]
 
   ggplot2::ggplot(df, ggplot2::aes(x = Base, y = Filename, fill = Percentage)) +

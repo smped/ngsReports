@@ -4,7 +4,7 @@
 \alias{plotBaseQualities}
 \title{Plot the Base Qualities for each file}
 \usage{
-plotBaseQualities(x, subset, nc = 2, trimNames = TRUE,
+plotBaseQualities(x, subset, nc = 2, pwfCols, trimNames = TRUE,
   pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
@@ -15,6 +15,8 @@ plotBaseQualities(x, subset, nc = 2, trimNames = TRUE,
 May be useful to only return totals from R1 files, or any other subset}
 
 \item{nc}{\code{numeric}. The number of columns to create in the plot layout}
+
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 
