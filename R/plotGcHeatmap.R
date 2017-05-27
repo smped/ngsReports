@@ -78,7 +78,7 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
                     Filename = "Observed Mean")
 
     df <- dplyr::bind_rows(df, mn)
-    df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+    df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
     gcPlot <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Filename, fill = Freq)) +
       ggplot2::labs(fill = "Frequency")
@@ -92,7 +92,7 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
       dplyr::mutate(Filename = "Observed Mean")
 
     df <- dplyr::bind_rows(df, mn)
-    df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+    df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
     # Initialise the plot using counts
     gcPlot <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Filename, fill= Count)) +
