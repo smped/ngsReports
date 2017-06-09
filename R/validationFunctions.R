@@ -51,3 +51,24 @@ isValidPwf <- function(object){
   TRUE
 
 }
+
+isValidTheoreticalGC <- function(object){
+
+  # Get the species & check there is data for all
+  sp <- object@mData$Species
+  if(!all(sp %in% slotNames(object))) return(FALSE)
+
+  # Check the mData column names
+  mCols <- c("Species", "Group", "Source", "Genome", "Transcriptome")
+  if(!all(mCols %in% colnames(object@mData))) return(FALSE)
+
+  # Check all GC_Content columns are valid for each species
+  checkCols <- vapply(sp, function(x){
+    all(colnames(slot(object, x)) %in% c("GC_Content",  "Genome", "Transcriptome"))
+    },
+    logical(1))
+  if (!all(checkCols)) return(FALSE)
+
+  TRUE
+
+}
