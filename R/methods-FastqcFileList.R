@@ -10,9 +10,9 @@
 #' @include AllClasses.R
 #' @include AllGenerics.R
 #'
+#' @docType methods
+#'
 #' @export
-#' @rdname FastqcFileList-methods
-#' @aliases FastqcFileList,character-method
 setMethod("FastqcFileList", "character",
           function(path)
           {
@@ -21,8 +21,6 @@ setMethod("FastqcFileList", "character",
           })
 
 #' @export
-#' @rdname FastqcFileList-methods
-#' @aliases FastqcFileList,list-method
 setMethod("FastqcFileList", "list",
           function(path)
           {
@@ -32,20 +30,10 @@ setMethod("FastqcFileList", "list",
           })
 
 #' @export
-#' @rdname FastqcFileList-methods
-#' @aliases path,FastqcFileList-method
 setMethod("path", "FastqcFileList",
           function(object){vapply(object, path, character(1))})
 
-#' #' @export
-#' #' @rdname FastqcFileList-methods
-#' #' @aliases isCompressed,FastqcFileList-method
-#' setMethod("isCompressed", "FastqcFileList",
-#'           function(object){vapply(object, isCompressed, logical(1))})
-
 #' @export
-#' @rdname FastqcFileList-methods
-#' @aliases fileNames,FastqcFileList-method
 setMethod("fileNames", "FastqcFileList", function(object){vapply(object, fileNames, character(1))})
 
 # Define the subsetting method, to remain consistent with list behaviour

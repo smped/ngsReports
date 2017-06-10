@@ -10,19 +10,19 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname Overrepresented_sequences
-#' @aliases Overrepresented_sequences,FastqcData-method
 setMethod("Overrepresented_sequences", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Overrepresented_sequences,
                                 Filename = fileNames(object))
             dplyr::select(df, Filename, dplyr::everything())
           })
-#'
+
 #' @export
 #' @rdname Overrepresented_sequences
-#' @aliases Overrepresented_sequences,FastqcDataList-method
 setMethod("Overrepresented_sequences", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Overrepresented_sequences)

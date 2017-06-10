@@ -17,18 +17,12 @@
 #' @importFrom dplyr bind_rows
 #'
 #' @export
-#' @rdname FastqcDataList-methods
-#' @aliases path,FastqcDataList-methods
 setMethod("path", "FastqcDataList", function(object){vapply(object@.Data, path, character(1))})
 
 #' @export
-#' @rdname FastqcDataList-methods
-#' @aliases fileNames,FastqcDataList-method
 setMethod("fileNames", "FastqcDataList", function(object){vapply(object@.Data, fileNames, character(1))})
 
 #' @export
-#' @rdname FastqcDataList-methods,
-#' @aliases getSummary
 setMethod("getSummary", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, getSummary)
@@ -36,7 +30,6 @@ setMethod("getSummary", "FastqcDataList",
           })
 
 #' @export
-#' @rdname Version
 setMethod("Version", "FastqcDataList",
           function(object){
             data_frame(Filename = fileNames(object),

@@ -10,19 +10,19 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname Per_sequence_GC_content
-#' @aliases Per_sequence_GC_content,FastqcData-method
 setMethod("Per_sequence_GC_content", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Per_sequence_GC_content,
                                 Filename = fileNames(object))
             dplyr::select(df, Filename, dplyr::everything())
           })
-#'
+
 #' @export
 #' @rdname Per_sequence_GC_content
-#' @aliases Per_sequence_GC_content,FastqcDataList-method
 setMethod("Per_sequence_GC_content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_sequence_GC_content)

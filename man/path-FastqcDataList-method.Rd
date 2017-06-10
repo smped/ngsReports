@@ -3,13 +3,9 @@
 \docType{methods}
 \name{path,FastqcDataList-method}
 \alias{path,FastqcDataList-method}
-\alias{path,FastqcDataList-methods}
-\alias{fileNames,FastqcDataList-method}
 \title{Methods for an object of class FastqcDataList}
 \usage{
 \S4method{path}{FastqcDataList}(object)
-
-\S4method{fileNames}{FastqcDataList}(object)
 }
 \arguments{
 \item{object}{An object of class \code{FastqcDataList}}

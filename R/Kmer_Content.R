@@ -10,19 +10,19 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname Kmer_Content
-#' @aliases Kmer_Content,FastqcData-method
 setMethod("Kmer_Content", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Kmer_Content,
                                 Filename = fileNames(object))
             dplyr::select(df, Filename, dplyr::everything())
           })
-#'
+
 #' @export
 #' @rdname Kmer_Content
-#' @aliases Kmer_Content,FastqcDataList-method
 setMethod("Kmer_Content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Kmer_Content)

@@ -10,19 +10,19 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname Sequence_Duplication_Levels
-#' @aliases Sequence_Duplication_Levels,FastqcData-method
 setMethod("Sequence_Duplication_Levels", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Sequence_Duplication_Levels,
                                 Filename = fileNames(object))
             dplyr::select(df, Filename, dplyr::everything())
           })
-#'
+
 #' @export
 #' @rdname Sequence_Duplication_Levels
-#' @aliases Sequence_Duplication_Levels,FastqcDataList-method
 setMethod("Sequence_Duplication_Levels", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Sequence_Duplication_Levels)

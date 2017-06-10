@@ -44,25 +44,20 @@ setMethod("getGC", "TheoreticalGC",
           })
 
 #' @export
-#' @rdname mData,TheoreticalGC-method
 setMethod("mData", "TheoreticalGC", function(object){object@mData})
 
 #' @export
-#' @rdname allSpecies,TheoreticalGC-method
 setMethod("allSpecies", "TheoreticalGC", function(object){object@mData$Species})
 
 #' @export
-#' @rdname genomes,TheoreticalGC-method
 setMethod("genomes", "TheoreticalGC", function(object){
   dplyr::filter(object@mData, Genome)$Species
   })
 
 #' @export
-#' @rdname transcriptomes,TheoreticalGC-method
 setMethod("transcriptomes", "TheoreticalGC", function(object){
   dplyr::filter(object@mData, Transcriptome)$Species
 })
-
 
 # The show method doesn't need exporting
 setMethod("show", "TheoreticalGC",

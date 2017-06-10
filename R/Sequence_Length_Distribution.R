@@ -10,19 +10,19 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname Sequence_Length_Distribution
-#' @aliases Sequence_Length_Distribution,FastqcData-method
 setMethod("Sequence_Length_Distribution", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Sequence_Length_Distribution,
                                 Filename = fileNames(object))
             dplyr::select(df, Filename, dplyr::everything())
           })
-#'
+
 #' @export
 #' @rdname Sequence_Length_Distribution
-#' @aliases Sequence_Length_Distribution,FastqcDataList-method
 setMethod("Sequence_Length_Distribution", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Sequence_Length_Distribution)

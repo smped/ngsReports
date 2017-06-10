@@ -9,25 +9,21 @@
 #'
 #' @return An object of cass \code{FastqcFile}
 #'
+#' @docType methods
+#'
 #' @include AllClasses.R
 #' @include AllGenerics.R
 #'
 #' @export
-#' @rdname FastqcFile-methods
-#' @aliases FastqcFile,character-method
 setMethod("FastqcFile", "character",
           function(filePath){
             new("FastqcFile", path = filePath)
           })
 
 #' @export
-#' @rdname FastqcFile-methods
-#' @aliases path,FastqcFile-method
 setMethod("path", "FastqcFile", function(object){object@path})
 
 #' @export
-#' @rdname FastqcFile-methods
-#' @aliases fileNames,FastqcFile-method
 setMethod("fileNames", "FastqcFile", function(object){basename(object@path)})
 
 # The show method doesn't need exporting

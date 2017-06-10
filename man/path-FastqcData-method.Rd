@@ -3,19 +3,9 @@
 \docType{methods}
 \name{path,FastqcData-method}
 \alias{path,FastqcData-method}
-\alias{Version,FastqcData-method}
-\alias{getSummary,FastqcData-method}
-\alias{fileNames,FastqcData-method}
-\alias{fileName,FastqcData-method}
 \title{Methods for an object of class FastqcData}
 \usage{
 \S4method{path}{FastqcData}(object)
-
-\S4method{Version}{FastqcData}(object)
-
-\S4method{getSummary}{FastqcData}(object)
-
-\S4method{fileNames}{FastqcData}(object)
 }
 \arguments{
 \item{object}{An object of class \code{FastqcData}}

@@ -10,18 +10,18 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname Total_Deduplicated_Percentage
-#' @aliases Total_Deduplicated_Percentage,FastqcData-method
 setMethod("Total_Deduplicated_Percentage", "FastqcData",
           function(object){
             dplyr::data_frame(Filename = fileNames(object),
                               Total = object@Total_Deduplicated_Percentage)
           })
-#'
+
 #' @export
 #' @rdname Total_Deduplicated_Percentage
-#' @aliases Total_Deduplicated_Percentage,FastqcDataList-method
 setMethod("Total_Deduplicated_Percentage", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Total_Deduplicated_Percentage)

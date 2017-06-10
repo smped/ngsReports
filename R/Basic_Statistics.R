@@ -1,4 +1,4 @@
-#' @title Get the Basic Statistics information
+#' Get the set of Basic Statistics
 #'
 #' @description Retrieve the Basic Statistics module from one or more FastQC reports
 #'
@@ -10,10 +10,12 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname Basic_Statistics
 setMethod("Basic_Statistics", "FastqcData", function(object){object@Basic_Statistics})
-#'
+
 #' @export
 #' @rdname Basic_Statistics
 setMethod("Basic_Statistics", "FastqcDataList",

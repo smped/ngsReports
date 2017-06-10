@@ -18,6 +18,15 @@ setClass("FastqcData", slots = c(Summary = "data.frame",
                                  Version = "character",
                                  path = "character"))
 setClass("FastqcDataList", contains="list")
+setClass("StarLogData", slots = c(fileName = "character",
+                                  timing = "data.frame",
+                                  input = "data.frame",
+                                  unique = "data.frame",
+                                  splicing = "data.frame",
+                                  errors = "data.frame",
+                                  multiMapping = "data.frame",
+                                  unmapped = "data.frame"
+                                  ))
 setClass("PwfCols", slots = c(PASS = "character",
                               WARN = "character",
                               FAIL = "character",

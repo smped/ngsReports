@@ -17,23 +17,15 @@
 #' @importFrom dplyr everything
 #'
 #' @export
-#' @rdname FastqcData-methods
-#' @aliases path,FastqcData-method
 setMethod("path", "FastqcData", function(object){object@path})
 
 #' @export
-#' @rdname FastqcData-methods
-#' @aliases Version,FastqcData-method
 setMethod("Version", "FastqcData", function(object){object@Version})
 
 #' @export
-#' @rdname FastqcData-methods
-#' @aliases getSummary,FastqcData-method
 setMethod("getSummary", "FastqcData", function(object){object@Summary})
 
 #' @export
-#' @rdname FastqcData-methods
-#' @aliases fileName,FastqcData-method
 setMethod("fileNames", "FastqcData", function(object){object@Summary$Filename[1]})
 
 # The show method doesn't need exporting

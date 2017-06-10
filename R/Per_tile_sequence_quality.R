@@ -10,19 +10,19 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname Per_tile_sequence_quality
-#' @aliases Per_tile_sequence_quality,FastqcData-method
 setMethod("Per_tile_sequence_quality", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Per_tile_sequence_quality,
                                 Filename = fileNames(object))
             dplyr::select(df, Filename, dplyr::everything())
           })
-#'
+
 #' @export
 #' @rdname Per_tile_sequence_quality
-#' @aliases Per_tile_sequence_quality,FastqcDataList-method
 setMethod("Per_tile_sequence_quality", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_tile_sequence_quality)
