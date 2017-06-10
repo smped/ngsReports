@@ -3,6 +3,8 @@
 #' @description Methods and Accessors for an object of class TheoreticalGC
 #'
 #' @details Describes all methods for an object of class \code{TheoreticalGC}.
+#' The object \code{\link{gcTheoretical}} supplied with the package contains this
+#' information for a given set of species.
 #'
 #' \code{getGC} returns the theoretical GC content for a given species as a data frame.
 #'
