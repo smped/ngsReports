@@ -11,7 +11,7 @@
 #' @importFrom dplyr everything
 #'
 #' @export
-readHisat2Log <- function(logs){
+readHisat2Logs <- function(logs){
 
   fe <- file.exists(logs)
   if (all(!fe)) stop("Files could not be found")
