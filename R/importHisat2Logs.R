@@ -11,7 +11,7 @@
 #' @importFrom dplyr everything
 #'
 #' @export
-readHisat2Logs <- function(logs){
+importHisat2Logs <- function(logs){
 
   fe <- file.exists(logs)
   if (all(!fe)) stop("Files could not be found")
@@ -36,23 +36,23 @@ readHisat2Logs <- function(logs){
     paired <- grepl("were paired", x[2])
     if (paired){
       df <- dplyr::data_frame(
-        TotalReads = as.integer(gsub("([0-9]*) reads; of these:", "\\1", x[1])),
-        PairedReads = as.integer(gsub("([0-9]*) \\(.+\\) were paired; of these:", "\\1", x[2])),
-        UniqueInPairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned concordantly exactly 1 time", "\\1", x[4])),
-        MultipleInPairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned concordantly >1 times", "\\1", x[5])),
-        UniqueDiscordantPairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned discordantly 1 time", "\\1", x[8])),
-        UniqueUnpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned exactly 1 time", "\\1", x[13])),
-        MultipleUnpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned >1 times", "\\1", x[14])),
-        NotAligned = as.integer(gsub("([0-9]*) \\(.+\\) aligned 0 times", "\\1", x[12])),
-        AlignmentRate = 1 - NotAligned / (TotalReads + PairedReads))
+        Total_Reads = as.integer(gsub("([0-9]*) reads; of these:", "\\1", x[1])),
+        Paired_Reads = as.integer(gsub("([0-9]*) \\(.+\\) were paired; of these:", "\\1", x[2])),
+        Unique_In_Pairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned concordantly exactly 1 time", "\\1", x[4])),
+        Multiple_In_Pairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned concordantly >1 times", "\\1", x[5])),
+        Unique_Discordant_Pairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned discordantly 1 time", "\\1", x[8])),
+        Unique_Unpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned exactly 1 time", "\\1", x[13])),
+        Multiple_Unpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned >1 times", "\\1", x[14])),
+        Not_Aligned = as.integer(gsub("([0-9]*) \\(.+\\) aligned 0 times", "\\1", x[12])),
+        Alignment_Rate = 1 - Not_Aligned / (Total_Reads + Paired_Reads))
     }
     else{
       df <- dplyr:data_frame(
-        TotalReads = as.integer(gsub("([0-9]*) reads; of these:", "\\1", x[1])),
-        NotAligned = as.integer(gsub("([0-9]*) \\(.+\\) aligned 0 times", "\\1", x[3])),
-        UniqueUnpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned exactly 1 time", "\\1", x[4])),
-        MultipleUnpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned >1 times", "\\1", x[5])),
-        AlignmentRate = 1 - NotAligned / TotalReads)
+        Total_Reads = as.integer(gsub("([0-9]*) reads; of these:", "\\1", x[1])),
+        Not_Aligned = as.integer(gsub("([0-9]*) \\(.+\\) aligned 0 times", "\\1", x[3])),
+        Unique_Unpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned exactly 1 time", "\\1", x[4])),
+        Multiple_Unpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned >1 times", "\\1", x[5])),
+        Alignment_Rate = 1 - Not_Aligned / Total_Reads)
     }
     df
   }
