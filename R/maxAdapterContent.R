@@ -15,7 +15,7 @@
 #' @return A \code{data_frame} object containing the percent of reads with each adapter
 #' type at the final position
 #'
-#' @import tibble
+#' @importFrom tibble as_tibble
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
 #' @importFrom dplyr mutate
@@ -50,6 +50,6 @@ maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
 
   ac %>%
     reshape2::dcast(Filename~Type, value.var = "value") %>%
-    tibble::as_data_frame()
+    tibble::as_tibble()
 
 }

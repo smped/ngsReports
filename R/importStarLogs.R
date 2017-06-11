@@ -22,7 +22,10 @@
 #' @importFrom dplyr filter
 #' @importFrom dplyr rename
 #' @importFrom dplyr select
-#' @importFrom dplyr as_data_frame
+#' @importFrom dplyr ends_with
+#' @importFrom dplyr starts_with
+#' @importFrom dplyr everything
+#' @importFrom tibble as_tibble
 #' @importFrom stringr str_replace
 #' @importFrom stringr str_trim
 #' @importFrom stringr str_to_title
@@ -121,11 +124,11 @@ importStarLogs <- function(path){
   df$Mapping_Rate <- with(df, (Uniquely_Mapped_Reads + Multi_Mapped_Reads) / Input_Reads)
   # Reorder the columns to place these in sensible positions
   df <- dplyr::select(df, Filename,
-                      ends_with("On", ignore.case = FALSE),
-                      starts_with("Mapping"),
-                      Input_Reads, Average_Read_Length, everything())
+                      dplyr::ends_with("On", ignore.case = FALSE),
+                      dplyr::starts_with("Mapping"),
+                      Input_Reads, Average_Read_Length, dplyr::everything())
 
   # Return as a tibble
-  dplyr::as_data_frame(df)
+  tibble::as_tibble(df)
 
 }

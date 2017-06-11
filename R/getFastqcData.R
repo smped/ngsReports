@@ -7,11 +7,11 @@
 #' @return An object of \code{FastqcData}
 #'
 #' @importFrom dplyr data_frame
-#' @importFrom dplyr as_data_frame
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
 #' @importFrom stringr str_split_fixed
 #' @importFrom stringr str_split
+#' @importFrom tibble as_tibble
 #'
 #' @include AllGenerics.R
 #'
@@ -181,7 +181,7 @@ getBasicStatistics <- function(fastqcData){
                "Sequences_flagged_as_poor_quality", "Sequence_length", "%GC")
   stopifnot(reqVals %in% names(vals))
 
-  df <- dplyr::as_data_frame(as.list(vals))
+  df <- tibble::as_tibble(as.list(vals))
   df <- dplyr::mutate(df,
                       Total_Sequences = as.integer(Total_Sequences),
                       Sequences_flagged_as_poor_quality = as.integer(Sequences_flagged_as_poor_quality),
@@ -199,7 +199,7 @@ getPerBaseSeqQuals <- function(fastqcData){
   x <- fastqcData[["Per_base_sequence_quality"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -218,7 +218,7 @@ getPerTileSeqQuals <- function(fastqcData){
   x <- fastqcData[["Per_tile_sequence_quality"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -235,7 +235,7 @@ getPerSeqQualScores <- function(fastqcData){
   x <- fastqcData[["Per_sequence_quality_scores"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -251,7 +251,7 @@ getPerBaseSeqContent <- function(fastqcData){
   x <- fastqcData[["Per_base_sequence_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -268,7 +268,7 @@ getPerSeqGcContent <- function(fastqcData){
   x <- fastqcData[["Per_sequence_GC_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -284,7 +284,7 @@ getPerBaseNContent <- function(fastqcData){
   x <- fastqcData[["Per_base_N_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -300,7 +300,7 @@ getSeqLengthDist <- function(fastqcData){
   x <- fastqcData[["Sequence_Length_Distribution"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -330,7 +330,7 @@ getSeqDuplicationLevels <- function(fastqcData){
   x <- x[!hasTotDeDup]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -352,7 +352,7 @@ getOverrepSeq <- function(fastqcData){
   if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -370,7 +370,7 @@ getAdapterContent <- function(fastqcData){
   if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values
@@ -389,7 +389,7 @@ getKmerContent <- function(fastqcData){
   if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
-  df <- dplyr::as_data_frame(matrix(mat[-1,], ncol= nc))
+  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
   names(df) <- gsub(" ", "_", mat[1,])
 
   # Check for the required values

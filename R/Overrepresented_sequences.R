@@ -12,6 +12,11 @@
 #'
 #' @docType methods
 #'
+#' @importFrom dplyr mutate
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr everything
+#' @importFrom dplyr select
+#'
 #' @export
 #' @rdname Overrepresented_sequences
 setMethod("Overrepresented_sequences", "FastqcData",

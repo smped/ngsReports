@@ -12,9 +12,6 @@
 #' @docType methods
 #'
 #' @importFrom scales comma
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#' @importFrom dplyr everything
 #'
 #' @export
 setMethod("path", "FastqcData", function(object){object@path})

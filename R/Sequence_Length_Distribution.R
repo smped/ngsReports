@@ -12,6 +12,11 @@
 #'
 #' @docType methods
 #'
+#' @importFrom dplyr mutate
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr everything
+#' @importFrom dplyr select
+#'
 #' @export
 #' @rdname Sequence_Length_Distribution
 setMethod("Sequence_Length_Distribution", "FastqcData",

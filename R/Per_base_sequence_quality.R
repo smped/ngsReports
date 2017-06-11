@@ -12,6 +12,11 @@
 #'
 #' @docType methods
 #'
+#' @importFrom dplyr mutate
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr everything
+#' @importFrom dplyr select
+#'
 #' @export
 #' @rdname Per_base_sequence_quality
 setMethod("Per_base_sequence_quality", "FastqcData",

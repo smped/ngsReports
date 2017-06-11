@@ -13,6 +13,10 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @importFrom dplyr bind_rows
+#' @importFrom dplyr mutate
+#' @importFrom dplyr select
+#'
 #' @export
 #' @rdname Adapter_Content
 setMethod("Adapter_Content", "FastqcDataList",

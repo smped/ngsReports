@@ -12,6 +12,8 @@
 #'
 #' @docType methods
 #'
+#' @importFrom dplyr bind_rows
+#'
 #' @export
 #' @rdname Basic_Statistics
 setMethod("Basic_Statistics", "FastqcData", function(object){object@Basic_Statistics})
