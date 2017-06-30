@@ -17,6 +17,7 @@ setMethod("FastqcFileList", "character",
           function(path)
           {
             fls <- lapply(path, FastqcFile)
+            names(fls) <- basename(path)        
             new("FastqcFileList", fls)
           })
 
