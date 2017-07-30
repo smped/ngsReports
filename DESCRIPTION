@@ -1,10 +1,10 @@
-Package: fastqcReports
+Package: ngsReports
 Version: 0.1.0
 Date: 2017/03/07
-Title: Runs and Load FastqQC reports
+Title: Load FastqQC reports and other NGS related log files
 Author: Steve Pederson <stephen.pederson@adelaide.edu.au>
 Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
-Description: Generates FastQC reports, and loads the output summaries as complete libraries
+Description: Load FastQC reports and other output summaries intoR
 License: LGPL (>= 2)
 Encoding: UTF-8
 LazyData: true
