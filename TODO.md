@@ -11,5 +11,5 @@
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot
 - Add `plotBaseContent` 
-- Figure out errors in roxygen build
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
+- Incorporate bowtie & cufflinks output?
