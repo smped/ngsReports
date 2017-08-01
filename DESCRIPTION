@@ -30,6 +30,7 @@ Collate:
     'getColours.R'
     'getFastqcData.R'
     'getSummary.R'
+    'importBowtieLogs.R'
     'importHisat2Logs.R'
     'importStarLogs.R'
     'isCompressed.R'
