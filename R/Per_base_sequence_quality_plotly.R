@@ -71,37 +71,34 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogra
                       Start = as.integer(Start))
 
   #get longest sequence
-  basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence)
+  basicStat <- Basic_Statistics(fdl) %>% dplyr::select(Filename, Longest_sequence)
 
 
-  # initialize for Mean Base quality
+  #initialize for Mean Base quality
   if(type == "Mean"){
     df <- df %>% dplyr::right_join(basicStat, by = "Filename") %>%
-      dplyr::select(Filename, Start, Mean, Longest_sequence) %>%
-      tidyr::spread(Start, Mean)
+      dplyr::select(Filename, Start, Mean, Longest_sequence)
 
-    splitLengths <- df %>% split(f = .['Longest_sequence'])
 
     #split data into correct lengths and fill NA's
-
-    dfInner <- splitLengths %>% lapply(function(k){
-      k <- k %>% dplyr::select(Filename, dplyr::one_of(as.character(1:k$Longest_sequence[1]))) %>%
-        t() %>%
-        zoo::na.locf() %>%
-        t() %>%
-        as.data.frame()
-    }) %>% do.call(plyr::rbind.fill, .) %>% magrittr::set_rownames(.$Filename)
-
+    dfInner <- df %>% split(f = .['Filename']) %>% lapply(function(x){
+      dfFill <- data_frame(Start = 1:x$Longest_sequence[1])
+      x <- dplyr::right_join(x, dfFill, by = "Start") %>% zoo::na.locf()
+    }) %>% dplyr::bind_rows() %>%
+      mutate(Start = as.integer(Start)) %>%
+      select(-Longest_sequence) %>%
+      reshape2::dcast(Filename ~ Start)
 
     #cluster names true hclust names
     if(clusterNames){
-      xx <- dfInner %>% dplyr::select(-Filename)
+      xx <- dfInner  %>%
+        dplyr::select(-Filename)
       xx[is.na(xx)] <- 0
       clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
       row.ord <- order.dendrogram(clus)
       dfInner <- dfInner[row.ord,]
       dfInner$Filename <- with(dfInner, factor(Filename, levels=Filename))
-      dfLong <- dfInner %>% gather("Start", "Mean", 2:ncol(.))
+      dfLong <- dfInner %>% tidyr::gather("Start", "Mean", 2:ncol(.))
       dfLong$Mean <- as.integer(dfLong$Mean)
       dfLong$Start <- as.integer(dfLong$Start)
 
@@ -196,21 +193,17 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogra
   # initialize for Mean Base quality
   if(type == "Median"){
     df <- df %>% dplyr::right_join(basicStat, by = "Filename") %>%
-      dplyr::select(Filename, Start, Median, Longest_sequence) %>%
-      tidyr::spread(Start, Median)
+      dplyr::select(Filename, Start, Median, Longest_sequence)
 
-    splitLengths <- df %>% split(f = .['Longest_sequence'])
 
     #split data into correct lengths and fill NA's
-
-    dfInner <- splitLengths %>% lapply(function(k){
-      k <- k %>% dplyr::select(Filename, dplyr::one_of(as.character(1:k$Longest_sequence[1]))) %>%
-        t() %>%
-        zoo::na.locf() %>%
-        t() %>%
-        as.data.frame()
-    }) %>% do.call(plyr::rbind.fill, .) %>% magrittr::set_rownames(.$Filename)
-
+    dfInner <- df %>% split(f = .['Filename']) %>% lapply(function(x){
+      dfFill <- data_frame(Start = 1:x$Longest_sequence[1])
+      x <- dplyr::right_join(x, dfFill, by = "Start") %>% zoo::na.locf()
+    }) %>% dplyr::bind_rows() %>%
+      mutate(Start = as.integer(Start)) %>%
+      select(-Longest_sequence) %>%
+      reshape2::dcast(Filename ~ Start)
 
     #cluster names true hclust names
     if(clusterNames){
