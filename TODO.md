@@ -13,3 +13,4 @@
 - Add `plotBaseContent` 
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Incorporate bowtie & cufflinks output?
+- Fix package import problems with fastqc shiny app (cward)
