@@ -104,7 +104,7 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
 
     if(GCtheory){
       df <- df %>% split(.["Filename"]) %>% lapply(function(x){
-        gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, species = Species, type = "Genome")
+        gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, species = species, type = "Genome")
         x <- mutate(x, Freq = Freq - (gcTheoryDF$Genome/sum(gcTheoryDF$Genome)))
       }) %>% bind_rows()
     }
@@ -198,7 +198,7 @@ if(!clusterNames){
 
     if(GCtheory){
       df <- df %>% split(.["Filename"]) %>% lapply(function(x){
-        gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, species = Species, type = "Genome")
+        gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, species = species, type = "Genome")
         x <- mutate(x, Count = Count - (gcTheoryDF$Genome/sum(gcTheoryDF$Genome)))
       }) %>% bind_rows()
     }
