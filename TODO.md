@@ -2,7 +2,7 @@
 - Set character methods for `runFastQC` & redefine this function as a method for class `FastqFileList`
 - Test the output of `runFastQC` now it hs been changed to a `FastqcFileList`
 - Validation Functions for `fastqcData` and `fastqcDataLists` objects
-- Add the theoretical GC distribution using hg19/mm10 etc
+- Add the theoretical GC distribution using hg19/mm10 etc ***DONE***
 - *Convert everything to heatmaps*
 - Define `pwfCols` and `isValidPwf()` **DONE**
 - Implement `pwf`as the colour scheme for all plots
@@ -10,7 +10,7 @@
 - Calculate Ranks on each module and summarise
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot
-- Add `plotBaseContent` 
+- Add `plotBaseContent` ***Chris working on***
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Incorporate bowtie & cufflinks output?
 - Fix package import problems with fastqc shiny app (cward)
