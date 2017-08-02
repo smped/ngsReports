@@ -40,12 +40,15 @@
 #'
 #' @import ggplot2
 #' @import scales
+#' @import plotly
+#' @import tidyr
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
 #' @importFrom dplyr filter
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
+#' @importFrom magrittr %>%
 #'
 #' @export
 plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogram = FALSE, pattern = "(.+)\\.(fastq|fq).*", clusterNames = FALSE, setHeight = "auto"){
@@ -65,13 +68,13 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogra
 
   #load in applicable data
 
-  df <- tryCatch(Per_base_sequence_quality(fdl))
+  df <- tryCatch(Per_base_sequence_quality(x))
   df <- dplyr::mutate(df,
                       Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
                       Start = as.integer(Start))
 
   #get longest sequence
-  basicStat <- Basic_Statistics(fdl) %>% dplyr::select(Filename, Longest_sequence)
+  basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence)
 
 
   #initialize for Mean Base quality

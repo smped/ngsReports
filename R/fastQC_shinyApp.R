@@ -10,7 +10,6 @@
 #' @param subsetAll a \code{character} vector of length 1 to subset all files input into shiny app by
 #'
 #' @import shiny
-#' @import dplyr
 #' @import plotly
 #'
 #' @return UI data for fastQC shiny.
