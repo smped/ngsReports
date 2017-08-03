@@ -65,7 +65,7 @@ plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).
 
   # Get the NContent
   x <- tryCatch(x[subset])
-  df <- tryCatch(Per_base_N_content(x))
+  df <- tryCatch(Per_base_N_content(fdl))
   df <- dplyr::rename(df, Percentage = `N-Count`) %>%
     dplyr::mutate(Base = factor(Base, levels = unique(Base)))
   df <- dplyr::mutate(df,
@@ -75,101 +75,85 @@ plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).
   # Define the colour palette
   col <- getColours(pwfCols)
 
-  basicStat <- Basic_Statistics(x) %>% select(Filename, Longest_sequence)
+  basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence) %>%
+    dplyr::mutate(Filename = gsub(pattern[1], "\\1", .$Filename))
+  df <- dplyr::right_join(df, basicStat, by = "Filename")
 
-  df <- df %>% dplyr::right_join(basicStat, by = "Filename") %>%
-    dplyr::select(Filename, Start, Percentage, Longest_sequence) %>%
-    tidyr::spread(Start, Percentage)
+  #split data into correct lengths and fill NA's
+  df <- split(df, f = df['Filename']) %>%
+    lapply(function(x){
+      dfFill <- data.frame(Start = 1:x$Longest_sequence[1])
+      x <- dplyr::right_join(x, dfFill, by = "Start") %>%
+        zoo::na.locf()
+    }) %>%
+    dplyr::bind_rows() %>%
+    dplyr::mutate(Start = as.integer(Start)) %>%
+    dplyr::select(-Longest_sequence) %>%
+    dplyr::select(Filename, Start, Percentage)
 
-  splitLengths <- df %>% split(f = .['Longest_sequence'])
 
-  dfInner <- splitLengths %>% lapply(function(k){
-    k <- k %>% dplyr::select(Filename, dplyr::one_of(as.character(1:k$Longest_sequence[1]))) %>%
-      t() %>%
-      zoo::na.locf() %>%
-      t() %>%
-      as.data.frame()
-  }) %>% do.call(plyr::rbind.fill, .) %>% magrittr::set_rownames(.$Filename)
+  # Convert from wide to long & set the correct variable types
 
+  #cluster names true hclust names
   if(clusterNames){
-    xx <- dfInner %>% dplyr::select(-Filename)
+    df <- reshape2::dcast(df, Filename ~ Start)
+    xx <- dplyr::select(df, -Filename)
+    xx[is.na(xx)] <- 0
     clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
     row.ord <- order.dendrogram(clus)
-    dfInner <- dfInner[row.ord,]
-    dfInner$Filename <- with(dfInner, factor(Filename, levels=Filename))
-    dfLong <- dfInner %>% gather("Start", "Percentage", 2:ncol(.))
-    dfLong$Percentage <- as.numeric(dfLong$Percentage)
-    dfLong$Start <- as.numeric(dfLong$Start)
+    df <- df[row.ord,]
+    df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percentage")
+  }
 
-    key <- unique(dfLong["Filename"])
-    t <- ngsReports::getSummary(x) %>% dplyr::filter(Category == "Per base N content")
-    t <- dplyr::full_join(dfInner["Filename"], t, by = "Filename")
-    t$Filename <- with(t, factor(Filename, levels=Filename))
-    test <- spread(dfLong, Start, Percentage)
+    df <- dplyr::mutate(df, Percentage = as.numeric(Percentage),
+                        Start = as.integer(Start),
+                        Filename = factor(Filename, levels = unique(Filename)))
+    Nheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = Start, y = Filename, fill = Percentage))
 
-    p <- ggplot2::ggplot(dfLong, ggplot2::aes(x = Start, y = Filename, fill = Percentage)) +
-      ggplot2::geom_raster() +
-      # ggplot2::scale_fill_gradient2(low = pass, mid = warn, high = fail, midpoint = midpoint) +
+    Nheatmap <- Nheatmap + ggplot2::geom_raster() +
       ggplot2::scale_fill_gradientn(colours = c(col["PASS"], col["PASS"], col["WARN"], col["WARN"], col["FAIL"], col["FAIL"]),
-                                    values = rescale(c(0,5,5,20,20,30)),
+                                    values = scales::rescale(c(0,5,5,20,20,30)),
                                     guide = "colorbar", limits=c(0, 40), breaks = c(0, 5, 10, 20, 40)) +
-      ggplot2::theme_bw() +
       ggplot2::theme(panel.grid.minor = element_blank(),
-                     panel.background = element_blank(),
-                     axis.title.y=element_blank(),
-                     axis.text.y=element_blank(),
-                     axis.ticks.y=element_blank())
+                     panel.background = element_blank())
 
-    p <- plotly::ggplotly(p) %>% plotly::layout(margin = list(l = 0))
+  if(usePlotly){
+    t <- dplyr::filter(getSummary(x), Category == "Per base N content")
+    t <- dplyr::mutate(t, FilenameFull = Filename,
+                       Filename = gsub(pattern[1], "\\1", t$Filename),
+                       Filename = factor(Filename, levels = unique(df$Filename)))
+    t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+    key <- t$FilenameFull
 
-    d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_raster(aes(fill = Status)) +
+    sideBar <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
       ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
                                                                 panel.background = element_blank(),
                                                                 legend.position="none",
                                                                 axis.title=element_blank(),
                                                                 axis.text=element_blank(),
                                                                 axis.ticks=element_blank())
-    d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
+    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
 
+    #plot dendrogram
+    if(dendrogram){
+      ggdend <- function(df) {
+        ggplot2::ggplot() +
+          ggplot2::geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
+      }
+
+      dx <- ggdendro::dendro_data(clus)
+      dendro <- ggdend(dx$segments) + ggplot2::coord_flip() + ggplot2::scale_y_reverse(expand = c(0, 1)) + ggplot2::scale_x_continuous(expand = c(0,1))
+
+      dendro <- plotly::ggplotly(dendro) %>% plotly::layout(margin = list(b = 0, t = 0))
+
+      Nheatmap <- plotly::subplot(dendro, sideBar, Nheatmap, widths = c(0.2, 0.1,0.7), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
+    }else{
+      Nheatmap <- plotly::subplot(sideBar, BQheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+    }
+
+
+  }else{
+    Nheatmap
   }
-  if(!clusterNames){
-    dfInner$Filename <- with(dfInner, factor(Filename, levels=Filename))
-    dfLong <- dfInner %>% gather("Start", "Percentage", 2:ncol(.))
-    dfLong$Percentage <- as.numeric(dfLong$Percentage)
-    dfLong$Start <- as.numeric(dfLong$Start)
-
-    key <- unique(dfInner["Filename"])
-    t <- ngsReports::getSummary(x) %>% dplyr::filter(Category == "Per base N content")
-    t <- dplyr::full_join(dfInner["Filename"], t, by = "Filename")
-    t$Filename <- with(t, factor(Filename, levels=Filename))
-
-    p <- ggplot2::ggplot(dfLong, ggplot2::aes(x = Start, y = Filename, fill = Percentage)) +
-      ggplot2::geom_raster() +
-      # ggplot2::scale_fill_gradient2(low = pass, mid = warn, high = fail, midpoint = midpoint) +
-      ggplot2::scale_fill_gradientn(colours = c(col["PASS"], col["PASS"], col["WARN"], col["WARN"], col["FAIL"], col["FAIL"]),
-                                    values = rescale(c(0,5,5,20,20,30)),
-                                    guide = "colorbar", limits=c(0, 40), breaks = c(0, 5, 10, 20, 40)) +
-      ggplot2::theme_bw() +
-      ggplot2::theme(panel.grid.minor = element_blank(),
-                     panel.background = element_blank(),
-                     axis.title.y=element_blank(),
-                     axis.text.y=element_blank(),
-                     axis.ticks.y=element_blank())
-
-    p <- plotly::ggplotly(p) %>% plotly::layout(margin = list(l = 0))
-
-    d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_raster(aes(fill = Status)) +
-      ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
-                                                                panel.background = element_blank(),
-                                                                legend.position="none",
-                                                                axis.title=element_blank(),
-                                                                axis.text=element_blank(),
-                                                                axis.ticks=element_blank())
-    d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
-
-
-  }
-
-  NCheatmap <- plotly::subplot(d, p, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
-  NCheatmap
+  Nheatmap
 }
