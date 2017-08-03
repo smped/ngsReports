@@ -7,7 +7,7 @@
 - Calculate Ranks on each module and summarise
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot
-- Add `plotBaseContent` ***Chris working on***
+- Add `plotBaseContent` ***Funcitonal (check)***
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Incorporate bowtie2 & cufflinks output?
 - Fix package import problems with fastqc shiny app (cward)
