@@ -29,6 +29,8 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param usePlotly \code{logical}. If \code{TRUE} the plot will render as an interactive plot in the Viewer pane.
+#' Otherwise the plot will be generated using the current plot device.
 #'
 #' @return Returns a ggplot object.
 #'
@@ -56,11 +58,13 @@
 #' @importFrom dplyr select
 #' @importFrom reshape2 melt
 #' @importFrom magrittr %>%
+#' @importFrom plotly ggplotly
 #'
 #' @export
 plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
                                    col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2),
-                                   trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+                                   trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
+                                   usePlotly = FALSE){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -129,5 +133,11 @@ plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
 
   # Draw the plot
-  deDupPlot
+  if (usePlotly) {
+    plotly::ggplotly(deDupPlot)
+  }
+  else {
+    deDupPlot
+  }
+
 }
