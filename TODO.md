@@ -13,7 +13,6 @@
 - Fix package import problems with fastqc shiny app (cward)
 - Write Vignette
 - Incorporate subsetting by pattern in Shiny App
-- Add ggdendro to import
 - Add dendrogram to plots
 - Flip Total Read Plot
 - Tidy up redundant code
