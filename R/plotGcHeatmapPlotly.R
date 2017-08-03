@@ -79,8 +79,8 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
   stopifnot(is.logical(subset))
   stopifnot(length(subset) == length(x))
 
-  pwfCols <- ngsReports::pwf
-  col <- getColours(pwfCols)
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+  col <- ngsReports::getColours(pwfCols)
 
   x <- x[subset]
   df <- tryCatch(Per_sequence_GC_content(x))
@@ -140,7 +140,7 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
                         axis.title.y=element_blank(),
                         axis.text.y=element_blank(),
                         axis.ticks.y=element_blank()) +
-         ggplot2::scale_fill_gradientn(colours = viridis(50))
+         ggplot2::scale_fill_gradientn(colours = inferno(50))
 
        d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
          ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
@@ -170,7 +170,7 @@ if(!clusterNames){
                    axis.title.y=element_blank(),
                    axis.text.y=element_blank(),
                    axis.ticks.y=element_blank()) +
-    ggplot2::scale_fill_gradientn(colours = viridis(50))
+    ggplot2::scale_fill_gradientn(colours = viridisLite::inferno(50))
 
   d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
     ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
@@ -233,7 +233,7 @@ if(!clusterNames){
                        axis.title.y=element_blank(),
                        axis.text.y=element_blank(),
                        axis.ticks.y=element_blank()) +
-        ggplot2::scale_fill_gradientn(colours = viridis(50))
+        ggplot2::scale_fill_gradientn(colours = viridisLite::inferno(50))
 
       d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
         ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
@@ -263,7 +263,7 @@ if(!clusterNames){
                        axis.title.y=element_blank(),
                        axis.text.y=element_blank(),
                        axis.ticks.y=element_blank()) +
-        ggplot2::scale_fill_gradientn(colours = viridis(50))
+        ggplot2::scale_fill_gradientn(colours = viridisLite::inferno(50))
 
       d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
         ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
