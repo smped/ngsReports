@@ -48,7 +48,11 @@
 #' @importFrom dplyr filter
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
+#' @importFrom dplyr right_join
 #' @importFrom magrittr %>%
+#' @importFrom zoo na.locf
+#' @importFrom reshape2 dcast
+#' @importFrom reshape2 melt
 #'
 #' @export
 plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogram = FALSE, pattern = "(.+)\\.(fastq|fq).*", clusterNames = FALSE, setHeight = "auto"){
@@ -79,33 +83,39 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogra
 
   #initialize for Mean Base quality
   if(type == "Mean"){
-    df <- df %>% dplyr::right_join(basicStat, by = "Filename") %>%
+    df <- df %>%
+      dplyr::right_join(basicStat, by = "Filename") %>%
       dplyr::select(Filename, Start, Mean, Longest_sequence)
 
 
     #split data into correct lengths and fill NA's
-    dfInner <- df %>% split(f = .['Filename']) %>% lapply(function(x){
-      dfFill <- data_frame(Start = 1:x$Longest_sequence[1])
-      x <- dplyr::right_join(x, dfFill, by = "Start") %>% zoo::na.locf()
-    }) %>% dplyr::bind_rows() %>%
+    dfInner <- df %>%
+      split(f = .['Filename']) %>%
+      lapply(function(x){
+        dfFill <- data_frame(Start = 1:x$Longest_sequence[1])
+        x <- dplyr::right_join(x, dfFill, by = "Start") %>%
+          zoo::na.locf()
+      }) %>%
+      dplyr::bind_rows() %>%
       mutate(Start = as.integer(Start)) %>%
       select(-Longest_sequence) %>%
       reshape2::dcast(Filename ~ Start)
 
+    # Convert from wide to long & set the correct variable types
+    dfLong <- reshape2::melt(dfInner, id.vars = "Filename", variable.name = "Start", value.name = "Mean")
+    dfLong$Mean <- as.numeric(dfLong$Mean)
+    dfLong$Start <- as.integer(dfLong$Start)
+
     #cluster names true hclust names
     if(clusterNames){
-      xx <- dfInner  %>%
-        dplyr::select(-Filename)
+      xx <- dplyr::select(dfInner, -Filename)
       xx[is.na(xx)] <- 0
       clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
       row.ord <- order.dendrogram(clus)
       dfInner <- dfInner[row.ord,]
       dfInner$Filename <- with(dfInner, factor(Filename, levels=Filename))
-      dfLong <- dfInner %>% tidyr::gather("Start", "Mean", 2:ncol(.))
-      dfLong$Mean <- as.integer(dfLong$Mean)
-      dfLong$Start <- as.integer(dfLong$Start)
 
-      t <- ngsReports::getSummary(x) %>% dplyr::filter(Category == "Per base sequence quality")
+      t <- dplyr::filter(getSummary(x), Category == "Per base sequence quality")
       t <- dplyr::full_join(dfInner["Filename"], t, by = "Filename")
       t$Filename <- with(t, factor(Filename, levels=Filename))
       key <- t["Filename"]
@@ -157,9 +167,6 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogra
 
     #do not cluster Filenames
     if(!clusterNames){
-      dfLong <- dfInner %>% tidyr::gather("Start", "Mean", 2:ncol(.))
-      dfLong$Mean <- as.integer(dfLong$Mean)
-      dfLong$Start <- as.integer(dfLong$Start)
 
       t <- getSummary(x) %>% dplyr::filter(Category == "Per base sequence quality")
       t <- dplyr::full_join(dfInner["Filename"], t, by = "Filename")
