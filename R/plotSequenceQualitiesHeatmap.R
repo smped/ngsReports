@@ -105,7 +105,6 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
     t <- dplyr::right_join(unique(df["Filename"]), t, by = "Filename")
     key <- t$FilenameFull
 
-
     d <- ggplot2::ggplot(t, ggplot2::aes(x = 1, y = Filename, key = key, fill = Status)) + ggplot2::geom_tile() +
       ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
                                                                 panel.background = ggplot2::element_blank(),
