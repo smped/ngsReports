@@ -63,14 +63,15 @@
 #'
 #' @export plotGCHeatmapPlotly
 plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq).*",
-                          clusterNames = TRUE, pwfCols, GCtheory = FALSE, species = "Hsapiens"){
+                                clusterNames = FALSE, pwfCols, GCtheory = FALSE,
+                                species = "Hsapiens", trimNames = TRUE, usePlotly = FALSE, dendrogram = FALSE){
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if(GCtheory){
     spp <- ngsReports::genomes(ngsReports::gcTheoretical)
     if(!species %in% spp){
-    stop(cat("Currently only supports the species", spp, sep = ", "))
-      }
+      stop(cat("Currently only supports the species", spp, sep = ", "))
+    }
   }
 
   if (missing(subset)){
@@ -85,200 +86,109 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
   x <- x[subset]
   df <- tryCatch(Per_sequence_GC_content(x))
 
+  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
+    # These need to be checked to ensure non-duplicated names
+    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+  }else{
+    pattern <- ""
+  }
+
+
   if (!counts){
 
     # Summarise to frequencies & initialise the plot
     df <- dplyr::group_by(df, Filename) %>%
       dplyr::mutate(Freq = Count / sum(Count)) %>%
       dplyr::ungroup() %>%
-      dplyr::select(Filename, GC_Content, Freq)
+      dplyr::select(Filename, GC_Content, Value = Freq)
 
     # Add the observed mean at each value:
     mn <- dplyr::group_by(df, GC_Content) %>%
-      dplyr::summarise(Freq = mean(Freq)) %>%
-      dplyr::mutate(Freq = Freq / sum(Freq), # Normalise to 1 for a distribution
+      dplyr::summarise(Value = mean(Value)) %>%
+      dplyr::mutate(Value = Value / sum(Value), # Normalise to 1 for a distribution
                     Filename = "Observed Mean")
+  }else{
+    df <- dplyr::select(df, Filename, GC_Content, Value = Count)
+    mn <- dplyr::group_by(df, GC_Content) %>%
+      dplyr::summarise(Value = mean(Value)) %>%
+      dplyr::mutate(Filename = "Observed Mean")
+  }
 
-    df <- dplyr::bind_rows(df, mn)
-    df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+  df <- dplyr::bind_rows(df, mn)
 
-    if(GCtheory){
-      df <- df %>% split(.["Filename"]) %>% lapply(function(x){
-        gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, species = species, type = "Genome")
-        x <- mutate(x, Freq = Freq - (gcTheoryDF$Genome/sum(gcTheoryDF$Genome)))
-      }) %>% bind_rows()
-    }
+  if(GCtheory){
+    df <- df %>% split(.["Filename"]) %>% lapply(function(x){
+      gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, species = species, type = "Genome")
+      x <- dplyr::mutate(x, Value =  Value - (gcTheoryDF$Genome/sum(gcTheoryDF$Genome)))
+    }) %>% dplyr::bind_rows()
+  }
+  if(clusterNames){
+    df <- reshape2::dcast(df, Filename ~ GC_Content)
+    xx <- dplyr::select(df, -Filename)
+    xx[is.na(xx)] <- 0
+    clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+    row.ord <- order.dendrogram(clus)
+    df <- df[row.ord,]
+    df <- reshape2::melt(df, id.vars = "Filename", variable.name = "GC_Content", value.name = "Value")
+  }
 
+  if(!counts){
+    df <- dplyr::mutate(df, Frequency = as.numeric(Value),
+                        GC_Content = as.integer(GC_Content),
+                        Filename = factor(Filename, levels = unique(Filename)))
+    GCheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Filename, fill = Frequency))
+  }else{
+    df <- dplyr::mutate(df, Counts = as.numeric(Value),
+                        GC_Content = as.integer(GC_Content),
+                        Filename = factor(Filename, levels = unique(Filename)))
+    GCheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Filename, fill = Counts))
+  }
 
-     if(clusterNames){
-       df <- df %>% spread(GC_Content, Freq)
-       rownames(df) <- as.matrix(df[1])
-       df <- df  %>% as.data.frame()
-
-       xx <- df %>% dplyr::select(-Filename)
-       xx[is.na(xx)] <- 0
-       clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
-       row.ord <- order.dendrogram(clus)
-       df <- df[row.ord,]
-       df$Filename <- with(df, factor(Filename, levels=Filename, ordered=TRUE))
-       dfLong <- df %>% tidyr::gather("GC_Content", "Frequency", 2:ncol(.))
-       dfLong$GC_Content <- as.numeric(dfLong$GC_Content)
-       dfLong$Frequency <- as.numeric(dfLong$Frequency)
-
-       om_col <- data.frame(Status = NA, Category = NA, Filename = "Observed Mean")
-
-       t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
-       t <- bind_rows(om_col, t)
-       t <- dplyr::full_join(df["Filename"], t, by = "Filename")
-       t$Filename <- with(t, factor(Filename, levels=Filename))
-       key <- t["Filename"]
-
-
-       p <- ggplot2::ggplot(dfLong, aes(x = GC_Content, y = Filename)) + ggplot2::geom_tile(aes(fill = Frequency), color = "white", size = 30) +
-         ggplot2::theme(panel.grid.minor = element_blank(),
-                        panel.background = element_blank(),
-                        axis.title.y=element_blank(),
-                        axis.text.y=element_blank(),
-                        axis.ticks.y=element_blank()) +
-         ggplot2::scale_fill_gradientn(colours = inferno(50))
-
-       d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-         ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
-                                                                   panel.background = element_blank(),
-                                                                   legend.position="none",
-                                                                   axis.title=element_blank(),
-                                                                   axis.text=element_blank(),
-                                                                   axis.ticks=element_blank())
-       d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
-
-
-       GCheatmap <- subplot(d, p, widths = c( 0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "GC Content %"))
-     }
-if(!clusterNames){
-
-  om_col <- data.frame(Status = NA, Category = NA, Filename = "Observed Mean")
-
-  key <- df %>% spread(GC_Content, Freq) %>% select(Filename)
-  t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
-  t <- bind_rows(om_col, t)
-  t <- dplyr::full_join(key, t, by = "Filename")
-  t$Filename <- with(t, factor(Filename, levels=Filename))
-
-  p <- ggplot2::ggplot(df, aes(x = GC_Content, y = Filename)) + ggplot2::geom_tile(aes(fill = Freq), color = "white", size = 30) +
-    ggplot2::theme(panel.grid.minor = element_blank(),
-                   panel.background = element_blank(),
-                   axis.title.y=element_blank(),
-                   axis.text.y=element_blank(),
-                   axis.ticks.y=element_blank()) +
+ GCheatmap <- GCheatmap + ggplot2::geom_tile() +
+    ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_blank()) +
     ggplot2::scale_fill_gradientn(colours = viridisLite::inferno(50))
 
-  d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-    ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
-                                                              panel.background = element_blank(),
-                                                              legend.position="none",
-                                                              axis.title=element_blank(),
-                                                              axis.text=element_blank(),
-                                                              axis.ticks=element_blank())
-  d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
+ if(usePlotly){
+
+    om_col <- data.frame(Status = NA, Category = NA, Filename = "Observed Mean")
+
+    t <- getSummary(fdl) %>% dplyr::filter(Category == "Per sequence GC content")
+    t <- dplyr::mutate(t, FilenameFull = Filename,
+                       Filename = gsub(pattern[1], "\\1", t$Filename),
+                       Filename = factor(Filename, levels = unique(df$Filename)))
+    t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+    key <- t$FilenameFull
+
+    sideBar <- ggplot2::ggplot(t, ggplot2::aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(ggplot2::aes(fill = Status)) +
+      ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
+                                                                panel.background = element_blank(),
+                                                                legend.position="none",
+                                                                axis.title=element_blank(),
+                                                                axis.text=element_blank(),
+                                                                axis.ticks=element_blank())
+    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+
+    #plot dendrogram
+    if(dendrogram){
+      ggdend <- function(df) {
+        ggplot2::ggplot() +
+          ggplot2::geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
+      }
+
+      dx <- ggdendro::dendro_data(clus)
+      dendro <- ggdend(dx$segments) + ggplot2::coord_flip() +
+        ggplot2::scale_y_reverse(expand = c(0, 1)) + ggplot2::scale_x_continuous(expand = c(0,1))
 
 
-  GCheatmap <- subplot(d, p, widths = c( 0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "GC Content %"))
+      GCheatmap <- plotly::subplot(dendro, sideBar, GCheatmap, widths = c(0.3, 0.1,0.6), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
+    }else{
+      GCheatmap <- plotly::subplot(sideBar, GCheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+    }
 
-}
+ }else{
+   GCheatmap
+ }
+GCheatmap
   }
-  else{
-
-    # Add the observed mean at each value:
-    mn <- dplyr::group_by(df, GC_Content) %>%
-      dplyr::summarise(Count = mean(Count)) %>%
-      dplyr::mutate(Filename = "Observed Mean")
-
-    df <- dplyr::bind_rows(df, mn)
-    df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
-
-    if(GCtheory){
-      df <- df %>% split(.["Filename"]) %>% lapply(function(x){
-        gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, species = species, type = "Genome")
-        x <- mutate(x, Count = Count - (gcTheoryDF$Genome/sum(gcTheoryDF$Genome)))
-      }) %>% bind_rows()
-    }
-
-    if(clusterNames){
-      df <- df %>% spread(GC_Content, Count)
-      rownames(df) <- as.matrix(df[1])
-      df <- df  %>% as.data.frame()
-
-      xx <- df %>% dplyr::select(-Filename)
-      xx[is.na(xx)] <- 0
-      clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
-      row.ord <- order.dendrogram(clus)
-      df <- df[row.ord,]
-      df$Filename <- with(df, factor(Filename, levels=Filename, ordered=TRUE))
-      dfLong <- df %>% tidyr::gather("GC_Content", "Count", 2:ncol(.))
-      dfLong$GC_Content <- as.numeric(dfLong$GC_Content)
-      dfLong$Count <- as.numeric(dfLong$Count)
-
-      om_col <- data.frame(Status = NA, Category = NA, Filename = "Observed Mean")
-
-      t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
-      t <- bind_rows(om_col, t)
-      t <- dplyr::full_join(df["Filename"], t, by = "Filename")
-      t$Filename <- with(t, factor(Filename, levels=Filename))
-      key <- t["Filename"]
-
-
-      p <- ggplot2::ggplot(dfLong, aes(x = GC_Content, y = Filename)) + ggplot2::geom_tile(aes(fill = Count), color = "white", size = 30) +
-        ggplot2::theme(panel.grid.minor = element_blank(),
-                       panel.background = element_blank(),
-                       axis.title.y=element_blank(),
-                       axis.text.y=element_blank(),
-                       axis.ticks.y=element_blank()) +
-        ggplot2::scale_fill_gradientn(colours = viridisLite::inferno(50))
-
-      d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-        ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
-                                                                  panel.background = element_blank(),
-                                                                  legend.position="none",
-                                                                  axis.title=element_blank(),
-                                                                  axis.text=element_blank(),
-                                                                  axis.ticks=element_blank())
-      d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
-
-
-      GCheatmap <- subplot(d, p, widths = c( 0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "GC Content %"))
-    }
-    if(!clusterNames){
-
-      om_col <- data.frame(Status = NA, Category = NA, Filename = "Observed Mean")
-
-      key <- df %>% spread(GC_Content, Count) %>% select(Filename)
-      t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
-      t <- bind_rows(om_col, t)
-      t <- dplyr::full_join(key, t, by = "Filename")
-      t$Filename <- with(t, factor(Filename, levels=Filename))
-
-      p <- ggplot2::ggplot(df, aes(x = GC_Content, y = Filename)) + ggplot2::geom_tile(aes(fill = Count), color = "white", size = 30) +
-        ggplot2::theme(panel.grid.minor = element_blank(),
-                       panel.background = element_blank(),
-                       axis.title.y=element_blank(),
-                       axis.text.y=element_blank(),
-                       axis.ticks.y=element_blank()) +
-        ggplot2::scale_fill_gradientn(colours = viridisLite::inferno(50))
-
-      d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-        ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
-                                                                  panel.background = element_blank(),
-                                                                  legend.position="none",
-                                                                  axis.title=element_blank(),
-                                                                  axis.text=element_blank(),
-                                                                  axis.ticks=element_blank())
-      d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
-
-
-      GCheatmap <- subplot(d, p, widths = c( 0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "GC Content %"))
-
-    }
-
-  }
- GCheatmap
-}

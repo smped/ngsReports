@@ -56,7 +56,7 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plotBaseQualities <- function(x, subset, type = "Mean", pwfCols, dendrogram = FALSE,
+plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogram = FALSE,
                                     pattern = "(.+)\\.(fastq|fq).*", clusterNames = FALSE,
                                     setHeight = "auto", usePlotly = FALSE, trimNames = TRUE){
   # A basic cautionary check
@@ -171,7 +171,7 @@ plotBaseQualities <- function(x, subset, type = "Mean", pwfCols, dendrogram = FA
 
         BQheatmap <- plotly::subplot(dendro, sideBar, BQheatmap, widths = c(0.2, 0.1,0.7), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
       }else{
-        BQheatmap <- plotly::subplot(sideBar, BQheatmap, widths = c( 0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+        BQheatmap <- plotly::subplot(sideBar, BQheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
       }
 
 
