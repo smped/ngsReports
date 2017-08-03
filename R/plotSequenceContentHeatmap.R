@@ -1,6 +1,7 @@
-#' @title Plot the per base quality as a heatmap
+#' @title Plot the per base content as a heatmap
 #'
-#' @description Plot the Per Base Sequence Quality for a set of FASTQC files
+#' @description Plot the Per Base content for a set of FASTQC files.
+#' Informative plot where per base sequence content (%A, %T, %G, %C),
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
@@ -9,11 +10,6 @@
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param pwfcols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
-#' fastqc data will be clustered using heirachial clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
@@ -49,13 +45,10 @@
 #'
 #' @export
 
-plotSequenceContent <- function(x, subset, pwfCols, clusterNames = TRUE){
+plotSequenceContent <- function(x, subset){
+
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
-
-  # Sort out the colours
-  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-  col <- ngsReports::getColours(pwfCols)
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
@@ -64,34 +57,37 @@ plotSequenceContent <- function(x, subset, pwfCols, clusterNames = TRUE){
   # Get the NContent
   x <- tryCatch(x[subset])
   df <- tryCatch(Per_base_sequence_content(x))
+  df <- Per_base_sequence_content(x)
   df <- dplyr::mutate(df,
                       Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
                       Start = as.integer(Start))
+  df <- mutate(df, colour = rgb(rescale(floor(A)+0.5*floor(G)), rescale(floor(T)+0.5*floor(G)), rescale(floor(C))))
 
-  #get longest sequence
-  basicStat <- Basic_Statistics(fdl) %>% dplyr::select(Filename, Longest_sequence)
+  basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence)
 
   df <- df %>% dplyr::right_join(basicStat, by = "Filename") %>%
-    dplyr::select(Filename, Start, , Longest_sequence) %>%
-    tidyr::spread(Start, Mean)
+    dplyr::select(Filename, Start, colour, Longest_sequence)
 
+  dfInner <- df %>%
+    split(f = .['Filename']) %>%
+    lapply(function(x){
+      dfFill <- data.frame(Start = 1:x$Longest_sequence[1])
+      x <- dplyr::right_join(x, dfFill, by = "Start") %>%
+        zoo::na.locf()
+    }) %>%
+    dplyr::bind_rows() %>%
+    dplyr::mutate(Start = as.integer(Start)) %>%
+    dplyr::select(-Longest_sequence)
 
-
-
+  sequenceContentHeatmap <- ggplot2::ggplot(dfInner,
+                                            ggplot2::aes(x = Start,
+                                                         y = Filename,
+                                                         fill = colour)) +
+    ggplot2::geom_tile() +
+    ggplot2::scale_fill_manual(values = dfInner$colour) +
+    ggplot2::theme(legend.position = "none",
+                   panel.grid.minor = element_blank(),
+                   panel.background = element_blank())
+  sequenceContentHeatmap
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
