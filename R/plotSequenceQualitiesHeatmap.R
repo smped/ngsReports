@@ -53,7 +53,7 @@
 #' @export
 plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
                                   trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                                  usePlotly = FALSE){
+                                  usePlotly = FALSE, clusterNames = FALSE){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
   stopifnot(is.logical(trimNames))
@@ -68,12 +68,26 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
   x <- tryCatch(x[subset])
   df <- tryCatch(Per_sequence_quality_scores(x))
 
+
+
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
     df$Filename <- gsub(pattern[1], "\\1", df$Filename)
     # These need to be checked to ensure non-duplicated names
     if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
   }
+  df <- reshape2::dcast(df, Filename ~ Quality)
+  df[is.na(df)] <- 0
+
+  if(clusterNames){
+    xx <- dplyr::select(df, -Filename)
+    clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+    row.ord <- order.dendrogram(clus)
+    df <- df[row.ord,]
+    df$Filename <- with(df, factor(Filename, levels=Filename))
+  }
+
+  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Quality", value.name = "Count")
 
   if (!counts){
 
@@ -94,15 +108,16 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
   qualPlot <- qualPlot + ggplot2::geom_raster() +
     ggplot2::xlab("Mean Sequence Quality Per Read (Phred Score)") +
     ggplot2::scale_fill_gradientn(colours = inferno(150)) +
-    ggplot2::ylab("filenames") + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
+    ggplot2::ylab("File names") + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
                                        panel.background = ggplot2::element_blank())
 
   if(usePlotly){
 
-    t <- dplyr::filter(getSummary(fdl), Category == "Per sequence quality scores")
+    t <- dplyr::filter(getSummary(x), Category == "Per sequence quality scores")
     t <- dplyr::mutate(t, FilenameFull = Filename,
-                       Filename = gsub(pattern[1], "\\1", t$Filename))
-    t <- dplyr::right_join(unique(df["Filename"]), t, by = "Filename")
+                       Filename = gsub(pattern[1], "\\1", t$Filename),
+                       Filename = factor(Filename, levels = unique(df$Filename)))
+    t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     key <- t$FilenameFull
 
     d <- ggplot2::ggplot(t, ggplot2::aes(x = 1, y = Filename, key = key, fill = Status)) + ggplot2::geom_tile() +
