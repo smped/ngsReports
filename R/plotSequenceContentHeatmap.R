@@ -61,7 +61,7 @@ plotSequenceContent <- function(x, subset){
   df <- dplyr::mutate(df,
                       Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
                       Start = as.integer(Start))
-  df <- mutate(df, colour = rgb(rescale(floor(A)+0.5*floor(G)), rescale(floor(T)+0.5*floor(G)), rescale(floor(C))))
+  df <- mutate(df, colour = rgb(rescale(A+0.33*G), rescale(T+0.33*G), rescale(C+0.33*G)))
 
   basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence)
 
