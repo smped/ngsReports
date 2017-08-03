@@ -124,7 +124,9 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
 
     qualPlot
   }else{
+
     qualPlot
+
   }
 
 }
