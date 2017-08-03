@@ -42,6 +42,7 @@
 #' @import scales
 #' @import plotly
 #' @import tidyr
+#' @import ggdendro
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
