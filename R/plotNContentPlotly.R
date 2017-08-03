@@ -50,7 +50,9 @@
 #' @importFrom magrittr %>%
 #'
 #' @export
-plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).*", clusterNames = TRUE){
+plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).*",
+                               clusterNames = FALSE, trimNames = TRUE, dendrogram = FALSE,
+                               usePlotly = FALSE){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
