@@ -62,6 +62,7 @@ Collate:
     'plotReadTotals.R'
     'plotSequenceContentHeatmap.R'
     'plotSequenceQualities.R'
+    'plotSequenceQualitiesHeatmap.R'
     'plotSummary.R'
     'pwf.R'
     'readTotals.R'
