@@ -52,6 +52,39 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                           shiny::h5("Total number of unique and duplicated reads in each sample"),
                                           plotly::plotlyOutput("ReadDuplication"),
                                           width = "70%", left = "30%", right = "0%"))),
+                      shiny::tabPanel("Per Base Sequence Quality",
+                                      shiny::splitLayout(
+                                        shiny::fixedPanel(
+                                          shiny::sidebarPanel(
+                                            shiny::radioButtons(inputId="BQType", label="Base Quality",
+                                                                choices=c("Mean","Median"), selected = "Mean"),
+                                            shiny::checkboxInput("BQcluster", "Cluster Filenames", value = FALSE),
+                                            shiny::htmlOutput("BQdendro"),
+                                            shiny::selectInput("BQheight", "Plot Height", choices = c("auto", 250, 500, 1000)),
+                                            shiny::verbatimTextOutput('click'),
+                                            width = "20%", left = "0%", right = "80%"
+                                          ), width = "20%"),
+                                        shiny::absolutePanel(
+                                          shiny::h1("Base Quality"),
+                                          shiny::h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
+                                          plotly::plotlyOutput("baseQualHeatmap"),
+                                          shiny::plotOutput("baseQualIndv"),
+                                          width = "70%", left = "30%", right = "0%"))),
+                      shiny::tabPanel("Per Sequence Quality Scores",
+                                      shiny::splitLayout(
+                                        shiny::fixedPanel(
+                                          shiny::sidebarPanel(
+                                            shiny::radioButtons(inputId="SQType", label="Base Quality",
+                                                                choices=c("Mean","Median"), selected = "Mean"),
+                                            shiny::checkboxInput("SQcluster", "Cluster Filenames", value = FALSE),
+                                            shiny::htmlOutput("SQdendro"),
+                                            width = "20%", left = "0%", right = "80%"
+                                          ), width = "20%"),
+                                        shiny::absolutePanel(
+                                          shiny::h1("Base Quality"),
+                                          shiny::h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
+                                          plotly::plotlyOutput("seqQualHeatmap"),
+                                          width = "70%", left = "30%", right = "0%"))),
                       shiny::tabPanel("% GC Content",
                                       shiny::splitLayout(
                                         shiny::fixedPanel(
@@ -82,24 +115,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                           shiny::h1("Overrepresented Sequences"),
                                           shiny::h5("Overrepresented sequences in each sample, can either view sequence on an individual or overall basis"),
                                           plotly::plotlyOutput("overRepHeatmap"),
-                                          width = "70%", left = "30%", right = "0%"))),
-                      shiny::tabPanel("Per Base Sequence Quality",
-                                      shiny::splitLayout(
-                                        shiny::fixedPanel(
-                                          shiny::sidebarPanel(
-                                            shiny::radioButtons(inputId="BQType", label="Base Quality",
-                                                                choices=c("Mean","Median"), selected = "Mean"),
-                                            shiny::checkboxInput("BQcluster", "Cluster Filenames", value = FALSE),
-                                            shiny::htmlOutput("BQdendro"),
-                                            shiny::selectInput("BQheight", "Plot Height", choices = c("auto", 250, 500, 1000)),
-                                            shiny::verbatimTextOutput('click'),
-                                            width = "20%", left = "0%", right = "80%"
-                                          ), width = "20%"),
-                                        shiny::absolutePanel(
-                                          shiny::h1("Base Quality"),
-                                          shiny::h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
-                                          plotly::plotlyOutput("baseQualHeatmap"),
-                                          shiny::plotOutput("baseQualIndv"),
                                           width = "70%", left = "30%", right = "0%"))),
                       shiny::tabPanel("% N-Content",
                                       shiny::splitLayout(
