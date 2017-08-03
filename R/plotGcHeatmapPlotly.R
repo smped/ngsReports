@@ -63,7 +63,7 @@
 #'
 #' @export plotGCHeatmapPlotly
 plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq).*",
-                          clusterNames = TRUE, pwfcols, GCtheory = FALSE, species = "Hsapiens"){
+                          clusterNames = TRUE, pwfCols, GCtheory = FALSE, species = "Hsapiens"){
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if(GCtheory){
