@@ -30,7 +30,7 @@
 #' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 #' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 #' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "fastqcReports")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
 #'
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
@@ -70,7 +70,7 @@ plotOverrepresentedHeatmapPlotly <- function(x, subset, pwfCols, nSeq = 20, type
   stopifnot(length(subset) == length(x))
   stopifnot(is.numeric(nSeq))
 
-  if (missing(pwfCols)) pwfCols <- fastqcReports::pwf
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   col <- getColours(pwfCols)
 
   x <- x[subset]

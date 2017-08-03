@@ -28,7 +28,7 @@
 #' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 #' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 #' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "fastqcReports")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
 #'
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
@@ -57,7 +57,7 @@ plotSequenceQualities <- function(x, subset, counts = FALSE, pwfCols,
   stopifnot(is.logical(trimNames))
 
   # Sort out the colours
-  if (missing(pwfCols)) pwfCols <- fastqcReports::pwf
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   stopifnot(isValidPwf(pwfCols))
 
   if (missing(subset)){

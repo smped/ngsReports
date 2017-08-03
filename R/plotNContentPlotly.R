@@ -27,7 +27,7 @@
 #' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 #' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 #' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "fastqcReports")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
 #'
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
@@ -56,7 +56,7 @@ plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   # Sort out the colours
-  if (missing(pwfCols)) pwfCols <- fastqcReports::pwf
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
 
 
   if (missing(subset)){
@@ -102,7 +102,7 @@ plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).
     dfLong$Start <- as.numeric(dfLong$Start)
 
     key <- unique(dfLong["Filename"])
-    t <- fastqcReports::getSummary(x) %>% dplyr::filter(Category == "Per base N content")
+    t <- ngsReports::getSummary(x) %>% dplyr::filter(Category == "Per base N content")
     t <- dplyr::full_join(dfInner["Filename"], t, by = "Filename")
     t$Filename <- with(t, factor(Filename, levels=Filename))
     test <- spread(dfLong, Start, Percentage)
@@ -139,7 +139,7 @@ plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).
     dfLong$Start <- as.numeric(dfLong$Start)
 
     key <- unique(dfInner["Filename"])
-    t <- fastqcReports::getSummary(x) %>% dplyr::filter(Category == "Per base N content")
+    t <- ngsReports::getSummary(x) %>% dplyr::filter(Category == "Per base N content")
     t <- dplyr::full_join(dfInner["Filename"], t, by = "Filename")
     t$Filename <- with(t, factor(Filename, levels=Filename))
 

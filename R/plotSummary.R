@@ -23,7 +23,7 @@
 #' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 #' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 #' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "fastqcReports")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
 #'
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
@@ -39,7 +39,7 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
-  if (missing(pwfCols)) pwfCols <- setAlpha(fastqcReports::pwf,alpha = 0.8)
+  if (missing(pwfCols)) pwfCols <- setAlpha(ngsReports::pwf,alpha = 0.8)
   stopifnot(isValidPwf(pwfCols))
   col <- getColours(pwfCols)
 

@@ -38,7 +38,7 @@
 #' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 #' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 #' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "fastqcReports")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
 #'
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
@@ -79,7 +79,7 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
   stopifnot(is.logical(subset))
   stopifnot(length(subset) == length(x))
 
-  pwfCols <- fastqcReports::pwf
+  pwfCols <- ngsReports::pwf
   col <- getColours(pwfCols)
 
   x <- x[subset]
