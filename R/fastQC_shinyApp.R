@@ -19,7 +19,6 @@
 
 
 fastqcShiny <- function(fastqcInput, subsetAll = ""){
-
   if(class(fastqcInput) != "FastqcDataList"){
     fdl <- ngsReports::getFastqcData(fastqcInput)
   }
@@ -27,18 +26,14 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     fdl <- fastqcInput
   }
 
+  fdl <- fdl[grepl(subsetAll, fileNames(fdl))]
+
   ui <- shiny::shinyUI(shiny::fluidPage(
     shiny::navbarPage("fastqcR",
                       #first panel is summary
                       shiny::tabPanel("fastQC Flags Summary",
                                       shiny::splitLayout(
-                                        shiny::fixedPanel(
-                                          shiny::sidebarPanel(
-                                            shiny::textInput("sub",
-                                                             "Pattern to subset data",
-                                                             value = ""),
-                                            width = "20%", left = "0%", right = "80%"
-                                          ), width = "20%"),
+                                        shiny::fixedPanel(),
                                         shiny::absolutePanel(
                                           shiny::h1("Summary of fastQC Flags"),
                                           shiny::h5("Heatmap of fastQC flags (pass, warning or fail) for each fastQC report"),
@@ -48,9 +43,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                       shiny::splitLayout(
                                         shiny::fixedPanel(
                                           shiny::sidebarPanel(
-                                            shiny::textInput("sub",
-                                                             "Pattern to subset data",
-                                                             value = ""),
                                             shiny::radioButtons(inputId="RDLbar", label="Bar presentation",
                                                                 choices=c("stacked","adjacent"), selected = "stacked"),
                                             width = "20%", left = "0%", right = "80%"
@@ -64,9 +56,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                       shiny::splitLayout(
                                         shiny::fixedPanel(
                                           shiny::sidebarPanel(
-                                            shiny::textInput("sub",
-                                                             "Pattern to subset data",
-                                                             value = ""),
                                             shiny::checkboxInput("GCtheory", "Normalize using theoretical GC", value = FALSE),
                                             shiny::htmlOutput("GCspecies"),
                                             shiny::radioButtons(inputId="GCheatType", label="Value to plot",
@@ -83,9 +72,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                       shiny::splitLayout(
                                         shiny::fixedPanel(
                                           shiny::sidebarPanel(
-                                            shiny::textInput("sub",
-                                                             "Pattern to subset data",
-                                                             value = ""),
                                             shiny::radioButtons(inputId="ORType", label="Individual or Overall",
                                                                 choices=c("Individual","Overall"), selected = "Overall"),
                                             shiny::checkboxInput("ORcluster", "Cluster Filenames", value = FALSE),
@@ -101,9 +87,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                       shiny::splitLayout(
                                         shiny::fixedPanel(
                                           shiny::sidebarPanel(
-                                            shiny::textInput("sub",
-                                                             "Pattern to subset data",
-                                                             value = ""),
                                             shiny::radioButtons(inputId="BQType", label="Base Quality",
                                                                 choices=c("Mean","Median"), selected = "Mean"),
                                             shiny::checkboxInput("BQcluster", "Cluster Filenames", value = FALSE),
@@ -122,9 +105,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                       shiny::splitLayout(
                                         shiny::fixedPanel(
                                           shiny::sidebarPanel(
-                                            shiny::textInput("sub",
-                                                             "Pattern to subset data",
-                                                             value = ""),
                                             shiny::checkboxInput("Ncluster", "Cluster Filenames", value = FALSE),
                                             width = "20%", left = "0%", right = "80%"
                                           ), width = "20%"),
@@ -163,8 +143,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$ReadDuplication <- plotly::renderPlotly({
       ngsReports::plotDeduplicatedTotalsPlotly(fdl,
-                                         subset = grepl(input$sub,
-                                                        fileNames(fdl)),
                                          bars = input$RDLbar) %>% plotly::layout(margin = list(r = 200))
 
     })
@@ -181,8 +159,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     output$GCheatmap <- plotly::renderPlotly({
       GCtype <- input$GCheatType == "Count"
       ngsReports::plotGCHeatmapPlotly(fdl,
-                                subset = grepl(input$sub,
-                                               fileNames(fdl)),
                                 clusterNames = input$GCcluster,
                                 counts = GCtype,
                                 GCtheory = input$GCtheory,
@@ -193,8 +169,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$overRepHeatmap <- plotly::renderPlotly({
       ngsReports::plotOverrepresentedHeatmapPlotly(fdl,
-                                             subset = grepl(input$sub,
-                                                            fileNames(fdl)),
                                              clusterNames = input$ORcluster,
                                              method = input$ORType,
                                              nSeq = input$ORslide) %>% layout(margin = list(r = 200))
@@ -208,8 +182,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$baseQualHeatmap <- plotly::renderPlotly({
       ngsReports::plotBaseQualitiesPlotly(fdl,
-                                          subset = grepl(input$sub,
-                                                         fileNames(fdl)),
                                           clusterNames = input$BQcluster,
                                           type = input$BQType,
                                           setHeight = input$BQheight,
@@ -229,8 +201,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$NCheatmap <- plotly::renderPlotly({
       ngsReports::plotNContentPlotly(fdl,
-                               subset = grepl(input$sub,
-                                              fileNames(fdl)),
                                clusterNames = input$Ncluster) %>% plotly::layout(margin = list(r = 200))
     })
   }
