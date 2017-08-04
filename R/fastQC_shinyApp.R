@@ -134,24 +134,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
   server <- function(input, output){
     output$SummaryFlags <- plotly::renderPlotly({
-      plotly:subplot(ngsReports::plotSummary(fdl)) %>% plotly::layout(margin = list(r = 200), xaxis=list(
-        autorange=TRUE,
-        showgrid=FALSE,
-        zeroline=FALSE,
-        showline=FALSE,
-        autotick=FALSE,
-        ticks='',
-        showticklabels=FALSE
-      ),
-      yaxis=list(
-        autorange=TRUE,
-        showgrid=FALSE,
-        zeroline=FALSE,
-        showline=FALSE,
-        autotick=FALSE,
-        ticks='',
-        showticklabels=FALSE
-      ))
+      ngsReports::plotSummary(fdl, usePlotly = TRUE) %>% plotly::layout(margin = list(r = 200))
     })
 
 
