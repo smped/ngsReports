@@ -6,6 +6,8 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
+#' @param pwfcols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
+#' values in plot
 #' @param nSeq \code{numeric}.
 #' The number of Sequences to show.
 #' Sequences are sorted by \code{max(Percentage)} across all files during selection
@@ -16,11 +18,11 @@
 #' @param low colour used as the low colour in the heatmap
 #' @param high colour used as the high colour in the heatmap
 #' @param naCol colour used for missing values
-#' @param flip \code{logical}. Enable a call to \code{coord_flip} to determine the best direction
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using heirachial clustering
 #'
 #' @return A standard ggplot2 object
 #'
@@ -57,9 +59,16 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plotOverrepresentedHeatmapPlotly <- function(x, subset, pwfCols, nSeq = 20, type = ".+", method = "Individual",
-                                       low = rgb(0.2, 0, 0.2), high = rgb(1, 0, 0),
-                                       naCol = "grey80", pattern = "(.+)\\.(fastq|fq).*", clusterNames = TRUE, kPop = NA){
+plotOverrepresentedHeatmapPlotly <- function(x,
+                                             subset,
+                                             pwfCols,
+                                             nSeq = 20,
+                                             type = ".+",
+                                             method = "Individual",
+                                             low = rgb(0.2, 0, 0.2), high = rgb(1, 0, 0),
+                                             naCol = "grey80",
+                                             pattern = "(.+)\\.(fastq|fq).*",
+                                             clusterNames = TRUE){
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
 

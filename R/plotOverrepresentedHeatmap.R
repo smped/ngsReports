@@ -57,10 +57,16 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plotOverrepresentedHeatmap <- function(x, subset, nSeq = 20, type = ".+", method = "overall",
+plotOverrepresentedHeatmap <- function(x,
+                                       subset,
+                                       nSeq = 20,
+                                       type = ".+",
+                                       method = "overall",
                                        low = rgb(0.2, 0, 0.2), high = rgb(1, 0, 0),
-                                       naCol = "grey80", flip = TRUE,
-                                       trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+                                       naCol = "grey80",
+                                       flip = TRUE,
+                                       trimNames = TRUE,
+                                       pattern = "(.+)\\.(fastq|fq).*"){
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
 

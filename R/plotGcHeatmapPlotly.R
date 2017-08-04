@@ -11,13 +11,13 @@
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param counts \code{logical}. Display counts of GC content rather than frequency
-#' @param pwfcols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
-#' values in plot
+#' @param pattern \code{character}.
+#' Contains a regular expression which will be captured from fileNames.
+#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' @param pwfCols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
+#' values in plot
 #' @param GCtheory \code{logical} default is \code{FALSE} to give the absolute value, set to \code{TRUE} to normalize
 #' values of GC_Content by the theoretical values using \code{\link{gcTheoretical}}. \code{species} must be specified.
 #' @param species \code{character} if \code{gcTheory} is \code{TRUE} its must be accompanied by a species
@@ -26,9 +26,10 @@
 #' M. furo, M. mulatta, M. musculus, O. sativa, P. troglodytes, R. norvegicus, S. cerevisiae, S scrofa, T. gondii,
 #' T. guttata, V. vinifera. Use \code{ngsReports::genomes(ngsReports::gcTheoretical)} to display the corresponding names for
 #' each species.
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
 #'
@@ -65,8 +66,9 @@
 #'
 #' @export plotGCHeatmapPlotly
 plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq).*",
-                                clusterNames = FALSE, pwfCols, GCtheory = FALSE,
-                                species = "Hsapiens", trimNames = TRUE, usePlotly = FALSE, dendrogram = FALSE){
+                                clusterNames = FALSE, pwfCols,
+                                GCtheory = FALSE, species = "Hsapiens",
+                                trimNames = TRUE, usePlotly = FALSE, dendrogram = FALSE){
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if(GCtheory){
