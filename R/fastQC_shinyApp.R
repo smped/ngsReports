@@ -61,7 +61,6 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                             shiny::checkboxInput("BQcluster", "Cluster Filenames", value = FALSE),
                                             shiny::htmlOutput("BQdendro"),
                                             shiny::selectInput("BQheight", "Plot Height", choices = c("auto", 250, 500, 1000)),
-                                            shiny::verbatimTextOutput('click'),
                                             width = "20%", left = "0%", right = "80%"
                                           ), width = "20%"),
                                         shiny::absolutePanel(
@@ -74,8 +73,8 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                       shiny::splitLayout(
                                         shiny::fixedPanel(
                                           shiny::sidebarPanel(
-                                            shiny::radioButtons(inputId="SQType", label="Base Quality",
-                                                                choices=c("Mean","Median"), selected = "Mean"),
+                                            shiny::radioButtons(inputId="SQType", label="Sequence Quality",
+                                                                choices=c("Frequency","Counts"), selected = "Frequency"),
                                             shiny::checkboxInput("SQcluster", "Cluster Filenames", value = FALSE),
                                             shiny::htmlOutput("SQdendro"),
                                             width = "20%", left = "0%", right = "80%"
@@ -177,7 +176,8 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                 clusterNames = input$GCcluster,
                                 counts = GCtype,
                                 GCtheory = input$GCtheory,
-                                species = input$GCspecies
+                                species = input$GCspecies,
+                                usePlotly = TRUE
       ) %>% plotly::layout(margin = list(r = 200))
 
     })
@@ -196,16 +196,28 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     })
 
     output$baseQualHeatmap <- plotly::renderPlotly({
-      ngsReports::plotBaseQualitiesPlotly(fdl,
+      if(is.null(input$BQdendro)){
+        ngsReports::plotBaseQualitiesPlotly(fdl,
                                           clusterNames = input$BQcluster,
                                           type = input$BQType,
                                           setHeight = input$BQheight,
-                                          dendrogram = input$BQdendro) %>% layout(margin = list(r = 200))
+                                          usePlotly = TRUE) %>% layout(margin = list(r = 200))
+      }else{
+        ngsReports::plotBaseQualitiesPlotly(fdl,
+                                            clusterNames = input$BQcluster,
+                                            type = input$BQType,
+                                            setHeight = input$BQheight,
+                                            dendrogram = input$BQdendro,
+                                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
+      }
+
     })
 
     output$click <- shiny::renderPrint({d <- plotly::event_data("plotly_click")
     d$key[[1]]
     })
+
+
 
     output$baseQualIndv <- shiny::renderPlot({
       click <- plotly::event_data("plotly_click")
@@ -214,9 +226,19 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
       if(!is.null()){ngsReports::plotBaseQualities(FastqcFile())}
     })
 
+
+    output$seqQualHeatmap <- plotly::renderPlotly({
+      SQtype <- input$SQType == "Counts"
+      ngsReports::plotSequenceQualitiesHeatmap(fdl,
+                                               counts = SQtype,
+                                               clusterNames = input$SQcluster,
+                                               usePlotly = TRUE) %>% layout(margin = list(r = 200))
+    })
+
     output$NCheatmap <- plotly::renderPlotly({
       ngsReports::plotNContentPlotly(fdl,
-                               clusterNames = input$Ncluster) %>% plotly::layout(margin = list(r = 200))
+                               clusterNames = input$Ncluster,
+                               usePlotly = TRUE) %>% plotly::layout(margin = list(r = 200))
     })
   }
 
