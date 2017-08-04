@@ -4,10 +4,10 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param type \code{character} Type of quality data to be presented "mean" or "median"
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param pwfcols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
+#' @param type \code{character} Type of quality data to be presented "mean" or "median"
+#' @param pwfCols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
 #' values in plot
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
@@ -17,7 +17,9 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
-#' @param
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #'
 #' @return A ggplot2 object
 #'
@@ -56,9 +58,10 @@
 #' @importFrom reshape2 melt
 #'
 #' @export
-plotBaseQualitiesPlotly <- function(x, subset, type = "Mean", pwfCols, dendrogram = FALSE,
+plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
+                                    pwfCols, dendrogram = FALSE,
                                     pattern = "(.+)\\.(fastq|fq).*", clusterNames = FALSE,
-                                    setHeight = "auto", usePlotly = FALSE, trimNames = TRUE){
+                                    usePlotly = FALSE, trimNames = TRUE){
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
   stopifnot(type %in% c("Mean", "Median"))

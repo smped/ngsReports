@@ -11,6 +11,9 @@ plotAdapterContent(x, subset, adapterType, plotType = "heatmap", nc, pwfCols,
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
+\item{subset}{\code{logical}. Return the values for a subset of files.
+May be useful to only return totals from R1 files, or any other subset}
+
 \item{adapterType}{A regular expression used to filter which adapter(s) are plotted}
 
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
@@ -50,7 +53,7 @@ after the call to \code{plotAdapterContent}.
 barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
 suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
 fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "fastqcReports")
+fileList <- system.file("extdata", fileList, package = "ngsReports")
 
 # Load the FASTQC data as a FastqcDataList
 fdl <- getFastqcData(fileList)
