@@ -35,11 +35,12 @@
 #' @importFrom stringr str_detect
 #'
 #' @export
-plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
+                        usePlotly = FALSE){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
-  if (missing(pwfCols)) pwfCols <- setAlpha(ngsReports::pwf,alpha = 0.8)
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   stopifnot(isValidPwf(pwfCols))
   col <- getColours(pwfCols)
 
@@ -50,7 +51,7 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
   }
   x <- tryCatch(x[subset])
 
-  df <- tryCatch(getSummary(x))
+  df <- tryCatch(getSummary(fdl))
 
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
@@ -61,14 +62,32 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
 
   df$Category <- factor(df$Category, levels = rev(unique(df$Category)))
   df$Status <- factor(df$Status, levels = c("PASS", "WARN", "FAIL"))
+  df$StatusNum <- as.integer(df$Status)
 
-  ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Category, fill = Status)) +
-    ggplot2::geom_tile(colour = "black") +
-    ggplot2::scale_fill_manual(values = col) +
-    ggplot2::labs(x="Filename", y="QC Category") +
-    ggplot2::scale_x_discrete(expand=c(0,0)) +
-    ggplot2::scale_y_discrete(expand=c(0,0)) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+
+   if(usePlotly){
+     sumPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Category, fill = StatusNum, key = Status)) +
+       ggplot2::geom_tile(colour = "black") +
+       ggplot2::scale_fill_gradientn(colours = c(col["PASS"], col["WARN"], col["FAIL"]), values = c(0,1)) +
+       ggplot2::labs(x="Filename", y="QC Category") +
+       ggplot2::scale_x_discrete(expand=c(0,0)) +
+       ggplot2::scale_y_discrete(expand=c(0,0)) +
+       ggplot2::theme_bw() +
+       ggplot2::theme(axis.text.x = ggplot2::element_blank(),
+                      axis.ticks.x = ggplot2::element_blank(),
+                      legend.position = "none")
+
+       ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status"))
+
+   }else{
+     ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Category, fill = Status)) +
+       ggplot2::geom_tile(colour = "black") +
+       ggplot2::scale_fill_manual(values = col) +
+       ggplot2::labs(x="Filename", y="QC Category") +
+       ggplot2::scale_x_discrete(expand=c(0,0)) +
+       ggplot2::scale_y_discrete(expand=c(0,0)) +
+       ggplot2::theme_bw() +
+       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+   }
 
 }
