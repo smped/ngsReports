@@ -5,15 +5,8 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param type \code{character} Type of quality data to be presented "mean" or "median"
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param pwfcols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
-#' values in plot
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
-#' @param
 #'
 #' @return A ggplot2 object
 #'
@@ -42,6 +35,7 @@
 #' @importFrom dplyr filter
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
+#' @importFrom zoo na.locf
 #'
 #' @export
 

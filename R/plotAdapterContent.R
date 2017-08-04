@@ -13,6 +13,8 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
+#' @param subset \code{logical}. Return the values for a subset of files.
+#' May be useful to only return totals from R1 files, or any other subset
 #' @param adapterType A regular expression used to filter which adapter(s) are plotted
 #' @param plotType \code{character}. Can only take the values \code{plotType = "heatmap"}
 #' or \code{plotType = "line"}
