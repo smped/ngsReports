@@ -1,6 +1,6 @@
-#' @title Plot the per base quality as a heatmap
+#' @title Plot the Per base N content as a Heatmap
 #'
-#' @description Plot the Per Base Sequence Quality for a set of FASTQC files
+#' @description Plot the Per Base N Content for a set of FASTQC files
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
@@ -11,15 +11,16 @@
 #' values in plot
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
 #' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
-#' @param
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
 #'
-#' @return A ggplot2 object
+#' @return A ggplot2 or plotly object
 #'
 #' @examples
 #'
@@ -67,7 +68,17 @@ plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).
 
   # Get the NContent
   x <- tryCatch(x[subset])
-  df <- tryCatch(Per_base_N_content(fdl))
+  df <- tryCatch(Per_base_N_content(x))
+
+  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
+    # These need to be checked to ensure non-duplicated names
+    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+  }else{
+    pattern <- ""
+  }
+
+
   df <- dplyr::rename(df, Percentage = `N-Count`) %>%
     dplyr::mutate(Base = factor(Base, levels = unique(Base)))
   df <- dplyr::mutate(df,
@@ -110,9 +121,7 @@ plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).
     df <- dplyr::mutate(df, Percentage = as.numeric(Percentage),
                         Start = as.integer(Start),
                         Filename = factor(Filename, levels = unique(Filename)))
-    Nheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = Start, y = Filename, fill = Percentage))
-
-    Nheatmap <- Nheatmap + ggplot2::geom_raster() +
+    Nheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = Start, y = Filename, fill = Percentage)) + ggplot2::geom_raster() +
       ggplot2::scale_fill_gradientn(colours = c(col["PASS"], col["PASS"], col["WARN"], col["WARN"], col["FAIL"], col["FAIL"]),
                                     values = scales::rescale(c(0,5,5,20,20,30)),
                                     guide = "colorbar", limits=c(0, 40), breaks = c(0, 5, 10, 20, 40)) +
@@ -150,7 +159,7 @@ plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).
 
       Nheatmap <- plotly::subplot(dendro, sideBar, Nheatmap, widths = c(0.2, 0.1,0.7), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
     }else{
-      Nheatmap <- plotly::subplot(sideBar, BQheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+      Nheatmap <- plotly::subplot(sideBar, Nheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
     }
 
 

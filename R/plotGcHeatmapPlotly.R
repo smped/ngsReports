@@ -15,7 +15,7 @@
 #' values in plot
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
 #' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param GCtheory \code{logical} default is \code{FALSE} to give the absolute value, set to \code{TRUE} to normalize
@@ -29,6 +29,8 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
 #'
 #' @return A plotly object
 #'
@@ -182,9 +184,9 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
         ggplot2::scale_y_reverse(expand = c(0, 1)) + ggplot2::scale_x_continuous(expand = c(0,1))
 
 
-      GCheatmap <- plotly::subplot(dendro, sideBar, GCheatmap, widths = c(0.3, 0.1,0.6), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
+      GCheatmap <- plotly::subplot(dendro, sideBar, GCheatmap, widths = c(0.3, 0.1,0.6), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "GC Content (%)"))
     }else{
-      GCheatmap <- plotly::subplot(sideBar, GCheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+      GCheatmap <- plotly::subplot(sideBar, GCheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "GC Content (%)"))
     }
 
  }else{

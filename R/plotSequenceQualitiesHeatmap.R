@@ -16,9 +16,16 @@
 #' If \code{counts = FALSE} the frequencies will be plotted
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using heirachial clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotlyz
 #'
 #' @return A ggplot2 object
 #'
