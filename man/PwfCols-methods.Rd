@@ -3,12 +3,12 @@
 \docType{methods}
 \name{names,PwfCols-method}
 \alias{names,PwfCols-method}
-\alias{plot,PwfCols,ANY-method}
+\alias{plot,PwfCols-method}
 \title{Define methods for objects of class PwfCols}
 \usage{
 \S4method{names}{PwfCols}(x)
 
-\S4method{plot}{PwfCols,ANY}(x, y, ...)
+\S4method{plot}{PwfCols}(x, y, ...)
 }
 \description{
 Define methods for objects of class PwfCols

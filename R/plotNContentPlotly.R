@@ -4,19 +4,19 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param type \code{character} Type of quality data to be presented "mean" or "median"
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param pwfcols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
-#' fastqc data will be clustered using heirachial clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using heirachial clustering
+#' @param trimNames \code{logical}. Remove the file suffix from the names displyed in the legend.
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
 #'
@@ -51,8 +51,13 @@
 #' @importFrom magrittr %>%
 #'
 #' @export
-plotNContentPlotly <- function(x, subset, pwfCols, pattern = "(.+)\\.(fastq|fq).*",
-                               clusterNames = FALSE, trimNames = TRUE, dendrogram = FALSE,
+plotNContentPlotly <- function(x,
+                               subset,
+                               pwfCols,
+                               pattern = "(.+)\\.(fastq|fq).*",
+                               clusterNames = FALSE,
+                               trimNames = TRUE,
+                               dendrogram = FALSE,
                                usePlotly = FALSE){
 
   # A basic cautionary check
