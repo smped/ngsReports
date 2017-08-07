@@ -79,8 +79,6 @@ plotNContentPlotly <- function(x,
     df$Filename <- gsub(pattern[1], "\\1", df$Filename)
     # These need to be checked to ensure non-duplicated names
     if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
-  }else{
-    pattern <- ""
   }
 
 
