@@ -17,3 +17,4 @@
 - Flip Total Read Plot
 - Tidy up redundant code
 - Set usePlotly in all plots and modify the body of each function to reflect these changes
+- make dependencies script for install 
