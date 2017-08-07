@@ -51,7 +51,7 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
   }
   x <- tryCatch(x[subset])
 
-  df <- tryCatch(getSummary(fdl))
+  df <- tryCatch(getSummary(x))
 
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {

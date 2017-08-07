@@ -183,13 +183,11 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
         ngsReports::plotBaseQualitiesPlotly(fdl,
                                           clusterNames = input$BQcluster,
                                           type = input$BQType,
-                                          setHeight = input$BQheight,
                                           usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }else{
         ngsReports::plotBaseQualitiesPlotly(fdl,
                                             clusterNames = input$BQcluster,
                                             type = input$BQType,
-                                            setHeight = input$BQheight,
                                             dendrogram = input$BQdendro,
                                             usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }

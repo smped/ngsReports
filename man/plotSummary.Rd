@@ -5,7 +5,7 @@
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
 plotSummary(x, subset, pwfCols, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
