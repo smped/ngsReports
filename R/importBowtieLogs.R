@@ -13,7 +13,9 @@
 #'
 #' @importFrom stringr str_split_fixed
 #' @importFrom tibble tibble
-#' @import lubridate
+#' @importFrom lubridate dminutes
+#' @importFrom lubridate dhours
+#' @importFrom lubridate dseconds
 #'
 #' @export
 importBowtieLogs <- function(path){

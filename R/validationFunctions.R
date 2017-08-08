@@ -1,4 +1,3 @@
-#' @importFrom checkmate testDirectoryExists
 isValidFastqcFile <- function(object){
 
   path <- path(object)

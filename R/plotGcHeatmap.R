@@ -33,7 +33,6 @@
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
 #' @import ggplot2
-#' @import viridis
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup

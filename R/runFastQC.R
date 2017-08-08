@@ -30,10 +30,7 @@
 #' @author Steve Pederson <stephen.pederson@@adelaide.edu.au>
 #' @seealso \code{\link{FastqFileList}}
 #'
-#' @import ShortRead
-#' @importFrom Rsamtools path
 #' @importFrom parallel detectCores
-#' @importFrom dplyr if_else
 #'
 #' @export
 runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",

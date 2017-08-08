@@ -2,11 +2,25 @@ Package: ngsReports
 Version: 0.1.0
 Date: 2017/03/07
 Title: Load FastqQC reports and other NGS related log files
-Author: Steve Pederson <stephen.pederson@adelaide.edu.au>
+Authors@R: c(
+    person("Steve", "Pederson", , "stephen.pederson@adelaide.edu.au", c("aut", "cre")),
+    person("Christopher", "Ward", , "christopher.ward@adelaide.edu.au", c("aut"))
+    )
 Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
-Description: Load FastQC reports and other output summaries intoR
+Description: Load FastQC reports and other output summaries into R
 License: LGPL (>= 2)
 Encoding: UTF-8
+Imports: 
+  checkmate,
+  dplyr,
+  ggdendro,
+  lubridate,
+  Rsamtools,
+  ShortRead,
+  tibble,
+  viridis,
+  viridisLite,
+  zoo
 LazyData: true
 RoxygenNote: 6.0.1
 Collate: 
