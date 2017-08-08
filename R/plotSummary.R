@@ -31,7 +31,7 @@
 #' # Check the overall PASS/WARN/FAIL status
 #' plotSummary(fdl)
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #'
 #' @export
@@ -66,28 +66,28 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
 
 
    if(usePlotly){
-     sumPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Category, fill = StatusNum, key = Status)) +
-       ggplot2::geom_tile(colour = "black") +
-       ggplot2::scale_fill_gradientn(colours = c(col["PASS"], col["WARN"], col["FAIL"]), values = c(0,1)) +
-       ggplot2::labs(x="Filename", y="QC Category") +
-       ggplot2::scale_x_discrete(expand=c(0,0)) +
-       ggplot2::scale_y_discrete(expand=c(0,0)) +
-       ggplot2::theme_bw() +
-       ggplot2::theme(axis.text.x = ggplot2::element_blank(),
-                      axis.ticks.x = ggplot2::element_blank(),
+     sumPlot <- ggplot(df, aes(x = Filename, y = Category, fill = StatusNum, key = Status)) +
+       geom_tile(colour = "black") +
+       scale_fill_gradientn(colours = c(col["PASS"], col["WARN"], col["FAIL"]), values = c(0,1)) +
+       labs(x="Filename", y="QC Category") +
+       scale_x_discrete(expand=c(0,0)) +
+       scale_y_discrete(expand=c(0,0)) +
+       theme_bw() +
+       theme(axis.text.x = element_blank(),
+                      axis.ticks.x = element_blank(),
                       legend.position = "none")
 
        ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status"))
 
    }else{
-     ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Category, fill = Status)) +
-       ggplot2::geom_tile(colour = "black") +
-       ggplot2::scale_fill_manual(values = col) +
-       ggplot2::labs(x="Filename", y="QC Category") +
-       ggplot2::scale_x_discrete(expand=c(0,0)) +
-       ggplot2::scale_y_discrete(expand=c(0,0)) +
-       ggplot2::theme_bw() +
-       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+     ggplot(df, aes(x = Filename, y = Category, fill = Status)) +
+       geom_tile(colour = "black") +
+       scale_fill_manual(values = col) +
+       labs(x="Filename", y="QC Category") +
+       scale_x_discrete(expand=c(0,0)) +
+       scale_y_discrete(expand=c(0,0)) +
+       theme_bw() +
+       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
    }
 
 }

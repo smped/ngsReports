@@ -52,4 +52,5 @@ plotDuplicationLevels(fdl)
 r1 <- grepl("R1", fileNames(fdl))
 plotDuplicationLevels(fdl, subset = r1, type = "Total")
 
+
 }

@@ -53,4 +53,5 @@ r1 <- grepl("R1", fileNames(fdl))
 plotGcContent(fdl, subset = r1 , counts = TRUE)
 
 
+
 }

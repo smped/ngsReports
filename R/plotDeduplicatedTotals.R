@@ -50,7 +50,7 @@
 #' # Draw the plot with stacked bars
 #' plotDeduplicatedTotals(fdl, bars = "stacked")
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr rename
 #' @importFrom dplyr left_join
@@ -103,9 +103,9 @@ plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
       reshape2::melt(id.vars = "Filename", variable.name = "Type", value.name = "Total") %>%
       dplyr::mutate(Total = Total / (10^(millions*6)))
 
-    deDupPlot <- ggplot2::ggplot(joinedDf, ggplot2::aes(x = Filename, y = Total, fill = Type)) +
-      ggplot2::geom_bar(stat = "identity", position = "dodge") +
-      ggplot2::scale_fill_manual(values = (c(Total = col1, Deduplicated = col2)))
+    deDupPlot <- ggplot(joinedDf, aes(x = Filename, y = Total, fill = Type)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      scale_fill_manual(values = (c(Total = col1, Deduplicated = col2)))
 
   }
   if (bars == "stacked"){
@@ -120,17 +120,17 @@ plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
       dplyr::mutate(Total = Total / (10^(millions*6)),
                     Type = factor(Type, levels = c("Duplicated", "Unique")))
 
-    deDupPlot <- ggplot2::ggplot(joinedDf, ggplot2::aes(x = Filename, y = Total, fill = Type)) +
-      ggplot2::geom_bar(stat = "identity") +
-      ggplot2::scale_fill_manual(values = (c(Duplicated = col1, Unique = col2)))
+    deDupPlot <- ggplot(joinedDf, aes(x = Filename, y = Total, fill = Type)) +
+      geom_bar(stat = "identity") +
+      scale_fill_manual(values = (c(Duplicated = col1, Unique = col2)))
 
   }
 
   # Add the basic layout
   deDupPlot <- deDupPlot +
-    ggplot2::ylab(ylab) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+    ylab(ylab) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
   # Draw the plot
   if (usePlotly) {

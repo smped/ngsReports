@@ -42,7 +42,7 @@
 #' ccR1 <- grepl("CC.+R1", fileNames(fdl))
 #' plotKmers(fdl, subset = ccR1, nc = 1, method = "individual", nKmers = 4)
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr mutate
 #' @importFrom dplyr filter
@@ -149,22 +149,22 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
   df$Sequence <- factor(df$Sequence, levels = kMerLevels)
 
   # Now draw the basic plots
-  kMerPlot <- ggplot2::ggplot(df,
-                              ggplot2::aes(x = Start, y = `Obs/Exp_Max`, colour = Sequence)) +
-    ggplot2::geom_line() +
-    ggplot2::facet_wrap(~Filename, ncol = nc) +
-    ggplot2::scale_x_continuous(breaks = refForX$Start,
+  kMerPlot <- ggplot(df,
+                              aes(x = Start, y = `Obs/Exp_Max`, colour = Sequence)) +
+    geom_line() +
+    facet_wrap(~Filename, ncol = nc) +
+    scale_x_continuous(breaks = refForX$Start,
                                 labels = refForX$Base) +
-    ggplot2::theme_bw() +
-    ggplot2::ylab(expression(paste(log[2], " Obs/Exp"))) +
-    ggplot2::xlab("Position in read (bp)")
+    theme_bw() +
+    ylab(expression(paste(log[2], " Obs/Exp"))) +
+    xlab("Position in read (bp)")
 
   # Check for binned x-axis values to decied whether to rotate x-axis labels
   # This should be clear if there are more than 2 characters in the plotted labels
   binned <- max(nchar(dplyr::filter(refForX, Start %in% df$Start)$Base)) > 2
   if (binned) {
     kMerPlot <- kMerPlot +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
   }
 
   # Draw the plot

@@ -27,7 +27,7 @@
 #' # Using counts
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
-#' @import ggplot2
+#' 
 #' @import scales
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
@@ -72,13 +72,13 @@ plotSequenceContent <- function(x, subset){
     dplyr::mutate(Start = as.integer(Start)) %>%
     dplyr::select(-Longest_sequence)
 
-  sequenceContentHeatmap <- ggplot2::ggplot(dfInner,
-                                            ggplot2::aes(x = Start,
+  sequenceContentHeatmap <- ggplot(dfInner,
+                                            aes(x = Start,
                                                          y = Filename,
                                                          fill = colour)) +
-    ggplot2::geom_tile() +
-    ggplot2::scale_fill_manual(values = dfInner$colour) +
-    ggplot2::theme(legend.position = "none",
+    geom_tile() +
+    scale_fill_manual(values = dfInner$colour) +
+    theme(legend.position = "none",
                    panel.grid.minor = element_blank(),
                    panel.background = element_blank())
   sequenceContentHeatmap

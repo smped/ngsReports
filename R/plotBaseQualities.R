@@ -36,7 +36,7 @@
 #' r1 <- grepl("R1", fileNames(fdl))
 #' plotBaseQualities(fdl, subset = r1 )
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr mutate
 #'
@@ -77,30 +77,30 @@ plotBaseQualities <- function(x, subset, nc = 2, pwfCols,
   enc <- Basic_Statistics(x)$Encoding[1]
   enc <- gsub(".*(Illumina [0-9\\.]*)", "\\1", enc)
 
-  qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = as.integer(Start), y = Median)) +
-    ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 30, ymax = Inf,
+  qualPlot <- ggplot(df, aes(x = as.integer(Start), y = Median)) +
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = 30, ymax = Inf,
                       fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
-    ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 20, ymax = 30,
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = 20, ymax = 30,
                       fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
-    ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 20,
+    annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 20,
                       fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
-    ggplot2::geom_crossbar(ggplot2::aes(ymin = Lower_Quartile, ymax = Upper_Quartile),
+    geom_crossbar(aes(ymin = Lower_Quartile, ymax = Upper_Quartile),
                            fill = "yellow", width = 0.8, size = 0.2) +
-    ggplot2::geom_segment(ggplot2::aes(x = as.integer(Start)-0.4, xend = as.integer(Start) + 0.4,
+    geom_segment(aes(x = as.integer(Start)-0.4, xend = as.integer(Start) + 0.4,
                                        yend = Median), colour = "red") +
-    ggplot2::geom_linerange(ggplot2::aes(ymin = `10th_Percentile`, ymax = Lower_Quartile)) +
-    ggplot2::geom_linerange(ggplot2::aes(ymin = Upper_Quartile, ymax = `90th_Percentile`)) +
-    ggplot2::geom_line(ggplot2::aes(y = Mean), colour = "blue") +
-    ggplot2::scale_x_continuous(breaks = seq_along(levels(df$Start)),
+    geom_linerange(aes(ymin = `10th_Percentile`, ymax = Lower_Quartile)) +
+    geom_linerange(aes(ymin = Upper_Quartile, ymax = `90th_Percentile`)) +
+    geom_line(aes(y = Mean), colour = "blue") +
+    scale_x_continuous(breaks = seq_along(levels(df$Start)),
                                 labels = unique(df$Base),
                                 expand = c(0, 0)) +
-    ggplot2::scale_y_continuous(limits = ylim, expand = c(0,0)) +
-    ggplot2::xlab("Position in read (bp)") +
-    ggplot2::ylab(paste0("Quality Scores (", enc, " encoding)")) +
-    ggplot2::facet_wrap(~Filename, ncol = nc) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-                   axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+    scale_y_continuous(limits = ylim, expand = c(0,0)) +
+    xlab("Position in read (bp)") +
+    ylab(paste0("Quality Scores (", enc, " encoding)")) +
+    facet_wrap(~Filename, ncol = nc) +
+    theme_bw() +
+    theme(panel.grid.minor = element_blank(),
+                   axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
   # Draw the plot
   qualPlot

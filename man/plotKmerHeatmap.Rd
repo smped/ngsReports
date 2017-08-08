@@ -67,4 +67,5 @@ plotKmerHeatmap(fdl)
 ccR1 <- grepl("CC.+R1", fileNames(fdl))
 plotKmerHeatmap(fdl, subset = ccR1, method = "individual", nKmers = 3)
 
+
 }

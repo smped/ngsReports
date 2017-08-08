@@ -40,7 +40,7 @@
 #' # Using counts
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
-#' @import ggplot2
+#' 
 #' @import scales
 #' @import plotly
 #' @import tidyr
@@ -126,19 +126,19 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
       df <- dplyr::mutate(df, Mean = as.numeric(Data),
                           Start = as.integer(Start),
       Filename = factor(Filename, levels = unique(Filename)))
-    BQheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = Start, y = Filename, fill = Mean))
+    BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Mean))
     }else{
       df <- dplyr::mutate(df, Median = as.numeric(Data),
                           Start = as.integer(Start),
                           Filename = factor(Filename, levels = unique(Filename)))
-      BQheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = Start, y = Filename, fill = Median))
+      BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Median))
     }
 
-       BQheatmap <- BQheatmap + ggplot2::geom_tile() +
-        ggplot2::scale_fill_gradientn(colours = c(col["FAIL"], col["FAIL"],col["WARN"], col["WARN"], col["PASS"], col["PASS"]),
+       BQheatmap <- BQheatmap + geom_tile() +
+        scale_fill_gradientn(colours = c(col["FAIL"], col["FAIL"],col["WARN"], col["WARN"], col["PASS"], col["PASS"]),
                                       values = scales::rescale(c(0,20,20,30,30,40)),
                                       guide = "colorbar", limits=c(0, 40), na.value = "white") +
-        ggplot2::theme(panel.grid.minor = element_blank(),
+        theme(panel.grid.minor = element_blank(),
                        panel.background = element_blank())
 
       if(usePlotly){
@@ -149,8 +149,8 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
         t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
         key <- t$FilenameFull
 
-      sideBar <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-        ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
+      sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
+        scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
                                                                   panel.background = element_blank(),
                                                                   legend.position="none",
                                                                   axis.title=element_blank(),
@@ -161,16 +161,16 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
       #plot dendrogram
       if(dendrogram){
         ggdend <- function(df) {
-          ggplot2::ggplot() +
-            ggplot2::geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
+          ggplot() +
+            geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
             ggdendro::theme_dendro()
         }
 
         dx <- ggdendro::dendro_data(clus)
         dendro <- ggdend(dx$segments) +
-          ggplot2::coord_flip() +
-          ggplot2::scale_y_reverse(expand = c(0, 1)) +
-          ggplot2::scale_x_continuous(expand = c(0,1))
+          coord_flip() +
+          scale_y_reverse(expand = c(0, 1)) +
+          scale_x_continuous(expand = c(0,1))
 
         dendro <- plotly::ggplotly(dendro) %>%
           plotly::layout(margin = list(b = 0, t = 0))

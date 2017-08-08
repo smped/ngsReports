@@ -52,4 +52,5 @@ plotBaseQualities(fdl)
 r1 <- grepl("R1", fileNames(fdl))
 plotBaseQualities(fdl, subset = r1 )
 
+
 }

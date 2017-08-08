@@ -60,4 +60,5 @@ r1 <- grepl("R1", fileNames(fdl))
 plotSequenceQualities(fdl, subset = r1, counts = TRUE) +
   facet_wrap(~Filename, ncol = 2)
 
+
 }

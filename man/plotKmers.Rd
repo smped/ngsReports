@@ -59,4 +59,5 @@ plotKmers(fdl)
 ccR1 <- grepl("CC.+R1", fileNames(fdl))
 plotKmers(fdl, subset = ccR1, nc = 1, method = "individual", nKmers = 4)
 
+
 }
