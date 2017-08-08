@@ -54,7 +54,7 @@
 #'
 #' @import tidyr
 #' 
-#' @import scales
+#' 
 #' @import plotly
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
@@ -62,7 +62,7 @@
 #' @importFrom dplyr filter
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
-#' @importFrom magrittr %>%
+#' 
 #'
 #' @export plotGCHeatmapPlotly
 plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq).*",

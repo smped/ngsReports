@@ -28,7 +28,7 @@
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
 #' 
-#' @import scales
+#' 
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup

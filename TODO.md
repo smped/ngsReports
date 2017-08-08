@@ -14,6 +14,7 @@
 - Write Vignette
 - Incorporate subsetting by pattern in Shiny App
 - Add dendrogram to plots
+- Sort out devtools::check() namespace issues for plotly, readr, reshape2, shiny, stringrand tidyr
 - Flip Total Read Plot
 - Tidy up redundant code
 - Set usePlotly in all plots and modify the body of each function to reflect these changes

@@ -11,7 +11,7 @@
 #'
 #' @docType methods
 #'
-#' @importFrom scales comma
+#' 
 #'
 #' @export
 setMethod("path", "FastqcData", function(object){object@path})

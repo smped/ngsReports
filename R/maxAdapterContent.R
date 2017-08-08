@@ -21,9 +21,9 @@
 #' @importFrom dplyr mutate
 #' @importFrom reshape2 melt
 #' @importFrom reshape2 dcast
-#' @importFrom magrittr %>%
-#' @importFrom magrittr %<>%
-#' @importFrom scales percent
+#'
+#'
+#' 
 #'
 #' @export
 maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
@@ -32,9 +32,8 @@ maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
   ac <- tryCatch(Adapter_Content(x))
 
   # Perform the summary
-  ac %<>%
-    reshape2::melt(id.vars = c("Filename", "Position"),
-                   variable.name = "Type")%>%
+  ac <- reshape2::melt(ac, id.vars = c("Filename", "Position"),
+                       variable.name = "Type")%>%
     dplyr::group_by(Filename, Type) %>%
     dplyr::summarise(value = max(value))
 
@@ -44,9 +43,9 @@ maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
   }
   else {
     digits <- floor(digits)[1] # Silently ignore any additional values
-    ac %<>% dplyr::mutate(value = round(value, digits))
+    ac <- dplyr::mutate(ac, value = round(value, digits))
   }
-  if (asPercent) ac %<>% dplyr::mutate(value = scales::percent(0.01*value))
+  if (asPercent) ac <- dplyr::mutate(ac, value = scales::percent(0.01*value))
 
   ac %>%
     reshape2::dcast(Filename~Type, value.var = "value") %>%

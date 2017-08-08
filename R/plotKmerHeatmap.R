@@ -57,9 +57,9 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr arrange
 #' @importFrom dplyr if_else
-#' @importFrom magrittr extract2
-#' @importFrom magrittr %>%
-#' @importFrom magrittr %<>%
+#' 
+#' 
+#' 
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #'

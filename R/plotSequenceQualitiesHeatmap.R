@@ -52,7 +52,7 @@
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
-#' @importFrom magrittr %>%
+#' 
 #'
 #' @export
 plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,

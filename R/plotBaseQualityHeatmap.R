@@ -41,7 +41,7 @@
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
 #' 
-#' @import scales
+#' 
 #' @import plotly
 #' @import tidyr
 #' @importFrom dplyr group_by
@@ -51,7 +51,7 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
 #' @importFrom dplyr right_join
-#' @importFrom magrittr %>%
+#' 
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #'
