@@ -37,7 +37,7 @@
 #'
 #' 
 #' @importFrom stringr str_detect
-#' @importFrom magrittr %>%
+#' 
 #' @importFrom dplyr rename
 #' @importFrom dplyr mutate
 #'

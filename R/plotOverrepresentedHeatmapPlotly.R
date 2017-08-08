@@ -53,8 +53,8 @@
 #' @importFrom dplyr arrange
 #' @importFrom dplyr slice
 #' @importFrom dplyr filter
-#' @importFrom magrittr %>%
-#' @importFrom magrittr extract2
+#' 
+#' 
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #'

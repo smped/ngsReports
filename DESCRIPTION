@@ -18,6 +18,7 @@ Imports:
   lubridate,
   magrittr,
   Rsamtools,
+  scales,
   ShortRead,
   tibble,
   viridis,

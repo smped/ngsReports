@@ -38,7 +38,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
-#' @importFrom magrittr %>%
+#' 
 #'
 #' @export
 plotOverrepresentedSummary <- function(x, subset, source = "(Primer|Adapter)",

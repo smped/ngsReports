@@ -56,7 +56,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
 #' @importFrom reshape2 melt
-#' @importFrom magrittr %>%
+#' 
 #'
 #' @export
 plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",

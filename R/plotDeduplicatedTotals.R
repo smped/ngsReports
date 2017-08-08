@@ -57,7 +57,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
 #' @importFrom reshape2 melt
-#' @importFrom magrittr %>%
+#' 
 #' @importFrom plotly ggplotly
 #'
 #' @export

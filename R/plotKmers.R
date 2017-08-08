@@ -42,7 +42,7 @@
 #' ccR1 <- grepl("CC.+R1", fileNames(fdl))
 #' plotKmers(fdl, subset = ccR1, nc = 1, method = "individual", nKmers = 4)
 #'
-#' 
+#'
 #' @importFrom stringr str_detect
 #' @importFrom dplyr mutate
 #' @importFrom dplyr filter
@@ -54,9 +54,9 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr arrange
 #' @importFrom dplyr rename
-#' @importFrom magrittr extract2
-#' @importFrom magrittr %>%
-#' @importFrom magrittr %<>%
+#'
+#'
+#'
 #'
 #' @export
 plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
@@ -104,8 +104,7 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
       magrittr::extract2("Sequence")
   }
 
-  df %<>%
-    dplyr::filter(Sequence %in% topKmers) %>%
+  df <- dplyr::filter(df, Sequence %in% topKmers) %>%
     dplyr::rename(Base = `Max_Obs/Exp_Position`) %>%
     dplyr::mutate(Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
                   Start = as.integer(Start)) %>%
@@ -134,8 +133,7 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
 
   # After the bind_rows, duplicate values will exist at some positions
   # Spuriously introduced zeros need to be removed
-  df %<>%
-    dplyr::bind_rows(zeros) %>%
+  df <- dplyr::bind_rows(df, zeros) %>%
     dplyr::arrange(Filename, Sequence, Start, desc(`Obs/Exp_Max`)) %>%
     dplyr::distinct(Filename, Sequence, Start, .keep_all = TRUE)
 

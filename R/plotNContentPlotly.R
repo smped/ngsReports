@@ -40,7 +40,7 @@
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
 #' 
-#' @import scales
+#' 
 #' @import plotly
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
@@ -48,7 +48,7 @@
 #' @importFrom dplyr filter
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
-#' @importFrom magrittr %>%
+#' 
 #'
 #' @export
 plotNContentPlotly <- function(x,
