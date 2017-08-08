@@ -35,7 +35,6 @@
 #' @importFrom dplyr filter
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
-#' @importFrom zoo na.locf
 #'
 #' @export
 

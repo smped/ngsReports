@@ -44,7 +44,6 @@
 #' @import scales
 #' @import plotly
 #' @import tidyr
-#' @import ggdendro
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
@@ -53,7 +52,6 @@
 #' @importFrom dplyr summarise
 #' @importFrom dplyr right_join
 #' @importFrom magrittr %>%
-#' @importFrom zoo na.locf
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #'
@@ -164,13 +162,18 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
       if(dendrogram){
         ggdend <- function(df) {
           ggplot2::ggplot() +
-            ggplot2::geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
+            ggplot2::geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
+            ggdendro::theme_dendro()
         }
 
         dx <- ggdendro::dendro_data(clus)
-        dendro <- ggdend(dx$segments) + ggplot2::coord_flip() + ggplot2::scale_y_reverse(expand = c(0, 1)) + ggplot2::scale_x_continuous(expand = c(0,1))
+        dendro <- ggdend(dx$segments) +
+          ggplot2::coord_flip() +
+          ggplot2::scale_y_reverse(expand = c(0, 1)) +
+          ggplot2::scale_x_continuous(expand = c(0,1))
 
-        dendro <- plotly::ggplotly(dendro) %>% plotly::layout(margin = list(b = 0, t = 0))
+        dendro <- plotly::ggplotly(dendro) %>%
+          plotly::layout(margin = list(b = 0, t = 0))
 
         BQheatmap <- plotly::subplot(dendro, sideBar, BQheatmap, widths = c(0.2, 0.1,0.7), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
       }else{

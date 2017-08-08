@@ -83,7 +83,7 @@ importStarLogs <- function(path){
 
   # Set some fields to more correct formats
   timeCols <- grep("On$", names(df))
-  df[timeCols] <- lapply(df[timeCols], lubridate::parse_date_time, orders = "b! d! HMS")
+  df[timeCols] <- lapply(df[timeCols], parse_date_time, orders = "b! d! HMS")
   df$Mapping_Speed <- as.double(df$Mapping_Speed)
   df$Input_Reads <- as.integer(df$Input_Reads)
   df <- dplyr::rename(df, Average_Read_Length = Average_Input_Read_Length)
