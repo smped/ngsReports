@@ -48,7 +48,7 @@
 #' plotSequenceQualities(fdl, subset = r1, counts = TRUE) +
 #'   facet_wrap(~Filename, ncol = 2)
 #'
-#' @import ggplot2
+#' 
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
@@ -99,21 +99,21 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
     df <- dplyr::group_by(df, Filename) %>%
       dplyr::mutate(Freq = Count / sum(Count)) %>%
       dplyr::ungroup()
-    qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Quality, y = Filename, fill = Freq))
+    qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Freq))
 
   }
   else{
 
     # Initialise the plot using counts
-    qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Quality, y = Filename, fill = Count))
+    qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Count))
 
   }
 
-  qualPlot <- qualPlot + ggplot2::geom_raster() +
-    ggplot2::xlab("Mean Sequence Quality Per Read (Phred Score)") +
-    ggplot2::scale_fill_gradientn(colours = inferno(150)) +
-    ggplot2::ylab("File names") + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-                                       panel.background = ggplot2::element_blank())
+  qualPlot <- qualPlot + geom_raster() +
+    xlab("Mean Sequence Quality Per Read (Phred Score)") +
+    scale_fill_gradientn(colours = inferno(150)) +
+    ylab("File names") + theme(panel.grid.minor = element_blank(),
+                                       panel.background = element_blank())
 
   if(usePlotly){
 
@@ -124,19 +124,19 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     key <- t$FilenameFull
 
-    d <- ggplot2::ggplot(t, ggplot2::aes(x = 1, y = Filename, key = key, fill = Status)) + ggplot2::geom_tile() +
-      ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-                                                                panel.background = ggplot2::element_blank(),
+    d <- ggplot(t, aes(x = 1, y = Filename, key = key, fill = Status)) + geom_tile() +
+      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
+                                                                panel.background = element_blank(),
                                                                 legend.position="none",
-                                                                axis.title=ggplot2::element_blank(),
-                                                                axis.text=ggplot2::element_blank(),
-                                                                axis.ticks=ggplot2::element_blank())
+                                                                axis.title=element_blank(),
+                                                                axis.text=element_blank(),
+                                                                axis.ticks=element_blank())
     d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
 
 
-    qualPlot <- qualPlot + ggplot2::theme(axis.title.y = ggplot2::element_blank(),
-                                          axis.text.y = ggplot2::element_blank(),
-                                          axis.ticks.y = ggplot2::element_blank())
+    qualPlot <- qualPlot + theme(axis.title.y = element_blank(),
+                                          axis.text.y = element_blank(),
+                                          axis.ticks.y = element_blank())
 
     qualPlot <- plotly::subplot(d, qualPlot, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>%
       plotly::layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"))

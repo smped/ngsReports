@@ -39,7 +39,7 @@
 #' # Using counts
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
-#' @import ggplot2
+#' 
 #' @import scales
 #' @import plotly
 #' @importFrom dplyr group_by
@@ -124,11 +124,11 @@ plotNContentPlotly <- function(x,
     df <- dplyr::mutate(df, Percentage = as.numeric(Percentage),
                         Start = as.integer(Start),
                         Filename = factor(Filename, levels = unique(Filename)))
-    Nheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = Start, y = Filename, fill = Percentage)) + ggplot2::geom_raster() +
-      ggplot2::scale_fill_gradientn(colours = c(col["PASS"], col["PASS"], col["WARN"], col["WARN"], col["FAIL"], col["FAIL"]),
+    Nheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Percentage)) + geom_raster() +
+      scale_fill_gradientn(colours = c(col["PASS"], col["PASS"], col["WARN"], col["WARN"], col["FAIL"], col["FAIL"]),
                                     values = scales::rescale(c(0,5,5,20,20,30)),
                                     guide = "colorbar", limits=c(0, 40), breaks = c(0, 5, 10, 20, 40)) +
-      ggplot2::theme(panel.grid.minor = element_blank(),
+      theme(panel.grid.minor = element_blank(),
                      panel.background = element_blank())
 
   if(usePlotly){
@@ -139,8 +139,8 @@ plotNContentPlotly <- function(x,
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     key <- t$FilenameFull
 
-    sideBar <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-      ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
                                                                 panel.background = element_blank(),
                                                                 legend.position="none",
                                                                 axis.title=element_blank(),
@@ -151,12 +151,12 @@ plotNContentPlotly <- function(x,
     #plot dendrogram
     if(dendrogram){
       ggdend <- function(df) {
-        ggplot2::ggplot() +
-          ggplot2::geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
+        ggplot() +
+          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
       }
 
       dx <- ggdendro::dendro_data(clus)
-      dendro <- ggdend(dx$segments) + ggplot2::coord_flip() + ggplot2::scale_y_reverse(expand = c(0, 1)) + ggplot2::scale_x_continuous(expand = c(0,1))
+      dendro <- ggdend(dx$segments) + coord_flip() + scale_y_reverse(expand = c(0, 1)) + scale_x_continuous(expand = c(0,1))
 
       dendro <- plotly::ggplotly(dendro) %>% plotly::layout(margin = list(b = 0, t = 0))
 

@@ -68,4 +68,5 @@ plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
 # Check the top 2 sequences with No Hit from each R1 file
 plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 
+
 }

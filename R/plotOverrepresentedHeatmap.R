@@ -44,7 +44,7 @@
 #' # Check the top 2 sequences with No Hit from each R1 file
 #' plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
@@ -140,21 +140,21 @@ plotOverrepresentedHeatmap <- function(x,
     reshape2::dcast(Filename~Seq_Source, value.var = "Percentage") %>%
     reshape2::melt(id.vars = "Filename",
                    variable.name = "Seq_Source", value.name = "Percentage") %>%
-    ggplot2::ggplot(ggplot2::aes(x = Filename, y = Seq_Source, fill = Percentage)) +
-    ggplot2::geom_tile() +
-    ggplot2::scale_fill_gradient(low = low, high = high, na.value = naCol) +
-    ggplot2::scale_x_discrete(expand = c(0, 0)) +
-    ggplot2::scale_y_discrete(expand = c(0, 0)) +
-    ggplot2::xlab("Filename") +
-    ggplot2::ylab("Sequence") +
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
-                   panel.grid = ggplot2::element_blank())
+    ggplot(aes(x = Filename, y = Seq_Source, fill = Percentage)) +
+    geom_tile() +
+    scale_fill_gradient(low = low, high = high, na.value = naCol) +
+    scale_x_discrete(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0)) +
+    xlab("Filename") +
+    ylab("Sequence") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                   panel.grid = element_blank())
 
   if (nSeq > length(x) && flip){
     heatPlot <- heatPlot +
-      ggplot2::coord_flip() +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 45, vjust = 1))
+      coord_flip() +
+      theme(axis.text.x = element_text(angle = 45, vjust = 1))
   }
 
   # Draw the plot

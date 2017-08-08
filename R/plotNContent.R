@@ -35,7 +35,7 @@
 #'
 #'
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom magrittr %>%
 #' @importFrom dplyr rename
@@ -77,11 +77,11 @@ plotNContent <- function(x, subset, pwfCols,
   gradCols <- getColours(pwfCols)[1:nCols]
   breaks <- c(0, 5, 20, upr)[1:nCols]
 
-  ggplot2::ggplot(df, ggplot2::aes(x = Base, y = Filename, fill = Percentage)) +
-    ggplot2::geom_tile() +
-    # ggplot2::scale_fill_gradient2(low = pass, mid = warn, high = fail, midpoint = midpoint) +
-    ggplot2::scale_fill_gradientn(colours = gradCols, values = breaks/max(breaks)) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+  ggplot(df, aes(x = Base, y = Filename, fill = Percentage)) +
+    geom_tile() +
+    # scale_fill_gradient2(low = pass, mid = warn, high = fail, midpoint = midpoint) +
+    scale_fill_gradientn(colours = gradCols, values = breaks/max(breaks)) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 }

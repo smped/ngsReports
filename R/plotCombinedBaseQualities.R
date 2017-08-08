@@ -44,7 +44,7 @@
 #' # Plot the R1 files showing the Mean and Lower_Quartile
 #' plotCombinedBaseQualities(fdl, subset = r1, value = c("Mean", "Lower_Quartile"))
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
@@ -103,18 +103,18 @@ plotCombinedBaseQualities <- function(x, subset, value = "Mean", pwfCols,
                        variable.name = "Value", value.name = "Score")
 
   # Make basic plot, adding the shaded background colours
-  qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Base, y = Score, colour = Filename)) +
-    ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = 30, ymax = Inf,
+  qualPlot <- ggplot(df, aes(x = Base, y = Score, colour = Filename)) +
+    annotate("rect", xmin = 0, xmax = Inf, ymin = 30, ymax = Inf,
                       fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
-    ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = 20, ymax = 30,
+    annotate("rect", xmin = 0, xmax = Inf, ymin = 20, ymax = 30,
                       fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
-    ggplot2::annotate("rect", xmin = 0, xmax = Inf, ymin = -Inf, ymax = 20,
+    annotate("rect", xmin = 0, xmax = Inf, ymin = -Inf, ymax = 20,
                       fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
-    ggplot2::geom_line(ggplot2::aes(linetype = Value)) +
-    ggplot2::scale_x_continuous(expand = c(0, 0)) +
-    ggplot2::scale_y_continuous(expand = c(0, 0)) +
-    ggplot2::ylab(paste0("Quality Scores (", enc, " encoding)")) +
-    ggplot2::theme_bw()
+    geom_line(aes(linetype = Value)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_continuous(expand = c(0, 0)) +
+    ylab(paste0("Quality Scores (", enc, " encoding)")) +
+    theme_bw()
 
   # Draw the plot
   qualPlot

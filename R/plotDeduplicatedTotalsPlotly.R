@@ -48,7 +48,7 @@
 #' # Draw the plot with stacked bars
 #' plotDeduplicatedTotals(fdl, bars = "stacked")
 #'
-#' @import ggplot2
+#' 
 #' @import plotly
 #' @importFrom stringr str_detect
 #' @importFrom dplyr rename
@@ -104,9 +104,9 @@ plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",
       reshape2::melt(id.vars = "Filename", variable.name = "Type", value.name = "Total") %>%
       dplyr::mutate(Total = Total / (10^(millions*6)))
 
-    deDupPlot <- ggplot2::ggplot(joinedDf, ggplot2::aes(x = Filename, y = Total, fill = Type)) +
-      ggplot2::geom_bar(stat = "identity", position = "dodge") +
-      ggplot2::scale_fill_manual(values = (c(Total = col1, Deduplicated = col2)))
+    deDupPlot <- ggplot(joinedDf, aes(x = Filename, y = Total, fill = Type)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      scale_fill_manual(values = (c(Total = col1, Deduplicated = col2)))
 
   }
   if (bars == "stacked"){
@@ -121,9 +121,9 @@ plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",
       dplyr::mutate(Total = Total / (10^(millions*6)),
                     Type = factor(Type, levels = c("Duplicated", "Unique")))
 
-    deDupPlot <- ggplot2::ggplot(joinedDf, ggplot2::aes(x = Filename, y = Total, fill = Type)) +
-      ggplot2::geom_bar(stat = "identity") +
-      ggplot2::scale_fill_manual(values = (c(Duplicated = col1, Unique = col2)))
+    deDupPlot <- ggplot(joinedDf, aes(x = Filename, y = Total, fill = Type)) +
+      geom_bar(stat = "identity") +
+      scale_fill_manual(values = (c(Duplicated = col1, Unique = col2)))
 
   }
   key <- unique(deDup["Filename"])
@@ -132,8 +132,8 @@ plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",
   t$Filename <- with(t, factor(Filename, levels=Filename))
 
 
-  sideBar <- ggplot2::ggplot(t, aes(x = Filename, y = 1, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-    ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
+  sideBar <- ggplot(t, aes(x = Filename, y = 1, key = key)) + geom_tile(aes(fill = Status)) +
+    scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
                                                               panel.background = element_blank(),
                                                               axis.title=element_blank(),
                                                               axis.text=element_blank(),
@@ -142,8 +142,8 @@ plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",
   sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
   # Add the basic layout
   deDupPlot <- deDupPlot +
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x =element_blank(),
+    theme_bw() +
+    theme(axis.text.x =element_blank(),
                    axis.ticks.x=element_blank(),
                    legend.position="none")
 

@@ -47,7 +47,7 @@
 #' ccR1 <- grepl("CC.+R1", fileNames(fdl))
 #' plotKmerHeatmap(fdl, subset = ccR1, method = "individual", nKmers = 3)
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr mutate
 #' @importFrom dplyr filter
@@ -158,10 +158,10 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
       dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
       dplyr::mutate(PValue = dplyr::if_else(is.na(PValue), ">0", "=0")) %>%
-      ggplot2::ggplot(ggplot2::aes(x =Filename, y = Sequence, fill = PValue)) +
-      ggplot2::geom_tile(colour = "grey30", alpha = 0.9) +
-      ggplot2::scale_fill_manual(values = c(`=0` = warn, `>0` = naCol)) +
-      ggplot2::labs(fill = "PValue")
+      ggplot(aes(x =Filename, y = Sequence, fill = PValue)) +
+      geom_tile(colour = "grey30", alpha = 0.9) +
+      scale_fill_manual(values = c(`=0` = warn, `>0` = naCol)) +
+      labs(fill = "PValue")
   }
   else{
     # First get explicit NA values
@@ -169,25 +169,25 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       reshape2::dcast(Filename~Sequence, value.var = "PValue") %>%
       reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
       dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
-      ggplot2::ggplot(ggplot2::aes(x =Filename, y = Sequence, fill = PValue)) +
-      ggplot2::geom_tile(colour = "grey30", alpha = 0.9) +
-      ggplot2::scale_fill_gradient2(low = getColours(pwfCols)["PASS"],
+      ggplot(aes(x =Filename, y = Sequence, fill = PValue)) +
+      geom_tile(colour = "grey30", alpha = 0.9) +
+      scale_fill_gradient2(low = getColours(pwfCols)["PASS"],
                                     mid = getColours(pwfCols)["WARN"],
                                     high = getColours(pwfCols)["FAIL"],
                                     na.value = naCol,
                                     midpoint = max(df$PValue)/2) +
-      ggplot2::labs(fill = expression(paste(-log[10], "P")))
+      labs(fill = expression(paste(-log[10], "P")))
   }
 
   heatPlot <- heatPlot +
-    ggplot2::theme_bw() +
-      ggplot2::scale_x_discrete(expand = c(0, 0)) +
-      ggplot2::scale_y_discrete(expand = c(0, 0)) +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
-                     panel.grid = ggplot2::element_blank())
+    theme_bw() +
+      scale_x_discrete(expand = c(0, 0)) +
+      scale_y_discrete(expand = c(0, 0)) +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                     panel.grid = element_blank())
 
   if (nKmers > length(x) && flip){
-    heatPlot <- heatPlot + ggplot2::coord_flip()
+    heatPlot <- heatPlot + coord_flip()
   }
 
   # Draw the plot

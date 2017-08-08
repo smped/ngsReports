@@ -52,7 +52,7 @@
 #' scale_y_continuous()
 #'
 #'
-#' @import ggplot2
+#' 
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
 #' @importFrom reshape2 melt
@@ -114,9 +114,9 @@ plotAdapterContent <- function(x, subset,
   if (plotType == "heatmap"){
 
     acPlot <- ggplot(df,
-                     ggplot2::aes(x = Position, y = Filename, fill = Percent)) +
-      ggplot2::geom_tile() +
-      ggplot2::facet_wrap(~Type, ncol = nc)
+                     aes(x = Position, y = Filename, fill = Percent)) +
+      geom_tile() +
+      facet_wrap(~Type, ncol = nc)
 
     # Define the colour palette
     upr <- max(df$Percent)
@@ -126,34 +126,34 @@ plotAdapterContent <- function(x, subset,
 
     # Add them to the initial plot
     acPlot <- acPlot +
-      ggplot2::scale_fill_gradientn(colours = gradCols, values = breaks / max(breaks))
+      scale_fill_gradientn(colours = gradCols, values = breaks / max(breaks))
   }
 
   if (plotType == "line") {
     # Create the basic plot
-    acPlot <- ggplot2::ggplot(df,
-                              ggplot2::aes(x = as.integer(Position), y = Percent, colour = Filename)) +
-      ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 5,
+    acPlot <- ggplot(df,
+                              aes(x = as.integer(Position), y = Percent, colour = Filename)) +
+      annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 5,
                         fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
-      ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 5, ymax = 10,
+      annotate("rect", xmin = -Inf, xmax = Inf, ymin = 5, ymax = 10,
                         fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
-      ggplot2::annotate("rect", xmin = -Inf, xmax = Inf, ymin = 10, ymax = Inf,
+      annotate("rect", xmin = -Inf, xmax = Inf, ymin = 10, ymax = Inf,
                         fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
-      ggplot2::geom_line() +
-      ggplot2::scale_y_continuous(limits = c(0, 100)) +
-      ggplot2::scale_x_continuous(breaks = seq_along(levels(df$Position)),
+      geom_line() +
+      scale_y_continuous(limits = c(0, 100)) +
+      scale_x_continuous(breaks = seq_along(levels(df$Position)),
                                   labels = unique(df$Position),
                                   expand = c(0, 0)) +
-      ggplot2::ylab("Percent (%)")
+      ylab("Percent (%)")
 
     # Add the basic customisations
-    acPlot <- acPlot + ggplot2::facet_wrap(~Type, ncol = nc[1])
+    acPlot <- acPlot + facet_wrap(~Type, ncol = nc[1])
   }
 
   # And draw the plot
   acPlot +
-    ggplot2::labs(x = "Position in read (bp)") +
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+    labs(x = "Position in read (bp)") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 }

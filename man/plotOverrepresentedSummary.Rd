@@ -50,4 +50,5 @@ fdl <- getFastqcData(fileList)
 # Another example which isn't ideal
 plotOverrepresentedSummary(fdl)
 
+
 }

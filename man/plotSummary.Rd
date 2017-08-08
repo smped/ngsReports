@@ -46,4 +46,5 @@ fdl <- getFastqcData(fileList)
 # Check the overall PASS/WARN/FAIL status
 plotSummary(fdl)
 
+
 }

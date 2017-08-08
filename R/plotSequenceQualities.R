@@ -44,7 +44,7 @@
 #' plotSequenceQualities(fdl, subset = r1, counts = TRUE) +
 #'   facet_wrap(~Filename, ncol = 2)
 #'
-#' @import ggplot2
+#' 
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
@@ -82,28 +82,28 @@ plotSequenceQualities <- function(x, subset, counts = FALSE, pwfCols,
     df <- dplyr::group_by(df, Filename) %>%
       dplyr::mutate(Freq = Count / sum(Count)) %>%
       dplyr::ungroup()
-    qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Quality, y = Freq, colour = Filename))
+    qualPlot <- ggplot(df, aes(x = Quality, y = Freq, colour = Filename))
 
   }
   else{
 
     # Initialise the plot using counts
-    qualPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Quality, y = Count, colour = Filename))
+    qualPlot <- ggplot(df, aes(x = Quality, y = Count, colour = Filename))
 
   }
 
   qualPlot <- qualPlot +
-    ggplot2::annotate("rect", xmin = 30, xmax = Inf, ymin = -Inf, ymax = Inf,
+    annotate("rect", xmin = 30, xmax = Inf, ymin = -Inf, ymax = Inf,
                       fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
-    ggplot2::annotate("rect", xmin = 20, xmax = 30, ymin = -Inf, ymax = Inf,
+    annotate("rect", xmin = 20, xmax = 30, ymin = -Inf, ymax = Inf,
                       fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
-    ggplot2::annotate("rect", xmin = -Inf, xmax = 20,, ymin = -Inf, ymax = Inf,
+    annotate("rect", xmin = -Inf, xmax = 20,, ymin = -Inf, ymax = Inf,
                       fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
-    ggplot2::scale_x_continuous(limits = c(0, 41), expand = c(0, 0), breaks = seq(0, 40, by = 10)) +
-    ggplot2::geom_line() +
-    ggplot2::xlab("Mean Sequence Quality Per Read (Phred Score)") +
-    ggplot2::ylab(ylab) +
-    ggplot2::theme_bw()
+    scale_x_continuous(limits = c(0, 41), expand = c(0, 0), breaks = seq(0, 40, by = 10)) +
+    geom_line() +
+    xlab("Mean Sequence Quality Per Read (Phred Score)") +
+    ylab(ylab) +
+    theme_bw()
 
   # Draw the plot
   qualPlot

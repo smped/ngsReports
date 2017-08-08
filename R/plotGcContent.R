@@ -39,7 +39,7 @@
 #' plotGcContent(fdl, subset = r1 , counts = TRUE)
 #'
 #'
-#' @import ggplot2
+#' 
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
@@ -90,9 +90,9 @@ plotGcContent <- function(x, subset, counts = FALSE,
       dplyr::mutate(Freq = Freq / sum(Freq), # Normalise to 1 for a distribution
                     Filename = "Mean")
 
-    gcPlot <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Freq, colour = Filename)) +
-      ggplot2::geom_line() +
-      ggplot2::geom_line(data = mn, ggplot2::aes(x = GC_Content, y = Freq),
+    gcPlot <- ggplot(df, aes(x = GC_Content, y = Freq, colour = Filename)) +
+      geom_line() +
+      geom_line(data = mn, aes(x = GC_Content, y = Freq),
                          colour = "black", linetype = 2)
 
   }
@@ -104,17 +104,17 @@ plotGcContent <- function(x, subset, counts = FALSE,
       dplyr::mutate(Filename = "Mean")
 
     # Initialise the plot using counts
-    gcPlot <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Count, colour = Filename)) +
-      ggplot2::geom_line() +
-      ggplot2::geom_line(data = mn, ggplot2::aes(x = GC_Content, y = Count),
+    gcPlot <- ggplot(df, aes(x = GC_Content, y = Count, colour = Filename)) +
+      geom_line() +
+      geom_line(data = mn, aes(x = GC_Content, y = Count),
                          colour = "black", linetype = 2)
 
   }
 
   # Add the rest of the plotting detail
   gcPlot <- gcPlot +
-    ggplot2::ylab(ylab) +
-    ggplot2::theme_bw()
+    ylab(ylab) +
+    theme_bw()
 
   # Draw the plot
   gcPlot

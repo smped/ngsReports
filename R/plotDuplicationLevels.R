@@ -39,7 +39,7 @@
 #' r1 <- grepl("R1", fileNames(fdl))
 #' plotDuplicationLevels(fdl, subset = r1, type = "Total")
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom stringr str_to_title
 #' @importFrom reshape2 melt
@@ -86,22 +86,22 @@ plotDuplicationLevels <- function(x, subset, type = ".+",
   df <- dplyr::filter(df, grepl(type, Type))
   if(nrow(df) == 0) stop("Invalid type selected")
 
-  dupPlot <- ggplot2::ggplot(df, ggplot2::aes(x = as.integer(Duplication_Level), y = Percent)) +
-    ggplot2::annotate("rect",
+  dupPlot <- ggplot(df, aes(x = as.integer(Duplication_Level), y = Percent)) +
+    annotate("rect",
                       xmin = seq(1.5, 17, by = 2), xmax = seq(2.5, 17, by = 2),
                       ymin = 0, ymax = Inf, fill = "grey80", alpha = 0.5) +
-    ggplot2::geom_line(ggplot2::aes(colour = Filename, group = Filename)) +
-    ggplot2::facet_wrap(~Type, ncol = 1) +
-    ggplot2::scale_y_continuous(limits = c(0, 100), expand = c(0, 0),
+    geom_line(aes(colour = Filename, group = Filename)) +
+    facet_wrap(~Type, ncol = 1) +
+    scale_y_continuous(limits = c(0, 100), expand = c(0, 0),
                                 breaks = seq(0, 100, by = 20)) +
-    ggplot2::scale_x_continuous(breaks = seq_along(levels(df$Duplication_Level)),
+    scale_x_continuous(breaks = seq_along(levels(df$Duplication_Level)),
                                 labels = levels(df$Duplication_Level),
                                 limits = c(0, length(levels(df$Duplication_Level))) + 0.5,
                                 expand = c(0, 0)) +
-    ggplot2::labs(x = "Duplication Level", y = "Percent (%)") +
-    ggplot2::theme_bw() +
-    ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                   panel.grid.minor.x = ggplot2::element_blank())
+    labs(x = "Duplication Level", y = "Percent (%)") +
+    theme_bw() +
+    theme(panel.grid.major.x = element_blank(),
+                   panel.grid.minor.x = element_blank())
 
     # And draw the plot
     dupPlot

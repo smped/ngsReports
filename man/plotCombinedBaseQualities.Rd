@@ -60,4 +60,5 @@ plotCombinedBaseQualities(fdl)
 # Plot the R1 files showing the Mean and Lower_Quartile
 plotCombinedBaseQualities(fdl, subset = r1, value = c("Mean", "Lower_Quartile"))
 
+
 }

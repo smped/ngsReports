@@ -32,7 +32,7 @@
 #' # Using counts
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
-#' @import ggplot2
+#' 
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
@@ -80,8 +80,8 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
     df <- dplyr::bind_rows(df, mn)
     df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
-    gcPlot <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Filename, fill = Freq)) +
-      ggplot2::labs(fill = "Frequency")
+    gcPlot <- ggplot(df, aes(x = GC_Content, y = Filename, fill = Freq)) +
+      labs(fill = "Frequency")
 
   }
   else{
@@ -95,17 +95,17 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
     df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
     # Initialise the plot using counts
-    gcPlot <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Filename, fill= Count)) +
-      ggplot2::labs(fill = "Count")
+    gcPlot <- ggplot(df, aes(x = GC_Content, y = Filename, fill= Count)) +
+      labs(fill = "Count")
 
   }
 
   # Add the rest of the plotting detail
   gcPlot <- gcPlot  +
     geom_tile() +
-    ggplot2::xlab("GC Content") +
-    ggplot2::theme_bw() +
-    ggplot2::scale_x_continuous(expand = c(0, 0))
+    xlab("GC Content") +
+    theme_bw() +
+    scale_x_continuous(expand = c(0, 0))
 
   # Draw the plot
   gcPlot

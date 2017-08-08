@@ -46,7 +46,7 @@
 #' # Check the top 2 sequences with No Hit from each R1 file
 #' plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
@@ -155,16 +155,16 @@ plotOverrepresentedHeatmapPlotly <- function(x,
 
 
     p <- dfLong %>%
-      ggplot2::ggplot(ggplot2::aes(x = Seq, y = Filename, fill = Percentage)) +
-      ggplot2::geom_tile() +
-      ggplot2::scale_fill_gradient(low = low, high = high, na.value = naCol) +
-      ggplot2::theme_bw() +
-      ggplot2::theme(axis.text= ggplot2::element_blank(),
-                     axis.ticks= ggplot2::element_blank(),
-                     panel.grid = ggplot2::element_blank())
+      ggplot(aes(x = Seq, y = Filename, fill = Percentage)) +
+      geom_tile() +
+      scale_fill_gradient(low = low, high = high, na.value = naCol) +
+      theme_bw() +
+      theme(axis.text= element_blank(),
+                     axis.ticks= element_blank(),
+                     panel.grid = element_blank())
 
-    d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-      ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
+    d <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
                                                                 panel.background = element_blank(),
                                                                 legend.position="none",
                                                                 axis.title=element_blank(),
@@ -186,16 +186,16 @@ plotOverrepresentedHeatmapPlotly <- function(x,
 
 
     p <- df %>%
-      ggplot2::ggplot(ggplot2::aes(x = Seq_Source, y = Filename, fill = Percentage)) +
-      ggplot2::geom_tile() +
-      ggplot2::scale_fill_gradient(low = low, high = high, na.value = naCol) +
-      ggplot2::theme_bw() +
-      ggplot2::theme(axis.text= ggplot2::element_blank(),
-                     axis.ticks= ggplot2::element_blank(),
-                     panel.grid = ggplot2::element_blank())
+      ggplot(aes(x = Seq_Source, y = Filename, fill = Percentage)) +
+      geom_tile() +
+      scale_fill_gradient(low = low, high = high, na.value = naCol) +
+      theme_bw() +
+      theme(axis.text= element_blank(),
+                     axis.ticks= element_blank(),
+                     panel.grid = element_blank())
 
-    d <- ggplot2::ggplot(t, aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(aes(fill = Status)) +
-      ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
+    d <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
                                                                 panel.background = element_blank(),
                                                                 legend.position="none",
                                                                 axis.title=element_blank(),

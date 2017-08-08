@@ -53,7 +53,7 @@
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
 #' @import tidyr
-#' @import ggplot2
+#' 
 #' @import scales
 #' @import plotly
 #' @importFrom dplyr group_by
@@ -141,18 +141,18 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
     df <- dplyr::mutate(df, Frequency = as.numeric(Value),
                         GC_Content = as.integer(GC_Content),
                         Filename = factor(Filename, levels = unique(Filename)))
-    GCheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Filename, fill = Frequency))
+    GCheatmap <- ggplot(df, aes(x = GC_Content, y = Filename, fill = Frequency))
   }else{
     df <- dplyr::mutate(df, Counts = as.numeric(Value),
                         GC_Content = as.integer(GC_Content),
                         Filename = factor(Filename, levels = unique(Filename)))
-    GCheatmap <- ggplot2::ggplot(df, ggplot2::aes(x = GC_Content, y = Filename, fill = Counts))
+    GCheatmap <- ggplot(df, aes(x = GC_Content, y = Filename, fill = Counts))
   }
 
- GCheatmap <- GCheatmap + ggplot2::geom_tile() +
-    ggplot2::theme(panel.grid.minor = ggplot2::element_blank(),
-                   panel.background = ggplot2::element_blank()) +
-    ggplot2::scale_fill_gradientn(colours = viridisLite::inferno(50))
+ GCheatmap <- GCheatmap + geom_tile() +
+    theme(panel.grid.minor = element_blank(),
+                   panel.background = element_blank()) +
+    scale_fill_gradientn(colours = viridisLite::inferno(50))
 
  if(usePlotly){
 
@@ -165,8 +165,8 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     key <- t$FilenameFull
 
-    sideBar <- ggplot2::ggplot(t, ggplot2::aes(x = 1, y = Filename, key = key)) + ggplot2::geom_tile(ggplot2::aes(fill = Status)) +
-      ggplot2::scale_fill_manual(values = col) + ggplot2::theme(panel.grid.minor = element_blank(),
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
                                                                 panel.background = element_blank(),
                                                                 legend.position="none",
                                                                 axis.title=element_blank(),
@@ -177,13 +177,13 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
     #plot dendrogram
     if(dendrogram){
       ggdend <- function(df) {
-        ggplot2::ggplot() +
-          ggplot2::geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
+        ggplot() +
+          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
       }
 
       dx <- ggdendro::dendro_data(clus)
-      dendro <- ggdend(dx$segments) + ggplot2::coord_flip() +
-        ggplot2::scale_y_reverse(expand = c(0, 1)) + ggplot2::scale_x_continuous(expand = c(0,1))
+      dendro <- ggdend(dx$segments) + coord_flip() +
+        scale_y_reverse(expand = c(0, 1)) + scale_x_continuous(expand = c(0,1))
 
 
       GCheatmap <- plotly::subplot(dendro, sideBar, GCheatmap, widths = c(0.3, 0.1,0.6), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "GC Content (%)"))

@@ -38,7 +38,7 @@
 #'
 #' @return Returns a ggplot object.
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #'
 #' @export
@@ -64,19 +64,19 @@ plotReadTotals <- function(x, subset, millions,
 
   # Setup the basic plot in millions or not
   if (millions){
-    rtPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Total_Sequences/1e06)) +
-      ggplot2::labs(y = "Total Reads (millions)")
+    rtPlot <- ggplot(df, aes(x = Filename, y = Total_Sequences/1e06)) +
+      labs(y = "Total Reads (millions)")
   }
   else{
-    rtPlot <- ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Total_Sequences)) +
-      ggplot2::labs(y = "Total Reads")
+    rtPlot <- ggplot(df, aes(x = Filename, y = Total_Sequences)) +
+      labs(y = "Total Reads")
   }
 
   # Add the rest of the parameters
   rtPlot <- rtPlot +
-    ggplot2::geom_bar(stat = "identity") +
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+    geom_bar(stat = "identity") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
   # Draw the plot
   rtPlot

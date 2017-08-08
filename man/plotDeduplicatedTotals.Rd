@@ -69,4 +69,5 @@ plotDeduplicatedTotals(fdl)
 # Draw the plot with stacked bars
 plotDeduplicatedTotals(fdl, bars = "stacked")
 
+
 }

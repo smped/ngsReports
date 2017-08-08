@@ -33,7 +33,7 @@
 #' # Another example which isn't ideal
 #' plotOverrepresentedSummary(fdl)
 #'
-#' @import ggplot2
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr mutate
 #' @importFrom dplyr group_by
@@ -70,11 +70,11 @@ plotOverrepresentedSummary <- function(x, subset, source = "(Primer|Adapter)",
     dplyr::group_by(Filename, Type) %>%
     dplyr::summarise(Percentage = sum(Percentage))
 
-  ggplot2::ggplot(df, ggplot2::aes(x = Filename, y = Percentage, fill = Type)) +
-    ggplot2::geom_bar(stat = "identity") +
-    ggplot2::ylab("Overrepresented Sequences (% of Total)") +
-    ggplot2::scale_fill_manual(values = c(col1, col2)) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5))
+  ggplot(df, aes(x = Filename, y = Percentage, fill = Type)) +
+    geom_bar(stat = "identity") +
+    ylab("Overrepresented Sequences (% of Total)") +
+    scale_fill_manual(values = c(col1, col2)) +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
 }
