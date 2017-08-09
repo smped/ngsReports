@@ -7,6 +7,7 @@
 #' @docType methods
 #'
 #' @importFrom graphics plot
+#' @importFrom graphics pie
 #'
 #' @export
 #' @rdname PwfCols-methods

@@ -24,7 +24,6 @@
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
 #'
-#' @return A standard ggplot2 object
 #'
 #' @examples
 #'
@@ -46,17 +45,24 @@
 #' # Check the top 2 sequences with No Hit from each R1 file
 #' plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 #'
-#'
-#' @importFrom stringr str_detect
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarise
-#' @importFrom dplyr arrange
-#' @importFrom dplyr slice
-#' @importFrom dplyr filter
-#'
-#'
-#' @importFrom reshape2 dcast
-#' @importFrom reshape2 melt
+#' @importFrom magrittr %>%
+#' @importFrom grDevices rgb
+#' @importFrom stats as.dendrogram
+#' @importFrom stats order.dendrogram
+#' @importFrom ggdendro theme_dendro
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 geom_segment
+#' @importFrom ggplot2 scale_fill_gradient
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_y_discrete
+#' @importFrom ggplot2 scale_y_reverse
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 coord_flip
 #'
 #' @export
 plotOverrepresentedHeatmapPlotly <- function(x,
@@ -122,7 +128,6 @@ plotOverrepresentedHeatmapPlotly <- function(x,
   }
   df <- dplyr::filter(df, Sequence %in% topSeq)
 
-
   # Create a column which merges the Sequnce & Possible_Source
   df$Seq_Source <- with(df,
                         paste0(Sequence, "\n(", Possible_Source, ")"))
@@ -163,8 +168,8 @@ plotOverrepresentedHeatmapPlotly <- function(x,
     scale_fill_gradient(low = low, high = high, na.value = naCol) +
     scale_x_discrete(expand = c(0, 0)) +
     scale_y_discrete(expand = c(0, 0))  +
-    ggplot2::theme(panel.grid = ggplot2::element_blank(),
-                   panel.background = ggplot2::element_blank())
+    theme(panel.grid = element_blank(),
+          panel.background = element_blank())
 
   if(usePlotly){
     t <- dplyr::filter(getSummary(fdl), Category == "Overrepresented sequences")
@@ -172,36 +177,40 @@ plotOverrepresentedHeatmapPlotly <- function(x,
     if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
       t <- dplyr::mutate(t, FilenameFull = Filename,
                          Filename = gsub(pattern[1], "\\1", t$Filename),
-                         Filename = factor(Filename, levels = unique(df$Filename)))
-    }else{
-      t <- dplyr::mutate(t, FilenameFull = Filename,
-                         Filename = factor(Filename, levels = unique(df$Filename)))
+                         Filename = factor(Filename, levels = unique(Filename)))
+    }
+    else{
+      t <- dplyr::mutate(t,
+                         FilenameFull = Filename,
+                         Filename = factor(Filename, levels = unique(Filename)))
     }
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     key <- t$FilenameFull
 
-    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
-      scale_fill_manual(values = col) + theme(panel.grid.minor = ggplot2::element_blank(),
-                                              panel.background = ggplot2::element_blank(),
-                                              legend.position="none",
-                                              axis.title=ggplot2::element_blank(),
-                                              axis.text=ggplot2::element_blank(),
-                                              axis.ticks=ggplot2::element_blank())
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
+      geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_blank(),
+            legend.position="none",
+            axis.title = element_blank(),
+            axis.text = element_blank(),
+            axis.ticks = element_blank())
     sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
 
-    ORheatmap <- ORheatmap + ggplot2::theme(axis.text = ggplot2::element_blank(),
-                                            axis.ticks = ggplot2::element_blank())
+    ORheatmap <- ORheatmap +
+      theme(axis.text = element_blank(), axis.ticks = element_blank())
 
     #plot dendrogram
     if(dendrogram && clusterNames){
       ggdend <- function(df) {
         ggplot() +
           geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
-          ggdendro::theme_dendro()
+          theme_dendro()
       }
 
       dx <- ggdendro::dendro_data(clus)
-      dendro <- ggdend(dx$segments) +
+      dendro <- dendextend::ggdend(dx$segments) +
         coord_flip() +
         scale_y_reverse(expand = c(0, 1)) +
         scale_x_continuous(expand = c(0,1))
@@ -209,17 +218,22 @@ plotOverrepresentedHeatmapPlotly <- function(x,
       dendro <- plotly::ggplotly(dendro) %>%
         plotly::layout(margin = list(b = 0, t = 0))
 
-      ORheatmap <- plotly::subplot(dendro, sideBar, ORheatmap, widths = c(0.2, 0.1,0.7),
-                                   margin = 0, shareY = TRUE) %>%
-        plotly::layout(xaxis3 = list(title = "Overrepresented Sequence", plot_bgcolor = "white"))
+      ORheatmap <- plotly::subplot(dendro, sideBar, ORheatmap,
+                                   widths = c(0.2, 0.1,0.7), margin = 0,
+                                   shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Overrepresented Sequence",
+                                     plot_bgcolor = "white"))
     }else{
       ORheatmap <- plotly::subplot(sideBar, ORheatmap, widths = c(0.1,0.9),
                                    margin = 0, shareY = TRUE) %>%
-        plotly::layout(xaxis2 = list(title = "Overrepresented Sequence", plot_bgcolor = "white"))
+        plotly::layout(xaxis2 = list(title = "Overrepresented Sequence",
+                                     plot_bgcolor = "white"))
     }
   }else{
-    ORheatmap <- ORheatmap + ggplot2::theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-                                            panel.grid = element_blank()) + ggplot2::coord_flip() +
+    ORheatmap <- ORheatmap +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+            panel.grid = element_blank()) +
+      coord_flip() +
       xlab("Filename") +
       ylab("Sequence")
   }

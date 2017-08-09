@@ -12,12 +12,14 @@
 #'
 #' @docType methods
 #'
+#' 
+#'
 #' @export
 setMethod("FastqcFileList", "character",
           function(path)
           {
             fls <- lapply(path, FastqcFile)
-            names(fls) <- basename(path)        
+            names(fls) <- basename(path)
             new("FastqcFileList", fls)
           })
 

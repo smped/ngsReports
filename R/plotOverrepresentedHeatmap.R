@@ -44,15 +44,14 @@
 #' # Check the top 2 sequences with No Hit from each R1 file
 #' plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 #'
-#' 
+#'
 #' @importFrom stringr str_detect
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
 #' @importFrom dplyr arrange
 #' @importFrom dplyr slice
 #' @importFrom dplyr filter
-#' 
-#' 
+#' @importFrom grDevices rgb
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #'

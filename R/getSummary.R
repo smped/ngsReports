@@ -10,6 +10,7 @@
 #' @importFrom readr read_delim
 #' @importFrom stringr str_split_fixed
 #' @importFrom tibble as_tibble
+#' @importFrom utils unzip
 #'
 #' @include AllGenerics.R
 #'

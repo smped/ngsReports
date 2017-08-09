@@ -39,16 +39,22 @@
 #' # Using counts
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
-#' 
-#' 
-#' 
-#' @importFrom dplyr group_by
-#' @importFrom dplyr mutate
-#' @importFrom dplyr ungroup
-#' @importFrom dplyr filter
-#' @importFrom dplyr select
-#' @importFrom dplyr summarise
-#' 
+#'
+#' @importFrom stats as.dendrogram
+#' @importFrom stats order.dendrogram
+#' @importFrom stats dist
+#' @importFrom stats hclust
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_segment
+#' @importFrom ggplot2 geom_raster
+#' @importFrom ggplot2 scale_fill_gradientn
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 coord_flip
+#' @importFrom ggplot2 scale_y_reverse
+#' @importFrom ggplot2 scale_x_continuous
 #'
 #' @export
 plotNContentPlotly <- function(x,
@@ -82,8 +88,8 @@ plotNContentPlotly <- function(x,
   }
 
 
-  df <- dplyr::rename(df, Percentage = `N-Count`) %>%
-    dplyr::mutate(Base = factor(Base, levels = unique(Base)))
+  df <- dplyr::rename(df, Percentage = `N-Count`)
+  df <- dplyr::mutate(df, Base = factor(Base, levels = unique(Base)))
   df <- dplyr::mutate(df,
                       Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
                       Start = as.integer(Start))
@@ -91,7 +97,8 @@ plotNContentPlotly <- function(x,
   # Define the colour palette
   col <- getColours(pwfCols)
 
-  basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence) %>%
+  basicStat <- Basic_Statistics(x) %>%
+    dplyr::select(Filename, Longest_sequence) %>%
     dplyr::mutate(Filename = gsub(pattern[1], "\\1", .$Filename))
   df <- dplyr::right_join(df, basicStat, by = "Filename")
 
@@ -121,15 +128,17 @@ plotNContentPlotly <- function(x,
     df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percentage")
   }
 
-    df <- dplyr::mutate(df, Percentage = as.numeric(Percentage),
-                        Start = as.integer(Start),
-                        Filename = factor(Filename, levels = unique(Filename)))
-    Nheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Percentage)) + geom_raster() +
-      scale_fill_gradientn(colours = c(col["PASS"], col["PASS"], col["WARN"], col["WARN"], col["FAIL"], col["FAIL"]),
-                                    values = scales::rescale(c(0,5,5,20,20,30)),
-                                    guide = "colorbar", limits=c(0, 40), breaks = c(0, 5, 10, 20, 40)) +
-      theme(panel.grid.minor = element_blank(),
-                     panel.background = element_blank())
+  df <- dplyr::mutate(df, Percentage = as.numeric(Percentage),
+                      Start = as.integer(Start),
+                      Filename = factor(Filename, levels = unique(Filename)))
+  Nheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Percentage)) +
+    geom_raster() +
+    scale_fill_gradientn(colours = c(col["PASS"], col["PASS"], col["WARN"], col["WARN"], col["FAIL"], col["FAIL"]),
+                         values = scales::rescale(c(0,5,5,20,20,30)),
+                         guide = "colorbar", limits=c(0, 40),
+                         breaks = c(0, 5, 10, 20, 40)) +
+    theme(panel.grid.minor = element_blank(),
+          panel.background = element_blank())
 
   if(usePlotly){
     t <- dplyr::filter(getSummary(x), Category == "Per base N content")
@@ -139,35 +148,46 @@ plotNContentPlotly <- function(x,
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     key <- t$FilenameFull
 
-    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
-      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
-                                                                panel.background = element_blank(),
-                                                                legend.position="none",
-                                                                axis.title=element_blank(),
-                                                                axis.text=element_blank(),
-                                                                axis.ticks=element_blank())
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
+      geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_blank(),
+            legend.position = "none",
+            axis.title = element_blank(),
+            axis.text = element_blank(),
+            axis.ticks = element_blank())
     sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
 
     #plot dendrogram
     if(dendrogram){
       ggdend <- function(df) {
         ggplot() +
-          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
+          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
+          ggdendro::theme_dendro()
       }
 
       dx <- ggdendro::dendro_data(clus)
-      dendro <- ggdend(dx$segments) + coord_flip() + scale_y_reverse(expand = c(0, 1)) + scale_x_continuous(expand = c(0,1))
+      dendro <- ggdend(dx$segments) +
+        coord_flip() +
+        scale_y_reverse(expand = c(0, 1)) +
+        scale_x_continuous(expand = c(0,1))
 
-      dendro <- plotly::ggplotly(dendro) %>% plotly::layout(margin = list(b = 0, t = 0))
+      dendro <- plotly::ggplotly(dendro) %>%
+        plotly::layout(margin = list(b = 0, t = 0))
 
-      Nheatmap <- plotly::subplot(dendro, sideBar, Nheatmap, widths = c(0.2, 0.1,0.7), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
-    }else{
-      Nheatmap <- plotly::subplot(sideBar, Nheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+      Nheatmap <- plotly::subplot(dendro, sideBar, Nheatmap,
+                                  widths = c(0.2, 0.1,0.7), margin = 0,
+                                  shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
     }
-
-
-  }else{
-    Nheatmap
+    else{
+      Nheatmap <- plotly::subplot(sideBar, Nheatmap,
+                                  widths = c(0.1,0.9), margin = 0,
+                                  shareY = TRUE) %>%
+        plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+    }
   }
+
   Nheatmap
 }

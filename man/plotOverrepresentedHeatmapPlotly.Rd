@@ -43,9 +43,6 @@ fastqc data will be clustered using heirachial clustering}
 \item{pwfcols}{Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
 values in plot}
 }
-\value{
-A standard ggplot2 object
-}
 \description{
 Plot Overrepresented Sequences across an entire library
 }
@@ -68,6 +65,5 @@ plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
 
 # Check the top 2 sequences with No Hit from each R1 file
 plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
-
 
 }

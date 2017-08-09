@@ -58,6 +58,4 @@ plotGcHeatmap(fdl)
 plotGcHeatmap(fdl, counts = TRUE)
 
 
-
-
 }

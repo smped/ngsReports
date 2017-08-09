@@ -33,12 +33,12 @@
 #' # Another example which isn't ideal
 #' plotOverrepresentedSummary(fdl)
 #'
-#' 
+#'
 #' @importFrom stringr str_detect
 #' @importFrom dplyr mutate
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
-#' 
+#' @importFrom grDevices rgb
 #'
 #' @export
 plotOverrepresentedSummary <- function(x, subset, source = "(Primer|Adapter)",

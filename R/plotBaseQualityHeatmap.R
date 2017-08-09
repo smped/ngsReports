@@ -41,8 +41,6 @@
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
 #'
-#'
-#' 
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
@@ -52,6 +50,8 @@
 #' @importFrom dplyr right_join
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
+#' @importFrom stats as.dendrogram
+#' @importFrom stats order.dendrogram
 #'
 #' @export
 plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",

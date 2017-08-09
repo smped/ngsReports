@@ -14,6 +14,8 @@
 #' @include AllClasses.R
 #' @include AllGenerics.R
 #'
+#' 
+#'
 #' @export
 setMethod("FastqcFile", "character",
           function(filePath){

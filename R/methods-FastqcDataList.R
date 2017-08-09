@@ -16,6 +16,7 @@
 #'
 #' @importFrom dplyr bind_rows
 #' @importFrom dplyr data_frame
+#' 
 #'
 #' @export
 setMethod("path", "FastqcDataList", function(object){vapply(object@.Data, path, character(1))})
