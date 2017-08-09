@@ -36,9 +36,22 @@
 #' r1 <- grepl("R1", fileNames(fdl))
 #' plotBaseQualities(fdl, subset = r1 )
 #'
-#' 
-#' @importFrom stringr str_detect
-#' @importFrom dplyr mutate
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 annotate
+#' @importFrom ggplot2 geom_crossbar
+#' @importFrom ggplot2 geom_segment
+#' @importFrom ggplot2 geom_linerange
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 element_text
 #'
 #' @export
 plotBaseQualities <- function(x, subset, nc = 2, pwfCols,

@@ -46,24 +46,3 @@ values in plot}
 \description{
 Plot Overrepresented Sequences across an entire library
 }
-\examples{
-
-# Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
-
-# Load the FASTQC data as a FastqcDataList
-fdl <- getFastqcData(fileList)
-
-# Another example which isn't ideal
-plotOverrepresentedHeatmap(fdl)
-
-# Dig a bit deeper
-plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
-
-# Check the top 2 sequences with No Hit from each R1 file
-plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
-
-}

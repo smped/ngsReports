@@ -16,7 +16,8 @@
 #' Can be any of the columns returned by \code{\link{Per_base_sequence_quality}}.
 #' Defaults to \code{value = "Mean"}.
 #' Can additionally set to "all" to plot all available quantities
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param pwfCols Object of class \code{PwfCols} containing the colours for PASS/WARN/FAIL.
+#' Defaults to the object \code{pwf}
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
@@ -44,12 +45,15 @@
 #' # Plot the R1 files showing the Mean and Lower_Quartile
 #' plotCombinedBaseQualities(fdl, subset = r1, value = c("Mean", "Lower_Quartile"))
 #'
-#' 
-#' @importFrom stringr str_detect
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#' @importFrom dplyr one_of
-#' @importFrom reshape2 melt
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 annotate
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 theme_bw
 #'
 #' @export
 plotCombinedBaseQualities <- function(x, subset, value = "Mean", pwfCols,
@@ -57,6 +61,10 @@ plotCombinedBaseQualities <- function(x, subset, value = "Mean", pwfCols,
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
+
+  # Sort out the colours
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+  stopifnot(isValidPwf(pwfCols))
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))

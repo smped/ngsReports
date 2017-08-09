@@ -31,8 +31,17 @@
 #' # Check the overall PASS/WARN/FAIL status
 #' plotSummary(fdl)
 #'
-#' 
-#' @importFrom stringr str_detect
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 scale_fill_gradientn
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 scale_y_discrete
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_blank
 #'
 #' @export
 plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
@@ -77,7 +86,7 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
                       axis.ticks.x = element_blank(),
                       legend.position = "none")
 
-       ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status"))
+       plotly::ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status"))
 
    }else{
      ggplot(df, aes(x = Filename, y = Category, fill = Status)) +

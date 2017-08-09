@@ -57,6 +57,7 @@ r1 <- grepl("R1", fileNames(fdl))
 
 # Customise using the R1 subset, plotting counts,
 # and faceting after the initial function call
+library(ggplot2)
 plotSequenceQualities(fdl, subset = r1, counts = TRUE) +
   facet_wrap(~Filename, ncol = 2)
 
