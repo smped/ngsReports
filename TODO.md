@@ -10,12 +10,9 @@
 - Add `plotBaseContent` ***Funcitonal (check)***
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Incorporate bowtie2 & cufflinks output?
-- Fix package import problems with fastqc shiny app (cward)
 - Write Vignette
-- Incorporate subsetting by pattern in Shiny App
-- Add dendrogram to plots
+- Add dendrogram to plot in shiny app
 - Sort out devtools::check() namespace issues for plotly, readr, reshape2, shiny, stringrand tidyr
 - Flip Total Read Plot
-- Tidy up redundant code
-- Set usePlotly in all plots and modify the body of each function to reflect these changes
 - make dependencies script for install 
+- make 'output all plots to pdf' function
