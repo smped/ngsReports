@@ -41,7 +41,7 @@
 #'
 #' 
 #' 
-#' @import plotly
+#' 
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
