@@ -25,25 +25,6 @@
 #' fastqc data will be clustered using heirachial clustering
 #'
 #'
-#' @examples
-#'
-#' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
-#'
-#' # Load the FASTQC data as a FastqcDataList
-#' fdl <- getFastqcData(fileList)
-#'
-#' # Another example which isn't ideal
-#' plotOverrepresentedHeatmap(fdl)
-#'
-#' # Dig a bit deeper
-#' plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
-#'
-#' # Check the top 2 sequences with No Hit from each R1 file
-#' plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 #'
 #' @importFrom magrittr %>%
 #' @importFrom grDevices rgb
@@ -51,6 +32,7 @@
 #' @importFrom stats order.dendrogram
 #' @importFrom ggdendro theme_dendro
 #' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_tile
 #' @importFrom ggplot2 geom_segment
 #' @importFrom ggplot2 scale_fill_gradient
@@ -210,7 +192,7 @@ plotOverrepresentedHeatmapPlotly <- function(x,
       }
 
       dx <- ggdendro::dendro_data(clus)
-      dendro <- dendextend::ggdend(dx$segments) +
+      dendro <- ggdend(dx$segments) +
         coord_flip() +
         scale_y_reverse(expand = c(0, 1)) +
         scale_x_continuous(expand = c(0,1))

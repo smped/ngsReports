@@ -66,9 +66,8 @@ r1 <- grepl("R1", fileNames(fdl))
 plotAdapterContent(fdl, subset = r1)
 
 # Plot just the Universal Adapter, and change the y-axis
+library(ggplot2)
 plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
 scale_y_continuous()
-
-
 
 }

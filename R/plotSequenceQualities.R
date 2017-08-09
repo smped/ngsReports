@@ -41,13 +41,19 @@
 #'
 #' # Customise using the R1 subset, plotting counts,
 #' # and faceting after the initial function call
+#' library(ggplot2)
 #' plotSequenceQualities(fdl, subset = r1, counts = TRUE) +
 #'   facet_wrap(~Filename, ncol = 2)
 #'
-#' 
-#' @importFrom dplyr group_by
-#' @importFrom dplyr mutate
-#' @importFrom dplyr ungroup
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 annotate
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 theme_bw
 #'
 #' @export
 plotSequenceQualities <- function(x, subset, counts = FALSE, pwfCols,

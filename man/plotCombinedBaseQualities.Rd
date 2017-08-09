@@ -19,7 +19,8 @@ Can be any of the columns returned by \code{\link{Per_base_sequence_quality}}.
 Defaults to \code{value = "Mean"}.
 Can additionally set to "all" to plot all available quantities}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+\item{pwfCols}{Object of class \code{PwfCols} containing the colours for PASS/WARN/FAIL.
+Defaults to the object \code{pwf}}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
 

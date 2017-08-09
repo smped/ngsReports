@@ -48,15 +48,23 @@
 #' plotAdapterContent(fdl, subset = r1)
 #'
 #' # Plot just the Universal Adapter, and change the y-axis
+#' library(ggplot2)
 #' plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
 #' scale_y_continuous()
 #'
-#'
-#' 
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#' @importFrom reshape2 melt
-#' @importFrom stringr str_detect
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 facet_wrap
+#' @importFrom ggplot2 scale_fill_gradientn
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 annotate
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
 #'
 #' @export
 plotAdapterContent <- function(x, subset,
@@ -113,8 +121,7 @@ plotAdapterContent <- function(x, subset,
 
   if (plotType == "heatmap"){
 
-    acPlot <- ggplot(df,
-                     aes(x = Position, y = Filename, fill = Percent)) +
+    acPlot <- ggplot(df, aes(x = Position, y = Filename, fill = Percent)) +
       geom_tile() +
       facet_wrap(~Type, ncol = nc)
 
@@ -132,18 +139,18 @@ plotAdapterContent <- function(x, subset,
   if (plotType == "line") {
     # Create the basic plot
     acPlot <- ggplot(df,
-                              aes(x = as.integer(Position), y = Percent, colour = Filename)) +
+                     aes(x = as.integer(Position), y = Percent, colour = Filename)) +
       annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 5,
-                        fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
+               fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
       annotate("rect", xmin = -Inf, xmax = Inf, ymin = 5, ymax = 10,
-                        fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
+               fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
       annotate("rect", xmin = -Inf, xmax = Inf, ymin = 10, ymax = Inf,
-                        fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
+               fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
       geom_line() +
       scale_y_continuous(limits = c(0, 100)) +
       scale_x_continuous(breaks = seq_along(levels(df$Position)),
-                                  labels = unique(df$Position),
-                                  expand = c(0, 0)) +
+                         labels = unique(df$Position),
+                         expand = c(0, 0)) +
       ylab("Percent (%)")
 
     # Add the basic customisations

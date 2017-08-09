@@ -38,8 +38,14 @@
 #'
 #' @return Returns a ggplot object.
 #'
-#' 
-#' @importFrom stringr str_detect
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
 #'
 #' @export
 plotReadTotals <- function(x, subset, millions,

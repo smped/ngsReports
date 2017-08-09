@@ -39,21 +39,26 @@
 #' plotOverrepresentedHeatmap(fdl)
 #'
 #' # Dig a bit deeper
+#' r1 <- grepl("R1", fileNames(fdl))
 #' plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
 #'
 #' # Check the top 2 sequences with No Hit from each R1 file
 #' plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 #'
-#'
-#' @importFrom stringr str_detect
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarise
-#' @importFrom dplyr arrange
-#' @importFrom dplyr slice
-#' @importFrom dplyr filter
-#' @importFrom grDevices rgb
-#' @importFrom reshape2 dcast
-#' @importFrom reshape2 melt
+#' @importFrom magrittr %>%
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 scale_fill_gradient
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 scale_y_discrete
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 coord_flip
 #'
 #' @export
 plotOverrepresentedHeatmap <- function(x,

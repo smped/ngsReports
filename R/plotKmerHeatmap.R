@@ -47,21 +47,21 @@
 #' ccR1 <- grepl("CC.+R1", fileNames(fdl))
 #' plotKmerHeatmap(fdl, subset = ccR1, method = "individual", nKmers = 3)
 #'
-#' 
-#' @importFrom stringr str_detect
-#' @importFrom dplyr mutate
-#' @importFrom dplyr filter
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarise
-#' @importFrom dplyr slice
-#' @importFrom dplyr select
-#' @importFrom dplyr arrange
-#' @importFrom dplyr if_else
-#' 
-#' 
-#' 
-#' @importFrom reshape2 dcast
-#' @importFrom reshape2 melt
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 scale_fill_gradient2
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 scale_y_discrete
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 coord_flip
 #'
 #' @export
 plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
