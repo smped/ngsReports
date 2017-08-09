@@ -40,8 +40,8 @@
 #' # Using counts
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
-#' 
-#' 
+#'
+#'
 #' @import plotly
 #' @import tidyr
 #' @importFrom dplyr group_by
@@ -51,7 +51,7 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
 #' @importFrom dplyr right_join
-#' 
+#'
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #'
@@ -88,8 +88,13 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
   }
 
   #get longest sequence
-  basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence) %>%
-    dplyr::mutate(Filename = gsub(pattern[1], "\\1", .$Filename))
+  basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence)
+
+  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+    basicStat <- dplyr::mutate(basicStat, Filename = gsub(pattern[1], "\\1", basicStat$Filename))
+    }
+
+
   df <- dplyr::right_join(df, basicStat, by = "Filename")
 
   #initialize for Mean Base quality
@@ -141,11 +146,17 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
         theme(panel.grid.minor = element_blank(),
                        panel.background = element_blank())
 
-      if(usePlotly){
-        t <- dplyr::filter(getSummary(fdl), Category == "Per base sequence quality")
-        t <- dplyr::mutate(t, FilenameFull = Filename,
-                           Filename = gsub(pattern[1], "\\1", t$Filename),
-                           Filename = factor(Filename, levels = unique(df$Filename)))
+       if(usePlotly){
+         t <- dplyr::filter(getSummary(fdl), Category == "Per base sequence quality")
+
+         if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+           t <- dplyr::mutate(t, FilenameFull = Filename,
+                              Filename = gsub(pattern[1], "\\1", t$Filename),
+                              Filename = factor(Filename, levels = unique(df$Filename)))
+         }else{
+           t <- dplyr::mutate(t, FilenameFull = Filename,
+                              Filename = factor(Filename, levels = unique(df$Filename)))
+         }
         t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
         key <- t$FilenameFull
 
