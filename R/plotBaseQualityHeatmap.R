@@ -42,8 +42,7 @@
 #'
 #'
 #'
-#' @import plotly
-#' @import tidyr
+#' 
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
@@ -51,7 +50,6 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
 #' @importFrom dplyr right_join
-#'
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #'
@@ -92,7 +90,7 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
 
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
     basicStat <- dplyr::mutate(basicStat, Filename = gsub(pattern[1], "\\1", basicStat$Filename))
-    }
+  }
 
 
   df <- dplyr::right_join(df, basicStat, by = "Filename")
@@ -103,97 +101,98 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
   }else{
     df <- dplyr::select(df, Filename, Start, Data = Median, Longest_sequence)
   }
-    #split data into correct lengths and fill NA's
-    df <- split(df, f = df['Filename']) %>%
-      lapply(function(x){
-        dfFill <- data.frame(Start = 1:x$Longest_sequence[1])
-        x <- dplyr::right_join(x, dfFill, by = "Start") %>%
-          zoo::na.locf()
-      }) %>%
-      dplyr::bind_rows() %>%
-      dplyr::mutate(Start = as.integer(Start)) %>%
-      dplyr::select(-Longest_sequence) %>%
-      reshape2::dcast(Filename ~ Start)
+  #split data into correct lengths and fill NA's
+  df <- split(df, f = df['Filename']) %>%
+    lapply(function(x){
+      dfFill <- data.frame(Start = 1:x$Longest_sequence[1])
+      x <- dplyr::right_join(x, dfFill, by = "Start") %>%
+        zoo::na.locf()
+    }) %>%
+    dplyr::bind_rows() %>%
+    dplyr::mutate(Start = as.integer(Start)) %>%
+    dplyr::select(-Longest_sequence) %>%
+    reshape2::dcast(Filename ~ Start)
 
-    # Convert from wide to long & set the correct variable types
+  # Convert from wide to long & set the correct variable types
 
-    #cluster names true hclust names
-    if(clusterNames){
-      xx <- dplyr::select(df, -Filename)
-      xx[is.na(xx)] <- 0
-      clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
-      row.ord <- order.dendrogram(clus)
-      df <- df[row.ord,]
-    }
-
-    df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Data")
-    if(type == "Mean"){
-      df <- dplyr::mutate(df, Mean = as.numeric(Data),
-                          Start = as.integer(Start),
-      Filename = factor(Filename, levels = unique(Filename)))
-    BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Mean))
-    }else{
-      df <- dplyr::mutate(df, Median = as.numeric(Data),
-                          Start = as.integer(Start),
-                          Filename = factor(Filename, levels = unique(Filename)))
-      BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Median))
-    }
-
-       BQheatmap <- BQheatmap + geom_tile() +
-        scale_fill_gradientn(colours = c(col["FAIL"], col["FAIL"],col["WARN"], col["WARN"], col["PASS"], col["PASS"]),
-                                      values = scales::rescale(c(0,20,20,30,30,40)),
-                                      guide = "colorbar", limits=c(0, 40), na.value = "white") +
-        theme(panel.grid.minor = element_blank(),
-                       panel.background = element_blank())
-
-       if(usePlotly){
-         t <- dplyr::filter(getSummary(fdl), Category == "Per base sequence quality")
-
-         if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-           t <- dplyr::mutate(t, FilenameFull = Filename,
-                              Filename = gsub(pattern[1], "\\1", t$Filename),
-                              Filename = factor(Filename, levels = unique(df$Filename)))
-         }else{
-           t <- dplyr::mutate(t, FilenameFull = Filename,
-                              Filename = factor(Filename, levels = unique(df$Filename)))
-         }
-        t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
-        key <- t$FilenameFull
-
-      sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
-        scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
-                                                                  panel.background = element_blank(),
-                                                                  legend.position="none",
-                                                                  axis.title=element_blank(),
-                                                                  axis.text=element_blank(),
-                                                                  axis.ticks=element_blank())
-      sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
-
-      #plot dendrogram
-      if(dendrogram){
-        ggdend <- function(df) {
-          ggplot() +
-            geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
-            ggdendro::theme_dendro()
-        }
-
-        dx <- ggdendro::dendro_data(clus)
-        dendro <- ggdend(dx$segments) +
-          coord_flip() +
-          scale_y_reverse(expand = c(0, 1)) +
-          scale_x_continuous(expand = c(0,1))
-
-        dendro <- plotly::ggplotly(dendro) %>%
-          plotly::layout(margin = list(b = 0, t = 0))
-
-        BQheatmap <- plotly::subplot(dendro, sideBar, BQheatmap, widths = c(0.2, 0.1,0.7), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
-      }else{
-        BQheatmap <- plotly::subplot(sideBar, BQheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
-      }
-
-
-      }else{
-      BQheatmap
-      }
-      BQheatmap
+  #cluster names true hclust names
+  if(clusterNames){
+    xx <- dplyr::select(df, -Filename)
+    xx[is.na(xx)] <- 0
+    clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+    row.ord <- order.dendrogram(clus)
+    df <- df[row.ord,]
   }
+
+  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Data")
+  if(type == "Mean"){
+    df <- dplyr::mutate(df, Mean = as.numeric(Data),
+                        Start = as.integer(Start),
+                        Filename = factor(Filename, levels = unique(Filename)))
+    BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Mean))
+  }else{
+    df <- dplyr::mutate(df, Median = as.numeric(Data),
+                        Start = as.integer(Start),
+                        Filename = factor(Filename, levels = unique(Filename)))
+    BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Median))
+  }
+
+  BQheatmap <- BQheatmap + geom_tile() +
+    scale_fill_gradientn(colours = c(col["FAIL"], col["FAIL"],col["WARN"], col["WARN"], col["PASS"], col["PASS"]),
+                         values = scales::rescale(c(0,20,20,30,30,40)),
+                         guide = "colorbar", limits=c(0, 40), na.value = "white") +
+    theme(panel.grid.minor = element_blank(),
+          panel.background = element_blank())
+
+  if(usePlotly){
+    t <- dplyr::filter(getSummary(fdl), Category == "Per base sequence quality")
+
+    if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+      t <- dplyr::mutate(t, FilenameFull = Filename,
+                         Filename = gsub(pattern[1], "\\1", t$Filename),
+                         Filename = factor(Filename, levels = unique(df$Filename)))
+    }else{
+      t <- dplyr::mutate(t, FilenameFull = Filename,
+                         Filename = factor(Filename, levels = unique(df$Filename)))
+    }
+    t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+    key <- t$FilenameFull
+
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
+                                              panel.background = element_blank(),
+                                              legend.position="none",
+                                              axis.title=element_blank(),
+                                              axis.text=element_blank(),
+                                              axis.ticks=element_blank())
+    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+
+    #plot dendrogram
+    if(dendrogram){
+      ggdend <- function(df) {
+        ggplot() +
+          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
+          ggdendro::theme_dendro()
+      }
+
+      dx <- ggdendro::dendro_data(clus)
+      dendro <- ggdend(dx$segments) +
+        coord_flip() +
+        scale_y_reverse(expand = c(0, 1)) +
+        scale_x_continuous(expand = c(0,1))
+
+      dendro <- plotly::ggplotly(dendro) %>%
+        plotly::layout(margin = list(b = 0, t = 0))
+
+      BQheatmap <- plotly::subplot(dendro, sideBar, BQheatmap, widths = c(0.2, 0.1,0.7), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
+    }
+    else{
+      BQheatmap <- plotly::subplot(sideBar, BQheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+    }
+
+
+  }else{
+    BQheatmap
+  }
+  BQheatmap
+}

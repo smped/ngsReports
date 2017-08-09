@@ -4,10 +4,11 @@
 \alias{plotOverrepresentedHeatmapPlotly}
 \title{Plot Overrepresented Sequnces As a Heatmap}
 \usage{
-plotOverrepresentedHeatmapPlotly(x, subset, pwfCols, nSeq = 20, type = ".+",
+plotOverrepresentedHeatmapPlotly(x, subset, pwfCols, nSeq = 5, type = ".+",
   method = "Individual", low = rgb(0.2, 0, 0.2), high = rgb(1, 0, 0),
   naCol = "grey80", pattern = "(.+)\\\\.(fastq|fq).*",
-  clusterNames = TRUE)
+  clusterNames = FALSE, usePlotly = FALSE, trimNames = TRUE,
+  dendrogram = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

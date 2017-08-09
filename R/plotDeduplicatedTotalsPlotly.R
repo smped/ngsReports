@@ -49,7 +49,7 @@
 #' plotDeduplicatedTotals(fdl, bars = "stacked")
 #'
 #' 
-#' @import plotly
+#' 
 #' @importFrom stringr str_detect
 #' @importFrom dplyr rename
 #' @importFrom dplyr left_join

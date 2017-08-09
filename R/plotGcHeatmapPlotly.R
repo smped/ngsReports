@@ -52,17 +52,15 @@
 #' # Using counts
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
-#' @import tidyr
+#'
 #' 
-#' 
-#' @import plotly
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
 #' @importFrom dplyr filter
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
-#' 
+#'
 #'
 #' @export plotGCHeatmapPlotly
 plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq).*",
@@ -149,12 +147,12 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
     GCheatmap <- ggplot(df, aes(x = GC_Content, y = Filename, fill = Counts))
   }
 
- GCheatmap <- GCheatmap + geom_tile() +
+  GCheatmap <- GCheatmap + geom_tile() +
     theme(panel.grid.minor = element_blank(),
-                   panel.background = element_blank()) +
+          panel.background = element_blank()) +
     scale_fill_gradientn(colours = viridisLite::inferno(50))
 
- if(usePlotly){
+  if(usePlotly){
 
     om_col <- data.frame(Status = NA, Category = NA, Filename = "Observed Mean")
 
@@ -167,11 +165,11 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
 
     sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
       scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
-                                                                panel.background = element_blank(),
-                                                                legend.position="none",
-                                                                axis.title=element_blank(),
-                                                                axis.text=element_blank(),
-                                                                axis.ticks=element_blank())
+                                              panel.background = element_blank(),
+                                              legend.position="none",
+                                              axis.title=element_blank(),
+                                              axis.text=element_blank(),
+                                              axis.ticks=element_blank())
     sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
 
     #plot dendrogram
@@ -191,8 +189,8 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
       GCheatmap <- plotly::subplot(sideBar, GCheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "GC Content (%)"))
     }
 
- }else{
-   GCheatmap
- }
-GCheatmap
+  }else{
+    GCheatmap
   }
+  GCheatmap
+}
