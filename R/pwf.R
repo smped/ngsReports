@@ -17,6 +17,8 @@
 #'  # Make a pie chart showing the default colours
 #' plot(pwf)
 #'
+#' 
+#'
 #' @rdname pwf
 #' @export
 pwf <- new("PwfCols",

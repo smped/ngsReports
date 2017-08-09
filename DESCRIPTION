@@ -7,7 +7,7 @@ Authors@R: c(
     person("Christopher", "Ward", , "christopher.ward@adelaide.edu.au", c("aut"))
     )
 Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
-Description: Load FastQC reports and other output summaries into R
+Description: Load FastQC reports and other NGS output summaries into R.
 License: LGPL (>= 2)
 Encoding: UTF-8
 Imports: 
@@ -17,6 +17,7 @@ Imports:
   ggplot2,
   lubridate,
   magrittr,
+  methods,
   plotly,
   readr,
   reshape2,
@@ -24,6 +25,7 @@ Imports:
   scales,
   shiny,
   ShortRead,
+  stats,
   stringr,
   tibble,
   viridis,

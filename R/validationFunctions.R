@@ -1,3 +1,5 @@
+#' @importFrom utils unzip
+#'
 isValidFastqcFile <- function(object){
 
   path <- path(object)

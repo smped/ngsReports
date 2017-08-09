@@ -67,5 +67,4 @@ plotDeduplicatedTotals(fdl)
 plotDeduplicatedTotals(fdl, bars = "stacked")
 
 
-
 }

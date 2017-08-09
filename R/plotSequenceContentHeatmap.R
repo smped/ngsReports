@@ -27,14 +27,15 @@
 #' # Using counts
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
-#' 
-#' 
+#'
+#'
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
 #' @importFrom dplyr filter
 #' @importFrom dplyr select
 #' @importFrom dplyr summarise
+#' @importFrom grDevices rgb
 #'
 #' @export
 

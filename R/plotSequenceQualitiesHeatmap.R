@@ -48,16 +48,23 @@
 #' plotSequenceQualities(fdl, subset = r1, counts = TRUE) +
 #'   facet_wrap(~Filename, ncol = 2)
 #'
-#' 
-#' @importFrom dplyr group_by
-#' @importFrom dplyr mutate
-#' @importFrom dplyr ungroup
-#' 
+#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_raster
+#' @importFrom ggplot2 xlab
+#' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 scale_fill_gradientn
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom stats as.dendrogram
+#' @importFrom stats order.dendrogram
+#' @importFrom viridisLite inferno
 #'
 #' @export
 plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
-                                  trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                                  usePlotly = FALSE, clusterNames = FALSE){
+                                         trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
+                                         usePlotly = FALSE, clusterNames = FALSE){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
   stopifnot(is.logical(trimNames))
@@ -71,8 +78,6 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
   }
   x <- tryCatch(x[subset])
   df <- tryCatch(Per_sequence_quality_scores(x))
-
-
 
   # Check the pattern contains a capture
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
@@ -109,11 +114,13 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
 
   }
 
-  qualPlot <- qualPlot + geom_raster() +
+  qualPlot <- qualPlot +
+    geom_raster() +
     xlab("Mean Sequence Quality Per Read (Phred Score)") +
     scale_fill_gradientn(colours = inferno(150)) +
-    ylab("File names") + theme(panel.grid.minor = element_blank(),
-                                       panel.background = element_blank())
+    ylab("File names") +
+    theme(panel.grid.minor = element_blank(),
+          panel.background = element_blank())
 
   if(usePlotly){
 
@@ -124,28 +131,32 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     key <- t$FilenameFull
 
-    d <- ggplot(t, aes(x = 1, y = Filename, key = key, fill = Status)) + geom_tile() +
-      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
-                                                                panel.background = element_blank(),
-                                                                legend.position="none",
-                                                                axis.title=element_blank(),
-                                                                axis.text=element_blank(),
-                                                                axis.ticks=element_blank())
+    d <- ggplot(t, aes(x = 1, y = Filename, key = key, fill = Status)) +
+      geom_tile() +
+      scale_fill_manual(values = col) +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_blank(),
+            legend.position="none",
+            axis.title=element_blank(),
+            axis.text=element_blank(),
+            axis.ticks=element_blank())
+
     d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
 
+    qualPlot <- qualPlot +
+      theme(axis.title.y = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks.y = element_blank())
 
-    qualPlot <- qualPlot + theme(axis.title.y = element_blank(),
-                                          axis.text.y = element_blank(),
-                                          axis.ticks.y = element_blank())
-
-    qualPlot <- plotly::subplot(d, qualPlot, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>%
+    qualPlot <- plotly::subplot(d,
+                                qualPlot,
+                                widths = c(0.1,0.9),
+                                margin = 0,
+                                shareY = TRUE) %>%
       plotly::layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"))
 
-    qualPlot
-  }else{
-
-    qualPlot
-
   }
+
+  qualPlot
 
 }

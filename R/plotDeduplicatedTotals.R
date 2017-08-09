@@ -50,15 +50,15 @@
 #' # Draw the plot with stacked bars
 #' plotDeduplicatedTotals(fdl, bars = "stacked")
 #'
-#' 
+#'
 #' @importFrom stringr str_detect
 #' @importFrom dplyr rename
 #' @importFrom dplyr left_join
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
 #' @importFrom reshape2 melt
-#' 
 #' @importFrom plotly ggplotly
+#' @importFrom grDevices rgb
 #'
 #' @export
 plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",

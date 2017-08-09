@@ -48,20 +48,21 @@
 #' # Draw the plot with stacked bars
 #' plotDeduplicatedTotals(fdl, bars = "stacked")
 #'
-#' 
-#' 
-#' @importFrom stringr str_detect
-#' @importFrom dplyr rename
-#' @importFrom dplyr left_join
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#' @importFrom reshape2 melt
-#' 
+#'
+#' @importFrom grDevices rgb
+#' @importFrom plotly layout
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 theme_bw
 #'
 #' @export
 plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",
-                                   col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2),
-                                   trimNames = FALSE, pattern = "(.+)\\.(fastq|fq).*"){
+                                         col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2),
+                                         trimNames = FALSE, pattern = "(.+)\\.(fastq|fq).*"){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -75,7 +76,6 @@ plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",
 
   pwfCols <- ngsReports::pwf
   col <- getColours(pwfCols)
-
 
   x <- x[subset]
   rt <- tryCatch(readTotals(x, subset = subset, trimNames = trimNames, pattern = pattern))
@@ -131,23 +131,27 @@ plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",
   t <- dplyr::full_join(key["Filename"], t, by = "Filename")
   t$Filename <- with(t, factor(Filename, levels=Filename))
 
-
-  sideBar <- ggplot(t, aes(x = Filename, y = 1, key = key)) + geom_tile(aes(fill = Status)) +
-    scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
-                                                              panel.background = element_blank(),
-                                                              axis.title=element_blank(),
-                                                              axis.text=element_blank(),
-                                                              axis.ticks=element_blank(),
-                                                              legend.title = element_blank())
+  sideBar <- ggplot(t, aes(x = Filename, y = 1, key = key)) +
+    geom_tile(aes(fill = Status)) +
+    scale_fill_manual(values = col) +
+    theme(panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
+          axis.title=element_blank(),
+          axis.text=element_blank(),
+          axis.ticks=element_blank(),
+          legend.title = element_blank())
   sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+
   # Add the basic layout
   deDupPlot <- deDupPlot +
     theme_bw() +
     theme(axis.text.x =element_blank(),
-                   axis.ticks.x=element_blank(),
-                   legend.position="none")
+          axis.ticks.x=element_blank(),
+          legend.position="none")
 
   # Draw the plot
-  plot <- subplot(sideBar, deDupPlot, nrows = 2, shareX = TRUE, heights = c(0.15, 0.85)) %>% layout(showlegend = FALSE, yaxis2 = list(title = ylab), margin = list(r = 200))
+  plot <- subplot(sideBar, deDupPlot,
+                  nrows = 2, shareX = TRUE, heights = c(0.15, 0.85)) %>%
+    layout(showlegend = FALSE, yaxis2 = list(title = ylab), margin = list(r = 200))
   plot
 }

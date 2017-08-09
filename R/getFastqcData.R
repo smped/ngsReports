@@ -9,9 +9,11 @@
 #' @importFrom dplyr data_frame
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
+#' 
 #' @importFrom stringr str_split_fixed
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble
+#' @importFrom utils unzip
 #'
 #' @include AllGenerics.R
 #'
