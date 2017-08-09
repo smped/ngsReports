@@ -46,15 +46,15 @@
 #' # Check the top 2 sequences with No Hit from each R1 file
 #' plotOverrepresentedHeatmap(fdl, subset = r1, type = "No Hit", nSeq = 2, method = "individual")
 #'
-#' 
+#'
 #' @importFrom stringr str_detect
 #' @importFrom dplyr group_by
 #' @importFrom dplyr summarise
 #' @importFrom dplyr arrange
 #' @importFrom dplyr slice
 #' @importFrom dplyr filter
-#' 
-#' 
+#'
+#'
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #'
@@ -62,13 +62,16 @@
 plotOverrepresentedHeatmapPlotly <- function(x,
                                              subset,
                                              pwfCols,
-                                             nSeq = 20,
+                                             nSeq = 5,
                                              type = ".+",
                                              method = "Individual",
                                              low = rgb(0.2, 0, 0.2), high = rgb(1, 0, 0),
                                              naCol = "grey80",
                                              pattern = "(.+)\\.(fastq|fq).*",
-                                             clusterNames = TRUE){
+                                             clusterNames = FALSE,
+                                             usePlotly = FALSE,
+                                             trimNames = TRUE,
+                                             dendrogram = FALSE){
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -84,6 +87,12 @@ plotOverrepresentedHeatmapPlotly <- function(x,
 
   x <- x[subset]
   df <- tryCatch(Overrepresented_sequences(x))
+
+  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
+    # These need to be checked to ensure non-duplicated names
+    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+  }
 
   # Get the top Overrepresented Sequences
   nSeq <- as.integer(nSeq)
@@ -134,82 +143,85 @@ plotOverrepresentedHeatmapPlotly <- function(x,
   # Quickly add NA values using dcast/melt
   # scale_fill_gradient requires explicit NA values
   df <- df %>%
-    reshape2::dcast(Filename~Seq_Source, value.var = "Percentage") %>%
-    reshape2::melt(id.vars = "Filename",
-                   variable.name = "Seq_Source", value.name = "Percentage")
- if(clusterNames){
-    dfInner <- df %>% spread(Seq_Source, Percentage)
-    xx <- dfInner %>% dplyr::select(-Filename)
+    reshape2::dcast(Filename~Seq_Source, value.var = "Percentage")
+
+  if(clusterNames){
+    xx <- dplyr::select(df, -Filename)
     xx[is.na(xx)] <- 0
     clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
     row.ord <- order.dendrogram(clus)
-    dfInner <- dfInner[row.ord,]
-    dfInner$Filename <- with(dfInner, factor(Filename, levels=Filename))
-    dfLong <- dfInner %>% tidyr::gather("Seq", "Percentage", 2:ncol(.))
-    dfLong$Percentage <- as.numeric(dfLong$Percentage)
-
-    key <- unique(dfLong["Filename"])
-    t <- getSummary(x) %>% dplyr::filter(Category == "Overrepresented sequences")
-    t <- dplyr::full_join(key, t, by = "Filename")
-    t$Filename <- with(t, factor(Filename, levels=Filename))
-
-
-    p <- dfLong %>%
-      ggplot(aes(x = Seq, y = Filename, fill = Percentage)) +
-      geom_tile() +
-      scale_fill_gradient(low = low, high = high, na.value = naCol) +
-      theme_bw() +
-      theme(axis.text= element_blank(),
-                     axis.ticks= element_blank(),
-                     panel.grid = element_blank())
-
-    d <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
-      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
-                                                                panel.background = element_blank(),
-                                                                legend.position="none",
-                                                                axis.title=element_blank(),
-                                                                axis.text=element_blank(),
-                                                                axis.ticks=element_blank())
-    d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
-
-
-    ORSheatmap <- subplot(d, p, widths = c( 0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Overrepresented sequence"), yaxis = list(title = "Filename"))
-
-
- }
-  if(!clusterNames){
-
-    key <- unique(df["Filename"])
-    t <- getSummary(x) %>% dplyr::filter(Category == "Overrepresented sequences")
-    t <- dplyr::full_join(key, t, by = "Filename")
-    t$Filename <- with(t, factor(Filename, levels=Filename))
-
-
-    p <- df %>%
-      ggplot(aes(x = Seq_Source, y = Filename, fill = Percentage)) +
-      geom_tile() +
-      scale_fill_gradient(low = low, high = high, na.value = naCol) +
-      theme_bw() +
-      theme(axis.text= element_blank(),
-                     axis.ticks= element_blank(),
-                     panel.grid = element_blank())
-
-    d <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
-      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
-                                                                panel.background = element_blank(),
-                                                                legend.position="none",
-                                                                axis.title=element_blank(),
-                                                                axis.text=element_blank(),
-                                                                axis.ticks=element_blank())
-    d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
-
-
-    ORSheatmap <- subplot(d, p, widths = c( 0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Overrepresented sequence"), yaxis = list(title = "Filename"))
-
+    df <- df[row.ord,]
 
   }
- # Draw the plot
- ORSheatmap
 
+  df <- reshape2::melt(df, id.vars = "Filename",
+                       variable.name = "Seq_Source", value.name = "Percentage") %>%
+    mutate(Filename = factor(Filename, levels = unique(Filename)))
+
+  ORheatmap <- ggplot(data = df, aes(x = Seq_Source, y = Filename, fill = Percentage)) +
+    geom_tile() +
+    scale_fill_gradient(low = low, high = high, na.value = naCol) +
+    scale_x_discrete(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0))  +
+    ggplot2::theme(panel.grid = ggplot2::element_blank(),
+                   panel.background = ggplot2::element_blank())
+
+  if(usePlotly){
+    t <- dplyr::filter(getSummary(fdl), Category == "Overrepresented sequences")
+
+    if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
+      t <- dplyr::mutate(t, FilenameFull = Filename,
+                         Filename = gsub(pattern[1], "\\1", t$Filename),
+                         Filename = factor(Filename, levels = unique(df$Filename)))
+    }else{
+      t <- dplyr::mutate(t, FilenameFull = Filename,
+                         Filename = factor(Filename, levels = unique(df$Filename)))
+    }
+    t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+    key <- t$FilenameFull
+
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) + theme(panel.grid.minor = ggplot2::element_blank(),
+                                              panel.background = ggplot2::element_blank(),
+                                              legend.position="none",
+                                              axis.title=ggplot2::element_blank(),
+                                              axis.text=ggplot2::element_blank(),
+                                              axis.ticks=ggplot2::element_blank())
+    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+
+    ORheatmap <- ORheatmap + ggplot2::theme(axis.text = ggplot2::element_blank(),
+                                            axis.ticks = ggplot2::element_blank())
+
+    #plot dendrogram
+    if(dendrogram && clusterNames){
+      ggdend <- function(df) {
+        ggplot() +
+          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
+          ggdendro::theme_dendro()
+      }
+
+      dx <- ggdendro::dendro_data(clus)
+      dendro <- ggdend(dx$segments) +
+        coord_flip() +
+        scale_y_reverse(expand = c(0, 1)) +
+        scale_x_continuous(expand = c(0,1))
+
+      dendro <- plotly::ggplotly(dendro) %>%
+        plotly::layout(margin = list(b = 0, t = 0))
+
+      ORheatmap <- plotly::subplot(dendro, sideBar, ORheatmap, widths = c(0.2, 0.1,0.7),
+                                   margin = 0, shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Overrepresented Sequence", plot_bgcolor = "white"))
+    }else{
+      ORheatmap <- plotly::subplot(sideBar, ORheatmap, widths = c(0.1,0.9),
+                                   margin = 0, shareY = TRUE) %>%
+        plotly::layout(xaxis2 = list(title = "Overrepresented Sequence", plot_bgcolor = "white"))
+    }
+  }else{
+    ORheatmap <- ORheatmap + ggplot2::theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                                            panel.grid = element_blank()) + ggplot2::coord_flip() +
+      xlab("Filename") +
+      ylab("Sequence")
+  }
+  ORheatmap
 }
-
