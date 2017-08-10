@@ -34,6 +34,7 @@
 #' @importFrom shiny sliderInput
 #' @importFrom shiny renderUI
 #' @importFrom shiny renderPrint
+#' @importFrom shiny shinyApp
 #'
 #' @export
 #' @rdname fastqcShiny
@@ -202,7 +203,8 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
       plotOverrepresentedHeatmapPlotly(fdl,
                                        clusterNames = input$ORcluster,
                                        method = input$ORType,
-                                       nSeq = input$ORslide) %>%
+                                       nSeq = input$ORslide,
+                                       usePlotly = TRUE) %>%
         layout(margin = list(r = 200))
     })
 

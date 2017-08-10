@@ -51,6 +51,7 @@
 #'
 #' @importFrom grDevices rgb
 #' @importFrom plotly layout
+#' @importFrom plotly subplot
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 geom_bar
 #' @importFrom ggplot2 scale_fill_manual

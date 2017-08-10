@@ -60,7 +60,9 @@ plotOverrepresentedHeatmapPlotly <- function(x,
                                              usePlotly = FALSE,
                                              trimNames = TRUE,
                                              dendrogram = FALSE){
-  # A basic cautionary check
+
+
+   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if (missing(subset)){
