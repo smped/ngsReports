@@ -16,7 +16,7 @@
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
-#' @param pwfCols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
 #' @param GCtheory \code{logical} default is \code{FALSE} to give the absolute value, set to \code{TRUE} to normalize
 #' values of GC_Content by the theoretical values using \code{\link{gcTheoretical}}. \code{species} must be specified.

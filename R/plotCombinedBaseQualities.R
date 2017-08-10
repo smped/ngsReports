@@ -13,7 +13,7 @@
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param value \code{character}. Specify which value whould be plotted.
-#' Can be any of the columns returned by \code{\link{Per_base_sequence_quality}}.
+#' Can be any of the columns returned by \code{Per_base_sequence_quality}.
 #' Defaults to \code{value = "Mean"}.
 #' Can additionally set to "all" to plot all available quantities
 #' @param pwfCols Object of class \code{PwfCols} containing the colours for PASS/WARN/FAIL.
