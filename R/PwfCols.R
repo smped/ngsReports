@@ -20,12 +20,6 @@ setClass("PwfCols", slots = c(PASS = "character",
                               MAX = "character"))
 setValidity("PwfCols", isValidPwf)
 
-#' Define the generics & methods for setting/getting colours from an object of class PwfCols
-setGeneric("getColours", function(x){standardGeneric("getColours")})
-setGeneric("setColours", function(x, ...){standardGeneric("setColours")})
-setGeneric("setAlpha", function(x, ...){standardGeneric("setAlpha")})
-
-#' Methods to simply display colours
 #' @importFrom graphics plot
 #' @importFrom graphics pie
 #' @export
@@ -33,8 +27,14 @@ setMethod("plot", "PwfCols", function(x, ...){
   pie(rep(1,4), labels = names(x), col = getColours(x), ...)
 })
 
-#' Methods to return (get) the colours from a PwfCols object
+#' @title Get and Set the Colours for a PwfCols Objects
+#'
+#' @description Define the generics & methods for setting/getting colours from an object of class PwfCols
+#'
 #' @param x An object of class PwfCols
+#'
+#' @include AllGenerics.R
+#'
 #' @export
 #' @rdname getColours
 setMethod("getColours", "PwfCols", function(x){
@@ -47,11 +47,9 @@ setMethod("getColours", "PwfCols", function(x){
 })
 
 #' @export
-#' @rdname getColours
 #' @aliases getColors
 getColors <- getColours
 
-#' Methods to set the colours for a PwfCols object
 #' @export
 #' @rdname getColours
 #' @aliases setColours
@@ -74,7 +72,6 @@ setMethod("setColours", "PwfCols", function(x, PASS, WARN, FAIL, MAX){
 #' @aliases setColors
 setColors <- setColours
 
-#' Define the generic and method for setting alpha (transparency)
 #' @export
 #' @rdname getColours
 #' @aliases setAlpha
@@ -90,7 +87,6 @@ setMethod("setAlpha", "PwfCols", function(x, alpha){
              MAX = paste0(x@MAX, hexAlpha))
 })
 
-#' Define the behaviours for names & names <-
 #' @importFrom methods slotNames
 #' @export
 setMethod(names, "PwfCols", function(x){slotNames(x)})

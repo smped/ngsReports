@@ -11,19 +11,14 @@
 #'
 #' @docType methods
 #'
-#' 
 #'
-#' @export
-setMethod("path", "FastqcData", function(object){object@path})
-
+#'
 #' @export
 setMethod("Version", "FastqcData", function(object){object@Version})
 
 #' @export
 setMethod("getSummary", "FastqcData", function(object){object@Summary})
 
-#' @export
-setMethod("fileNames", "FastqcData", function(object){object@Summary$Filename[1]})
 
 # The show method doesn't need exporting
 setMethod("show", "FastqcData",

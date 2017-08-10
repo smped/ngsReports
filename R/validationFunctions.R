@@ -53,6 +53,7 @@ isValidPwf <- function(object){
 
 }
 
+#' @importFrom methods slot
 isValidTheoreticalGC <- function(object){
 
   # Get the species & check there is data for all
