@@ -7,12 +7,11 @@
 - Calculate Ranks on each module and summarise
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot
-- Add `plotBaseContent` ***Funcitonal (check)***
+- Add `plotBaseContent` ***Functional (check)***
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Incorporate bowtie2 & cufflinks output?
 - Write Vignette
 - Add dendrogram to plot in shiny app
-- Sort out devtools::check() namespace issues for plotly, readr, reshape2, shiny, stringrand tidyr
 - Flip Total Read Plot
 - make dependencies script for install 
 - make 'output all plots to pdf' function

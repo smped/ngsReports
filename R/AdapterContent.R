@@ -10,6 +10,7 @@
 #'
 #' @include AllClasses.R
 #' @include AllGenerics.R
+#' @include FastqcFile-class.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
