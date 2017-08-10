@@ -141,6 +141,11 @@ plotNContentPlotly <- function(x,
           panel.background = element_blank())
 
   if(usePlotly){
+
+    Nheatmap <- Nheatmap + theme(axis.text.y = element_blank(),
+                                 axis.ticks.y = element_blank())
+
+
     t <- dplyr::filter(getSummary(x), Category == "Per base N content")
     t <- dplyr::mutate(t, FilenameFull = Filename,
                        Filename = gsub(pattern[1], "\\1", t$Filename),
@@ -182,6 +187,7 @@ plotNContentPlotly <- function(x,
         plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
     }
     else{
+
       Nheatmap <- plotly::subplot(sideBar, Nheatmap,
                                   widths = c(0.1,0.9), margin = 0,
                                   shareY = TRUE) %>%

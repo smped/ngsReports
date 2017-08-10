@@ -155,9 +155,12 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
 
   if(usePlotly){
 
+    GCheatmap <- GCheatmap + theme(axis.text.y = element_blank(),
+                                 axis.ticks.y = element_blank())
+
     om_col <- data.frame(Status = NA, Category = NA, Filename = "Observed Mean")
 
-    t <- getSummary(fdl) %>% dplyr::filter(Category == "Per sequence GC content")
+    t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
     t <- dplyr::mutate(t, FilenameFull = Filename,
                        Filename = gsub(pattern[1], "\\1", t$Filename),
                        Filename = factor(Filename, levels = unique(df$Filename)))
