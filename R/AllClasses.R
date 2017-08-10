@@ -1,5 +1,4 @@
 # Define object classes
-setClass("FastqcFile", slots = c(path = "character"))
 setClass("FastqcFileList", contains="list")
 
 setClass("FastqcData", slots = c(Summary = "data.frame",
@@ -48,18 +47,12 @@ setClass("TheoreticalGC", slots=c(Alyrata = "data.frame",
 
 # Set the validation functions for any object classes
 #' @include validationFunctions.R
-setValidity("FastqcFile", isValidFastqcFile)
 setValidity("FastqcFileList", isValidFastqcFileList)
 # setValidity("FastqcData", isValidFastqcData) # Not written or defined yet
 setValidity("FastqcDataList", isValidFastqcDataList) # Not written or defined yet
-
 setValidity("TheoreticalGC", isValidTheoreticalGC)
 
 # These are never set
-setMethod("names<-", "FastqcFile", function(x){
-  warning("The names attribute cannot be set on a FastqcFile object")
-  x
-  })
 setMethod("names<-", "FastqcFileList", function(x){
   warning("The names attribute cannot be set on a FastqcFileList object")
   x

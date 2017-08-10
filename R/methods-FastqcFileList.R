@@ -12,7 +12,7 @@
 #'
 #' @docType methods
 #'
-#' 
+#'
 #'
 #' @export
 setMethod("FastqcFileList", "character",
@@ -31,13 +31,6 @@ setMethod("FastqcFileList", "list",
             if (any(!cls %in% "FastqcFile")) stop("Method can only be applied to\nFastqcFile objects as a generic list.")
             new("FastqcFileList", path)
           })
-
-#' @export
-setMethod("path", "FastqcFileList",
-          function(object){vapply(object, path, character(1))})
-
-#' @export
-setMethod("fileNames", "FastqcFileList", function(object){vapply(object, fileNames, character(1))})
 
 # Define the subsetting method, to remain consistent with list behaviour
 setMethod("[", "FastqcFileList", function(x, i, j, ..., drop = TRUE){FastqcFileList(x@.Data[i])})

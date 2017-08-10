@@ -26,8 +26,7 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr select
-#' @importFrom dplyr filter
+#' @importFrom methods slot
 #'
 #' @export
 setMethod("getGC", "TheoreticalGC",
