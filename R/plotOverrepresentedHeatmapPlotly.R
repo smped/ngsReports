@@ -23,6 +23,8 @@
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
+#' @param dendrogram
+#' @param trimNames
 #'
 #'
 #'
@@ -156,7 +158,7 @@ plotOverrepresentedHeatmapPlotly <- function(x,
           panel.background = element_blank())
 
   if(usePlotly){
-    t <- dplyr::filter(getSummary(fdl), Category == "Overrepresented sequences")
+    t <- dplyr::filter(getSummary(x), Category == "Overrepresented sequences")
 
     if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
       t <- dplyr::mutate(t, FilenameFull = Filename,

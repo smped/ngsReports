@@ -145,7 +145,11 @@ plotBaseQualitiesPlotly <- function(x, subset, type = "Mean",
           panel.background = element_blank())
 
   if(usePlotly){
-    t <- dplyr::filter(getSummary(fdl), Category == "Per base sequence quality")
+
+    BQheatmap <- BQheatmap + theme(axis.text.y = element_blank(),
+                                 axis.ticks.y = element_blank())
+
+    t <- dplyr::filter(getSummary(x), Category == "Per base sequence quality")
 
     if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
       t <- dplyr::mutate(t, FilenameFull = Filename,
