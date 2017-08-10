@@ -14,8 +14,10 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param usePlotly \code{logical}. Generate an interactive plot using plotly
 #'
-#' @return A standard ggplot2 object
+#' @return A ggplot2 object (\code{usePlotly = FALSE})
+#' or an interactive plotly object (\code{usePlotly = TRUE})
 #'
 #' @examples
 #'

@@ -10,16 +10,26 @@
 \alias{setAlpha}
 \title{Get and Set the Colours for a PwfCols Objects}
 \usage{
-\S4method{getColours}{PwfCols}(x)
+\S4method{getColours}{PwfCols}(object)
 
-\S4method{setColours}{PwfCols}(x, PASS, WARN, FAIL, MAX)
+\S4method{setColours}{PwfCols}(object, PASS, WARN, FAIL, MAX)
 
-setColours(x, ...)
+setColours(object, PASS, WARN, FAIL, MAX)
 
-\S4method{setAlpha}{PwfCols}(x, alpha)
+\S4method{setAlpha}{PwfCols}(object, alpha)
 }
 \arguments{
-\item{x}{An object of class PwfCols}
+\item{object}{An object of class PwfCols}
+
+\item{PASS}{The colour denoting PASS on all plots, in rgb format}
+
+\item{WARN}{The colour denoting WARN on all plots, in rgb format}
+
+\item{FAIL}{The colour denoting FAIL on all plots, in rgb format}
+
+\item{MAX}{The colour denoting the limit of values in rgb format}
+
+\item{alpha}{Numeric(1). Ranges from 0 to 1 by default, but can also be on the range 0 to 255.}
 }
 \description{
 Define the generics & methods for setting/getting colours from an object of class PwfCols

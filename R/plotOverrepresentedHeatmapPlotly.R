@@ -6,7 +6,7 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param pwfcols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+#' @param pwfCols Object of class \code{PwfCols} to give colours for pass, warning, and fail
 #' values in plot
 #' @param nSeq \code{numeric}.
 #' The number of Sequences to show.
@@ -24,6 +24,7 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param clusterNames \code{logical} Cluster heatmap, or not.
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames

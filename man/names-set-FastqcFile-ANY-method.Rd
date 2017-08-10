@@ -7,6 +7,11 @@
 \usage{
 \S4method{names}{FastqcFile,ANY}(x) <- value
 }
+\arguments{
+\item{x}{An object of class FastqcFile}
+
+\item{value}{Not used}
+}
 \description{
 Names cannot be set on this type of object. Not required for export
 }
