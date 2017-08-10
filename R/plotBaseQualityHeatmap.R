@@ -7,7 +7,7 @@
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param type \code{character} Type of quality data to be presented "mean" or "median"
-#' @param pwfCols Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
