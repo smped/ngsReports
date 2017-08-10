@@ -18,13 +18,15 @@
 #' @param low colour used as the low colour in the heatmap
 #' @param high colour used as the high colour in the heatmap
 #' @param naCol colour used for missing values
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
-#' fastqc data will be clustered using heirachial clustering
-#' @param dendrogram
-#' @param trimNames
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
 #'
 #'
 #'
