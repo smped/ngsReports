@@ -17,7 +17,7 @@ May be useful to only return totals from R1 files, or any other subset}
 
 \item{type}{\code{character} Type of quality data to be presented "mean" or "median"}
 
-\item{pwfCols}{Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
 
 \item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}

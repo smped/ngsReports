@@ -40,7 +40,7 @@ The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using heirachial clustering}
 
-\item{pwfcols}{Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
+\item{pwfcols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
 }
 \description{
