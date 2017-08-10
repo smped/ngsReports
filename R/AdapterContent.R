@@ -10,16 +10,13 @@
 #'
 #' @include AllClasses.R
 #' @include AllGenerics.R
-#' @include FastqcFile-class.R
+#' @include FastqcFile.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#'
 #' @export
 #' @rdname Adapter_Content
+#' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Adapter_Content)
@@ -28,15 +25,17 @@ setMethod("Adapter_Content", "FastqcDataList",
 
 #' @export
 #' @rdname Adapter_Content
+#' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcData",
           function(object){
-            df <- dplyr::mutate(object@Adapter_Content,
-                                Filename = fileNames(object))
+            df <- object@Adapter_Content
+            df$Filename <- fileNames(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 
 #' @export
 #' @rdname Adapter_Content
+#' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcFile",
           function(object){
             object <- getFastqcData(object)
@@ -45,6 +44,7 @@ setMethod("Adapter_Content", "FastqcFile",
 
 #' @export
 #' @rdname Adapter_Content
+#' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcFileList",
           function(object){
             object <- getFastqcData(object)
@@ -53,6 +53,7 @@ setMethod("Adapter_Content", "FastqcFileList",
 
 #' @export
 #' @rdname Adapter_Content
+#' @aliases Adapter_Content
 setMethod("Adapter_Content", "character",
           function(object){
             object <- getFastqcData(object)

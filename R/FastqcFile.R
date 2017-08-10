@@ -1,17 +1,35 @@
-#' Create a New FastqcFile Object
+#' @title The FastqcFile Object Class
 #'
-#' Create a FastqcFile object
+#' @description The FastqcFile Object Class
 #'
-#' @param x Character vector (1) specifying a valid path to a file/directory as output by FastQC
+#' @details The is an object which refers to a fastqc output file.
+#' Only the path is stored, however the file is checked for the correct structure on formation of the object.
+#' Files can be zipped (*_fastqc.zip) or extracted directories
 #'
-#' @docType methods
-setGeneric("FastqcFile",function(x){standardGeneric("FastqcFile")})
+#'
+#' @return An object of class FastqcFile
+#'
+#' @include validationFunctions.R
+#'
+#' @slot path Character vector of length 1 which contains a valid file path.
+setClass("FastqcFile", slots = c(path = "character"))
+setValidity("FastqcFile", isValidFastqcFile)
 
+#' @title Create a new FastqcFile Object
+#' @description Create a new FastqcFile Object
+#' @details Create a new FastqcFile Object from an external file
+#' @return An object of class FastqcFile
+#' @param x Character vector (1) specifying a valid path to a file/directory as output by FastQC
+#' @include AllGenerics.R
 #' @importFrom methods new
 #' @export
-setMethod("FastqcFile", "character",
-          function(x){
-            new("FastqcFile", path = x)
+#' @rdname FastqcFile
+#' @aliases FastqcFile
+setMethod("FastqcFile", "character", function(x){new("FastqcFile", path = x)})
+
+# The show method doesn't need exporting
+setMethod("show", "FastqcFile",
+          function(object){
+            cat(fileNames(object), "\n")
+            cat("Located in", dirname(path(object)), "\n")
           })
-
-

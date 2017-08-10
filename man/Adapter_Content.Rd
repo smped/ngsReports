@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Adapter_Content,FastqcDataList-method}
 \alias{Adapter_Content,FastqcDataList-method}
+\alias{Adapter_Content}
 \alias{Adapter_Content,FastqcData-method}
+\alias{Adapter_Content}
 \alias{Adapter_Content,FastqcFile-method}
+\alias{Adapter_Content}
 \alias{Adapter_Content,FastqcFileList-method}
+\alias{Adapter_Content}
 \alias{Adapter_Content,character-method}
+\alias{Adapter_Content}
 \title{Get the Adapter Content information}
 \usage{
 \S4method{Adapter_Content}{FastqcDataList}(object)

@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Kmer_Content,FastqcData-method}
 \alias{Kmer_Content,FastqcData-method}
+\alias{Kmer_Content}
 \alias{Kmer_Content,FastqcDataList-method}
+\alias{Kmer_Content}
 \alias{Kmer_Content,FastqcFile-method}
+\alias{Kmer_Content}
 \alias{Kmer_Content,FastqcFileList-method}
+\alias{Kmer_Content}
 \alias{Kmer_Content,character-method}
+\alias{Kmer_Content}
 \title{Get the Kmer Content information}
 \usage{
 \S4method{Kmer_Content}{FastqcData}(object)

@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Basic_Statistics,FastqcData-method}
 \alias{Basic_Statistics,FastqcData-method}
+\alias{Basic_Statistics}
 \alias{Basic_Statistics,FastqcDataList-method}
+\alias{Basic_Statistics}
 \alias{Basic_Statistics,FastqcFile-method}
+\alias{Basic_Statistics}
 \alias{Basic_Statistics,FastqcFileList-method}
+\alias{Basic_Statistics}
 \alias{Basic_Statistics,character-method}
+\alias{Basic_Statistics}
 \title{Get the set of Basic Statistics}
 \usage{
 \S4method{Basic_Statistics}{FastqcData}(object)

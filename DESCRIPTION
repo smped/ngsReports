@@ -34,13 +34,12 @@ Imports:
 LazyData: true
 RoxygenNote: 6.0.1
 Collate: 
-    'validationFunctions.R'
-    'FastqcFile-class.R'
     'AllGenerics.R'
+    'validationFunctions.R'
+    'FastqcFile.R'
     'AllClasses.R'
     'AdapterContent.R'
     'Basic_Statistics.R'
-    'FastqcFile.R'
     'Kmer_Content.R'
     'Overrepresented_sequences.R'
     'Per_base_N_content.R'

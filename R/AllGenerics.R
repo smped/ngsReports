@@ -1,4 +1,5 @@
 # Set the Generics
+setGeneric("FastqcFile",function(x){standardGeneric("FastqcFile")})
 setGeneric("FastqcFileList", function(path){standardGeneric("FastqcFileList")})
 setGeneric("getSummary", function(object){standardGeneric("getSummary")})
 setGeneric("getFastqcData", function(object){standardGeneric("getFastqcData")})
