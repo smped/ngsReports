@@ -20,28 +20,21 @@ setClass("PwfCols", slots = c(PASS = "character",
                               MAX = "character"))
 setValidity("PwfCols", isValidPwf)
 
-#' @importFrom graphics plot
-#' @importFrom graphics pie
-#' @export
-setMethod("plot", "PwfCols", function(x, ...){
-  pie(rep(1,4), labels = names(x), col = getColours(x), ...)
-})
-
 #' @title Get and Set the Colours for a PwfCols Objects
 #'
 #' @description Define the generics & methods for setting/getting colours from an object of class PwfCols
 #'
-#' @param x An object of class PwfCols
+#' @param object An object of class PwfCols
 #'
 #' @include AllGenerics.R
 #'
 #' @export
 #' @rdname getColours
-setMethod("getColours", "PwfCols", function(x){
-  vals <- c(x@PASS,
-            x@WARN,
-            x@FAIL,
-            x@MAX)
+setMethod("getColours", "PwfCols", function(object){
+  vals <- c(object@PASS,
+            object@WARN,
+            object@FAIL,
+            object@MAX)
   names(vals) <- c("PASS", "WARN", "FAIL", "MAX")
   vals
 })
@@ -50,11 +43,15 @@ setMethod("getColours", "PwfCols", function(x){
 #' @aliases getColors
 getColors <- getColours
 
+#' @param PASS The colour denoting PASS on all plots, in rgb format
+#' @param WARN The colour denoting WARN on all plots, in rgb format
+#' @param FAIL The colour denoting FAIL on all plots, in rgb format
+#' @param MAX The colour denoting the limit of values in rgb format
 #' @export
 #' @rdname getColours
 #' @aliases setColours
-setMethod("setColours", "PwfCols", function(x, PASS, WARN, FAIL, MAX){
-  new <- x
+setMethod("setColours", "PwfCols", function(object, PASS, WARN, FAIL, MAX){
+  new <- object
   if(!missing(PASS)) new@PASS <- PASS
   if(!missing(WARN)) new@WARN <- WARN
   if(!missing(FAIL)) new@FAIL <- FAIL
@@ -62,7 +59,7 @@ setMethod("setColours", "PwfCols", function(x, PASS, WARN, FAIL, MAX){
 
   if(!isValidPwf(new)) {
     warning("Invalid specifications for an object of class PwfCols.\nThe object was not overwritten")
-    return(x)
+    return(object)
   }
 
   new
@@ -72,19 +69,20 @@ setMethod("setColours", "PwfCols", function(x, PASS, WARN, FAIL, MAX){
 #' @aliases setColors
 setColors <- setColours
 
+#' @param alpha Numeric(1). Ranges from 0 to 1 by default, but can also be on the range 0 to 255.
 #' @export
 #' @rdname getColours
 #' @aliases setAlpha
-setMethod("setAlpha", "PwfCols", function(x, alpha){
+setMethod("setAlpha", "PwfCols", function(object, alpha){
   stopifnot(alpha <= 255, alpha >= 0)
   if (alpha > 1) alpha <- alpha/255 # Set to the range [0, 1]
   hexAlpha <- toupper(as.hexmode(floor(alpha*256))) # Convert to hex (upper case)
   hexAlpha <- stringr::str_pad(hexAlpha, width = 2, side = "left", pad = "0")
-  setColours(x,
-             PASS = paste0(x@PASS, hexAlpha),
-             WARN = paste0(x@WARN, hexAlpha),
-             FAIL = paste0(x@FAIL, hexAlpha),
-             MAX = paste0(x@MAX, hexAlpha))
+  setColours(object,
+             PASS = paste0(object@PASS, hexAlpha),
+             WARN = paste0(object@WARN, hexAlpha),
+             FAIL = paste0(object@FAIL, hexAlpha),
+             MAX = paste0(object@MAX, hexAlpha))
 })
 
 #' @importFrom methods slotNames
@@ -96,6 +94,7 @@ setMethod("names<-", "PwfCols", function(x){
 })
 
 #' The default method for show
+#' @param object An object of class PwfCols
 setMethod(show, "PwfCols", function(object){
   cat("An object of class PwfCols.\n")
 })

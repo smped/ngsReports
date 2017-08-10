@@ -21,7 +21,7 @@ yellow (\code{rgb(0.9, 0.9, 0.2)}), red (\code{rgb(0.8, 0.2, 0.2)}) and white
 }
 \examples{
 # Make a pie chart showing the default colours
-plot(pwf)
+pie(rep(1,4), labels = names(pwf), col = getColours(pwf))
 
 }
 \keyword{datasets}

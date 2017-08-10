@@ -5,13 +5,11 @@
 #' @details Checks the structure of a folder or zip file with the output from FastQC
 #'
 #' @param path The path to a vector of zip files (or uncompressed folders) as output by FastQC
-#' @param object An object of class \code{FastqcFileList}
 #'
 #' @include AllClasses.R
 #' @include AllGenerics.R
 #'
 #' @docType methods
-#'
 #'
 #'
 #' @export

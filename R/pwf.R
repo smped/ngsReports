@@ -11,7 +11,7 @@
 #'
 #' @examples
 #' # Make a pie chart showing the default colours
-#' plot(pwf)
+#' pie(rep(1,4), labels = names(pwf), col = getColours(pwf))
 #'
 #' @export
 pwf <- new("PwfCols",

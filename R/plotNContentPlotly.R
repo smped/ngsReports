@@ -6,7 +6,7 @@
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param pwfcols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileNames.

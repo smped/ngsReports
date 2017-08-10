@@ -7,6 +7,9 @@
 \usage{
 \S4method{show}{PwfCols}(object)
 }
+\arguments{
+\item{object}{An object of class PwfCols}
+}
 \description{
 The default method for show
 }

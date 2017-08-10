@@ -9,8 +9,6 @@
 }
 \arguments{
 \item{path}{The path to a vector of zip files (or uncompressed folders) as output by FastQC}
-
-\item{object}{An object of class \code{FastqcFileList}}
 }
 \description{
 Define a FastqcFileList

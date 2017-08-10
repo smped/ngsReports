@@ -16,7 +16,9 @@ setClass("FastqcFile", slots = c(path = "character"))
 setValidity("FastqcFile", isValidFastqcFile)
 
 #' Names cannot be set on this type of object. Not required for export
-setMethod("names<-", "FastqcFile", function(x){
+#' @param x An object of class FastqcFile
+#' @param value Not used
+setMethod("names<-", "FastqcFile", function(x, value){
   warning("The names attribute cannot be set on a FastqcFile object")
   x
 })

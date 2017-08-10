@@ -17,6 +17,9 @@ plotOverrepresentedHeatmapPlotly(x, subset, pwfCols, nSeq = 5, type = ".+",
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful to only return totals from R1 files, or any other subset}
 
+\item{pwfCols}{Object of class \code{PwfCols} to give colours for pass, warning, and fail
+values in plot}
+
 \item{nSeq}{\code{numeric}.
 The number of Sequences to show.
 Sequences are sorted by \code{max(Percentage)} across all files during selection}
@@ -37,6 +40,8 @@ or whether the top nKmers are selected from each individual file.}
 Contains a regular expression which will be captured from fileNames.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
+\item{clusterNames}{\code{logical} Cluster heatmap, or not.}
+
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
@@ -45,9 +50,6 @@ If \code{TRUE} plot will be rendered with plotly}
 \item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
 if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
-
-\item{pwfcols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
-values in plot}
 }
 \description{
 Plot Overrepresented Sequences across an entire library
