@@ -31,7 +31,7 @@ will be displayed.}
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
-\item{pwfcols}{Object of class \code{\link{Pwfcol}} to give colours for pass, warning, and fail
+\item{pwfcols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
 }
 \value{
