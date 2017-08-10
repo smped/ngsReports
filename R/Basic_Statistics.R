@@ -7,7 +7,7 @@
 #'
 #' @include AllClasses.R
 #' @include AllGenerics.R
-#' @include FastqcFile-class.R
+#' @include FastqcFile.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
@@ -17,10 +17,12 @@
 #'
 #' @export
 #' @rdname Basic_Statistics
+#' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "FastqcData", function(object){object@Basic_Statistics})
 
 #' @export
 #' @rdname Basic_Statistics
+#' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "FastqcDataList",
           function(object){
             x <- lapply(object@.Data, Basic_Statistics)
@@ -29,6 +31,7 @@ setMethod("Basic_Statistics", "FastqcDataList",
 
 #' @export
 #' @rdname Basic_Statistics
+#' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "FastqcFile",
           function(object){
             object <- getFastqcData(object)
@@ -37,6 +40,7 @@ setMethod("Basic_Statistics", "FastqcFile",
 
 #' @export
 #' @rdname Basic_Statistics
+#' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "FastqcFileList",
           function(object){
             object <- getFastqcData(object)
@@ -45,6 +49,7 @@ setMethod("Basic_Statistics", "FastqcFileList",
 
 #' @export
 #' @rdname Basic_Statistics
+#' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "character",
           function(object){
             object <- getFastqcData(object)

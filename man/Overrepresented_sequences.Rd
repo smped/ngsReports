@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Overrepresented_sequences,FastqcData-method}
 \alias{Overrepresented_sequences,FastqcData-method}
+\alias{Overrepresented_sequences}
 \alias{Overrepresented_sequences,FastqcDataList-method}
+\alias{Overrepresented_sequences}
 \alias{Overrepresented_sequences,FastqcFile-method}
+\alias{Overrepresented_sequences}
 \alias{Overrepresented_sequences,FastqcFileList-method}
+\alias{Overrepresented_sequences}
 \alias{Overrepresented_sequences,character-method}
+\alias{Overrepresented_sequences}
 \title{Get the Overrepresented Sequences information}
 \usage{
 \S4method{Overrepresented_sequences}{FastqcData}(object)
