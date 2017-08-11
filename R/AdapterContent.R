@@ -11,6 +11,7 @@
 #' @include AllClasses.R
 #' @include AllGenerics.R
 #' @include FastqcFile.R
+#' @include FastqcFileList.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
@@ -30,7 +31,7 @@ setMethod("Adapter_Content", "FastqcData",
           function(object){
             df <- object@Adapter_Content
             df$Filename <- fileNames(object)
-            dplyr::select(df, Filename, dplyr::everything())
+            dplyr::select(df, dplyr::one_of("Filename"), dplyr::everything())
           })
 
 #' @export

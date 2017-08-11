@@ -34,9 +34,10 @@ Imports:
 LazyData: true
 RoxygenNote: 6.0.1
 Collate: 
-    'AllGenerics.R'
     'validationFunctions.R'
+    'FastqcFileList.R'
     'FastqcFile.R'
+    'AllGenerics.R'
     'AllClasses.R'
     'AdapterContent.R'
     'Basic_Statistics.R'
@@ -65,7 +66,6 @@ Collate:
     'maxAdapterContent.R'
     'methods-FastqcData.R'
     'methods-FastqcDataList.R'
-    'methods-FastqcFileList.R'
     'methods-TheoreticalGC.R'
     'path.R'
     'plotAdapterContent.R'

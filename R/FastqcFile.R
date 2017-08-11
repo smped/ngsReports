@@ -15,16 +15,17 @@
 setClass("FastqcFile", slots = c(path = "character"))
 setValidity("FastqcFile", isValidFastqcFile)
 
+
 #' @title Create a new FastqcFile Object
 #' @description Create a new FastqcFile Object
 #' @details Create a new FastqcFile Object from an external file
 #' @return An object of class FastqcFile
 #' @param x Character vector (1) specifying a valid path to a file/directory as output by FastQC
-#' @include AllGenerics.R
 #' @importFrom methods new
 #' @export
 #' @rdname FastqcFile
 #' @aliases FastqcFile
+setGeneric("FastqcFile",function(x){standardGeneric("FastqcFile")})
 setMethod("FastqcFile", "character", function(x){new("FastqcFile", path = x)})
 
 # The show method doesn't need exporting

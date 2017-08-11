@@ -1,6 +1,4 @@
 # Define object classes
-setClass("FastqcFileList", contains="list")
-
 setClass("FastqcData", slots = c(Summary = "data.frame",
                                  Basic_Statistics = "data.frame",
                                  Per_base_sequence_quality = "data.frame",
@@ -47,7 +45,6 @@ setClass("TheoreticalGC", slots=c(Alyrata = "data.frame",
 
 # Set the validation functions for any object classes
 #' @include validationFunctions.R
-setValidity("FastqcFileList", isValidFastqcFileList)
 # setValidity("FastqcData", isValidFastqcData) # Not written or defined yet
 setValidity("FastqcDataList", isValidFastqcDataList) # Not written or defined yet
 setValidity("TheoreticalGC", isValidTheoreticalGC)
