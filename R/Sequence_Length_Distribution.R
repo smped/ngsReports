@@ -12,22 +12,20 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr mutate
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr everything
-#' @importFrom dplyr select
 #'
 #' @export
 #' @rdname Sequence_Length_Distribution
+#' @aliases Sequence_Length_Distribution
 setMethod("Sequence_Length_Distribution", "FastqcData",
           function(object){
-            df <- dplyr::mutate(object@Sequence_Length_Distribution,
-                                Filename = fileNames(object))
+            df <- object@Sequence_Length_Distribution
+            df$Filename <- fileNames(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 
 #' @export
 #' @rdname Sequence_Length_Distribution
+#' @aliases Sequence_Length_Distribution
 setMethod("Sequence_Length_Distribution", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Sequence_Length_Distribution)
@@ -36,6 +34,7 @@ setMethod("Sequence_Length_Distribution", "FastqcDataList",
 
 #' @export
 #' @rdname Sequence_Length_Distribution
+#' @aliases Sequence_Length_Distribution
 setMethod("Sequence_Length_Distribution", "FastqcFile",
           function(object){
             object <- getFastqcData(object)
@@ -44,6 +43,7 @@ setMethod("Sequence_Length_Distribution", "FastqcFile",
 
 #' @export
 #' @rdname Sequence_Length_Distribution
+#' @aliases Sequence_Length_Distribution
 setMethod("Sequence_Length_Distribution", "FastqcFileList",
           function(object){
             object <- getFastqcData(object)
@@ -52,6 +52,7 @@ setMethod("Sequence_Length_Distribution", "FastqcFileList",
 
 #' @export
 #' @rdname Sequence_Length_Distribution
+#' @aliases Sequence_Length_Distribution
 setMethod("Sequence_Length_Distribution", "character",
           function(object){
             object <- getFastqcData(object)

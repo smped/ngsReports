@@ -12,22 +12,20 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr mutate
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr everything
-#' @importFrom dplyr select
 #'
 #' @export
 #' @rdname Per_base_sequence_content
+#' @aliases Per_base_sequence_content
 setMethod("Per_base_sequence_content", "FastqcData",
           function(object){
-            df <- dplyr::mutate(object@Per_base_sequence_content,
-                                Filename = fileNames(object))
+            df <- object@Per_base_sequence_content
+            df$Filename <- fileNames(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 
 #' @export
 #' @rdname Per_base_sequence_content
+#' @aliases Per_base_sequence_content
 setMethod("Per_base_sequence_content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_base_sequence_content)
@@ -36,6 +34,7 @@ setMethod("Per_base_sequence_content", "FastqcDataList",
 
 #' @export
 #' @rdname Per_base_sequence_content
+#' @aliases Per_base_sequence_content
 setMethod("Per_base_sequence_content", "FastqcFile",
           function(object){
             object <- getFastqcData(object)
@@ -44,6 +43,7 @@ setMethod("Per_base_sequence_content", "FastqcFile",
 
 #' @export
 #' @rdname Per_base_sequence_content
+#' @aliases Per_base_sequence_content
 setMethod("Per_base_sequence_content", "FastqcFileList",
           function(object){
             object <- getFastqcData(object)
@@ -52,6 +52,7 @@ setMethod("Per_base_sequence_content", "FastqcFileList",
 
 #' @export
 #' @rdname Per_base_sequence_content
+#' @aliases Per_base_sequence_content
 setMethod("Per_base_sequence_content", "character",
           function(object){
             object <- getFastqcData(object)

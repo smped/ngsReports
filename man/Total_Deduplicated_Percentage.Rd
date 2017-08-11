@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Total_Deduplicated_Percentage,FastqcData-method}
 \alias{Total_Deduplicated_Percentage,FastqcData-method}
+\alias{Total_Deduplicated_Percentage}
 \alias{Total_Deduplicated_Percentage,FastqcDataList-method}
+\alias{Total_Deduplicated_Percentage}
 \alias{Total_Deduplicated_Percentage,FastqcFile-method}
+\alias{Total_Deduplicated_Percentage}
 \alias{Total_Deduplicated_Percentage,FastqcFileList-method}
+\alias{Total_Deduplicated_Percentage}
 \alias{Total_Deduplicated_Percentage,character-method}
+\alias{Total_Deduplicated_Percentage}
 \title{Get the Total Deduplicated Percentage information}
 \usage{
 \S4method{Total_Deduplicated_Percentage}{FastqcData}(object)

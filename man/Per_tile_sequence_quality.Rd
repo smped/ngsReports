@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Per_tile_sequence_quality,FastqcData-method}
 \alias{Per_tile_sequence_quality,FastqcData-method}
+\alias{Per_tile_sequence_quality}
 \alias{Per_tile_sequence_quality,FastqcDataList-method}
+\alias{Per_tile_sequence_quality}
 \alias{Per_tile_sequence_quality,FastqcFile-method}
+\alias{Per_tile_sequence_quality}
 \alias{Per_tile_sequence_quality,FastqcFileList-method}
+\alias{Per_tile_sequence_quality}
 \alias{Per_tile_sequence_quality,character-method}
+\alias{Per_tile_sequence_quality}
 \title{Get the Per Tile Sequence Quality information}
 \usage{
 \S4method{Per_tile_sequence_quality}{FastqcData}(object)

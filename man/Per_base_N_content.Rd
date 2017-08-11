@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Per_base_N_content,FastqcData-method}
 \alias{Per_base_N_content,FastqcData-method}
+\alias{Per_base_N_content}
 \alias{Per_base_N_content,FastqcDataList-method}
+\alias{Per_base_N_content}
 \alias{Per_base_N_content,FastqcFile-method}
+\alias{Per_base_N_content}
 \alias{Per_base_N_content,FastqcFileList-method}
+\alias{Per_base_N_content}
 \alias{Per_base_N_content,character-method}
+\alias{Per_base_N_content}
 \title{Get the Per Base N Content information}
 \usage{
 \S4method{Per_base_N_content}{FastqcData}(object)

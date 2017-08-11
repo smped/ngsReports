@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Per_sequence_GC_content,FastqcData-method}
 \alias{Per_sequence_GC_content,FastqcData-method}
+\alias{Per_sequence_GC_content}
 \alias{Per_sequence_GC_content,FastqcDataList-method}
+\alias{Per_sequence_GC_content}
 \alias{Per_sequence_GC_content,FastqcFile-method}
+\alias{Per_sequence_GC_content}
 \alias{Per_sequence_GC_content,FastqcFileList-method}
+\alias{Per_sequence_GC_content}
 \alias{Per_sequence_GC_content,character-method}
+\alias{Per_sequence_GC_content}
 \title{Get the Per Sequence GC Content information}
 \usage{
 \S4method{Per_sequence_GC_content}{FastqcData}(object)
