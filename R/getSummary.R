@@ -7,16 +7,15 @@
 #' @return A \code{tibble} will be returned when supplying a \code{FastqcFile} object,
 #' whilst a list of tibbles will be returned when supplying a \code{FastqcFileList} object
 #'
-#' @importFrom readr read_delim
-#' @importFrom stringr str_split_fixed
-#' @importFrom tibble as_tibble
 #' @importFrom utils unzip
 #'
 #' @include AllGenerics.R
 #'
+#' @docType methods
+#'
 #' @export
 #' @rdname getSummary
-#' @aliases getSummary,FastqcFile-method
+#' @aliases getSummary
 setMethod("getSummary", "FastqcFile",
           function(object){
             path <- path(object)
@@ -48,7 +47,7 @@ setMethod("getSummary", "FastqcFile",
 
 #' @export
 #' @rdname getSummary
-#' @aliases getSummary,FastqcFileList-method
+#' @aliases getSummary
 setMethod("getSummary", "FastqcFileList",
           function(object){
             out <- lapply(object, getSummary)
@@ -56,6 +55,8 @@ setMethod("getSummary", "FastqcFileList",
           })
 
 #' @export
+#' @rdname getSummary
+#' @aliases getSummary
 setMethod("getSummary", "character",
           function(object){
             if(length(object) ==1) {
@@ -65,4 +66,18 @@ setMethod("getSummary", "character",
               object <- FastqcFileList(object)
             }
             getSummary(object)
+          })
+
+#' @export
+#' @rdname getSummary
+#' @aliases getSummary
+setMethod("getSummary", "FastqcData", function(object){object@Summary})
+
+#' @export
+#' @rdname getSummary
+#' @aliases getSummary
+setMethod("getSummary", "FastqcDataList",
+          function(object){
+            df <- lapply(object@.Data, getSummary)
+            dplyr::bind_rows(df)
           })

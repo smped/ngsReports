@@ -3,6 +3,7 @@
 \docType{methods}
 \name{getColours,PwfCols-method}
 \alias{getColours,PwfCols-method}
+\alias{getColours}
 \alias{setColours,PwfCols-method}
 \alias{setColours}
 \alias{setColors}

@@ -13,12 +13,6 @@
 #'
 #'
 #'
-#' @export
-setMethod("Version", "FastqcData", function(object){object@Version})
-
-#' @export
-setMethod("getSummary", "FastqcData", function(object){object@Summary})
-
 
 # The show method doesn't need exporting
 setMethod("show", "FastqcData",

@@ -16,19 +16,6 @@
 #'
 #' @importFrom dplyr data_frame
 #'
-#' @export
-setMethod("getSummary", "FastqcDataList",
-          function(object){
-            df <- lapply(object@.Data, getSummary)
-            dplyr::bind_rows(df)
-          })
-
-#' @export
-setMethod("Version", "FastqcDataList",
-          function(object){
-            data_frame(Filename = fileNames(object),
-                       Version = vapply(object@.Data, Version, character(1)))
-          })
 
 # Define the subsetting method, to remain consistent with list behaviour
 setMethod("[", "FastqcDataList",

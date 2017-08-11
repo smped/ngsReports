@@ -30,6 +30,7 @@ setValidity("PwfCols", isValidPwf)
 #'
 #' @export
 #' @rdname getColours
+#' @aliases getColours
 setMethod("getColours", "PwfCols", function(object){
   vals <- c(object@PASS,
             object@WARN,

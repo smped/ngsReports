@@ -52,6 +52,7 @@ Collate:
     'Sequence_Duplication_Levels.R'
     'Sequence_Length_Distribution.R'
     'Total_Deduplicated_Percentage.R'
+    'Version.R'
     'data.R'
     'fastQC_shinyApp.R'
     'fileNames.R'
