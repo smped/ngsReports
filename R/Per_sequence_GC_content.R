@@ -19,15 +19,17 @@
 #'
 #' @export
 #' @rdname Per_sequence_GC_content
+#' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "FastqcData",
           function(object){
-            df <- dplyr::mutate(object@Per_sequence_GC_content,
-                                Filename = fileNames(object))
+            df <- object@Per_sequence_GC_content
+            df$Filename<- fileNames(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 
 #' @export
 #' @rdname Per_sequence_GC_content
+#' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_sequence_GC_content)
@@ -36,6 +38,7 @@ setMethod("Per_sequence_GC_content", "FastqcDataList",
 
 #' @export
 #' @rdname Per_sequence_GC_content
+#' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "FastqcFile",
           function(object){
             object <- getFastqcData(object)
@@ -44,6 +47,7 @@ setMethod("Per_sequence_GC_content", "FastqcFile",
 
 #' @export
 #' @rdname Per_sequence_GC_content
+#' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "FastqcFileList",
           function(object){
             object <- getFastqcData(object)
@@ -52,6 +56,7 @@ setMethod("Per_sequence_GC_content", "FastqcFileList",
 
 #' @export
 #' @rdname Per_sequence_GC_content
+#' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "character",
           function(object){
             object <- getFastqcData(object)

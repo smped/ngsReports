@@ -12,22 +12,20 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr mutate
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr everything
-#' @importFrom dplyr select
 #'
 #' @export
 #' @rdname Sequence_Duplication_Levels
+#' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "FastqcData",
           function(object){
-            df <- dplyr::mutate(object@Sequence_Duplication_Levels,
-                                Filename = fileNames(object))
+            df <- object@Sequence_Duplication_Levels
+            df$Filename <- fileNames(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 
 #' @export
 #' @rdname Sequence_Duplication_Levels
+#' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Sequence_Duplication_Levels)
@@ -36,6 +34,7 @@ setMethod("Sequence_Duplication_Levels", "FastqcDataList",
 
 #' @export
 #' @rdname Sequence_Duplication_Levels
+#' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "FastqcFile",
           function(object){
             object <- getFastqcData(object)
@@ -44,6 +43,7 @@ setMethod("Sequence_Duplication_Levels", "FastqcFile",
 
 #' @export
 #' @rdname Sequence_Duplication_Levels
+#' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "FastqcFileList",
           function(object){
             object <- getFastqcData(object)
@@ -52,6 +52,7 @@ setMethod("Sequence_Duplication_Levels", "FastqcFileList",
 
 #' @export
 #' @rdname Sequence_Duplication_Levels
+#' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "character",
           function(object){
             object <- getFastqcData(object)

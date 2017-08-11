@@ -3,10 +3,15 @@
 \docType{methods}
 \name{Per_base_sequence_content,FastqcData-method}
 \alias{Per_base_sequence_content,FastqcData-method}
+\alias{Per_base_sequence_content}
 \alias{Per_base_sequence_content,FastqcDataList-method}
+\alias{Per_base_sequence_content}
 \alias{Per_base_sequence_content,FastqcFile-method}
+\alias{Per_base_sequence_content}
 \alias{Per_base_sequence_content,FastqcFileList-method}
+\alias{Per_base_sequence_content}
 \alias{Per_base_sequence_content,character-method}
+\alias{Per_base_sequence_content}
 \title{Get the Per Base Sequence Content information}
 \usage{
 \S4method{Per_base_sequence_content}{FastqcData}(object)

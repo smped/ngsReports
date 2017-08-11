@@ -19,15 +19,17 @@
 #'
 #' @export
 #' @rdname Per_base_N_content
+#' @aliases Per_base_N_content
 setMethod("Per_base_N_content", "FastqcData",
           function(object){
-            df <- dplyr::mutate(object@Per_base_N_content,
-                                Filename = fileNames(object))
+            df <- object@Per_base_N_content
+            df$Filename <- fileNames(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 
 #' @export
 #' @rdname Per_base_N_content
+#' @aliases Per_base_N_content
 setMethod("Per_base_N_content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_base_N_content)
@@ -36,6 +38,7 @@ setMethod("Per_base_N_content", "FastqcDataList",
 
 #' @export
 #' @rdname Per_base_N_content
+#' @aliases Per_base_N_content
 setMethod("Per_base_N_content", "FastqcFile",
           function(object){
             object <- getFastqcData(object)
@@ -44,6 +47,7 @@ setMethod("Per_base_N_content", "FastqcFile",
 
 #' @export
 #' @rdname Per_base_N_content
+#' @aliases Per_base_N_content
 setMethod("Per_base_N_content", "FastqcFileList",
           function(object){
             object <- getFastqcData(object)
@@ -52,6 +56,7 @@ setMethod("Per_base_N_content", "FastqcFileList",
 
 #' @export
 #' @rdname Per_base_N_content
+#' @aliases Per_base_N_content
 setMethod("Per_base_N_content", "character",
           function(object){
             object <- getFastqcData(object)

@@ -12,22 +12,20 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr mutate
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr everything
-#' @importFrom dplyr select
 #'
 #' @export
 #' @rdname Per_sequence_quality_scores
+#' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "FastqcData",
           function(object){
-            df <- dplyr::mutate(object@Per_sequence_quality_scores,
-                                Filename = fileNames(object))
+            df <- object@Per_sequence_quality_scores
+            df$Filename<- fileNames(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 
 #' @export
 #' @rdname Per_sequence_quality_scores
+#' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_sequence_quality_scores)
@@ -36,6 +34,7 @@ setMethod("Per_sequence_quality_scores", "FastqcDataList",
 
 #' @export
 #' @rdname Per_sequence_quality_scores
+#' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "FastqcFile",
           function(object){
             object <- getFastqcData(object)
@@ -44,6 +43,7 @@ setMethod("Per_sequence_quality_scores", "FastqcFile",
 
 #' @export
 #' @rdname Per_sequence_quality_scores
+#' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "FastqcFileList",
           function(object){
             object <- getFastqcData(object)
@@ -52,6 +52,7 @@ setMethod("Per_sequence_quality_scores", "FastqcFileList",
 
 #' @export
 #' @rdname Per_sequence_quality_scores
+#' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "character",
           function(object){
             object <- getFastqcData(object)
