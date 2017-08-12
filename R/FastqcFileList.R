@@ -24,12 +24,11 @@ setValidity("FastqcFileList", isValidFastqcFileList)
 #' @export
 #' @rdname FastqcFileList
 #' @aliases FastqcFileList
-setGeneric("FastqcFileList", function(path){standardGeneric("FastqcFileList")})
+setGeneric("FastqcFileList", function(x){standardGeneric("FastqcFileList")})
 setMethod("FastqcFileList", "character",
-          function(path)
+          function(x)
           {
-            fls <- lapply(path, FastqcFile)
-            names(fls) <- basename(path)
+            fls <- lapply(x, FastqcFile)
             new("FastqcFileList", fls)
           })
 
@@ -37,18 +36,12 @@ setMethod("FastqcFileList", "character",
 #' @rdname FastqcFileList
 #' @aliases FastqcFileList
 setMethod("FastqcFileList", "list",
-          function(path)
+          function(x)
           {
-            cls <- vapply(path, class, character(1))
+            cls <- vapply(x, class, character(1))
             if (any(!cls %in% "FastqcFile")) stop("Method can only be applied to\nFastqcFile objects as a generic list.")
-            new("FastqcFileList", path)
+            new("FastqcFileList", x)
           })
-
-#' @export
-setMethod("[", "FastqcFileList", function(x, i, j, ..., drop = TRUE){FastqcFileList(x@.Data[i])})
-
-#' @export
-setMethod("[[", "FastqcFileList", function(x, i, j){x@.Data[[i]]})
 
 # The show method doesn't need exporting
 setMethod("show", "FastqcFileList",

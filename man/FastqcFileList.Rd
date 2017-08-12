@@ -7,9 +7,9 @@
 \alias{FastqcFileList}
 \title{Create a new FastqcFileList Object}
 \usage{
-FastqcFileList(path)
+FastqcFileList(x)
 
-\S4method{FastqcFileList}{list}(path)
+\S4method{FastqcFileList}{list}(x)
 }
 \arguments{
 \item{x}{Character vector specifying a valid paths to files/directories as output by FastQC}
