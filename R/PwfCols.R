@@ -1,6 +1,6 @@
 #' The PwfCols class and associated methods
 #'
-#' @description Define the PwfCols class and associated methods
+#' @description Define and extract the PwfCols class and associated methods
 #'
 #' @details
 #' This is an object of with four colours in components named PASS, WARN, FAIL and MAX.
@@ -26,11 +26,16 @@ setValidity("PwfCols", isValidPwf)
 #'
 #' @param object An object of class PwfCols
 #'
-#' @include AllGenerics.R
-#'
 #' @export
-#' @rdname getColours
+#' @rdname getColours-methods
 #' @aliases getColours
+setGeneric("getColours", function(object){standardGeneric("getColours")})
+
+#' @importFrom methods slotNames
+#' @name getColours
+#' @aliases getColours,PwfCols-method
+#' @rdname getColours-methods
+#' @export
 setMethod("getColours", "PwfCols", function(object){
   vals <- c(object@PASS,
             object@WARN,
@@ -40,17 +45,20 @@ setMethod("getColours", "PwfCols", function(object){
   vals
 })
 
-#' @export
-#' @aliases getColors
-getColors <- getColours
-
 #' @param PASS The colour denoting PASS on all plots, in rgb format
 #' @param WARN The colour denoting WARN on all plots, in rgb format
 #' @param FAIL The colour denoting FAIL on all plots, in rgb format
 #' @param MAX The colour denoting the limit of values in rgb format
 #' @export
-#' @rdname getColours
+#' @rdname getColours-methods
 #' @aliases setColours
+setGeneric("setColours", function(object, PASS, WARN, FAIL, MAX){standardGeneric("setColours")})
+
+#' @importFrom methods slotNames
+#' @name setColours
+#' @aliases setColours,PwfCols-method
+#' @rdname getColours-methods
+#' @export
 setMethod("setColours", "PwfCols", function(object, PASS, WARN, FAIL, MAX){
   new <- object
   if(!missing(PASS)) new@PASS <- PASS
@@ -65,15 +73,18 @@ setMethod("setColours", "PwfCols", function(object, PASS, WARN, FAIL, MAX){
 
   new
 })
-#' @export
-#' @rdname getColours
-#' @aliases setColors
-setColors <- setColours
 
+#' @name setAlpha
 #' @param alpha Numeric(1). Ranges from 0 to 1 by default, but can also be on the range 0 to 255.
 #' @export
-#' @rdname getColours
+#' @rdname getColours-methods
 #' @aliases setAlpha
+setGeneric("setAlpha", function(object, alpha){standardGeneric("setAlpha")})
+
+#' @importFrom methods slotNames
+#' @export
+#' @rdname getColours-methods
+#' @aliases setAlpha,PwfCols-method
 setMethod("setAlpha", "PwfCols", function(object, alpha){
   stopifnot(alpha <= 255, alpha >= 0)
   if (alpha > 1) alpha <- alpha/255 # Set to the range [0, 1]
@@ -86,13 +97,6 @@ setMethod("setAlpha", "PwfCols", function(object, alpha){
              MAX = paste0(object@MAX, hexAlpha))
 })
 
-#' @importFrom methods slotNames
-#' @export
-setMethod(names, "PwfCols", function(x){slotNames(x)})
-setMethod("names<-", "PwfCols", function(x){
-  warning("The names attribute cannot be set on a PwfCols object")
-  x
-})
 
 #' The default method for show
 #' @param object An object of class PwfCols

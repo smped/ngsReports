@@ -1,6 +1,5 @@
 # Set the Generics
 setGeneric("getSummary", function(object){standardGeneric("getSummary")})
-setGeneric("getFastqcData", function(object){standardGeneric("getFastqcData")})
 setGeneric("Basic_Statistics", function(object){standardGeneric("Basic_Statistics")})
 setGeneric("Per_base_sequence_quality", function(object){standardGeneric("Per_base_sequence_quality")})
 setGeneric("Per_tile_sequence_quality", function(object){standardGeneric("Per_tile_sequence_quality")})
@@ -20,6 +19,3 @@ setGeneric("mData", function(object){standardGeneric("mData")})
 setGeneric("allSpecies", function(object){standardGeneric("allSpecies")})
 setGeneric("genomes", function(object){standardGeneric("genomes")})
 setGeneric("transcriptomes", function(object){standardGeneric("transcriptomes")})
-setGeneric("getColours", function(object){standardGeneric("getColours")})
-setGeneric("setColours", function(object, PASS, WARN, FAIL, MAX){standardGeneric("setColours")})
-setGeneric("setAlpha", function(object, ...){standardGeneric("setAlpha")})
