@@ -50,10 +50,6 @@ setValidity("FastqcDataList", isValidFastqcDataList) # Not written or defined ye
 setValidity("TheoreticalGC", isValidTheoreticalGC)
 
 # These are never set
-setMethod("names<-", "FastqcFile", function(x, value){
-  warning("The names attribute cannot be set on a FastqcFile object")
-  x
-})
 setMethod("names<-", "FastqcFileList", function(x, value){
   warning("The names attribute cannot be set on a FastqcFileList object")
   x
