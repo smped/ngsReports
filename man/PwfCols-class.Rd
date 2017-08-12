@@ -6,7 +6,7 @@
 \alias{PwfCols}
 \title{The PwfCols class and associated methods}
 \description{
-Define the PwfCols class and associated methods
+Define and extract the PwfCols class and associated methods
 }
 \details{
 This is an object of with four colours in components named PASS, WARN, FAIL and MAX.

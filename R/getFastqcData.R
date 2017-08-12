@@ -1,24 +1,22 @@
-#' Get the complete information from FastQC files
+#' Get all data from FastQC files
 #'
 #' @description Read the information from the \code{fastqc_data.txt} files in each FastqcFile
 #'
-#' @param object Can be a FastqcFile or FastqcFileList.
+#' @param object Can be a FastqcFile or FastqcFileList, or paths to files
 #'
-#' @return An object of \code{FastqcData}
-#'
-#' @importFrom dplyr data_frame
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#' 
-#' @importFrom stringr str_split_fixed
-#' @importFrom stringr str_split
-#' @importFrom tibble as_tibble
-#' @importFrom utils unzip
+#' @return An object of \code{FastqcData} or a \code{FastqcDataList}
 #'
 #' @include AllGenerics.R
 #'
 #' @export
-#' @rdname getFastqcData
+#' @rdname getFastqcData-methods
+setGeneric("getFastqcData", function(object){standardGeneric("getFastqcData")})
+
+#' @importFrom utils unzip
+#' @name getFastqcData
+#' @aliases getFastqcData,FastqcFile-method
+#' @rdname getFastqcData-methods
+#' @export
 setMethod("getFastqcData", "FastqcFile",
           function(object){
             path <- path(object)
@@ -148,8 +146,10 @@ setMethod("getFastqcData", "FastqcFile",
           })
 
 
+#' @name getFastqcData
+#' @aliases getFastqcData,character-method
+#' @rdname getFastqcData-methods
 #' @export
-# #' @rdname getFastqcData
 setMethod("getFastqcData", "character",
           function(object){
             if(length(object) ==1) {
@@ -161,8 +161,10 @@ setMethod("getFastqcData", "character",
             getFastqcData(object)
           })
 
+#' @name getFastqcData
+#' @aliases getFastqcData,FastqcFileList-method
+#' @rdname getFastqcData-methods
 #' @export
-# #' @rdname getFastqcData
 setMethod("getFastqcData", "FastqcFileList",
           function(object){
              fqc <- lapply(object@.Data, getFastqcData)
@@ -184,15 +186,14 @@ getBasicStatistics <- function(fastqcData){
   stopifnot(reqVals %in% names(vals))
 
   df <- tibble::as_tibble(as.list(vals))
-  df <- dplyr::mutate(df,
-                      Total_Sequences = as.integer(Total_Sequences),
-                      Sequences_flagged_as_poor_quality = as.integer(Sequences_flagged_as_poor_quality),
-                      Shortest_sequence = as.integer(gsub("(.*)-.*", "\\1", Sequence_length)),
-                      Longest_sequence = as.integer(gsub(".*-(.*)", "\\1", Sequence_length)))
+  df$Total_Sequences <- as.integer(df$Total_Sequences)
+  df$Sequences_flagged_as_poor_quality <- as.integer(df$Sequences_flagged_as_poor_quality)
+  df$Shortest_sequence <- as.integer(gsub("(.*)-.*", "\\1", df$Sequence_length))
+  df$Longest_sequence <- as.integer(gsub(".*-(.*)", "\\1", df$Sequence_length))
   dplyr::select(df,
-                Filename, Total_Sequences,
+                dplyr::one_of("Filename", "Total_Sequences"),
                 dplyr::contains("quality"), dplyr::ends_with("sequence"),
-                `%GC`, File_type, Encoding)
+                dplyr::one_of("%GC", "File_type", "Encoding"))
 
 }
 
@@ -244,8 +245,9 @@ getPerSeqQualScores <- function(fastqcData){
   reqVals <- c("Quality", "Count")
   stopifnot(reqVals %in% names(df))
 
-  dplyr::mutate(df, Quality = as.integer(Quality), Count = as.integer(Count))
-
+  df$Quality <- as.integer(df$Quality)
+  df$Count <- as.integer(df$Count)
+  df
 }
 
 getPerBaseSeqContent <- function(fastqcData){
@@ -277,8 +279,9 @@ getPerSeqGcContent <- function(fastqcData){
   reqVals <- c("GC_Content", "Count")
   stopifnot(reqVals %in% names(df))
 
-  dplyr::mutate(df, GC_Content = as.integer(GC_Content), Count = as.numeric(Count))
-
+  df$GC_Content <- as.integer(df$GC_Content)
+  df$Count <- as.integer(df$Count)
+  df
 }
 
 getPerBaseNContent <- function(fastqcData){
@@ -293,7 +296,8 @@ getPerBaseNContent <- function(fastqcData){
   reqVals <- c("Base", "N-Count")
   stopifnot(reqVals %in% names(df))
 
-  dplyr::mutate(df, `N-Count` = as.numeric(`N-Count`))
+  df$`N-Count` <- as.integer(df$`N-Count`)
+  df
 
 }
 
@@ -309,11 +313,12 @@ getSeqLengthDist <- function(fastqcData){
   reqVals <- c("Length", "Count")
   stopifnot(reqVals %in% names(df))
 
-  df <- dplyr::mutate(df,
-                      Lower = as.integer(gsub("(.*)-.*", "\\1",Length)),
-                      Upper = as.integer(gsub(".*-(.*)", "\\1",Length)),
-                      Count = as.integer(Count))
-  dplyr::select(df, Length, Lower, Upper, Count)
+  df$Lower <- as.integer(gsub("(.*)-.*", "\\1", df$Length))
+  df$Upper <- as.integer(gsub(".*-(.*)", "\\1", df$Length))
+  df$Count = as.integer(df$Count)
+
+  df[c("Length", "Lower", "Upper", "Count")]
+
 }
 
 getSeqDuplicationLevels <- function(fastqcData){
@@ -361,9 +366,9 @@ getOverrepSeq <- function(fastqcData){
   reqVals <- c("Sequence", "Count", "Percentage", "Possible_Source")
   stopifnot(reqVals %in% names(df))
 
-  dplyr::mutate(df,
-                Count = as.integer(Count),
-                Percentage = as.numeric(Percentage))
+  df$Count <- as.integer(df$Count)
+  df$Percentage <- as.numeric(df$Percentage)
+  df
 }
 
 getAdapterContent <- function(fastqcData){
@@ -398,11 +403,12 @@ getKmerContent <- function(fastqcData){
   reqVals <- c("Sequence", "Count", "PValue", "Obs/Exp_Max", "Max_Obs/Exp_Position")
   stopifnot(reqVals %in% names(df))
 
-  dplyr::mutate(df,
-                Count = as.integer(Count),
-                PValue = as.numeric(PValue),
-                `Obs/Exp_Max` = as.numeric(`Obs/Exp_Max`),
-                `Max_Obs/Exp_Position` = as.character(`Max_Obs/Exp_Position`))
+  df$Count <- as.integer(df$Count)
+  df$PValue <- as.numeric(df$PValue)
+  df$`Obs/Exp_Max` <- as.numeric(df$`Obs/Exp_Max`)
+  df$`Max_Obs/Exp_Position` <- as.character(df$`Max_Obs/Exp_Position`)
+
+  df
 
 }
 
