@@ -12,6 +12,7 @@
 #' @include validationFunctions.R
 #'
 #' @slot path Character vector of length 1 which contains a valid file path.
+#' @export
 setClass("FastqcFile", slots = c(path = "character"))
 setValidity("FastqcFile", isValidFastqcFile)
 
@@ -26,6 +27,10 @@ setValidity("FastqcFile", isValidFastqcFile)
 #' @rdname FastqcFile
 #' @aliases FastqcFile
 setGeneric("FastqcFile",function(x){standardGeneric("FastqcFile")})
+
+#' @export
+#' @rdname FastqcFile
+#' @aliases FastqcFile
 setMethod("FastqcFile", "character", function(x){new("FastqcFile", path = x)})
 
 # The show method doesn't need exporting

@@ -25,6 +25,10 @@ setValidity("FastqcFileList", isValidFastqcFileList)
 #' @rdname FastqcFileList
 #' @aliases FastqcFileList
 setGeneric("FastqcFileList", function(x){standardGeneric("FastqcFileList")})
+
+#' @export
+#' @rdname FastqcFileList
+#' @aliases FastqcFileList
 setMethod("FastqcFileList", "character",
           function(x)
           {
