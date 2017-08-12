@@ -2,7 +2,7 @@
 #'
 #' @description The FastqcFileList Object Class
 #'
-#' @details The is an object which refers to a list of fastqc output file.
+#' @details The is an object which refers to a list of fastqc output files.
 #' Only the paths are stored, however the files are checked for the correct structure on formation of the object.
 #' Files can be any combination of zipped (*_fastqc.zip) or extracted directories
 #'

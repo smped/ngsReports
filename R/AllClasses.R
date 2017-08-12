@@ -15,23 +15,8 @@ setClass("FastqcData", slots = c(Summary = "data.frame",
                                  Total_Deduplicated_Percentage = "numeric",
                                  Version = "character",
                                  path = "character"))
-setClass("FastqcDataList", contains="list")
+
 
 # Set the validation functions for any object classes
 #' @include validationFunctions.R
 # setValidity("FastqcData", isValidFastqcData) # Not written or defined yet
-setValidity("FastqcDataList", isValidFastqcDataList) # Not written or defined yet
-
-# These are never set
-# setMethod("names<-", "FastqcFileList", function(x, value){
-#   warning("The names attribute cannot be set on a FastqcFileList object")
-#   x
-# })
-# setMethod("names<-", "FastqcData", function(x, value){
-#   warning("The names attribute cannot be set on a FastqcData object")
-#   x
-# })
-# setMethod("names<-", "FastqcDataList", function(x, value){
-#   warning("The names attribute cannot be set on a FastqcDataList object")
-#   x
-# })

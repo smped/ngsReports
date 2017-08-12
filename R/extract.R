@@ -4,7 +4,7 @@
 #'
 #' @details Extract elements in a consistent manner with R conventions
 #'
-#' @param x A FastqcFileList
+#' @param x A FastqcFileList or FastqcDataList
 #' @param i character, logical or integer vector
 #' @param j not used
 #' @param ... not used
@@ -37,6 +37,16 @@ setMethod("[", signature = c(x = "FastqcFileList", i = "character", j = "missing
             }
             FastqcFileList(x@.Data[sub])}
 )
+
+#' @name [
+#' @aliases [,FastqcDataList,ANY,missing-method [,FastqcDataList,ANY,missing,ANY-method
+#' @rdname extract-methods
+#' @export
+setMethod("[", signature = c(x = "FastqcDataList", i = "ANY", j = "missing"),
+          function(x, i, j, ..., drop = TRUE){
+            new("FastqcDataList", x@.Data[i])
+          })
+
 
 #' @name [[
 #' @aliases [[,FastqcFileList,character,missing-method
