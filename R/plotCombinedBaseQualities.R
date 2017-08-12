@@ -18,9 +18,9 @@
 #' Can additionally set to "all" to plot all available quantities
 #' @param pwfCols Object of class \code{PwfCols} containing the colours for PASS/WARN/FAIL.
 #' Defaults to the object \code{pwf}
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
+#' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #'
 #' @return A standard ggplot2 object
@@ -37,7 +37,7 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Find the R1 files
-#' r1 <- grepl("R1", fileNames(fdl))
+#' r1 <- grepl("R1", fileName(fdl))
 #'
 #' # The default plot using the Mean only
 #' plotCombinedBaseQualities(fdl)

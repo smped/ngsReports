@@ -12,9 +12,9 @@
 #' Defaults to \code{source = "(Primer|Adapter)"}
 #' @param col1 The colour to use for the Total values
 #' @param col2 The colour to use for the Deduplicated values
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
+#' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #'
 #' @return A standard ggplot2 object

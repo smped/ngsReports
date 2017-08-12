@@ -7,7 +7,7 @@
 #' @param object An object of class \code{FastqcDataList}
 #'
 #' @return Returns a \code{data_frame} for all the methods except \code{path}, \code{names},
-#' \code{fileNames}
+#' \code{fileName}
 #'
 #' @include AllClasses.R
 #' @include AllGenerics.R

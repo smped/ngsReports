@@ -11,6 +11,7 @@ Description: Load FastQC reports and other NGS output summaries into R.
 License: LGPL (>= 2)
 Encoding: UTF-8
 Imports:
+  BiocGenerics,
   checkmate,
   dplyr,
   ggdendro,
@@ -33,7 +34,7 @@ Imports:
   zoo
 LazyData: true
 RoxygenNote: 6.0.1
-Collate:
+Collate: 
     'validationFunctions.R'
     'FastqcFileList.R'
     'FastqcFile.R'
@@ -56,7 +57,7 @@ Collate:
     'Version.R'
     'data.R'
     'fastQC_shinyApp.R'
-    'fileNames.R'
+    'fileName.R'
     'getFastqcData.R'
     'getSummary.R'
     'importBowtieLogs.R'

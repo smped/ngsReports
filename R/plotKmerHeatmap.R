@@ -22,9 +22,9 @@
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param naCol colour used for missing values
 #' @param flip \code{logical}. Enable a call to \code{coord_flip} to determine the best direction
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
+#' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #'
 #' @return A standard ggplot2 object
@@ -44,7 +44,7 @@
 #' plotKmerHeatmap(fdl)
 #'
 #' # Find the R1 files with CC barcodes & just plot these
-#' ccR1 <- grepl("CC.+R1", fileNames(fdl))
+#' ccR1 <- grepl("CC.+R1", fileName(fdl))
 #' plotKmerHeatmap(fdl, subset = ccR1, method = "individual", nKmers = 3)
 #'
 #'
@@ -141,10 +141,10 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
   }
   # Ensure that all files are included on the plot
   if (trimNames){
-    allNames <- gsub(pattern[1], "\\1", fileNames(x))
+    allNames <- gsub(pattern[1], "\\1", fileName(x))
   }
   else{
-    allNames <- fileNames(x)
+    allNames <- fileName(x)
   }
   df$Filename <- factor(df$Filename, levels = rev(allNames))
 

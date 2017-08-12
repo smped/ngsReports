@@ -12,7 +12,7 @@
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param counts \code{logical}. Display counts of GC content rather than frequency
 #' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
+#' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
@@ -26,7 +26,7 @@
 #' M. furo, M. mulatta, M. musculus, O. sativa, P. troglodytes, R. norvegicus, S. cerevisiae, S scrofa, T. gondii,
 #' T. guttata, V. vinifera. Use \code{ngsReports::genomes(ngsReports::gcTheoretical)} to display the corresponding names for
 #' each species.
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
 #' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.

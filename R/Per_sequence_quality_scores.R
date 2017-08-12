@@ -19,7 +19,7 @@
 setMethod("Per_sequence_quality_scores", "FastqcData",
           function(object){
             df <- object@Per_sequence_quality_scores
-            df$Filename<- fileNames(object)
+            df$Filename<- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 

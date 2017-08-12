@@ -17,9 +17,9 @@
 #' @param high colour used as the high colour in the heatmap
 #' @param naCol colour used for missing values
 #' @param flip \code{logical}. Enable a call to \code{coord_flip} to determine the best direction
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
+#' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #'
 #' @return A standard ggplot2 object
@@ -39,7 +39,7 @@
 #' plotOverrepresentedHeatmap(fdl)
 #'
 #' # Dig a bit deeper
-#' r1 <- grepl("R1", fileNames(fdl))
+#' r1 <- grepl("R1", fileName(fdl))
 #' plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
 #'
 #' # Check the top 2 sequences with No Hit from each R1 file

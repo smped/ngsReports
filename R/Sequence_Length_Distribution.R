@@ -19,7 +19,7 @@
 setMethod("Sequence_Length_Distribution", "FastqcData",
           function(object){
             df <- object@Sequence_Length_Distribution
-            df$Filename <- fileNames(object)
+            df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 

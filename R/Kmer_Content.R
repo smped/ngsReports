@@ -22,7 +22,7 @@
 setMethod("Kmer_Content", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Kmer_Content,
-                                Filename = fileNames(object))
+                                Filename = fileName(object))
             dplyr::select(df, Filename, dplyr::everything())
           })
 

@@ -19,7 +19,7 @@ May be useful to only return totals from R1 files, or any other subset}
 values in plot}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},

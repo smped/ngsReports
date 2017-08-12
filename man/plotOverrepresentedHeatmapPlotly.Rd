@@ -37,7 +37,7 @@ or whether the top nKmers are selected from each individual file.}
 \item{naCol}{colour used for missing values}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
 \item{clusterNames}{\code{logical} Cluster heatmap, or not.}
@@ -45,7 +45,7 @@ The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
 if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram

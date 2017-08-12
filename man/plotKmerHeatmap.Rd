@@ -27,10 +27,10 @@ or whether the top nKmers are selected from each individual file.}
 
 \item{flip}{\code{logical}. Enable a call to \code{coord_flip} to determine the best direction}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{
@@ -64,7 +64,7 @@ fdl <- getFastqcData(fileList)
 plotKmerHeatmap(fdl)
 
 # Find the R1 files with CC barcodes & just plot these
-ccR1 <- grepl("CC.+R1", fileNames(fdl))
+ccR1 <- grepl("CC.+R1", fileName(fdl))
 plotKmerHeatmap(fdl, subset = ccR1, method = "individual", nKmers = 3)
 
 

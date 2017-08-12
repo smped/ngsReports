@@ -19,7 +19,7 @@
 setMethod("Per_tile_sequence_quality", "FastqcData",
           function(object){
             df <- object@Per_tile_sequence_quality
-            df$Filename <- fileNames(object)
+            df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 

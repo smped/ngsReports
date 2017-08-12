@@ -23,7 +23,7 @@
 setMethod("Per_base_N_content", "FastqcData",
           function(object){
             df <- object@Per_base_N_content
-            df$Filename <- fileNames(object)
+            df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 

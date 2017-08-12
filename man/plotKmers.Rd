@@ -22,10 +22,10 @@ May be useful to only return totals from R1 files, or any other subset}
 Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
 or whether the top nKmers are selected from each individual file.}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{
@@ -56,7 +56,7 @@ fdl <- getFastqcData(fileList)
 plotKmers(fdl)
 
 # Try digging a bit deeper
-ccR1 <- grepl("CC.+R1", fileNames(fdl))
+ccR1 <- grepl("CC.+R1", fileName(fdl))
 plotKmers(fdl, subset = ccR1, nc = 1, method = "individual", nKmers = 4)
 
 

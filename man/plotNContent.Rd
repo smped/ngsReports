@@ -19,7 +19,7 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{

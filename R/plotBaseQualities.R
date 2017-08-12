@@ -13,9 +13,9 @@
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param nc \code{numeric}. The number of columns to create in the plot layout
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
+#' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #'
 #' @return A standard ggplot2 object
@@ -33,7 +33,7 @@
 #'
 #' # The default and subset plot
 #' plotBaseQualities(fdl)
-#' r1 <- grepl("R1", fileNames(fdl))
+#' r1 <- grepl("R1", fileName(fdl))
 #' plotBaseQualities(fdl, subset = r1 )
 #'
 #' @importFrom ggplot2 ggplot

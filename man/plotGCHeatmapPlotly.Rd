@@ -19,7 +19,7 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{counts}{\code{logical}. Display counts of GC content rather than frequency}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
@@ -38,7 +38,7 @@ M. furo, M. mulatta, M. musculus, O. sativa, P. troglodytes, R. norvegicus, S. c
 T. guttata, V. vinifera. Use \code{ngsReports::genomes(ngsReports::gcTheoretical)} to display the corresponding names for
 each species.}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}

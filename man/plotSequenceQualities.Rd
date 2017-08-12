@@ -19,10 +19,10 @@ If \code{counts = FALSE} the frequencies will be plotted}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{
@@ -53,7 +53,7 @@ fdl <- getFastqcData(fileList)
 plotSequenceQualities(fdl)
 
 # Get the R1 files
-r1 <- grepl("R1", fileNames(fdl))
+r1 <- grepl("R1", fileName(fdl))
 
 # Customise using the R1 subset, plotting counts,
 # and faceting after the initial function call
