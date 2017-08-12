@@ -3,11 +3,15 @@
 \docType{methods}
 \name{FastqcFileList}
 \alias{FastqcFileList}
+\alias{FastqcFileList,character-method}
+\alias{FastqcFileList}
 \alias{FastqcFileList,list-method}
 \alias{FastqcFileList}
 \title{Create a new FastqcFileList Object}
 \usage{
 FastqcFileList(x)
+
+\S4method{FastqcFileList}{character}(x)
 
 \S4method{FastqcFileList}{list}(x)
 }
