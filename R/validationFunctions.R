@@ -56,20 +56,25 @@ isValidPwf <- function(object){
 #' @importFrom methods slot
 isValidTheoreticalGC <- function(object){
 
-  # Get the species & check there is data for all
-  sp <- object@mData$Species
-  if(!all(sp %in% slotNames(object))) return(FALSE)
+  # Check the colnames of the metaData
+  reqCols <- c("Name", "Genome", "Transcriptome")
+  if (!all(reqCols %in% colnames(object@mData))) return(FALSE)
+  gn <- object@mData$Genome
+  if (!is.logical(gn)) return(FALSE)
+  tr <- object@mData$Transcriptome
+  if (!is.logical(tr)) return(FALSE)
 
-  # Check the mData column names
-  mCols <- c("Species", "Group", "Source", "Genome", "Transcriptome")
-  if(!all(mCols %in% colnames(object@mData))) return(FALSE)
+  # Check Genome & Transcriptomes called as TRUE match the metadata exactly
+  if (!all(object@mData$Name[gn] %in% colnames(object@Genome))) return(FALSE)
+  if (!all(colnames(object@Genome)[-1] %in% object@mData$Name[gn])) return(FALSE)
+  if (!all(object@mData$Name[tr] %in% colnames(object@Transcriptome))) FALSE
+  if (!all(colnames(object@Transcriptome)[-1] %in% object@mData$Name[tr])) FALSE
 
-  # Check all GC_Content columns are valid for each species
-  checkCols <- vapply(sp, function(x){
-    all(colnames(slot(object, x)) %in% c("GC_Content",  "Genome", "Transcriptome"))
-    },
-    logical(1))
-  if (!all(checkCols)) return(FALSE)
+  # Check all content is given as a frequency
+  gFreqs <- vapply(object@Genome[-1], function(x){sum(x > 1 | x < 0)}, integer(1))
+  if (any(gFreqs != 0)) return(FALSE)
+  tFreqs <- vapply(object@Transcriptome[-1], function(x){sum(x > 1 | x < 0)}, integer(1))
+  if (any(tFreqs != 0)) return(FALSE)
 
   TRUE
 
