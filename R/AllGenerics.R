@@ -14,8 +14,3 @@ setGeneric("Adapter_Content", function(object){standardGeneric("Adapter_Content"
 setGeneric("Kmer_Content", function(object){standardGeneric("Kmer_Content")})
 setGeneric("Total_Deduplicated_Percentage", function(object){standardGeneric("Total_Deduplicated_Percentage")})
 setGeneric("Version", function(object){standardGeneric("Version")})
-setGeneric("getGC", function(object, ...){standardGeneric("getGC")})
-setGeneric("mData", function(object){standardGeneric("mData")})
-setGeneric("allSpecies", function(object){standardGeneric("allSpecies")})
-setGeneric("genomes", function(object){standardGeneric("genomes")})
-setGeneric("transcriptomes", function(object){standardGeneric("transcriptomes")})
