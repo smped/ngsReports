@@ -34,10 +34,10 @@ or whether the top nKmers are selected from each individual file.}
 
 \item{flip}{\code{logical}. Enable a call to \code{coord_flip} to determine the best direction}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{
@@ -61,7 +61,7 @@ fdl <- getFastqcData(fileList)
 plotOverrepresentedHeatmap(fdl)
 
 # Dig a bit deeper
-r1 <- grepl("R1", fileNames(fdl))
+r1 <- grepl("R1", fileName(fdl))
 plotOverrepresentedHeatmap(fdl, subset = r1, flip = FALSE, nSeq = 10)
 
 # Check the top 2 sequences with No Hit from each R1 file

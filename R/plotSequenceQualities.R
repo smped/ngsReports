@@ -15,9 +15,9 @@
 #' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
 #' If \code{counts = FALSE} the frequencies will be plotted
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
+#' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #'
 #' @return A ggplot2 object
@@ -37,7 +37,7 @@
 #' plotSequenceQualities(fdl)
 #'
 #' # Get the R1 files
-#' r1 <- grepl("R1", fileNames(fdl))
+#' r1 <- grepl("R1", fileName(fdl))
 #'
 #' # Customise using the R1 subset, plotting counts,
 #' # and faceting after the initial function call

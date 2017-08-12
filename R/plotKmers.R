@@ -17,9 +17,9 @@
 #' @param method Can only take the values \code{"overall"} or \code{"individual"}.
 #' Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
 #' or whether the top nKmers are selected from each individual file.
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileNames
+#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileNames.
+#' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #'
 #' @return A standard ggplot2 object
@@ -39,7 +39,7 @@
 #' plotKmers(fdl)
 #'
 #' # Try digging a bit deeper
-#' ccR1 <- grepl("CC.+R1", fileNames(fdl))
+#' ccR1 <- grepl("CC.+R1", fileName(fdl))
 #' plotKmers(fdl, subset = ccR1, nc = 1, method = "individual", nKmers = 4)
 #'
 #'
@@ -123,7 +123,7 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
   # In order to get a line plot, zero values need to be added to the missing positions
   # The above reference scale for X will be used to label the missing values
   # Include all files to ensure all appear in the final plot
-  if (trimNames) allNames <- gsub(pattern[1], "\\1", fileNames(x))
+  if (trimNames) allNames <- gsub(pattern[1], "\\1", fileName(x))
   zeros <- with(df,
                 expand.grid(list(Filename = allNames,
                                  Sequence = unique(Sequence),

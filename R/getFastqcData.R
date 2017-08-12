@@ -25,7 +25,7 @@ setMethod("getFastqcData", "FastqcFile",
             if (isCompressed(path, type = "zip")){
               # Get the internal path within the zip archive
               if (!file.exists(path)) stop("The zip archive can not be found.")
-              fl <- file.path( gsub(".zip$", "", fileNames(object)), "fastqc_data.txt")
+              fl <- file.path( gsub(".zip$", "", fileName(object)), "fastqc_data.txt")
               # Check the required file exists
               allFiles <- unzip(path, list = TRUE)$Name
               stopifnot(fl %in% allFiles)

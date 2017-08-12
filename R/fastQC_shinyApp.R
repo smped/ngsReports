@@ -48,7 +48,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     fdl <- fastqcInput
   }
 
-  fdl <- fdl[grepl(subsetAll, fileNames(fdl))]
+  fdl <- fdl[grepl(subsetAll, fileName(fdl))]
 
   ui <- shinyUI(
     fluidPage(

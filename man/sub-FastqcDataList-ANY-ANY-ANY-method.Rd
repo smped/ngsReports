@@ -12,7 +12,7 @@
 }
 \value{
 Returns a \code{data_frame} for all the methods except \code{path}, \code{names},
-\code{fileNames}
+\code{fileName}
 }
 \description{
 Methods and Accessors for an object of class FastqcDataList

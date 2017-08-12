@@ -23,7 +23,7 @@
 setMethod("Overrepresented_sequences", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Overrepresented_sequences,
-                                Filename = fileNames(object))
+                                Filename = fileName(object))
             dplyr::select(df, Filename, dplyr::everything())
           })
 

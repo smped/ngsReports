@@ -26,7 +26,7 @@ or \code{plotType = "line"}}
 \item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
 \item{...}{Used to pass additional arguments, such as \code{invert} or \code{ignore.case},
@@ -62,7 +62,7 @@ fdl <- getFastqcData(fileList)
 plotAdapterContent(fdl)
 
 # Also subset the reads to just the R1 files
-r1 <- grepl("R1", fileNames(fdl))
+r1 <- grepl("R1", fileName(fdl))
 plotAdapterContent(fdl, subset = r1)
 
 # Plot just the Universal Adapter, and change the y-axis

@@ -17,10 +17,10 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{type}{A regular expression used to filter which value is plotted.
 Patterns should match one of \code{\% Total sequences} or \code{\% Deduplicated sequences}}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{
@@ -49,7 +49,7 @@ fdl <- getFastqcData(fileList)
 plotDuplicationLevels(fdl)
 
 # Plot the \% Total Sequences for the R1 files only
-r1 <- grepl("R1", fileNames(fdl))
+r1 <- grepl("R1", fileName(fdl))
 plotDuplicationLevels(fdl, subset = r1, type = "Total")
 
 

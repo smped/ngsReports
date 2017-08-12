@@ -22,7 +22,7 @@ setMethod("Version", "FastqcData", function(object){object@Version})
 #' @aliases Version
 setMethod("Version", "FastqcDataList",
           function(object){
-            data_frame(Filename = fileNames(object),
+            data_frame(Filename = fileName(object),
                        Version = vapply(object@.Data, Version, character(1)))
           })
 

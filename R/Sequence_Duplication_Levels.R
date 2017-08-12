@@ -19,7 +19,7 @@
 setMethod("Sequence_Duplication_Levels", "FastqcData",
           function(object){
             df <- object@Sequence_Duplication_Levels
-            df$Filename <- fileNames(object)
+            df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
           })
 

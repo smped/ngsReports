@@ -17,10 +17,10 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
 If \code{counts = FALSE} the frequencies will be plotted}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{

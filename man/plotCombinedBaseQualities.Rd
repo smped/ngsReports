@@ -22,10 +22,10 @@ Can additionally set to "all" to plot all available quantities}
 \item{pwfCols}{Object of class \code{PwfCols} containing the colours for PASS/WARN/FAIL.
 Defaults to the object \code{pwf}}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileNames}
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
 \item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileNames.
+Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 }
 \value{
@@ -53,7 +53,7 @@ fileList <- system.file("extdata", fileList, package = "ngsReports")
 fdl <- getFastqcData(fileList)
 
 # Find the R1 files
-r1 <- grepl("R1", fileNames(fdl))
+r1 <- grepl("R1", fileName(fdl))
 
 # The default plot using the Mean only
 plotCombinedBaseQualities(fdl)
