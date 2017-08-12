@@ -10,7 +10,7 @@ Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
 Description: Load FastQC reports and other NGS output summaries into R.
 License: LGPL (>= 2)
 Encoding: UTF-8
-Imports: 
+Imports:
   checkmate,
   dplyr,
   ggdendro,
@@ -33,7 +33,7 @@ Imports:
   zoo
 LazyData: true
 RoxygenNote: 6.0.1
-Collate: 
+Collate:
     'validationFunctions.R'
     'FastqcFileList.R'
     'FastqcFile.R'
@@ -93,3 +93,4 @@ Collate:
     'pwf.R'
     'readTotals.R'
     'runFastQC.R'
+Suggests: testthat

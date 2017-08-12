@@ -15,3 +15,4 @@
 - Flip Total Read Plot
 - make dependencies script for install 
 - make 'output all plots to pdf' function
+- Build tests for classes and methods
