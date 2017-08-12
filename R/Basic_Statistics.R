@@ -9,6 +9,7 @@
 #' @include AllGenerics.R
 #' @include FastqcFile.R
 #' @include FastqcFileList.R
+#' @include FastqcDataList.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
