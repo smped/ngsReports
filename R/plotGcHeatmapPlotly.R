@@ -117,7 +117,7 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
     if(GCtheory){
       df <- df %>% split(.["Filename"]) %>% lapply(function(x){
         gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, name = species, type = GCtheoryType)
-        x <- dplyr::mutate(x, Value = Value - unlist(gcTheoryDF[species]))
+        x <- dplyr::mutate(x, Value = abs(Value - unlist(gcTheoryDF[species])))
       }) %>% dplyr::bind_rows(.)
     }
   }else{
