@@ -4,17 +4,20 @@
 \alias{importStarLogs}
 \title{Import STAR log files}
 \usage{
-importStarLogs(path)
+importStarLogs(x, tidyNames = TRUE)
 }
 \arguments{
-\item{path}{\code{character}. Vector of filenames}
+\item{x}{\code{character}. Vector of filenames}
+
+\item{tidyNames}{\code{logical}(1). Return names in slightly more convenient format (TRUE)
+or mostly as provided on the original file}
 }
 \value{
 A \code{data_frame}.
 Column names are broadly similar to those in the supplied files,
 but have been modified for easier handling under R naming conventions.
 
-In addition, the columns \code{Mapping_Duration} and the overall \code{Mapping_Rate}
+In addition, the columns \code{Mapping_Duration} and the overall \code{Total_Mapped_Percent}
 are returned
 }
 \description{
