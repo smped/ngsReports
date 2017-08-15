@@ -16,22 +16,6 @@
 #' In addition, the columns \code{Mapping_Duration} and the overall \code{Mapping_Rate}
 #' are returned
 #'
-#' @importFrom readr read_delim
-#' @importFrom dplyr mutate
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr filter
-#' @importFrom dplyr rename
-#' @importFrom dplyr select
-#' @importFrom dplyr ends_with
-#' @importFrom dplyr starts_with
-#' @importFrom dplyr everything
-#' @importFrom tibble as_tibble
-#' @importFrom stringr str_replace
-#' @importFrom stringr str_trim
-#' @importFrom stringr str_to_title
-#' @importFrom reshape2 dcast
-#' @importFrom lubridate parse_date_time
-#'
 #' @export
 importStarLogs <- function(path){
 
@@ -61,14 +45,17 @@ importStarLogs <- function(path){
     dplyr::mutate(data[[x]], Filename = x)
   })
   df <- dplyr::bind_rows(df)
-  df <- dplyr::filter(df, !is.na(Value))
+  df <- df[!is.na(df$Value),]
+
   # Tidy up the whitespace & pipe symbol
   df$Category <- stringr::str_replace(df$Category, "\\|", "")
   df$Category <- stringr::str_trim(df$Category)
+
   # Remove redundant information
   df$Category <- gsub("(Number of | per base| %)", "", df$Category)
   df$Category <- gsub("\\% of reads", "Percent", df$Category)
   df$Category <- gsub("(:|,)", "",  df$Category)
+
   # Customise some fields
   df$Category <- gsub("(Mapping speed).+", "\\1", df$Category)
   # df$Category <- gsub("input reads", "Total reads", df$Category)
@@ -76,6 +63,7 @@ importStarLogs <- function(path){
   df$Category[!grepl("splices", df$Category)] <- stringr::str_to_title(df$Category[!grepl("splices", df$Category)])
   df$Category <- gsub("splices", "Splices", df$Category)
   df$Category <- gsub(" ", "_", df$Category)
+
   # Cast into the final structure
   colOrder <- unique(df$Category)
   df <- reshape2::dcast(df, Filename~Category, value.var = "Value")
@@ -83,11 +71,12 @@ importStarLogs <- function(path){
 
   # Set some fields to more correct formats
   timeCols <- grep("On$", names(df))
-  df[timeCols] <- lapply(df[timeCols], parse_date_time, orders = "b! d! HMS")
+  df[timeCols] <- lapply(df[timeCols], lubridate::parse_date_time, orders = "b! d! HMS")
   df$Mapping_Speed <- as.double(df$Mapping_Speed)
   df$Input_Reads <- as.integer(df$Input_Reads)
   df <- dplyr::rename(df, Average_Read_Length = Average_Input_Read_Length)
   df$Average_Read_Length <- as.integer(df$Average_Read_Length)
+
   # Tidy up the unique mappings
   df <- dplyr::rename(df,
                       Uniquely_Mapped_Proportion = Uniquely_Mapped_Reads,
@@ -95,33 +84,40 @@ importStarLogs <- function(path){
   df$Uniquely_Mapped_Reads <- as.integer(df$Uniquely_Mapped_Reads)
   df$Uniquely_Mapped_Proportion <- with(df, Uniquely_Mapped_Reads / Input_Reads)
   df$Uniquely_Mapped_Average_Length <- as.double(df$Uniquely_Mapped_Average_Length)
+
   # The splice information is all integer values
   splCols <- grep("Splices", names(df))
   df[splCols] <- lapply(df[splCols], as.integer)
+
   # Leave the rates as percentages for Indels...
   df$Deletion_Average_Length <- as.double(df$Deletion_Average_Length)
   df$Insertion_Average_Length <- as.double(df$Insertion_Average_Length)
+
   # Tidy up the multi mapped reads
   df <- dplyr::rename(df,
                       Multi_Mapped_Reads = Reads_Mapped_To_Multiple_Loci,
                       Multi_Mapped_Proportion = Percent_Mapped_To_Multiple_Loci)
   df$Multi_Mapped_Reads <- as.integer(df$Multi_Mapped_Reads)
   df$Multi_Mapped_Proportion <- with(df, Multi_Mapped_Reads / Input_Reads)
+
   # And the reads mapped too many times
   df <- dplyr::rename(df,
                       Too_Many_Mapped_Reads = Reads_Mapped_To_Too_Many_Loci,
                       Too_Many_Mapped_Proportion = Percent_Mapped_To_Too_Many_Loci)
   df$Too_Many_Mapped_Reads <- as.integer(df$Too_Many_Mapped_Reads)
   df$Too_Many_Mapped_Proportion <- with(df, Too_Many_Mapped_Reads / Input_Reads)
+
   # And the unmapped reads
   names(df) <- gsub("Percent_(Unmapped.+)", "\\1_Proportion", names(df))
   unmapCols <- grep("Unmapped", names(df))
   df[unmapCols] <- lapply(df[unmapCols], function(x){
     as.numeric(gsub("%", "", x)) / 100
   })
+
   # Add Useful Information
   df$Mapping_Duration <- with(df, Finished_On - Started_Mapping_On)
   df$Mapping_Rate <- with(df, (Uniquely_Mapped_Reads + Multi_Mapped_Reads) / Input_Reads)
+
   # Reorder the columns to place these in sensible positions
   df <- dplyr::select(df, Filename,
                       dplyr::ends_with("On", ignore.case = FALSE),
