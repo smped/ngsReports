@@ -7,124 +7,77 @@
 #' as proportions intead of percentages.
 #' Indel and substitution rates are left as character values showing percentages.
 #'
-#' @param path \code{character}. Vector of filenames
+#' @param x \code{character}. Vector of filenames
+#' @param tidyNames \code{logical}(1). Return names in slightly more convenient format (TRUE)
+#' or mostly as provided on the original file
 #'
 #' @return A \code{data_frame}.
 #' Column names are broadly similar to those in the supplied files,
 #' but have been modified for easier handling under R naming conventions.
 #'
-#' In addition, the columns \code{Mapping_Duration} and the overall \code{Mapping_Rate}
+#' In addition, the columns \code{Mapping_Duration} and the overall \code{Total_Mapped_Percent}
 #' are returned
 #'
 #' @export
-importStarLogs <- function(path){
+importStarLogs <- function(x, tidyNames = TRUE){
 
-  path <- unique(path) # Remove any  duplicates
-  stopifnot(file.exists(path)) # Check they all exist
-  # Load them all
-  data <- suppressWarnings(lapply(path, readr::read_delim,
-                                  delim = "\t", col_names = c("Category", "Value"),
-                                  col_types = "cc", trim_ws = TRUE) )
-  names(data) <- basename(path)
+  stopifnot(file.exists(x))
+  ln <- lapply(x, readLines)
 
   # Define a quick check
   isValidStarLog <- function(x){
-    nLines <- length(x)
-    if (!grepl("Started job on", x$Category[1])) return(FALSE)
-    if (!grepl("UNIQUE READS:", x$Category[7])) return(FALSE)
-    if (!grepl("MULTI-MAPPING READS:", x$Category[22])) return(FALSE)
-    if (!grepl("UNMAPPED READS:", x$Category[27])) return(FALSE)
+    if (!grepl("Started job on", x[1])) return(FALSE)
+    if (!any(grepl("UNIQUE READS:", x))) return(FALSE)
+    if (!any(grepl("MULTI-MAPPING READS:", x))) return(FALSE)
+    if (!any(grepl("UNMAPPED READS:", x))) return(FALSE)
     TRUE
   }
-  validLogs <- vapply(data, isValidStarLog, logical(1))
+  validLogs <- vapply(ln, isValidStarLog, logical(1))
   if (any(!validLogs)) {
     stop(paste("Incorrect file structure for:", names(validLogs)[!validLogs], collapse = "\n"))
   }
 
-  df <- lapply(names(data), function(x){
-    dplyr::mutate(data[[x]], Filename = x)
+  ln <- lapply(ln, stringr::str_split_fixed, pattern = "\\|\t", n = 2)
+  ln <- lapply(ln, function(x){
+    x <- x[x[,2] != "",] # Remove blanks
+    x <- apply(x, MARGIN = 2, FUN = stringr::str_trim) # Trim whitespace
+    "Clean up the column names"
+    x[,1] <- stringr::str_replace_all(x[,1], "[:,\\(\\)]", "") # Remove brackets, colons etc
+    x[,1] <- stringr::str_replace_all(x[,1], "%", "percent")
+    x[,1] <- stringr::str_to_title(x[,1])
+    x[,1] <- stringr::str_replace_all(x[,1], "( |-)", "_") # Replace whitespace & '-' with underscores
+    # Clean up the values & return a data.frame
+    x[,2] <- stringr::str_replace_all(x[,2], "%", "")
+    x <- structure(as.list(x[,2]), names = x[,1])
+    as.data.frame(x, stringsAsFactors = FALSE)
   })
-  df <- dplyr::bind_rows(df)
-  df <- df[!is.na(df$Value),]
-
-  # Tidy up the whitespace & pipe symbol
-  df$Category <- stringr::str_replace(df$Category, "\\|", "")
-  df$Category <- stringr::str_trim(df$Category)
-
-  # Remove redundant information
-  df$Category <- gsub("(Number of | per base| %)", "", df$Category)
-  df$Category <- gsub("\\% of reads", "Percent", df$Category)
-  df$Category <- gsub("(:|,)", "",  df$Category)
-
-  # Customise some fields
-  df$Category <- gsub("(Mapping speed).+", "\\1", df$Category)
-  # df$Category <- gsub("input reads", "Total reads", df$Category)
-  df$Category <- gsub("Average mapped length", "Uniquely mapped average length", df$Category)
-  df$Category[!grepl("splices", df$Category)] <- stringr::str_to_title(df$Category[!grepl("splices", df$Category)])
-  df$Category <- gsub("splices", "Splices", df$Category)
-  df$Category <- gsub(" ", "_", df$Category)
-
-  # Cast into the final structure
-  colOrder <- unique(df$Category)
-  df <- reshape2::dcast(df, Filename~Category, value.var = "Value")
-  df <- df[, c("Filename", colOrder)]
-
-  # Set some fields to more correct formats
-  timeCols <- grep("On$", names(df))
+  #Merge all files into a single df
+  df <- dplyr::bind_rows(ln)
+  timeCols <- grepl("On$", names(df))
   df[timeCols] <- lapply(df[timeCols], lubridate::parse_date_time, orders = "b! d! HMS")
-  df$Mapping_Speed <- as.double(df$Mapping_Speed)
-  df$Input_Reads <- as.integer(df$Input_Reads)
-  df <- dplyr::rename(df, Average_Read_Length = Average_Input_Read_Length)
-  df$Average_Read_Length <- as.integer(df$Average_Read_Length)
-
-  # Tidy up the unique mappings
-  df <- dplyr::rename(df,
-                      Uniquely_Mapped_Proportion = Uniquely_Mapped_Reads,
-                      Uniquely_Mapped_Reads = Uniquely_Mapped_Reads_Number)
-  df$Uniquely_Mapped_Reads <- as.integer(df$Uniquely_Mapped_Reads)
-  df$Uniquely_Mapped_Proportion <- with(df, Uniquely_Mapped_Reads / Input_Reads)
-  df$Uniquely_Mapped_Average_Length <- as.double(df$Uniquely_Mapped_Average_Length)
-
-  # The splice information is all integer values
-  splCols <- grep("Splices", names(df))
-  df[splCols] <- lapply(df[splCols], as.integer)
-
-  # Leave the rates as percentages for Indels...
-  df$Deletion_Average_Length <- as.double(df$Deletion_Average_Length)
-  df$Insertion_Average_Length <- as.double(df$Insertion_Average_Length)
-
-  # Tidy up the multi mapped reads
-  df <- dplyr::rename(df,
-                      Multi_Mapped_Reads = Reads_Mapped_To_Multiple_Loci,
-                      Multi_Mapped_Proportion = Percent_Mapped_To_Multiple_Loci)
-  df$Multi_Mapped_Reads <- as.integer(df$Multi_Mapped_Reads)
-  df$Multi_Mapped_Proportion <- with(df, Multi_Mapped_Reads / Input_Reads)
-
-  # And the reads mapped too many times
-  df <- dplyr::rename(df,
-                      Too_Many_Mapped_Reads = Reads_Mapped_To_Too_Many_Loci,
-                      Too_Many_Mapped_Proportion = Percent_Mapped_To_Too_Many_Loci)
-  df$Too_Many_Mapped_Reads <- as.integer(df$Too_Many_Mapped_Reads)
-  df$Too_Many_Mapped_Proportion <- with(df, Too_Many_Mapped_Reads / Input_Reads)
-
-  # And the unmapped reads
-  names(df) <- gsub("Percent_(Unmapped.+)", "\\1_Proportion", names(df))
-  unmapCols <- grep("Unmapped", names(df))
-  df[unmapCols] <- lapply(df[unmapCols], function(x){
-    as.numeric(gsub("%", "", x)) / 100
-  })
-
-  # Add Useful Information
+  df[!timeCols] <- lapply(df[!timeCols], as.numeric)
+  intCols <- grepl("Number", names(df))
+  df[intCols] <- lapply(df[intCols], as.integer)
+  names(df) <- gsub("^(Number_Of_Splices_[ACGT])([acgt])\\.([AGCT])([acgt])$",
+                    "\\1\\U\\2/\\3\\U\\4",
+                    names(df), perl = TRUE)
+  # Add the filename & additional columns
+  df$Filename <- basename(x)
   df$Mapping_Duration <- with(df, Finished_On - Started_Mapping_On)
-  df$Mapping_Rate <- with(df, (Uniquely_Mapped_Reads + Multi_Mapped_Reads) / Input_Reads)
-
-  # Reorder the columns to place these in sensible positions
+  df$Total_Mapped_Percent <- with(df, 100*(Uniquely_Mapped_Reads_Number + Number_Of_Reads_Mapped_To_Multiple_Loci) / Number_Of_Input_Reads)
   df <- dplyr::select(df, Filename,
-                      dplyr::ends_with("On", ignore.case = FALSE),
-                      dplyr::starts_with("Mapping"),
-                      Input_Reads, Average_Read_Length, dplyr::everything())
+                      dplyr::starts_with("Total"),
+                      dplyr::contains("Input"),
+                      dplyr::contains("Mapped"),
+                      dplyr::contains("Splice"),
+                      dplyr::ends_with("On"),
+                      dplyr::contains("Mapping"),
+                      dplyr::everything())
 
-  # Return as a tibble
+  if (tidyNames){
+    names(df) <- gsub("(Number_Of_|_Number)", "", names(df))
+    names(df) <- gsub("Percent_Of_(.+)", "\\1_(%)", names(df))
+  }
+
   tibble::as_tibble(df)
-
 }
