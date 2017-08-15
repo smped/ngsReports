@@ -4,28 +4,26 @@
 #'
 #' @details Imports one or more log files as output by the aligner bowtie
 #'
-#' @param path \code{character}. Vector of filenames
+#' @param x \code{character}. Vector of filenames
 #'
-#' @return A \code{data_frame}.
+#' @return A \code{tibble}.
 #' Column names are broadly similar to the text in supplied files,
 #' but have been modified for easier handling under R naming conventions.
 #'
 #'
-#' @importFrom stringr str_split_fixed
-#' @importFrom tibble tibble
 #' @importFrom lubridate dminutes
 #' @importFrom lubridate dhours
 #' @importFrom lubridate dseconds
 #'
 #' @export
-importBowtieLogs <- function(path){
+importBowtieLogs <- function(x){
 
-  path <- unique(path) # Remove any  duplicates
-  stopifnot(file.exists(path)) # Check they all exist
+  x <- unique(x) # Remove any  duplicates
+  stopifnot(file.exists(x)) # Check they all exist
 
   # Load the data
-  data <- suppressWarnings(lapply(path, readLines))
-  names(data) <- basename(path)
+  data <- suppressWarnings(lapply(x, readLines))
+  names(data) <- basename(x)
 
   # Define a quick check
   isValidBowtieLog <- function(x){
@@ -45,92 +43,38 @@ importBowtieLogs <- function(path){
     stop(paste("Incorrect file structure for:", names(validLogs)[!validLogs], collapse = "\n"))
   }
 
-  forwardIndexTime <- vapply(data,function(x){
-    x <- grep("Time loading forward index", x, value = TRUE)
-    x <- gsub("Time loading forward index: ", "", x)
-  }, character(1))
-  forwardIndexTime <- stringr::str_split_fixed(forwardIndexTime, pattern = ":", 3)
-  forwardIndexTime <- apply(forwardIndexTime, 2, as.integer)
-  forwardIndexTime <- dhours(forwardIndexTime[,1]) + dminutes(forwardIndexTime[,2]) + dseconds(forwardIndexTime[,3])
+  df <- lapply(data, function(x){
+    x <- gsub("# ", "", x)
+    total <- grep("Reported .* alignments", x = x, value = TRUE)
+    x <- setdiff(x, total)
+    x <- stringr::str_split_fixed(x, pattern = ": ", 2)
+    x[,1] <- stringr::str_to_title(x[,1])
+    x[,1] <- gsub("( |-)", "_", x[,1])
+    x[,2] <- gsub("(.+) \\(.+\\)", "\\1", x[,2])
+    df <- structure(as.list(x[,2]), names = x[,1])
+    df <- as.data.frame(df, stringsAsFactors = FALSE)
+  })
+  df <- dplyr::bind_rows(df)
 
-  mirrorIndexTime <- vapply(data, function(x){
-    x <- grep("Time loading mirror index", x, value = TRUE)
-    x <- gsub("Time loading mirror index: ", "", x)
-    }, character(1))
-  mirrorIndexTime <- stringr::str_split_fixed(mirrorIndexTime, pattern = ":", 3)
-  mirrorIndexTime <- apply(mirrorIndexTime, 2, as.integer)
-  mirrorIndexTime <- dhours(mirrorIndexTime[,1]) + dminutes(mirrorIndexTime[,2]) + dseconds(mirrorIndexTime[,3])
+  # Some colnames may have a flag from the original bowtie code
+  # This will replace that after the conversion steps above
+  names(df) <- gsub("__(.)", "_-\\L\\1", names(df), perl = TRUE)
 
-  seededSearchTime <- vapply(data, function(x){
-    x <- grep("Seeded quality full-index search:", x, value = TRUE)
-    x <- gsub("Seeded quality full-index search: ", "", x)
-    }, character(1))
-  seededSearchTime <- stringr::str_split_fixed(seededSearchTime, pattern = ":", 3)
-  seededSearchTime <- apply(seededSearchTime, 2, as.integer)
-  seededSearchTime <- dhours(seededSearchTime[,1]) + dminutes(seededSearchTime[,2]) + dseconds(seededSearchTime[,3])
+  # Reformat the columns
+  timeCols <- grepl("(Time|Full_Index_Search)", names(df))
+  df[!timeCols] <- suppressWarnings(lapply(df[!timeCols], as.integer))
+  df[timeCols] <- lapply(df[timeCols], function(x){
+    x <- stringr::str_split_fixed(x, ":", 3)
+    x <- as.numeric(x)
+    x <- matrix(x, ncol = 3)
+    dhours(x[,1]) + dminutes(x[,2]) + dseconds(x[,3])
+  })
+  df$Filename <- basename(x)
+  df <- dplyr::select(df,
+                      Filename,
+                      dplyr::contains("Reads"),
+                      dplyr::contains("Time"),
+                      dplyr::everything())
 
-  nReads <- vapply(data, function(x){
-    n <- grep("# reads processed:", x, value = TRUE)
-    n <- gsub("# reads processed: ", "", n)
-    n <- as.integer(n)},
-    integer(1))
-
-  aligned <- vapply(data, function(x){
-    n <- grep("# reads with at least one reported alignment:", x, value = TRUE)
-    n <- gsub("# reads with at least one reported alignment: ", "", n)
-    n <- gsub(" \\(.+\\)", "", n)
-    n <- as.integer(n)},
-    integer(1))
-
-  unaligned <- vapply(data, function(x){
-    n <- grep("# reads that failed to align:", x, value = TRUE)
-    n <- gsub("# reads that failed to align: ", "", n)
-    n <- gsub(" \\(.+\\)", "", n)
-    n <- as.integer(n)},
-    integer(1))
-
-  suppressed <- vapply(data, function(x){
-    v <- grepl("# reads with alignments suppressed", x)
-    if (sum(v) == 0) return(0L)
-    x <- x[v]
-    x <- gsub("# reads with alignments suppressed.+: ([0-9]+) \\(.+\\)", "\\1", x)
-    x <- as.integer(x)
-    x
-  }, integer(1))
-
-  totalAlignments <- vapply(data, function(x){
-    n <- grep("Reported.+alignments to", x, value = TRUE)
-    n <- gsub("Reported ([0-9]*) .*alignments to.+", "\\1", n)
-    n <- as.integer(n)
-    }, integer(1))
-
-  totalSearchTime <- vapply(data, function(x){
-     t <- grep("Time searching:", x, value = TRUE)
-     t <- gsub("Time searching: ", "", t)
-    }, character(1))
-  totalSearchTime <- stringr::str_split_fixed(totalSearchTime, pattern = ":", 3)
-  totalSearchTime <- apply(totalSearchTime, 2, as.integer)
-  totalSearchTime <- dhours(totalSearchTime[,1]) + dminutes(totalSearchTime[,2]) + dseconds(totalSearchTime[,3])
-
-  overallTime <- vapply(data, function(x){
-    t <- grep("Overall time:", x, value = TRUE)
-    t <- gsub("Overall time: ", "", t)
-  }, character(1))
-  overallTime <- stringr::str_split_fixed(overallTime, pattern = ":", 3)
-  overallTime <- apply(overallTime, 2, as.integer)
-  overallTime <- dhours(overallTime[,1]) + dminutes(overallTime[,2]) + dseconds(overallTime[,3])
-
-  # Collect the output
-  tibble::tibble(file = names(data),
-                 totalReads = nReads,
-                 alignedReads = aligned,
-                 unalignedReads = unaligned,
-                 totalAlignments = totalAlignments,
-                 suppressedAlignments = suppressed,
-                 overallTime = overallTime,
-                 totalSearchTime = totalSearchTime,
-                 seededSearchTime = seededSearchTime,
-                 forwardIndexTime = forwardIndexTime,
-                 mirrorIndexTime = mirrorIndexTime)
-
+  tibble::as_tibble(df)
 }

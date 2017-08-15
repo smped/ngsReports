@@ -4,10 +4,10 @@
 \alias{importHisat2Logs}
 \title{Read Hisat2 Log Files}
 \usage{
-importHisat2Logs(logs)
+importHisat2Logs(x)
 }
 \arguments{
-\item{logs}{\code{character}. Vector of paths to hisat2 log files}
+\item{x}{\code{character}. Vector of paths to hisat2 log files}
 }
 \value{
 A \code{data_frame}
