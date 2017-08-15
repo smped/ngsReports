@@ -181,7 +181,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     output$GCspecies <- renderUI({
       if(input$GCtheory){
         selectInput("GCspecies", "Select species for Theoretical GC",
-                    choices = genomes(gcTheoretical),
+                    choices = genomes(gcTheoretical)$Name,
                     selected = "Hsapiens")
       }
     })

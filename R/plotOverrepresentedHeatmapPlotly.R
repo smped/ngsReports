@@ -63,7 +63,7 @@ plotOverrepresentedHeatmapPlotly <- function(x,
                                              pattern = "(.+)\\.(fastq|fq).*",
                                              clusterNames = FALSE,
                                              usePlotly = FALSE,
-                                             trimNames = TRUE,
+                                             trimNames = FALSE,
                                              dendrogram = FALSE){
 
 
