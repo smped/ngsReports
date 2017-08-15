@@ -4,13 +4,13 @@
 \alias{importBowtieLogs}
 \title{Import bowtie log files}
 \usage{
-importBowtieLogs(path)
+importBowtieLogs(x)
 }
 \arguments{
-\item{path}{\code{character}. Vector of filenames}
+\item{x}{\code{character}. Vector of filenames}
 }
 \value{
-A \code{data_frame}.
+A \code{tibble}.
 Column names are broadly similar to the text in supplied files,
 but have been modified for easier handling under R naming conventions.
 }

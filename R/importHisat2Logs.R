@@ -2,23 +2,23 @@
 #'
 #' @description Import one or more hisat2 log files as a data frame.
 #'
-#' @param logs \code{character}. Vector of paths to hisat2 log files
+#' @param x \code{character}. Vector of paths to hisat2 log files
 #'
 #' @return A \code{data_frame}
 #'
 #' @export
-importHisat2Logs <- function(logs){
+importHisat2Logs <- function(x){
 
-  fe <- file.exists(logs)
+  fe <- file.exists(x)
   if (all(!fe)) stop("Files could not be found")
   if (any(!fe) ){
-    warning("The following file(s) could not be found:\n", paste(logs[!fe], sep = "\n"),
+    warning("The following file(s) could not be found:\n", paste(x[!fe], sep = "\n"),
             "\nThese files will be ignored")
   }
-  logs <- logs[fe]
+  x <- x[fe]
 
-  data <- lapply(logs, readLines)
-  names(data) <- basename(logs)
+  data <- lapply(x, readLines)
+  names(data) <- basename(x)
 
   isHisat2Log <- function(x){
     n <- length(x)
@@ -30,37 +30,41 @@ importHisat2Logs <- function(logs){
 
   getHisat2Data <- function(x){
     paired <- grepl("were paired", x[2])
+    df <- data.frame(Total_Reads = as.integer(gsub("([0-9]*) reads; of these:", "\\1", x[1])))
+    df$Not_Aligned <- as.integer(gsub("([0-9]*) \\(.+\\) aligned 0 times", "\\1",
+                                      x[grep("aligned 0 times$", x)]))
+    df$Unique_Unpaired <- as.integer(gsub("([0-9]*) \\(.+\\) aligned exactly 1 time", "\\1",
+                                          x[grep("aligned exactly 1 time", x)]))
+    df$Multiple_Unpaired <- as.integer(gsub("([0-9]*) \\(.+\\) aligned >1 times", "\\1",
+                                            x[grep("aligned >1 times", x)]))
     if (paired){
-      df <- dplyr::data_frame(
-        Total_Reads = as.integer(gsub("([0-9]*) reads; of these:", "\\1", x[1])),
-        Paired_Reads = as.integer(gsub("([0-9]*) \\(.+\\) were paired; of these:", "\\1", x[2])),
-        Unique_In_Pairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned concordantly exactly 1 time", "\\1", x[4])),
-        Multiple_In_Pairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned concordantly >1 times", "\\1", x[5])),
-        Unique_Discordant_Pairs = as.integer(gsub("([0-9]*) \\(.+\\) aligned discordantly 1 time", "\\1", x[8])),
-        Unique_Unpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned exactly 1 time", "\\1", x[13])),
-        Multiple_Unpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned >1 times", "\\1", x[14])),
-        Not_Aligned = as.integer(gsub("([0-9]*) \\(.+\\) aligned 0 times", "\\1", x[12])))
+      df$Paired_Reads <- as.integer(gsub("([0-9]*) \\(.+\\) were paired; of these:", "\\1",
+                                         x[grep("were paired; of these:", x)]))
+      df$Unique_In_Pairs <- as.integer(gsub("([0-9]*) \\(.+\\) aligned concordantly exactly 1 time", "\\1",
+                                            x[grep("aligned concordantly exactly 1 time", x)]))
+      df$Multiple_In_Pairs <- as.integer(gsub("([0-9]*) \\(.+\\) aligned concordantly >1 times", "\\1",
+                                              x[grep("aligned concordantly >1 times", x)]))
+      df$Unique_Discordant_Pairs <- as.integer(gsub("([0-9]*) \\(.+\\) aligned discordantly 1 time", "\\1",
+                                                    x[grep("aligned discordantly 1 time", x)]))
       df$Alignment_Rate = with(df, 1 - Not_Aligned / (Total_Reads + Paired_Reads))
     }
     else{
-      df <- dplyr::data_frame(
-        Total_Reads = as.integer(gsub("([0-9]*) reads; of these:", "\\1", x[1])),
-        Not_Aligned = as.integer(gsub("([0-9]*) \\(.+\\) aligned 0 times", "\\1", x[3])),
-        Unique_Unpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned exactly 1 time", "\\1", x[4])),
-        Multiple_Unpaired = as.integer(gsub("([0-9]*) \\(.+\\) aligned >1 times", "\\1", x[5])))
       df$Alignment_Rate = with(df, 1 - Not_Aligned / Total_Reads)
     }
     df
   }
 
   validLogs <- vapply(data, isHisat2Log, logical(1))
-  if (any(!validLogs)) warning("Incorrect File structure for:\n", names(validLogs)[!validLogs])
-  data <- data[validLogs]
+  if (any(!validLogs)) stop("Incorrect File structure for:\n", names(validLogs)[!validLogs])
 
   out <- lapply(data, getHisat2Data)
   out <- dplyr::bind_rows(out)
   out$Filename <- names(data)
 
-  dplyr::select(out, Filename, dplyr::everything())
+  dplyr::select(out, Filename,
+                dplyr::ends_with("Reads"),
+                dplyr::contains("Unique"),
+                dplyr::contains("Multiple"),
+                dplyr::everything())
 
 }
