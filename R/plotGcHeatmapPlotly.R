@@ -66,14 +66,22 @@
 #' @export plotGCHeatmapPlotly
 plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq).*",
                                 clusterNames = FALSE, pwfCols,
-                                GCtheory = FALSE, species = "Hsapiens",
-                                trimNames = TRUE, usePlotly = FALSE, dendrogram = FALSE){
+                                GCtheory = FALSE, GCtheoryType = "Genome", species = "Hsapiens",
+                                trimNames = TRUE, usePlotly = FALSE,
+                                dendrogram = FALSE){
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
-  if(GCtheory){
+  if(GCtheory & GCtheoryType == "Genome"){
     spp <- ngsReports::genomes(ngsReports::gcTheoretical)
-    if(!species %in% spp){
-      stop(cat("Currently only supports the species", spp, sep = ", "))
+    if(!species %in% spp$Name){
+      stop(cat("Currently only supports genomes for", spp$Name, sep = ", "))
+    }
+  }
+
+  if(GCtheory & GCtheoryType == "Transcriptome"){
+    spp <- ngsReports::genomes(ngsReports::gcTheoretical)
+    if(!species %in% spp$Name){
+      stop(cat("Currently only supports transcriptomes for", spp$Name, sep = ", "))
     }
   }
 
@@ -106,26 +114,16 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
       dplyr::ungroup() %>%
       dplyr::select(Filename, GC_Content, Value = Freq)
 
-    # Add the observed mean at each value:
-    mn <- dplyr::group_by(df, GC_Content) %>%
-      dplyr::summarise(Value = mean(Value)) %>%
-      dplyr::mutate(Value = Value / sum(Value), # Normalise to 1 for a distribution
-                    Filename = "Observed Mean")
+    if(GCtheory){
+      df <- df %>% split(.["Filename"]) %>% lapply(function(x){
+        gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, name = species, type = GCtheoryType)
+        x <- dplyr::mutate(x, Value = abs(Value - unlist(gcTheoryDF[species])))
+      }) %>% dplyr::bind_rows(.)
+    }
   }else{
     df <- dplyr::select(df, Filename, GC_Content, Value = Count)
-    mn <- dplyr::group_by(df, GC_Content) %>%
-      dplyr::summarise(Value = mean(Value)) %>%
-      dplyr::mutate(Filename = "Observed Mean")
   }
 
-  df <- dplyr::bind_rows(df, mn)
-
-  if(GCtheory){
-    df <- df %>% split(.["Filename"]) %>% lapply(function(x){
-      gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, species = species, type = "Genome")
-      x <- dplyr::mutate(x, Value =  Value - (gcTheoryDF$Genome/sum(gcTheoryDF$Genome)))
-    }) %>% dplyr::bind_rows()
-  }
   if(clusterNames){
     df <- reshape2::dcast(df, Filename ~ GC_Content)
     xx <- dplyr::select(df, -Filename)
@@ -158,7 +156,6 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
     GCheatmap <- GCheatmap + theme(axis.text.y = element_blank(),
                                  axis.ticks.y = element_blank())
 
-    om_col <- data.frame(Status = NA, Category = NA, Filename = "Observed Mean")
 
     t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
     t <- dplyr::mutate(t, FilenameFull = Filename,
