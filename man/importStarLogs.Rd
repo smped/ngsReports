@@ -29,3 +29,8 @@ Values which are simple to calculate from the returned information are returned
 as proportions intead of percentages.
 Indel and substitution rates are left as character values showing percentages.
 }
+\examples{
+starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
+df <- importStarLogs(starLog)
+
+}

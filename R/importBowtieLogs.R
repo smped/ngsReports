@@ -10,6 +10,9 @@
 #' Column names are broadly similar to the text in supplied files,
 #' but have been modified for easier handling under R naming conventions.
 #'
+#' @examples
+#' bowtieLogs <- system.file("extdata", c("bowtiePE.log", "bowtieSE.log"), package = "ngsReports")
+#' df <- importBowtieLogs(bowtieLogs)
 #'
 #' @importFrom lubridate dminutes
 #' @importFrom lubridate dhours
