@@ -18,6 +18,10 @@
 #' In addition, the columns \code{Mapping_Duration} and the overall \code{Total_Mapped_Percent}
 #' are returned
 #'
+#' @examples
+#' starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
+#' df <- importStarLogs(starLog)
+#'
 #' @export
 importStarLogs <- function(x, tidyNames = TRUE){
 

@@ -2,16 +2,28 @@
 % Please edit documentation in R/importHisat2Logs.R
 \name{importHisat2Logs}
 \alias{importHisat2Logs}
-\title{Read Hisat2 Log Files}
+\alias{importBowtie2Logs}
+\title{Read Hisat2/Bowtie2 Log Files}
 \usage{
 importHisat2Logs(x)
+
+importBowtie2Logs(x)
 }
 \arguments{
-\item{x}{\code{character}. Vector of paths to hisat2 log files}
+\item{x}{\code{character}. Vector of paths to log files}
 }
 \value{
 A \code{data_frame}
 }
 \description{
-Import one or more hisat2 log files as a data frame.
+Import one or more hisat2/bowtie2 log files as a data frame.
+}
+\examples{
+hisat2Logs <- system.file("extdata", "hisat2PE.log", package = "ngsReports")
+df <- importHisat2Logs(hisat2Logs)
+
+# bowtie2 logs are the identical format
+bowtie2Logs <- system.file("extdata", c("bowtie2PE.log", "bowtie2SE.log"), package = "ngsReports")
+df <- importBowtie2Logs(bowtie2Logs)
+
 }

@@ -1,10 +1,18 @@
-#' @title Read Hisat2 Log Files
+#' @title Read Hisat2/Bowtie2 Log Files
 #'
-#' @description Import one or more hisat2 log files as a data frame.
+#' @description Import one or more hisat2/bowtie2 log files as a data frame.
 #'
-#' @param x \code{character}. Vector of paths to hisat2 log files
+#' @param x \code{character}. Vector of paths to log files
 #'
 #' @return A \code{data_frame}
+#'
+#' @examples
+#' hisat2Logs <- system.file("extdata", "hisat2PE.log", package = "ngsReports")
+#' df <- importHisat2Logs(hisat2Logs)
+#'
+#' # bowtie2 logs are the identical format
+#' bowtie2Logs <- system.file("extdata", c("bowtie2PE.log", "bowtie2SE.log"), package = "ngsReports")
+#' df <- importBowtie2Logs(bowtie2Logs)
 #'
 #' @export
 importHisat2Logs <- function(x){
@@ -68,3 +76,8 @@ importHisat2Logs <- function(x){
                 dplyr::everything())
 
 }
+
+#' @rdname importHisat2Logs
+#' @aliases importBowtie2Logs
+#' @export
+importBowtie2Logs <- importHisat2Logs
