@@ -7,7 +7,7 @@
 plotOverrepresentedHeatmapPlotly(x, subset, pwfCols, nSeq = 5, type = ".+",
   method = "Individual", low = rgb(0.2, 0, 0.2), high = rgb(1, 0, 0),
   naCol = "grey80", pattern = "(.+)\\\\.(fastq|fq).*",
-  clusterNames = FALSE, usePlotly = FALSE, trimNames = TRUE,
+  clusterNames = FALSE, usePlotly = FALSE, trimNames = FALSE,
   dendrogram = FALSE)
 }
 \arguments{

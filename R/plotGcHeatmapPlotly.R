@@ -18,8 +18,10 @@
 #' fastqc data will be clustered using heirachial clustering
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param GCtheory \code{logical} default is \code{FALSE} to give the absolute value, set to \code{TRUE} to normalize
+#' @param GCtheory \code{logical} default is \code{FALSE} to give the true GC content%, set to \code{TRUE} to normalize
 #' values of GC_Content by the theoretical values using \code{\link{gcTheoretical}}. \code{species} must be specified.
+#' @param GCtheoryType \code{"character"} Select type of data to normalize GC content% agianst accepts either "Genome" or
+#' "Transcriptome" Default is "Genome"
 #' @param species \code{character} if \code{gcTheory} is \code{TRUE} its must be accompanied by a species
 #' Currently supports Genome only (transcriptome to come). Species currently supported: A. lyrata, A. mellifera, A. thaliana,
 #' B. taurus, C. elegans, C. familiaris, D. melanogaster, D. rerio, E. coli, G. aculeatus, G. gallus, H. sapiens, M. fascicularis,
