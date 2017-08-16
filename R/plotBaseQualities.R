@@ -17,6 +17,9 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
+#'
 #'
 #' @return A standard ggplot2 object
 #'
@@ -33,8 +36,10 @@
 #'
 #' # The default and subset plot
 #' plotBaseQualities(fdl)
+#'
+#' # Plot the R1 files using counts
 #' r1 <- grepl("R1", fileName(fdl))
-#' plotBaseQualities(fdl, subset = r1 )
+#' plotBaseQualities(fdl, subset = r1)
 #'
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes
@@ -52,10 +57,12 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_blank
 #' @importFrom ggplot2 element_text
+#' @importFrom plotly ggplotly
 #'
 #' @export
 plotBaseQualities <- function(x, subset, nc = 2, pwfCols,
-                              trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+                              trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
+                              usePlotly = FALSE){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
@@ -64,6 +71,8 @@ plotBaseQualities <- function(x, subset, nc = 2, pwfCols,
   # Sort out the colours
   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   stopifnot(isValidPwf(pwfCols))
+  cols <- getColours(pwfCols)
+
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
@@ -115,7 +124,26 @@ plotBaseQualities <- function(x, subset, nc = 2, pwfCols,
     theme(panel.grid.minor = element_blank(),
                    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
-  # Draw the plot
-  qualPlot
+  if(usePlotly){
+  cutOffs <- data.frame(pass = 30, Filename = df$Filename, warn = 20, fail = 0, top =  max(ylim))
 
+  qualPlot <- ggplotly(qualPlot)# %>% add_trace(data = test, y = ~top, type = 'scatter', mode = 'lines',
+    #                     line = list(color = NULL),
+    #                     showlegend = FALSE, name = 'high 2014', xmin = 0, xmax = Inf, ymin = 20, ymax =  ylim, fillopacity = 0.1, hoverinfo = "none") %>%
+    # add_trace(data = cutOffs, y = ~pass, type = 'scatter', mode = 'lines',
+    #           fill = 'tonexty', fillcolor=adjustcolor(cols["PASS"], alpha.f = 0.1),
+    #           line = list(color = adjustcolor(cols["PASS"], alpha.f = 0.1)),
+    #           xmin = 0, xmax = Inf, ymin = 30, ymax = 40, hoverinfo = "none") %>%
+    # add_trace(data = cutOffs, y = ~warn, type = 'scatter', mode = 'lines',
+    #           fill = 'tonexty', fillcolor=adjustcolor(cols["WARN"], alpha.f = 0.1),
+    #           line = list(color = adjustcolor(cols["WARN"], alpha.f = 0.1)),
+    #           xmin = 0, xmax = Inf, ymin = -Inf, ymax = 0, hoverinfo = "none") %>%
+    # add_trace(data = cutOffs, y = ~fail, type = 'scatter', mode = 'lines',
+    #           fill = 'tonexty', fillcolor=adjustcolor(cols["FAIL"], alpha.f = 0.1),
+    #           line = list(color = adjustcolor(cols["FAIL"], alpha.f = 0.1)),
+    #           xmin = 0, xmax = Inf, ymin = -Inf, ymax = 0, hoverinfo = "none")
+  }
+
+  qualPlot
 }
+
