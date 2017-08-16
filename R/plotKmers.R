@@ -21,6 +21,8 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
 #'
 #' @return A standard ggplot2 object
 #'
@@ -54,13 +56,14 @@
 #' @importFrom dplyr select
 #' @importFrom dplyr arrange
 #' @importFrom dplyr rename
-#'
+#' @importFrom plotly ggplotly
 #'
 #'
 #'
 #' @export
 plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
-                      trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+                      trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
+                      usePlotly = FALSE){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
@@ -163,6 +166,10 @@ plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
   if (binned) {
     kMerPlot <- kMerPlot +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+  }
+
+  if(usePlotly){
+    kMerPlot <- ggplotly(kMerPlot)
   }
 
   # Draw the plot
