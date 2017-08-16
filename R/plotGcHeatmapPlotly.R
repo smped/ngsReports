@@ -79,7 +79,7 @@ plotGCHeatmapPlotly <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fa
   }
 
   if(GCtheory & GCtheoryType == "Transcriptome"){
-    spp <- ngsReports::genomes(ngsReports::gcTheoretical)
+    spp <- ngsReports::transcriptomes(ngsReports::gcTheoretical)
     if(!species %in% spp$Name){
       stop(cat("Currently only supports transcriptomes for", spp$Name, sep = ", "))
     }
