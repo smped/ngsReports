@@ -5,6 +5,9 @@ r: bioc-release
 sudo: false
 cache: packages
 notifications:
+  recipients:
+    - bioinf_hub@adelaide.edu.au
+    - christopher.ward@adelaide.edu.au
   email:
     on_success: change
     on_failure: change
