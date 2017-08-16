@@ -20,6 +20,7 @@
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
 #'
+#'
 #' @return A standard ggplot2 object
 #'
 #' @examples

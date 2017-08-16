@@ -5,7 +5,7 @@
 \title{Plot Overrepresented Kmers}
 \usage{
 plotKmers(x, subset, nc = 2, nKmers = 6, method = "overall",
-  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
+  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -27,6 +27,9 @@ or whether the top nKmers are selected from each individual file.}
 \item{pattern}{\code{character}.
 Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
 }
 \value{
 A standard ggplot2 object

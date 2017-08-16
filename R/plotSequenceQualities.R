@@ -19,6 +19,8 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
 #'
 #' @return A ggplot2 object
 #'
@@ -54,17 +56,24 @@
 #' @importFrom ggplot2 xlab
 #' @importFrom ggplot2 ylab
 #' @importFrom ggplot2 theme_bw
+#' @importFrom plotly ggplotly
+#' @importFrom plotly add_trace
 #'
 #' @export
 plotSequenceQualities <- function(x, subset, counts = FALSE, pwfCols,
-                                  trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+                                  trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
+                                  usePlotly = FALSE){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
   stopifnot(is.logical(trimNames))
 
+
+
   # Sort out the colours
   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   stopifnot(isValidPwf(pwfCols))
+  cols <- getColours(pwfCols)
+
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
@@ -111,6 +120,27 @@ plotSequenceQualities <- function(x, subset, counts = FALSE, pwfCols,
     ylab(ylab) +
     theme_bw()
 
+
+  if(usePlotly){
+    cutOffs <- data.frame(pass = 30, Filename = df$Filename, warn = 20, fail = 0, top =  max(ylim))
+
+    qualPlot <- ggplotly(qualPlot) %>%
+      add_trace(data = cutOffs, x = ~top, type = 'scatter', mode = 'lines',
+                line = list(color = NULL),
+                showlegend = FALSE, name = 'high 2014', xmin = 0, xmax = Inf, ymin = 20, ymax =  ylim, fillopacity = 0.1, hoverinfo = "none") %>%
+      add_trace(data = cutOffs, x = ~pass, type = 'scatter', mode = 'lines',
+                fill = 'tonexty', fillcolor=adjustcolor(cols["PASS"], alpha.f = 0.1),
+                line = list(color = adjustcolor(cols["PASS"], alpha.f = 0.1)),
+                xmin = 0, xmax = Inf, name = "PASS", ymin = 30, ymax = 40, hoverinfo = "none") %>%
+      add_trace(data = cutOffs, x = ~warn, type = 'scatter', mode = 'lines',
+                fill = 'tonexty', fillcolor=adjustcolor(cols["WARN"], alpha.f = 0.1),
+                line = list(color = adjustcolor(cols["WARN"], alpha.f = 0.1)),
+                xmin = 0, xmax = Inf, name = "WARN", ymin = -Inf, ymax = 0, hoverinfo = "none") %>%
+      add_trace(data = cutOffs, x = ~fail, type = 'scatter', mode = 'lines',
+                fill = 'tonexty', fillcolor=adjustcolor(cols["FAIL"], alpha.f = 0.1),
+                line = list(color = adjustcolor(cols["FAIL"], alpha.f = 0.1)),
+                xmin = 0, xmax = Inf, name = "FAIL", ymin = -Inf, ymax = 0, hoverinfo = "none")
+  }
   # Draw the plot
   qualPlot
 
