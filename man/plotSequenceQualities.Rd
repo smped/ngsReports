@@ -5,7 +5,7 @@
 \title{Plot the Per Sequence Quality Scores}
 \usage{
 plotSequenceQualities(x, subset, counts = FALSE, pwfCols, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -24,6 +24,9 @@ If \code{counts = FALSE} the frequencies will be plotted}
 \item{pattern}{\code{character}.
 Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
 }
 \value{
 A ggplot2 object

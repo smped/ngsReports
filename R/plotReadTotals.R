@@ -16,6 +16,9 @@
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
+#'
 #'
 #' @examples
 #'
@@ -46,10 +49,12 @@
 #' @importFrom ggplot2 theme_bw
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
+#' @importFrom plotly ggplotly
 #'
 #' @export
 plotReadTotals <- function(x, subset, millions,
-                           trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+                           trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
+                           usePlotly = FALSE){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -84,6 +89,9 @@ plotReadTotals <- function(x, subset, millions,
     theme_bw() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
+  if(usePlotly){
+    rtPlot <- ggplotly(rtPlot)
+  }
   # Draw the plot
   rtPlot
 
