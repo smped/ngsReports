@@ -6,8 +6,8 @@
 \usage{
 plotGCHeatmapPlotly(x, subset, counts = FALSE,
   pattern = "(.+)\\\\.(fastq|fq).*", clusterNames = FALSE, pwfCols,
-  GCtheory = FALSE, species = "Hsapiens", trimNames = TRUE,
-  usePlotly = FALSE, dendrogram = FALSE)
+  GCtheory = FALSE, GCtheoryType = "Genome", species = "Hsapiens",
+  trimNames = TRUE, usePlotly = FALSE, dendrogram = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
