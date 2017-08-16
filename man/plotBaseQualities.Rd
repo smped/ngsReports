@@ -5,7 +5,7 @@
 \title{Plot the Base Qualities for each file}
 \usage{
 plotBaseQualities(x, subset, nc = 2, pwfCols, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -23,6 +23,9 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{pattern}{\code{character}.
 Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
 }
 \value{
 A standard ggplot2 object
@@ -49,7 +52,9 @@ fdl <- getFastqcData(fileList)
 
 # The default and subset plot
 plotBaseQualities(fdl)
+
+# Plot the R1 files using counts
 r1 <- grepl("R1", fileName(fdl))
-plotBaseQualities(fdl, subset = r1 )
+plotBaseQualities(fdl, subset = r1)
 
 }
