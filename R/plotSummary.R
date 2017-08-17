@@ -33,17 +33,25 @@
 #' # Check the overall PASS/WARN/FAIL status
 #' plotSummary(fdl)
 #'
+#' # Interactive plot
+#' plotSummary(fdl, usePlotly = TRUE)
+#'
 #'
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 geom_vline
+#' @importFrom ggplot2 geom_hline
 #' @importFrom ggplot2 scale_fill_gradientn
+#' @importFrom ggplot2 scale_fill_manual
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 scale_x_discrete
 #' @importFrom ggplot2 scale_y_discrete
 #' @importFrom ggplot2 theme_bw
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 element_text
+#' @importFrom grid unit
 #'
 #' @export
 plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
@@ -77,21 +85,27 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
 
 
    if(usePlotly){
-     sumPlot <- ggplot(df, aes(x = Filename, y = Category, fill = StatusNum, key = Status)) +
+     nx <- length(x)
+     ny <- length(unique(df$Category))
+     sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "StatusNum", key = "Status")) +
        geom_tile(colour = "black") +
+       geom_vline(xintercept = seq(1.5, nx), colour = "grey20", size = 0.2) +
+       geom_hline(yintercept = seq(1.5, ny), colour = "grey20", size = 0.2) +
        scale_fill_gradientn(colours = c(col["PASS"], col["WARN"], col["FAIL"]), values = c(0,1)) +
        labs(x="Filename", y="QC Category") +
        scale_x_discrete(expand=c(0,0)) +
        scale_y_discrete(expand=c(0,0)) +
        theme_bw() +
        theme(axis.text.x = element_blank(),
-                      axis.ticks.x = element_blank(),
-                      legend.position = "none")
+             axis.ticks.x = element_blank(),
+             axis.title = element_blank(),
+             plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
+             legend.position = "none")
 
        plotly::ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status"))
 
    }else{
-     ggplot(df, aes(x = Filename, y = Category, fill = Status)) +
+     ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status")) +
        geom_tile(colour = "black") +
        scale_fill_manual(values = col) +
        labs(x="Filename", y="QC Category") +
