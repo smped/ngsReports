@@ -4,8 +4,8 @@
 \alias{plotAdapterContent}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, subset, adapterType, plotType = "heatmap", nc, pwfCols,
-  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*", ...)
+plotAdapterContent(x, subset, adapterType, plotType = "heatmap", warn = 5,
+  fail = 10, pwfCols, labels)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -19,18 +19,13 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
 or \code{plotType = "line"}}
 
-\item{nc}{Number of columns to use when faceting by Adapter Type.}
+\item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
-
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
-
-\item{...}{Used to pass additional arguments, such as \code{invert} or \code{ignore.case},
-to \code{grep} when selecting Adapter \code{adapterType}}
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 }
 \value{
 A standard ggplot2 object
@@ -65,7 +60,8 @@ plotAdapterContent(fdl)
 r1 <- grepl("R1", fileName(fdl))
 plotAdapterContent(fdl, subset = r1)
 
-# Plot just the Universal Adapter, and change the y-axis
+# Plot just the Universal Adapter
+# and change the y-axis using ggplot2::scale_y_continuous
 library(ggplot2)
 plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
 scale_y_continuous()
