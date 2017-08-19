@@ -15,6 +15,8 @@
 #' Contains a regular expression which will be captured from fileName.
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
+#' @param ... Used to pass various potting parameters to theme.
+#' Can also be used to set size and colour for box outlines.
 #'
 #' @return A ggplot2 object (\code{usePlotly = FALSE})
 #' or an interactive plotly object (\code{usePlotly = TRUE})
@@ -55,15 +57,13 @@
 #'
 #' @export
 plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                        usePlotly = FALSE){
+                        usePlotly = FALSE, ...){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   stopifnot(isValidPwf(pwfCols))
-  col <- getColours(pwfCols)
-
-  stopifnot(is.logical(trimNames))
+  fillCol <- getColours(pwfCols)
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
@@ -73,6 +73,7 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
   df <- tryCatch(getSummary(x))
 
   # Check the pattern contains a capture
+  stopifnot(is.logical(trimNames))
   if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
     df$Filename <- gsub(pattern[1], "\\1", df$Filename)
     # These need to be checked to ensure non-duplicated names
@@ -83,36 +84,63 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
   df$Status <- factor(df$Status, levels = c("PASS", "WARN", "FAIL"))
   df$StatusNum <- as.integer(df$Status)
 
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  if ("size" %in% names(dotArgs)){
+    sz <- dotArgs$size
+  }
+  else{
+    sz <- 0.2
+  }
+  if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
+    i <- which(names(dotArgs) %in% c("colour", "color"))
+    lineCol <- dotArgs[[i]]
+  }
+  else{
+    lineCol <- "grey20"
+  }
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-   if(usePlotly){
-     nx <- length(x)
-     ny <- length(unique(df$Category))
-     sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "StatusNum", key = "Status")) +
-       geom_tile(colour = "black") +
-       geom_vline(xintercept = seq(1.5, nx), colour = "grey20", size = 0.2) +
-       geom_hline(yintercept = seq(1.5, ny), colour = "grey20", size = 0.2) +
-       scale_fill_gradientn(colours = c(col["PASS"], col["WARN"], col["FAIL"]), values = c(0,1)) +
-       labs(x="Filename", y="QC Category") +
-       scale_x_discrete(expand=c(0,0)) +
-       scale_y_discrete(expand=c(0,0)) +
-       theme_bw() +
-       theme(axis.text.x = element_blank(),
-             axis.ticks.x = element_blank(),
-             axis.title = element_blank(),
-             plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
-             legend.position = "none")
+  if(usePlotly){
+    nx <- length(x)
+    ny <- length(unique(df$Category))
+    sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "StatusNum", key = "Status")) +
+      geom_tile(colour = lineCol) +
+      geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = sz) +
+      geom_hline(yintercept = seq(1.5, ny), colour = lineCol, size = sz) +
+      scale_fill_gradientn(colours = c(fillCol["PASS"], fillCol["WARN"], fillCol["FAIL"]),
+                           values = c(0,1)) +
+      labs(x="Filename", y="QC Category") +
+      scale_x_discrete(expand=c(0,0)) +
+      scale_y_discrete(expand=c(0,0)) +
+      theme_bw() +
+      theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank(),
+            axis.title = element_blank(),
+            plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
+            legend.position = "none")
+    # Add any parameters from dotArgs
+    if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
 
-       plotly::ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status"))
+    plotly::ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status"))
 
-   }else{
-     ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status")) +
-       geom_tile(colour = "black") +
-       scale_fill_manual(values = col) +
-       labs(x="Filename", y="QC Category") +
-       scale_x_discrete(expand=c(0,0)) +
-       scale_y_discrete(expand=c(0,0)) +
-       theme_bw() +
-       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-   }
+  }
+  else{
+    sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status")) +
+      geom_tile(colour = lineCol, size = sz) +
+      scale_fill_manual(values = fillCol) +
+      labs(x="Filename", y="QC Category") +
+      scale_x_discrete(expand=c(0,0)) +
+      scale_y_discrete(expand=c(0,0)) +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+    # Add any parameters from dotArgs
+    if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
+
+    sumPlot
+  }
 
 }
