@@ -50,6 +50,7 @@ fdl <- getFastqcData(fileList)
 plotSummary(fdl)
 
 # Change theme parameters using the ellipsis
+library(ggplot2)
 plotSummary(fdl, axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 
 # Add a vector of alternative names
