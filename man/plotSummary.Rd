@@ -5,7 +5,7 @@
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
 plotSummary(x, subset, pwfCols, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
+  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -23,6 +23,9 @@ Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
+
+\item{...}{Used to pass various potting parameters to theme.
+Can also be used to set size and colour for box outlines.}
 }
 \value{
 A ggplot2 object (\code{usePlotly = FALSE})
