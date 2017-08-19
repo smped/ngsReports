@@ -4,8 +4,7 @@
 \alias{plotSummary}
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
-plotSummary(x, subset, pwfCols, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE, ...)
+plotSummary(x, subset, pwfCols, labels, usePlotly = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -16,11 +15,9 @@ May be useful to only return totals from R1 files, or any other subset}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
-
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
@@ -51,6 +48,13 @@ fdl <- getFastqcData(fileList)
 
 # Check the overall PASS/WARN/FAIL status
 plotSummary(fdl)
+
+# Change theme parameters using the ellipsis
+plotSummary(fdl, axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+# Add a vector of alternative names
+altNames <- structure(gsub(".fastq", "", fileName(fdl)), names = fileName(fdl))
+plotSummary(fdl, labels = altNames)
 
 # Interactive plot
 plotSummary(fdl, usePlotly = TRUE)

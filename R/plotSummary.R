@@ -10,10 +10,9 @@
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param labels An optional named vector of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
@@ -34,6 +33,13 @@
 #'
 #' # Check the overall PASS/WARN/FAIL status
 #' plotSummary(fdl)
+#'
+#' # Change theme parameters using the ellipsis
+#' plotSummary(fdl, axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+#'
+#' # Add a vector of alternative names
+#' altNames <- structure(gsub(".fastq", "", fileName(fdl)), names = fileName(fdl))
+#' plotSummary(fdl, labels = altNames)
 #'
 #' # Interactive plot
 #' plotSummary(fdl, usePlotly = TRUE)
@@ -56,8 +62,7 @@
 #' @importFrom grid unit
 #'
 #' @export
-plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                        usePlotly = FALSE, ...){
+plotSummary <- function(x, subset, pwfCols, labels, usePlotly = FALSE, ...){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -69,20 +74,21 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
     subset <- rep(TRUE, length(x))
   }
   x <- tryCatch(x[subset])
-
   df <- tryCatch(getSummary(x))
-
-  # Check the pattern contains a capture
-  stopifnot(is.logical(trimNames))
-  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
-    # These need to be checked to ensure non-duplicated names
-    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
-  }
 
   df$Category <- factor(df$Category, levels = rev(unique(df$Category)))
   df$Status <- factor(df$Status, levels = c("PASS", "WARN", "FAIL"))
   df$StatusNum <- as.integer(df$Status)
+
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                        names = fileName(x))
+  }
+  else{
+    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
   # Get any arguments for dotArgs that have been set manually
   dotArgs <- list(...)
@@ -107,11 +113,14 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
   if(usePlotly){
     nx <- length(x)
     ny <- length(unique(df$Category))
+    df$Filename <- labels[df$Filename] # Add the new labels
     sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "StatusNum", key = "Status")) +
       geom_tile(colour = lineCol) +
       geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = sz) +
       geom_hline(yintercept = seq(1.5, ny), colour = lineCol, size = sz) +
-      scale_fill_gradientn(colours = c(fillCol["PASS"], fillCol["WARN"], fillCol["FAIL"]),
+      scale_fill_gradientn(colours = c(fillCol["PASS"],
+                                       fillCol["WARN"],
+                                       fillCol["FAIL"]),
                            values = c(0,1)) +
       labs(x="Filename", y="QC Category") +
       scale_x_discrete(expand=c(0,0)) +
@@ -124,8 +133,7 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
             legend.position = "none")
     # Add any parameters from dotArgs
     if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-
-    plotly::ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status"))
+    suppressMessages(plotly::ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status")))
 
   }
   else{
@@ -133,13 +141,12 @@ plotSummary <- function(x, subset, pwfCols, trimNames = TRUE, pattern = "(.+)\\.
       geom_tile(colour = lineCol, size = sz) +
       scale_fill_manual(values = fillCol) +
       labs(x="Filename", y="QC Category") +
-      scale_x_discrete(expand=c(0,0)) +
+      scale_x_discrete(expand=c(0,0), labels = labels) +
       scale_y_discrete(expand=c(0,0)) +
       theme_bw() +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
     # Add any parameters from dotArgs
     if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-
     sumPlot
   }
 
