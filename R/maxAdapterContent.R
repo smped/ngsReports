@@ -15,15 +15,6 @@
 #' @return A \code{data_frame} object containing the percent of reads with each adapter
 #' type at the final position
 #'
-#' @importFrom tibble as_tibble
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarise
-#' @importFrom dplyr mutate
-#' @importFrom reshape2 melt
-#' @importFrom reshape2 dcast
-#'
-#'
-#' 
 #'
 #' @export
 maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
@@ -33,9 +24,9 @@ maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
 
   # Perform the summary
   ac <- reshape2::melt(ac, id.vars = c("Filename", "Position"),
-                       variable.name = "Type")%>%
-    dplyr::group_by(Filename, Type) %>%
-    dplyr::summarise(value = max(value))
+                       variable.name = "Type")
+  ac <- dplyr::group_by(ac, Filename, Type)
+  ac <- dplyr::summarise_at(ac, dplyr::vars("value"), dplyr::funs("max"))
 
   # Format the output
   if (!is.numeric(digits)) {
@@ -43,12 +34,11 @@ maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
   }
   else {
     digits <- floor(digits)[1] # Silently ignore any additional values
-    ac <- dplyr::mutate(ac, value = round(value, digits))
+    ac$value <- round(ac$value, digits)
   }
-  if (asPercent) ac <- dplyr::mutate(ac, value = scales::percent(0.01*value))
+  if (asPercent) ac$value <- scales::percent(0.01*ac$value)
 
-  ac %>%
-    reshape2::dcast(Filename~Type, value.var = "value") %>%
-    tibble::as_tibble()
+  ac <- reshape2::dcast(ac, Filename~Type, value.var = "value")
+  tibble::as_tibble(ac)
 
 }

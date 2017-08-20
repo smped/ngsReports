@@ -96,4 +96,5 @@ Collate:
     'pwf.R'
     'readTotals.R'
     'runFastQC.R'
+    'scale_fill_pwf.R'
 Suggests: testthat
