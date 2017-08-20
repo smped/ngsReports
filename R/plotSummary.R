@@ -7,15 +7,14 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param subset \code{logical}. Return the values for a subset of files.
-#' May be useful to only return totals from R1 files, or any other subset
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
 #' @param ... Used to pass various potting parameters to theme.
-#' Can also be used to set size and colour for box outlines.
+#' @param lineWidth,lineCol Passed to geom_hline and geom_vline to determine
+#' width and colour of gridlines
 #'
 #' @return A ggplot2 object (\code{usePlotly = FALSE})
 #' or an interactive plotly object (\code{usePlotly = TRUE})
@@ -63,19 +62,14 @@
 #' @importFrom grid unit
 #'
 #' @export
-plotSummary <- function(x, subset, pwfCols, labels, usePlotly = FALSE, ...){
+plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
+                        lineWidth = 0.2, lineCol = "grey20"){
 
-  stopifnot(grepl("(Fastqc|character)", class(x)))
+  df <- tryCatch(getSummary(x))
 
   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   stopifnot(isValidPwf(pwfCols))
   fillCol <- getColours(pwfCols)
-
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-  x <- tryCatch(x[subset])
-  df <- tryCatch(getSummary(x))
 
   df$Category <- factor(df$Category, levels = rev(unique(df$Category)))
   df$Status <- factor(df$Status, levels = c("PASS", "WARN", "FAIL"))
@@ -93,19 +87,6 @@ plotSummary <- function(x, subset, pwfCols, labels, usePlotly = FALSE, ...){
 
   # Get any arguments for dotArgs that have been set manually
   dotArgs <- list(...)
-  if ("size" %in% names(dotArgs)){
-    sz <- dotArgs$size
-  }
-  else{
-    sz <- 0.2
-  }
-  if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
-    i <- which(names(dotArgs) %in% c("colour", "color"))
-    lineCol <- dotArgs[[i]]
-  }
-  else{
-    lineCol <- "grey20"
-  }
   allowed <- names(formals(ggplot2::theme))
   keepArgs <- which(names(dotArgs) %in% allowed)
   userTheme <- c()
@@ -117,8 +98,8 @@ plotSummary <- function(x, subset, pwfCols, labels, usePlotly = FALSE, ...){
     df$Filename <- labels[df$Filename] # Add the new labels
     sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "StatusNum", key = "Status")) +
       geom_tile(colour = lineCol) +
-      geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = sz) +
-      geom_hline(yintercept = seq(1.5, ny), colour = lineCol, size = sz) +
+      geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
+      geom_hline(yintercept = seq(1.5, ny), colour = lineCol, size = lineWidth) +
       scale_fill_gradientn(colours = c(fillCol["PASS"],
                                        fillCol["WARN"],
                                        fillCol["FAIL"]),
@@ -139,7 +120,7 @@ plotSummary <- function(x, subset, pwfCols, labels, usePlotly = FALSE, ...){
   }
   else{
     sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status")) +
-      geom_tile(colour = lineCol, size = sz) +
+      geom_tile(colour = lineCol, size = lineWidth) +
       scale_fill_manual(values = fillCol) +
       labs(x="Filename", y="QC Category") +
       scale_x_discrete(expand=c(0,0), labels = labels) +
