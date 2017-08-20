@@ -4,32 +4,35 @@
 \alias{plotSequenceQualities}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
-plotSequenceQualities(x, subset, counts = FALSE, pwfCols, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
+plotSequenceQualities(x, usePlotly = FALSE, labels, counts = FALSE,
+  warn = 30, fail = 20, pwfCols, ..., expand = c(0.02, 0), alpha = 0.2)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
+
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
 If \code{counts = FALSE} the frequencies will be plotted}
 
+\item{warn, fail}{The default values for WARN and FAIL in FASTQC}
+
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
+\item{...}{Used to pass additional attributes to theme()}
 
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+\item{expand}{the default expansion of the x-axis. Passed to scale_x_continuous()}
 
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
+\item{alpha}{Passed to background colours}
 }
 \value{
-A ggplot2 object
+A ggplot2 object or interactive plotly object
 }
 \description{
 Plot the Per Sequence Quality Scores for a set of FASTQC reports
@@ -55,14 +58,10 @@ fdl <- getFastqcData(fileList)
 # Draw the defualt plot
 plotSequenceQualities(fdl)
 
-# Get the R1 files
-r1 <- grepl("R1", fileName(fdl))
-
 # Customise using the R1 subset, plotting counts,
 # and faceting after the initial function call
 library(ggplot2)
-plotSequenceQualities(fdl, subset = r1, counts = TRUE) +
-  facet_wrap(~Filename, ncol = 2)
-
+plotSequenceQualities(fdl, counts = TRUE) +
+  facet_wrap(~Filename, ncol = 2, scales = "free_y")
 
 }
