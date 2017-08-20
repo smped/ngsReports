@@ -2,10 +2,12 @@
 % Please edit documentation in R/plotGcHeatmap.R
 \name{plotGcHeatmap}
 \alias{plotGcHeatmap}
-\title{Plot the GC content as a heatmap}
+\title{Plot GC Content for each file}
 \usage{
-plotGcHeatmap(x, subset, counts = FALSE, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+plotGcHeatmap(x, subset, counts = FALSE, pattern = "(.+)\\\\.(fastq|fq).*",
+  clusterNames = FALSE, pwfCols, GCtheory = FALSE,
+  GCtheoryType = "Genome", species = "Hsapiens", trimNames = TRUE,
+  usePlotly = FALSE, dendrogram = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -14,20 +16,50 @@ plotGcHeatmap(x, subset, counts = FALSE, trimNames = TRUE,
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful to only return totals from R1 files, or any other subset}
 
-\item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
-If \code{counts = FALSE} the frequencies will be plotted}
-
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
+\item{counts}{\code{logical}. Display counts of GC content rather than frequency}
 
 \item{pattern}{\code{character}.
 Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using heirachial clustering}
+
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+values in plot}
+
+\item{GCtheory}{\code{logical} default is \code{FALSE} to give the true GC content%, set to \code{TRUE} to normalize
+values of GC_Content by the theoretical values using \code{\link{gcTheoretical}}. \code{species} must be specified.}
+
+\item{GCtheoryType}{\code{"character"} Select type of data to normalize GC content% agianst accepts either "Genome" or
+"Transcriptome" Default is "Genome"}
+
+\item{species}{\code{character} if \code{gcTheory} is \code{TRUE} its must be accompanied by a species
+Currently supports Genome only (transcriptome to come). Species currently supported: A. lyrata, A. mellifera, A. thaliana,
+B. taurus, C. elegans, C. familiaris, D. melanogaster, D. rerio, E. coli, G. aculeatus, G. gallus, H. sapiens, M. fascicularis,
+M. furo, M. mulatta, M. musculus, O. sativa, P. troglodytes, R. norvegicus, S. cerevisiae, S scrofa, T. gondii,
+T. guttata, V. vinifera. Use \code{ngsReports::genomes(ngsReports::gcTheoretical)} to display the corresponding names for
+each species.}
+
+\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
+
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
 }
 \value{
-A ggplot2 object
+A plotly object
 }
 \description{
-Plot the Per Sequence GC Content for a set of FASTQC files
+Plot the GC content for each file
+}
+\details{
+makes interactive heatmap for \code{GC content}
+
+For large datasets, subsetting by R1 or R2 reads may be helpful
 }
 \examples{
 
@@ -45,6 +77,7 @@ plotGcHeatmap(fdl)
 
 # Using counts
 plotGcHeatmap(fdl, counts = TRUE)
+
 
 
 }
