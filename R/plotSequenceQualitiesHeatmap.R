@@ -147,7 +147,7 @@ plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfC
             axis.text=element_blank(),
             axis.ticks=element_blank())
 
-    sideBar <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
+    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
 
     qualPlot <- qualPlot +
       theme(axis.title.y = element_blank(),

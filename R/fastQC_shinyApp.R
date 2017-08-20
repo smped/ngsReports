@@ -189,7 +189,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$GCheatmap <- renderPlotly({
       GCtype <- input$GCheatType == "Count"
-      plotGCHeatmapPlotly(fdl,
+      plotGcHeatmap(fdl,
                           clusterNames = input$GCcluster,
                           counts = GCtype,
                           GCtheory = input$GCtheory,
