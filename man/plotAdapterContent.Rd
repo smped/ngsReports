@@ -5,7 +5,7 @@
 \title{Draw an Adapter Content Plot}
 \usage{
 plotAdapterContent(x, subset, adapterType, plotType = "heatmap", warn = 5,
-  fail = 10, pwfCols, labels)
+  fail = 10, pwfCols, labels, usePlotly = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -26,6 +26,8 @@ or \code{plotType = "line"}}
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
+
+\item{usePlotly}{\code{logical}. Output as ggplot2 or plotly object.}
 }
 \value{
 A standard ggplot2 object
