@@ -1,5 +1,5 @@
 #' @title Plot the Per Sequence Quality Scores
-#'
+#' @aliases
 #' @description Plot the Per Sequence Quality Scores for a set of FASTQC reports
 #'
 #' @details Plots the distribution of average sequence quality scores across the set of files.
