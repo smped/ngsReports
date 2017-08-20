@@ -23,6 +23,7 @@
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
+#' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
 #'
 #' @return A standard ggplot2 object
 #'
@@ -70,7 +71,8 @@ plotAdapterContent <- function(x, subset,
                                adapterType, plotType = "heatmap",
                                warn = 5, fail = 10,
                                pwfCols,
-                               labels){
+                               labels,
+                               usePlotly = FALSE){
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
@@ -114,20 +116,20 @@ plotAdapterContent <- function(x, subset,
 
   if (plotType == "heatmap"){
 
-    # Define the colour palette
-    upr <- max(df$Percent)
-    nCols <- findInterval(upr, c(0, warn, fail, 100)) + 1
-    gradCols <- getColours(pwfCols)[1:nCols]
-    breaks <- c(0, warn, fail, 100)[1:nCols]
-
     # Reverse the factor levels for a better looking plot
     df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
-    acPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "Percent")) +
-      scale_y_discrete(labels = labels) +
-      geom_tile() +
-      facet_wrap(~Type, ncol = 1) +
-      scale_fill_gradientn(colours = gradCols, values = breaks / max(breaks))
+    if (!usePlotly){
+      acPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "Percent")) +
+        scale_y_discrete(labels = labels) +
+        geom_tile() +
+        facet_wrap(~Type, ncol = 1) +
+        scale_fill_pwf(df$Percent, pwf, breaks =c(0, warn, fail, 100))
+    }
+    else{
+      message("Not Implemented")
+      return(NULL)
+    }
 
   }
 
