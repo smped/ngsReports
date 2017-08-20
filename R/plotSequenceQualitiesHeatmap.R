@@ -15,14 +15,18 @@
 #' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
 #' If \code{counts = FALSE} the frequencies will be plotted
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
+#' @param labels An optional named factor of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using heirachial clustering
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
-#' If \code{TRUE} plot will be rendered with plotlyz
+#' If \code{TRUE} plot will be rendered with plotly
+#' @param ... Used to pass various potting parameters to theme.
+#' Can also be used to set size and colour for box outlines.
 #'
 #' @return A ggplot2 object
 #'
@@ -41,12 +45,11 @@
 #' @importFrom viridisLite inferno
 #'
 #' @export
-plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
-                                         trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                                         usePlotly = FALSE, clusterNames = FALSE){
+plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfCols,
+                                         usePlotly = FALSE, dendrogram = FALSE,
+                                         clusterNames = FALSE, ...){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
-  stopifnot(is.logical(trimNames))
 
   # Sort out the colours
   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -58,12 +61,37 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
   x <- tryCatch(x[subset])
   df <- tryCatch(Per_sequence_quality_scores(x))
 
-  # Check the pattern contains a capture
-  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
-    # These need to be checked to ensure non-duplicated names
-    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                        names = fileName(x))
   }
+  else{
+    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  if ("size" %in% names(dotArgs)){
+    sz <- dotArgs$size
+  }
+  else{
+    sz <- 0.2
+  }
+  if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
+    i <- which(names(dotArgs) %in% c("colour", "color"))
+    lineCol <- dotArgs[[i]]
+  }
+  else{
+    lineCol <- "grey20"
+  }
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+
   df <- reshape2::dcast(df, Filename ~ Quality)
   df[is.na(df)] <- 0
 
@@ -81,36 +109,35 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
 
     # Summarise to frequencies & initialise the plot
     df <- dplyr::group_by(df, Filename) %>%
-      dplyr::mutate(Freq = Count / sum(Count)) %>%
+      dplyr::mutate(Value = Count / sum(Count)) %>%
       dplyr::ungroup()
-    qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Freq))
 
+
+  }else{
+    df <- mutate(df, Value = Count)
   }
-  else{
-
-    # Initialise the plot using counts
-    qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Count))
-
-  }
-
-  qualPlot <- qualPlot +
-    geom_raster() +
-    xlab("Mean Sequence Quality Per Read (Phred Score)") +
-    scale_fill_gradientn(colours = inferno(150)) +
-    ylab("File names") +
-    theme(panel.grid.minor = element_blank(),
-          panel.background = element_blank())
 
   if(usePlotly){
+    df$Filename <- labels[df$Filename]
+
+
+    qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Value)) +
+      geom_tile(colour = lineCol, size = sz) +
+      xlab("Mean Sequence Quality Per Read (Phred Score)") +
+      scale_fill_gradientn(colours = inferno(150)) +
+      ylab("File names") +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_blank())
+
+
 
     t <- dplyr::filter(getSummary(x), Category == "Per sequence quality scores")
-    t <- dplyr::mutate(t, FilenameFull = Filename,
-                       Filename = gsub(pattern[1], "\\1", t$Filename),
-                       Filename = factor(Filename, levels = unique(df$Filename)))
+    t$Filename <- labels[t$Filename]
+    t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
-    key <- t$FilenameFull
+    key <- t$Filename
 
-    d <- ggplot(t, aes(x = 1, y = Filename, key = key, fill = Status)) +
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key, fill = Status)) +
       geom_tile() +
       scale_fill_manual(values = col) +
       theme(panel.grid.minor = element_blank(),
@@ -120,20 +147,49 @@ plotSequenceQualitiesHeatmap <- function(x, subset, counts = FALSE, pwfCols,
             axis.text=element_blank(),
             axis.ticks=element_blank())
 
-    d <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
+    sideBar <- plotly::ggplotly(d, tooltip = c("Status", "Filename"))
 
     qualPlot <- qualPlot +
       theme(axis.title.y = element_blank(),
             axis.text.y = element_blank(),
             axis.ticks.y = element_blank())
 
-    qualPlot <- plotly::subplot(d,
-                                qualPlot,
-                                widths = c(0.1,0.9),
-                                margin = 0,
-                                shareY = TRUE) %>%
-      plotly::layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"))
+    #plot dendrogram
+    if(dendrogram && clusterNames){
+      ggdend <- function(df) {
+        ggplot() +
+          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
+          theme_dendro()
+      }
 
+      dx <- ggdendro::dendro_data(clus)
+      dendro <- ggdend(dx$segments) +
+        coord_flip() +
+        scale_y_reverse(expand = c(0, 1)) +
+        scale_x_continuous(expand = c(0,1))
+
+      qualPlot <- plotly::subplot(dendro, sideBar, qualPlot,
+                                  widths = c(0.2, 0.1,0.7), margin = 0,
+                                  shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)",
+                                     plot_bgcolor = "white"))
+    }else{
+
+      qualPlot <- plotly::subplot(sideBar,
+                                  qualPlot,
+                                  widths = c(0.1,0.9),
+                                  margin = 0,
+                                  shareY = TRUE) %>%
+        plotly::layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"))
+    }
+  }else{
+    qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Value)) +
+      geom_tile(colour = lineCol, size = sz) +
+      xlab("Mean Sequence Quality Per Read (Phred Score)") +
+      scale_fill_gradientn(colours = inferno(150)) +
+      ylab("File names") +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_blank())
   }
 
   qualPlot
