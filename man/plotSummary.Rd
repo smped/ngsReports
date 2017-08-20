@@ -4,25 +4,25 @@
 \alias{plotSummary}
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
-plotSummary(x, subset, pwfCols, labels, usePlotly = FALSE, ...)
+plotSummary(x, usePlotly = FALSE, labels, pwfCols, ..., lineWidth = 0.2,
+  lineCol = "grey20")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
-
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+\item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{...}{Used to pass various potting parameters to theme.
-Can also be used to set size and colour for box outlines.}
+\item{...}{Used to pass various potting parameters to theme.}
+
+\item{lineWidth, lineCol}{Passed to geom_hline and geom_vline to determine
+width and colour of gridlines}
 }
 \value{
 A ggplot2 object (\code{usePlotly = FALSE})
