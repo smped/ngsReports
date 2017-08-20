@@ -2,6 +2,7 @@
 % Please edit documentation in R/plotSequenceQualities.R
 \name{plotSequenceQualities}
 \alias{plotSequenceQualities}
+\alias{PlotSequenceQualities}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
 plotSequenceQualities(x, subset, counts = FALSE, pwfCols, trimNames = TRUE,
