@@ -1,5 +1,5 @@
 #' @title Plot the Per Sequence Quality Scores
-#' @aliases
+#'
 #' @description Plot the Per Sequence Quality Scores for a set of FASTQC reports
 #'
 #' @details Plots the distribution of average sequence quality scores across the set of files.
@@ -10,19 +10,20 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param subset \code{logical}. Return the values for a subset of files.
-#' May be useful to only return totals from R1 files, or any other subset
-#' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
-#' If \code{counts = FALSE} the frequencies will be plotted
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
+#' @param labels An optional named vector of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
+#' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
+#' If \code{counts = FALSE} the frequencies will be plotted
+#' @param warn,fail The default values for WARN and FAIL in FASTQC
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param ... Used to pass additional attributes to theme()
+#' @param expand the default expansion of the x-axis. Passed to scale_x_continuous()
+#' @param alpha Passed to background colours
 #'
-#' @return A ggplot2 object
+#' @return A ggplot2 object or interactive plotly object
 #'
 #' @examples
 #'
@@ -38,18 +39,14 @@
 #' # Draw the defualt plot
 #' plotSequenceQualities(fdl)
 #'
-#' # Get the R1 files
-#' r1 <- grepl("R1", fileName(fdl))
-#'
 #' # Customise using the R1 subset, plotting counts,
 #' # and faceting after the initial function call
 #' library(ggplot2)
-#' plotSequenceQualities(fdl, subset = r1, counts = TRUE) +
-#'   facet_wrap(~Filename, ncol = 2)
-#'
+#' plotSequenceQualities(fdl, counts = TRUE) +
+#'   facet_wrap(~Filename, ncol = 2, scales = "free_y")
 #'
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 annotate
 #' @importFrom ggplot2 scale_x_continuous
 #' @importFrom ggplot2 geom_line
@@ -58,89 +55,113 @@
 #' @importFrom ggplot2 theme_bw
 #' @importFrom plotly ggplotly
 #' @importFrom plotly add_trace
+#' @importFrom grDevices adjustcolor
+#' @importFrom magrittr %>%
 #'
 #' @export
-plotSequenceQualities <- function(x, subset, counts = FALSE, pwfCols,
-                                  trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                                  usePlotly = FALSE){
+plotSequenceQualities <- function(x, usePlotly = FALSE, labels, counts = FALSE, warn = 30, fail = 20, pwfCols,
+                                  ..., expand = c(0.02, 0), alpha = 0.2){
 
-  stopifnot(grepl("(Fastqc|character)", class(x)))
-  stopifnot(is.logical(trimNames))
-
-
+  df <- tryCatch(Per_sequence_quality_scores(x))
 
   # Sort out the colours
   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   stopifnot(isValidPwf(pwfCols))
   cols <- getColours(pwfCols)
 
-
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                        names = fileName(x))
   }
-  x <- tryCatch(x[subset])
-  df <- tryCatch(Per_sequence_quality_scores(x))
-
-  # Check the pattern contains a capture
-  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
-    # These need to be checked to ensure non-duplicated names
-    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+  else{
+    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
   }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
-  # Get the correct y-axis label
-  ylab <- c("Frequency", "Count")[counts + 1]
+  minQ <- min(df$Quality)
+
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   if (!counts){
-
+    Count <- NULL # To avoid NOTE messages in R CMD check
     # Summarise to frequencies & initialise the plot
-    df <- dplyr::group_by(df, Filename) %>%
-      dplyr::mutate(Freq = Count / sum(Count)) %>%
-      dplyr::ungroup()
-    qualPlot <- ggplot(df, aes(x = Quality, y = Freq, colour = Filename))
+    df <- dplyr::group_by(df, Filename) %>% dplyr::mutate(Freq = Count / sum(Count))
+    df <- dplyr::ungroup(df)
+    qualPlot <- ggplot(df, aes_string(x = "Quality", y = "Freq", colour = "Filename")) +
+      ylab("Frequency")
 
   }
   else{
 
     # Initialise the plot using counts
-    qualPlot <- ggplot(df, aes(x = Quality, y = Count, colour = Filename))
+    qualPlot <- ggplot(df, aes_string(x = "Quality", y = "Count", colour = "Filename")) +
+      ylab("Count")
 
   }
 
   qualPlot <- qualPlot +
-    annotate("rect", xmin = 30, xmax = Inf, ymin = -Inf, ymax = Inf,
-                      fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
-    annotate("rect", xmin = 20, xmax = 30, ymin = -Inf, ymax = Inf,
-                      fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
-    annotate("rect", xmin = -Inf, xmax = 20,, ymin = -Inf, ymax = Inf,
-                      fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
-    scale_x_continuous(limits = c(0, 41), expand = c(0, 0), breaks = seq(0, 40, by = 10)) +
+    annotate("rect", xmin = warn, xmax = Inf, ymin = -Inf, ymax = Inf, fill = cols["PASS"],
+             alpha = alpha) +
+    annotate("rect", xmin = fail, xmax = warn, ymin = -Inf, ymax = Inf, fill = cols["WARN"],
+             alpha = alpha) +
+    annotate("rect", xmin = -Inf, xmax = fail, ymin = -Inf, ymax = Inf, fill = cols["FAIL"],
+             alpha = alpha) +
+    scale_x_continuous(limits = c(minQ, 40), breaks = seq(0, 40, by = 10), expand = expand) +
+    scale_colour_discrete(labels = labels) +
     geom_line() +
     xlab("Mean Sequence Quality Per Read (Phred Score)") +
-    ylab(ylab) +
     theme_bw()
 
+  if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
 
   if(usePlotly){
-    cutOffs <- data.frame(pass = 30, Filename = df$Filename, warn = 20, fail = 0, top =  max(ylim))
+    cutOffs <- data.frame(pass = warn, Filename = df$Filename, warn = fail, fail = 0, top =  41)
+    ymax <- 1
+    if (counts) ymax <- max(df$Count)
 
-    qualPlot <- ggplotly(qualPlot) %>%
-      add_trace(data = cutOffs, x = ~top, type = 'scatter', mode = 'lines',
+    qualPlot <- suppressMessages(ggplotly(qualPlot))
+    # These are still highly problematic.
+    # I wonder why layout using shape doesn't work?
+    qualPlot <- suppressWarnings(
+      add_trace(qualPlot,
+                data = cutOffs, x = ~top, type = 'scatter', mode = 'lines',
                 line = list(color = NULL),
-                showlegend = FALSE, name = 'high 2014', xmin = 0, xmax = Inf, ymin = 20, ymax =  ylim, fillopacity = 0.1, hoverinfo = "none") %>%
-      add_trace(data = cutOffs, x = ~pass, type = 'scatter', mode = 'lines',
-                fill = 'tonexty', fillcolor=adjustcolor(cols["PASS"], alpha.f = 0.1),
-                line = list(color = adjustcolor(cols["PASS"], alpha.f = 0.1)),
-                xmin = 0, xmax = Inf, name = "PASS", ymin = 30, ymax = 40, hoverinfo = "none") %>%
-      add_trace(data = cutOffs, x = ~warn, type = 'scatter', mode = 'lines',
-                fill = 'tonexty', fillcolor=adjustcolor(cols["WARN"], alpha.f = 0.1),
-                line = list(color = adjustcolor(cols["WARN"], alpha.f = 0.1)),
-                xmin = 0, xmax = Inf, name = "WARN", ymin = -Inf, ymax = 0, hoverinfo = "none") %>%
-      add_trace(data = cutOffs, x = ~fail, type = 'scatter', mode = 'lines',
-                fill = 'tonexty', fillcolor=adjustcolor(cols["FAIL"], alpha.f = 0.1),
-                line = list(color = adjustcolor(cols["FAIL"], alpha.f = 0.1)),
-                xmin = 0, xmax = Inf, name = "FAIL", ymin = -Inf, ymax = 0, hoverinfo = "none")
-  }
+                showlegend = FALSE, fillopacity = alpha,
+                xmin = 0, xmax = Inf, ymin = 0, ymax =  Inf,
+                hoverinfo = "none"))
+    qualPlot <- suppressWarnings(
+      add_trace(qualPlot,
+                data = cutOffs, x = ~pass, type = 'scatter', mode = 'lines',
+                fill = 'tonexty', fillcolor=adjustcolor(cols["PASS"], alpha.f = alpha),
+                line = list(color = adjustcolor(cols["PASS"], alpha.f = alpha)),
+                showlegend = FALSE,
+                xmin = 0, xmax = Inf, name = "PASS", ymin = warn, ymax = 0,
+                hoverinfo = "none"))
+    qualPlot <- suppressWarnings(
+      add_trace(qualPlot,
+                data = cutOffs, x = ~warn, type = 'scatter', mode = 'lines',
+                fill = 'tonexty', fillcolor=adjustcolor(cols["WARN"], alpha.f = alpha),
+                line = list(color = adjustcolor(cols["WARN"], alpha.f = alpha)),
+                showlegend = FALSE,
+                xmin = 0, xmax = Inf, name = "WARN", ymin = -Inf, ymax = 0,
+                hoverinfo = "none"))
+    qualPlot <- suppressWarnings(
+      add_trace(qualPlot,
+                data = cutOffs, x = ~fail, type = 'scatter', mode = 'lines',
+                fill = 'tonexty', fillcolor=adjustcolor(cols["FAIL"], alpha.f = alpha),
+                line = list(color = adjustcolor(cols["FAIL"], alpha.f = alpha)),
+                showlegend = FALSE,
+                xmin = -Inf, xmax = Inf,
+                name = "FAIL", ymin = -Inf, ymax = 0, hoverinfo = "none"))
+
+    }
+
   # Draw the plot
   qualPlot
 
