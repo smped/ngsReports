@@ -216,7 +216,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$baseQualHeatmap <- renderPlotly({
       if(is.null(input$BQdendro)){
-        plotBaseQualitiesPlotly(fdl,
+        plotBaseQualitiesHeatmap(fdl,
                                 clusterNames = input$BQcluster,
                                 type = input$BQType,
                                 usePlotly = TRUE) %>% layout(margin = list(r = 200))
