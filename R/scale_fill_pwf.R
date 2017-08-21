@@ -8,7 +8,7 @@
 # #' it will be a hidden function
 # #' @include PwfCols.R
 # #' @importFrom ggplot2 scale_fill_gradientn
-scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100)){
+scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = TRUE){
 
   gradCols <- getColours(pwfCols) # Get the default colours
   upr <- suppressWarnings(max(vals, na.rm = TRUE)) # The maximum colour in the data
@@ -25,6 +25,8 @@ scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100)){
   else{
     gradCols[nCols] <- maxCol
     breaks[nCols] <- upr
-    ggplot2::scale_fill_gradientn(colours = gradCols, values = breaks / upr, na.value = gradCols[1])
-  }
+    if(passLow) ggplot2::scale_fill_gradientn(colours = gradCols[1:3], values = breaks / upr, na.value = gradCols[1])
+    else ggplot2::scale_fill_gradientn(colours = gradCols[3:1], values = breaks / upr, na.value = gradCols[1])
+
+    }
 }
