@@ -150,14 +150,14 @@ plotBaseQualitiesHeatmap <- function(x, subset, type = "Mean",
                         Filename = factor(Filename, levels = unique(Filename)))
     BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Mean)) +
       geom_tile() +
-      ngsReports:::scale_fill_pwf(df$Mean, pwfCols, breaks = c(0, 20, 30, 40), passLow = FALSE)
+      scale_fill_pwf(df$Mean, pwfCols, breaks = c(0, 20, 30, 40), passLow = FALSE)
   }else{
     df <- dplyr::mutate(df, Median = as.numeric(Data),
                         Start = as.integer(Start),
                         Filename = factor(Filename, levels = unique(Filename)))
     BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Median)) +
       geom_tile() +
-      ngsReports:::scale_fill_pwf(df$Median, pwfCols, breaks = c(0, 20, 30, 40), passLow = FALSE)
+      scale_fill_pwf(df$Median, pwfCols, breaks = c(0, 20, 30, 40), passLow = FALSE)
   }
 
   BQheatmap <- BQheatmap +
