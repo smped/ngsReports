@@ -24,6 +24,7 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
+#' @param ... Used to pass additional attributes to theme()
 #'
 #' @return A standard ggplot2 object
 #'
@@ -65,6 +66,8 @@
 #' @importFrom ggplot2 theme_bw
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
+#' @importFrom dplyr vars
+#' @importFrom dplyr funs
 #'
 #' @export
 plotAdapterContent <- function(x, subset,
@@ -72,7 +75,8 @@ plotAdapterContent <- function(x, subset,
                                warn = 5, fail = 10,
                                pwfCols,
                                labels,
-                               usePlotly = FALSE){
+                               usePlotly = FALSE,
+                               ...){
 
   if (missing(subset)){
     subset <- rep(TRUE, length(x))
@@ -114,6 +118,32 @@ plotAdapterContent <- function(x, subset,
     if(nrow(df) == 0) stop("No adapters matching the supplied type were found")
   }
 
+  # Decide if plots should be dropped to avoid issues with plotly
+  # and heatmaps which contain all zeroes
+  maxAdapters <- dplyr::group_by(df, Type)
+  maxAdapters <- dplyr::summarise_at(maxAdapters, vars("Percent"), funs(Percent = max))
+  keepType <- maxAdapters$Type[maxAdapters$Percent > 0]
+  if (length(keepType) != nrow(maxAdapters)){
+    dropType <- maxAdapters$Type[!maxAdapters$Percent > 0]
+    message("Adapters with all zero values found. Removing plots for:\n",
+            paste(dropType, collapse = "\n"))
+  }
+  if (length(keepType) == 0) {
+    message("Adapter content is all zero. No plots are possible")
+    return(NULL)
+  }
+  df <- dplyr::filter(df, Type %in% keepType)
+  df <- droplevels(df)
+
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+  breaks <- c(0, warn, fail, 100)
+
   if (plotType == "heatmap"){
 
     # Reverse the factor levels for a better looking plot
@@ -124,13 +154,54 @@ plotAdapterContent <- function(x, subset,
         scale_y_discrete(labels = labels) +
         geom_tile() +
         facet_wrap(~Type, ncol = 1) +
-        scale_fill_pwf(df$Percent, pwf, breaks =c(0, warn, fail, 100))
+        scale_fill_pwf(df$Percent, pwf, breaks = breaks)
     }
     else{
-      message("Not Implemented")
-      return(NULL)
-    }
+      # Now generate plots for each adapter
+      splitDf <- split(df, f = df$Type)
+      acPlotList <- lapply(splitDf, function(x){
 
+        # Reset the status using adapter specific values
+        status <- dplyr::summarise_at(dplyr::group_by(x, Filename), vars("Percent"), funs(Percent = max))
+        status$Status <- cut(status$Percent, breaks = breaks, include.lowest = TRUE,
+                             labels = c("PASS", "WARN", "FAIL"))
+        status$x <- 1
+
+        # Form the sideBar for each adapter
+        sideBar <- ggplot(status, aes_string("x", "Filename")) +
+          geom_tile(aes_string(fill = "Status")) +
+          scale_fill_manual(values = getColours(pwfCols)) +
+          scale_y_discrete(expand = c(0, 0)) +
+          scale_x_continuous(expand = c(0, 0)) +
+          theme(panel.grid.minor = element_blank(),
+                panel.background = element_blank(),
+                legend.position="none",
+                axis.title=element_blank(),
+                axis.text=element_blank(),
+                axis.ticks=element_blank())
+        sideBar <- suppressMessages(ggplotly(sideBar, tooltip = c("Status", "Filename")))
+
+        # Make the individual heatmap
+        p <- ggplot(x, aes_string(x = "Position", y = "Filename", fill = "Percent")) +
+          scale_y_discrete(labels = labels) +
+          geom_tile() +
+          scale_fill_pwf(x$Percent, pwfCols, breaks =c(0, warn, fail, 100)) +
+          facet_wrap(~Type, ncol = 1) +
+          theme_bw() +
+          theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                axis.text.y = element_blank(),
+                axis.ticks.y = element_blank())
+
+        # Return each plotly object into a list
+        suppressMessages(
+          plotly::subplot(sideBar, p, widths = c(0.1,0.9), margin = 0.01, shareY = TRUE)
+        )
+      })
+      acPlot <- suppressMessages(
+        plotly::subplot(acPlotList, margin = c(0,0,0.06,0.06), titleX = TRUE,
+                        nrows = length(splitDf))
+      )
+    }
   }
 
   if (plotType == "line") {
@@ -139,11 +210,11 @@ plotAdapterContent <- function(x, subset,
     acPlot <- ggplot(df,
                      aes_string(x = "x", y = "Percent", colour = "Filename")) +
       annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = warn,
-               fill = getColours(pwfCols)["PASS"], alpha = 0.3) +
+               fill = getColours(pwfCols)["PASS"], alpha = 0.2) +
       annotate("rect", xmin = -Inf, xmax = Inf, ymin = warn, ymax = fail,
-               fill = getColours(pwfCols)["WARN"], alpha = 0.3) +
+               fill = getColours(pwfCols)["WARN"], alpha = 0.2) +
       annotate("rect", xmin = -Inf, xmax = Inf, ymin = fail, ymax = Inf,
-               fill = getColours(pwfCols)["FAIL"], alpha = 0.3) +
+               fill = getColours(pwfCols)["FAIL"], alpha = 0.2) +
       geom_line() +
       scale_y_continuous(limits = c(0, 100)) +
       scale_x_continuous(breaks = seq_along(levels(df$Position)),
@@ -154,12 +225,16 @@ plotAdapterContent <- function(x, subset,
 
     # Add the basic customisations
     acPlot <- acPlot + facet_wrap(~Type, ncol = 1)
+
   }
 
   # And draw the plot
-  acPlot +
-    labs(x = "Position in read (bp)") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-
+  if (!usePlotly){
+    acPlot <- acPlot +
+      labs(x = "Position in read (bp)") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+    if (!is.null(userTheme)) acPlot <- acPlot + userTheme
+  }
+  acPlot
 }

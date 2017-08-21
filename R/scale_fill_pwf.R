@@ -29,7 +29,7 @@ scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = T
       o <- seq(1, nCols, by = 1)
     }
     else{
-      o <- seq(nCol, 1, by = -1)
+      o <- seq(nCols, 1, by = -1)
     }
     ggplot2::scale_fill_gradientn(colours = gradCols[o], values = breaks[1:nCols] / upr,
                                   na.value = gradCols[1])
