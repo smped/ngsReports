@@ -10,8 +10,8 @@
 # #' @importFrom ggplot2 scale_fill_gradientn
 scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = TRUE){
 
-  gradCols <- getColours(pwfCols) # Get the default colours
-  upr <- suppressWarnings(max(vals, na.rm = TRUE)) # The maximum colour in the data
+  gradCols <- getColours(pwfCols) # Get the default gradient colours
+  upr <- suppressWarnings(max(vals, na.rm = TRUE)) # The maximum value in the data
   nCols <- dplyr::if_else(upr == 0, 1, findInterval(upr, breaks) + 1 ) # The number of breaks
   # Get the gradient based on the upper & lower breakpoints around the max value
   # Then define the upper colour based on where `upr` lies in this range
@@ -25,8 +25,13 @@ scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = T
   else{
     gradCols[nCols] <- maxCol
     breaks[nCols] <- upr
-    if(passLow) ggplot2::scale_fill_gradientn(colours = gradCols[1:3], values = breaks / upr, na.value = gradCols[1])
-    else ggplot2::scale_fill_gradientn(colours = gradCols[3:1], values = breaks / upr, na.value = gradCols[1])
-
+    if(passLow) {
+      o <- seq(1, nCols, by = 1)
+    }
+    else{
+      o <- seq(nCol, 1, by = -1)
+    }
+    ggplot2::scale_fill_gradientn(colours = gradCols[o], values = breaks[1:nCols] / upr,
+                                  na.value = gradCols[1])
     }
 }
