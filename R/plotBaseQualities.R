@@ -125,23 +125,8 @@ plotBaseQualities <- function(x, subset, nc = 2, pwfCols,
                    axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
   if(usePlotly){
-  cutOffs <- data.frame(pass = 30, Filename = df$Filename, warn = 20, fail = 0, top =  max(ylim))
-
-  qualPlot <- ggplotly(qualPlot)# %>% add_trace(data = test, y = ~top, type = 'scatter', mode = 'lines',
-    #                     line = list(color = NULL),
-    #                     showlegend = FALSE, name = 'high 2014', xmin = 0, xmax = Inf, ymin = 20, ymax =  ylim, fillopacity = 0.1, hoverinfo = "none") %>%
-    # add_trace(data = cutOffs, y = ~pass, type = 'scatter', mode = 'lines',
-    #           fill = 'tonexty', fillcolor=adjustcolor(cols["PASS"], alpha.f = 0.1),
-    #           line = list(color = adjustcolor(cols["PASS"], alpha.f = 0.1)),
-    #           xmin = 0, xmax = Inf, ymin = 30, ymax = 40, hoverinfo = "none") %>%
-    # add_trace(data = cutOffs, y = ~warn, type = 'scatter', mode = 'lines',
-    #           fill = 'tonexty', fillcolor=adjustcolor(cols["WARN"], alpha.f = 0.1),
-    #           line = list(color = adjustcolor(cols["WARN"], alpha.f = 0.1)),
-    #           xmin = 0, xmax = Inf, ymin = -Inf, ymax = 0, hoverinfo = "none") %>%
-    # add_trace(data = cutOffs, y = ~fail, type = 'scatter', mode = 'lines',
-    #           fill = 'tonexty', fillcolor=adjustcolor(cols["FAIL"], alpha.f = 0.1),
-    #           line = list(color = adjustcolor(cols["FAIL"], alpha.f = 0.1)),
-    #           xmin = 0, xmax = Inf, ymin = -Inf, ymax = 0, hoverinfo = "none")
+  qualPlot <- qualPlot + xlab("")
+  qualPlot <- ggplotly(qualPlot)
   }
 
   qualPlot
