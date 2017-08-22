@@ -132,6 +132,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
               h1("GC content in reads"),
               h5("GC content (%) in sample, can either view total count or frequency"),
               plotlyOutput("GCheatmap"),
+              plotlyOutput("GCSingle"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Overrepresented Sequences",
@@ -199,6 +200,20 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                     usePlotly = TRUE) %>%
         layout(margin = list(r = 200))
 
+    })
+
+    output$GCSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(fdl) == click$key[[1]])
+      }
+      GCtype <- input$GCheatType == "Count"
+      sub_fdl <- fdl[num]
+      plotGcContent(sub_fdl, usePlotly = TRUE, counts = GCtype) %>%
+        layout(margin = list(r = 200, l = 100),
+      legend = list(orientation = 'h', title = ""))
     })
 
     output$overRepHeatmap <- renderPlotly({

@@ -11,11 +11,6 @@
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
 #' @param counts \code{logical}. Display counts of GC content rather than frequency
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
-#' fastqc data will be clustered using heirachial clustering
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
 #' @param GCtheory \code{logical} default is \code{FALSE} to give the true GC content%, set to \code{TRUE} to normalize
@@ -28,13 +23,18 @@
 #' M. furo, M. mulatta, M. musculus, O. sativa, P. troglodytes, R. norvegicus, S. cerevisiae, S scrofa, T. gondii,
 #' T. guttata, V. vinifera. Use \code{ngsReports::genomes(ngsReports::gcTheoretical)} to display the corresponding names for
 #' each species.
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
+#' @param labels An optional named factor of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
 #' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using heirachial clustering
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
-#'
+#' @param ... Used to pass various potting parameters to theme.
+#' Can also be used to set size and colour for box outlines.
 #' @return A plotly object
 #'
 #' @examples
@@ -66,11 +66,11 @@
 #' @importFrom stats order.dendrogram
 #'
 #' @export
-plotGcHeatmap <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq).*",
-                                clusterNames = FALSE, pwfCols,
-                                GCtheory = FALSE, GCtheoryType = "Genome", species = "Hsapiens",
-                                trimNames = TRUE, usePlotly = FALSE,
-                                dendrogram = FALSE){
+plotGcHeatmap <- function(x, subset, counts = FALSE,
+                          clusterNames = FALSE, pwfCols, labels,
+                          GCtheory = FALSE, GCtheoryType = "Genome",
+                          species = "Hsapiens", usePlotly = FALSE,
+                          dendrogram = FALSE, ...){
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
   if(GCtheory & GCtheoryType == "Genome"){
@@ -99,13 +99,35 @@ plotGcHeatmap <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq
   x <- x[subset]
   df <- tryCatch(Per_sequence_GC_content(x))
 
-  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
-    # These need to be checked to ensure non-duplicated names
-    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
-  }else{
-    pattern <- ""
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                        names = fileName(x))
   }
+  else{
+    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  if ("size" %in% names(dotArgs)){
+    lineWidth <- dotArgs$size
+  }
+  else{
+    lineWidth <- 0.2
+  }
+  if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
+    i <- which(names(dotArgs) %in% c("colour", "color"))
+    lineCol <- dotArgs[[i]]
+  }
+  else{
+    lineCol <- "grey20"
+  }
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
 
   if (!counts){
@@ -119,22 +141,26 @@ plotGcHeatmap <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq
     if(GCtheory){
       df <- df %>% split(.["Filename"]) %>% lapply(function(x){
         gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, name = species, type = GCtheoryType)
-        x <- dplyr::mutate(x, Value = abs(Value - unlist(gcTheoryDF[species])))
+        x <- dplyr::mutate(x, Value = Value - unlist(gcTheoryDF[species]))
       }) %>% dplyr::bind_rows(.)
     }
   }else{
     df <- dplyr::select(df, Filename, GC_Content, Value = Count)
   }
 
+  df <- reshape2::dcast(df, Filename ~ GC_Content)
+
   if(clusterNames){
-    df <- reshape2::dcast(df, Filename ~ GC_Content)
     xx <- dplyr::select(df, -Filename)
     xx[is.na(xx)] <- 0
     clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
     row.ord <- order.dendrogram(clus)
     df <- df[row.ord,]
-    df <- reshape2::melt(df, id.vars = "Filename", variable.name = "GC_Content", value.name = "Value")
   }
+
+  key <- df$Filename
+  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "GC_Content", value.name = "Value")
+  df$Filename <- labels[df$Filename]
 
   if(!counts){
     df <- dplyr::mutate(df, Frequency = as.numeric(Value),
@@ -150,8 +176,11 @@ plotGcHeatmap <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq
 
   GCheatmap <- GCheatmap + geom_tile() +
     theme(panel.grid.minor = element_blank(),
-          panel.background = element_blank()) +
-    scale_fill_gradientn(colours = viridisLite::inferno(50))
+          panel.background = element_blank())
+
+  if(GCtheory){GCheatmap <- GCheatmap + scale_fill_gradient2(low = inferno(1, begin = 0.4), high = inferno(1, begin = 0.9), midpoint = 0, mid = inferno(1, begin = 0))
+  }else{GCheatmap <- GCheatmap + scale_fill_gradientn(colours = viridisLite::inferno(50))
+  }
 
   if(usePlotly){
 
@@ -160,11 +189,9 @@ plotGcHeatmap <- function(x, subset, counts = FALSE, pattern = "(.+)\\.(fastq|fq
 
 
     t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
-    t <- dplyr::mutate(t, FilenameFull = Filename,
-                       Filename = gsub(pattern[1], "\\1", t$Filename),
-                       Filename = factor(Filename, levels = unique(df$Filename)))
+    t$Filename <- labels[t$Filename]
+    t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
-    key <- t$FilenameFull
 
     sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
       scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
