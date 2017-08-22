@@ -274,17 +274,32 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
         num <- which(fileName(fdl) == click$key[[1]])
       }
       sub_fdl <- fdl[num]
-      plotSequenceQualities(sub_fdl, usePlotly = TRUE) %>%
-        layout(margin = list(r = 200, l = 100))
+      qualPlot <- plotSequenceQualities(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100),
+               legend = list(orientation = 'h', title = ""))
     })
 
+    output$NCdendro <- renderUI({
+      if(input$Ncluster) {
+        checkboxInput("NCdendro", "Plot Dendrogram?", value = FALSE)
+      }
+    })
 
     output$NCheatmap <- renderPlotly({
-      plotNContentPlotly(fdl,
-                         clusterNames = input$Ncluster,
-                         usePlotly = TRUE) %>%
-        layout(margin = list(r = 200))
+      if(is.null(input$NCdendro)){
+        plotNContentPlotly(fdl,
+                           clusterNames = input$Ncluster,
+                           usePlotly = TRUE) %>% layout(margin = list(r = 200))
+      }else{
+        plotNContentPlotly(fdl,
+                           clusterNames = input$Ncluster,
+                           dendrogram = input$NCdendro,
+                           usePlotly = TRUE) %>% layout(margin = list(r = 200))
+      }
     })
+
+
+
   }
 
   shinyApp(ui = ui, server = server)
