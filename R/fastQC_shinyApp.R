@@ -110,9 +110,11 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
-              h1("Base Quality"),
+              h1("Sequence Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
+              h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("seqQualHeatmap"),
+              plotlyOutput("SeqQualitiesSingle"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "% GC Content",
@@ -190,11 +192,11 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     output$GCheatmap <- renderPlotly({
       GCtype <- input$GCheatType == "Count"
       plotGcHeatmap(fdl,
-                          clusterNames = input$GCcluster,
-                          counts = GCtype,
-                          GCtheory = input$GCtheory,
-                          species = input$GCspecies,
-                          usePlotly = TRUE) %>%
+                    clusterNames = input$GCcluster,
+                    counts = GCtype,
+                    GCtheory = input$GCtheory,
+                    species = input$GCspecies,
+                    usePlotly = TRUE) %>%
         layout(margin = list(r = 200))
 
     })
@@ -210,22 +212,22 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$BQdendro <- renderUI({
       if(input$BQcluster) {
-        checkboxInput("BQdendro", "plot Dendrogram", value = FALSE)
+        checkboxInput("BQdendro", "Plot Dendrogram?", value = FALSE)
       }
     })
 
     output$baseQualHeatmap <- renderPlotly({
       if(is.null(input$BQdendro)){
         plotBaseQualitiesHeatmap(fdl,
-                                clusterNames = input$BQcluster,
-                                type = input$BQType,
-                                usePlotly = TRUE) %>% layout(margin = list(r = 200))
+                                 clusterNames = input$BQcluster,
+                                 type = input$BQType,
+                                 usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }else{
         plotBaseQualitiesHeatmap(fdl,
-                                clusterNames = input$BQcluster,
-                                type = input$BQType,
-                                dendrogram = input$BQdendro,
-                                usePlotly = TRUE) %>% layout(margin = list(r = 200))
+                                 clusterNames = input$BQcluster,
+                                 type = input$BQType,
+                                 dendrogram = input$BQdendro,
+                                 usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }
 
     })
@@ -237,26 +239,45 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
         click <- event_data("plotly_click")
         num <- which(fileName(fdl) == click$key[[1]])
       }
-        sub_fdl <- fdl[num]
-        plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
-          layout(margin = list(r = 200, l = 100))
-      })
-
-
-    output$baseQualIndv <- shiny::renderText({
-      click <- event_data("plotly_click")
-      click$key[[1]]
+      sub_fdl <- fdl[num]
+      plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
     })
 
+    output$SQdendro <- renderUI({
+      if(input$SQcluster) {
+        checkboxInput("SQdendro", "Plot Dendrogram?", value = FALSE)
+      }
+    })
 
     output$seqQualHeatmap <- renderPlotly({
       SQtype <- input$SQType == "Counts"
-      plotSequenceQualitiesHeatmap(fdl,
-                                   counts = SQtype,
-                                   clusterNames = input$SQcluster,
-                                   usePlotly = TRUE) %>%
-        layout(margin = list(r = 200))
+      if(is.null(input$SQdendro)){
+        plotSequenceQualitiesHeatmap(fdl,
+                                     clusterNames = input$SQcluster,
+                                     type = SQtype,
+                                     usePlotly = TRUE) %>% layout(margin = list(r = 200))
+      }else{
+        plotSequenceQualitiesHeatmap(fdl,
+                                     clusterNames = input$SQcluster,
+                                     type = SQtype,
+                                     dendrogram = input$SQdendro,
+                                     usePlotly = TRUE) %>% layout(margin = list(r = 200))
+      }
     })
+
+    output$SeqQualitiesSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(fdl) == click$key[[1]])
+      }
+      sub_fdl <- fdl[num]
+      plotSequenceQualities(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
 
     output$NCheatmap <- renderPlotly({
       plotNContentPlotly(fdl,

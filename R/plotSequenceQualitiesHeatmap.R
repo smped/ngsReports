@@ -74,10 +74,10 @@ plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfC
   # Get any arguments for dotArgs that have been set manually
   dotArgs <- list(...)
   if ("size" %in% names(dotArgs)){
-    sz <- dotArgs$size
+    lineWidth <- dotArgs$size
   }
   else{
-    sz <- 0.2
+    lineWidth <- 0.2
   }
   if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
     i <- which(names(dotArgs) %in% c("colour", "color"))
@@ -100,45 +100,46 @@ plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfC
     clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
     row.ord <- order.dendrogram(clus)
     df <- df[row.ord,]
-    df$Filename <- with(df, factor(Filename, levels=Filename))
   }
 
+  key <- df$Filename
   df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Quality", value.name = "Count")
+  df$Filename <- labels[df$Filename]
 
   if (!counts){
 
-    # Summarise to frequencies & initialise the plot
-    df <- dplyr::group_by(df, Filename) %>%
-      dplyr::mutate(Value = Count / sum(Count)) %>%
-      dplyr::ungroup()
+    # Summarise to frequencies
+    df <- dplyr::mutate(df, Value = Count / sum(Count),
+                    Filename = factor(Filename, levels = unique(Filename)))
 
 
   }else{
-    df <- mutate(df, Value = Count)
+    df <- mutate(df, Value = Count,
+                 Filename = factor(Filename, levels = unique(Filename)))
   }
 
+  qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Value)) +
+    geom_tile(colour = lineCol, size = lineWidth) +
+    xlab("Mean Sequence Quality Per Read (Phred Score)") +
+    scale_fill_gradientn(colours = inferno(150)) +
+    ylab("File names") +
+    theme(panel.grid.minor = element_blank(),
+          panel.background = element_blank())
+
   if(usePlotly){
-    df$Filename <- labels[df$Filename]
-
-
-    qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Value)) +
-      geom_tile(colour = lineCol, size = sz) +
-      xlab("Mean Sequence Quality Per Read (Phred Score)") +
-      scale_fill_gradientn(colours = inferno(150)) +
-      ylab("File names") +
-      theme(panel.grid.minor = element_blank(),
-            panel.background = element_blank())
-
-
+    nx <- length(x)
+    qualPlot <- qualPlot +
+      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth)
 
     t <- dplyr::filter(getSummary(x), Category == "Per sequence quality scores")
     t$Filename <- labels[t$Filename]
     t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
-    key <- t$Filename
+
 
     sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key, fill = Status)) +
       geom_tile() +
+      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
       scale_fill_manual(values = col) +
       theme(panel.grid.minor = element_blank(),
             panel.background = element_blank(),
@@ -182,16 +183,7 @@ plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfC
                                   shareY = TRUE) %>%
         plotly::layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"))
     }
-  }else{
-    qualPlot <- ggplot(df, aes(x = Quality, y = Filename, fill = Value)) +
-      geom_tile(colour = lineCol, size = sz) +
-      xlab("Mean Sequence Quality Per Read (Phred Score)") +
-      scale_fill_gradientn(colours = inferno(150)) +
-      ylab("File names") +
-      theme(panel.grid.minor = element_blank(),
-            panel.background = element_blank())
   }
-
   qualPlot
 
 }
