@@ -89,12 +89,12 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                              choices=c("Mean","Median"), selected = "Mean"),
                 checkboxInput("BQcluster", "Cluster Filenames", value = FALSE),
                 htmlOutput("BQdendro"),
-                selectInput("BQheight", "Plot Height", choices = c("auto", 250, 500, 1000)),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("Base Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
+              h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("baseQualHeatmap"),
               plotlyOutput("BaseQualitiesSingle"),
               width = "70%", left = "30%", right = "0%"))),
@@ -231,16 +231,16 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     })
 
     output$BaseQualitiesSingle <- renderPlotly({
-      if(is.null(event_data("plotly_click"))){
+      if(is.null(event_data("plotly_click")$key[[1]])){
         num <- 1
       }else {
         click <- event_data("plotly_click")
         num <- which(fileName(fdl) == click$key[[1]])
       }
-      sub_fdl <- fdl[num]
-      plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
-        layout(margin = list(r = 200, l = 100))
-    })
+        sub_fdl <- fdl[num]
+        plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
+          layout(margin = list(r = 200, l = 100))
+      })
 
 
     output$baseQualIndv <- shiny::renderText({
