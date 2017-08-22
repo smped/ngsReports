@@ -22,10 +22,7 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot
-#' plotGcHeatmap(fdl)
-#'
-#' # Using counts
-#' plotGcHeatmap(fdl, counts = TRUE)
+#' plotSequenceContentHeatmap(fdl)
 #'
 #'
 #'
@@ -51,7 +48,6 @@ plotSequenceContent <- function(x, subset){
   # Get the NContent
   x <- tryCatch(x[subset])
   df <- tryCatch(Per_base_sequence_content(x))
-  df <- Per_base_sequence_content(x)
   df <- dplyr::mutate(df,
                       Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
                       Start = as.integer(Start))
@@ -74,14 +70,15 @@ plotSequenceContent <- function(x, subset){
     dplyr::select(-Longest_sequence)
 
   sequenceContentHeatmap <- ggplot(dfInner,
-                                            aes(x = Start,
-                                                         y = Filename,
-                                                         fill = colour)) +
-    geom_tile() +
+                                   aes(x = Start,
+                                       y = Filename,
+                                       fill = colour)) +
+    geom_tile(fill = "black") +
+    geom_tile(alpha = 0.4) +
     scale_fill_manual(values = dfInner$colour) +
     theme(legend.position = "none",
-                   panel.grid.minor = element_blank(),
-                   panel.background = element_blank())
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank())
   sequenceContentHeatmap
 }
 
