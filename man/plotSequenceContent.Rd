@@ -32,10 +32,7 @@ fileList <- system.file("extdata", fileList, package = "ngsReports")
 fdl <- getFastqcData(fileList)
 
 # The default plot
-plotGcHeatmap(fdl)
-
-# Using counts
-plotGcHeatmap(fdl, counts = TRUE)
+plotSequenceContentHeatmap(fdl)
 
 
 

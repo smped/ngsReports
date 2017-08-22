@@ -210,11 +210,15 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
       }
 
       dx <- ggdendro::dendro_data(clus)
-      dendro <- ggdend(dx$segments) + coord_flip() +
-        scale_y_reverse(expand = c(0, 1)) + scale_x_continuous(expand = c(0,1))
+      dendro <- ggdend(dx$segments) +
+        coord_flip() +
+        scale_y_reverse(expand = c(0, 1)) +
+        scale_x_continuous(expand = c(0,2))
 
 
-      GCheatmap <- plotly::subplot(dendro, sideBar, GCheatmap, widths = c(0.3, 0.1,0.6), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "GC Content (%)"))
+      GCheatmap <- plotly::subplot(dendro, sideBar, GCheatmap, widths = c(0.1,0.1,0.8),
+                                   margin = 0, shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "GC Content (%)"))
     }else{
       GCheatmap <- plotly::subplot(sideBar, GCheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "GC Content (%)"))
     }
