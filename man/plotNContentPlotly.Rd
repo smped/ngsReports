@@ -4,9 +4,8 @@
 \alias{plotNContentPlotly}
 \title{Plot the Per base N content as a Heatmap}
 \usage{
-plotNContentPlotly(x, subset, pwfCols, pattern = "(.+)\\\\.(fastq|fq).*",
-  clusterNames = FALSE, trimNames = TRUE, dendrogram = FALSE,
-  usePlotly = FALSE)
+plotNContentPlotly(x, subset, pwfCols, labels, clusterNames = FALSE,
+  dendrogram = FALSE, usePlotly = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -18,14 +17,12 @@ May be useful to only return totals from R1 files, or any other subset}
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
 
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+\item{labels}{An optional named factor of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using heirachial clustering}
-
-\item{trimNames}{\code{logical}. Remove the file suffix from the names displyed in the legend.}
 
 \item{dendrogram}{\code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
 if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
@@ -33,6 +30,9 @@ will be displayed.}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
+
+\item{...}{Used to pass various potting parameters to theme.
+Can also be used to set size and colour for box outlines.}
 }
 \value{
 A ggplot2 or plotly object
