@@ -121,7 +121,10 @@ plotGcContent <- function(x, subset, counts = FALSE,
     theme_bw()
 
   if(usePlotly){
-    gcPlot <- ggplotly(gcPlot)
+    if(!counts) value <- "Freq"
+    else value <- "Count"
+    gcPlot <- gcPlot + labs(colour = "")
+    gcPlot <- ggplotly(gcPlot, tooltip = c("GC_Content", value))
   }
 
   # Draw the plot
