@@ -125,6 +125,7 @@ plotSequenceQualities <- function(x, usePlotly = FALSE, labels, counts = FALSE, 
     ymax <- 1
     if (counts) ymax <- max(df$Count)
 
+    qualPlot <- qualPlot + labs(colour = "")
     qualPlot <- suppressMessages(ggplotly(qualPlot))
     # These are still highly problematic.
     # I wonder why layout using shape doesn't work?
