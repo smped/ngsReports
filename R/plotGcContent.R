@@ -88,30 +88,15 @@ plotGcContent <- function(x, subset, counts = FALSE,
       dplyr::ungroup() %>%
       dplyr::select(Filename, GC_Content, Freq)
 
-    # Add the observed mean at each value:
-    mn <- dplyr::group_by(df, GC_Content) %>%
-      dplyr::summarise(Freq = mean(Freq)) %>%
-      dplyr::mutate(Freq = Freq / sum(Freq), # Normalise to 1 for a distribution
-                    Filename = "Mean")
-
     gcPlot <- ggplot(df, aes(x = GC_Content, y = Freq, colour = Filename)) +
-      geom_line() +
-      geom_line(data = mn, aes(x = GC_Content, y = Freq),
-                         colour = "black", linetype = 2)
+      geom_line()
 
   }
   else{
 
-    # Add the observed mean at each value:
-    mn <- dplyr::group_by(df, GC_Content) %>%
-      dplyr::summarise(Count = mean(Count)) %>%
-      dplyr::mutate(Filename = "Mean")
-
     # Initialise the plot using counts
     gcPlot <- ggplot(df, aes(x = GC_Content, y = Count, colour = Filename)) +
-      geom_line() +
-      geom_line(data = mn, aes(x = GC_Content, y = Count),
-                         colour = "black", linetype = 2)
+      geom_line()
 
   }
 
