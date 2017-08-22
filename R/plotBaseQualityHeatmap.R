@@ -141,6 +141,7 @@ plotBaseQualitiesHeatmap <- function(x, subset, type = "Mean",
 
 
   #melt data back to long format and change filenames to fit labels
+  key <- df$Filename
   df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Data")
   df$Filename <- labels[df$Filename]
   # start heatmap for mean and median
@@ -172,7 +173,6 @@ plotBaseQualitiesHeatmap <- function(x, subset, type = "Mean",
     t$Filename <- labels[t$Filename]
     t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
-    key <- t$Filename
 
     sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
       scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),

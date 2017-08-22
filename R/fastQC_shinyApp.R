@@ -96,7 +96,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
               h1("Base Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               plotlyOutput("baseQualHeatmap"),
-              plotOutput("baseQualIndv"),
+              plotlyOutput("BaseQualitiesSingle"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Per Sequence Quality Scores",
@@ -221,7 +221,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                                 type = input$BQType,
                                 usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }else{
-        plotBaseQualitiesPlotly(fdl,
+        plotBaseQualitiesHeatmap(fdl,
                                 clusterNames = input$BQcluster,
                                 type = input$BQType,
                                 dendrogram = input$BQdendro,
@@ -230,17 +230,22 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     })
 
-    output$click <- renderPrint({d <- event_data("plotly_click")
-    d$key[[1]]
+    output$BaseQualitiesSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click"))){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(fdl) == click$key[[1]])
+      }
+      sub_fdl <- fdl[num]
+      plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
     })
 
 
-
-    output$baseQualIndv <- shiny::renderPlot({
+    output$baseQualIndv <- shiny::renderText({
       click <- event_data("plotly_click")
-      key <- click$key[[1]]
-
-      if(!is.null()){plotBaseQualities(FastqcFile())}
+      click$key[[1]]
     })
 
 
