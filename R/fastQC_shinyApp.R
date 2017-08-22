@@ -95,6 +95,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
               h1("Base Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               h5("Click sidebar on heatmap to change line plots"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("baseQualHeatmap"),
               plotlyOutput("BaseQualitiesSingle"),
               width = "70%", left = "30%", right = "0%"))),
@@ -113,6 +114,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
               h1("Sequence Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               h5("Click sidebar on heatmap to change line plots"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("seqQualHeatmap"),
               plotlyOutput("SeqQualitiesSingle"),
               width = "70%", left = "30%", right = "0%"))),
@@ -126,11 +128,14 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                 radioButtons(inputId="GCheatType", label="Value to plot",
                              choices=c("Count","Frequency"), selected = "Frequency"),
                 checkboxInput("GCcluster", "Cluster Filenames", value = FALSE),
+                htmlOutput("GCdendro"),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("GC content in reads"),
               h5("GC content (%) in sample, can either view total count or frequency"),
+              h5("Click sidebar on heatmap to change line plots"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("GCheatmap"),
               plotlyOutput("GCSingle"),
               width = "70%", left = "30%", right = "0%"))),
@@ -161,6 +166,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
             absolutePanel(
               h1("N content in reads"),
               h5("N content (%) in sample"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("NCheatmap"),
               width = "70%", left = "30%", right = "0%")
           )
@@ -189,16 +195,32 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
       }
     })
 
+    output$GCdendro <- renderUI({
+      if(input$GCcluster) {
+        checkboxInput("GCdendro", "Plot Dendrogram?", value = FALSE)
+      }
+    })
 
     output$GCheatmap <- renderPlotly({
       GCtype <- input$GCheatType == "Count"
-      plotGcHeatmap(fdl,
-                    clusterNames = input$GCcluster,
-                    counts = GCtype,
-                    GCtheory = input$GCtheory,
-                    species = input$GCspecies,
-                    usePlotly = TRUE) %>%
-        layout(margin = list(r = 200))
+      if(is.null(input$GCdendro)){
+        plotGcHeatmap(fdl,
+                      clusterNames = input$GCcluster,
+                      counts = GCtype,
+                      GCtheory = input$GCtheory,
+                      species = input$GCspecies,
+                      usePlotly = TRUE) %>%
+          layout(margin = list(r = 200))
+      }else{
+        plotGcHeatmap(fdl,
+                      clusterNames = input$GCcluster,
+                      counts = GCtype,
+                      GCtheory = input$GCtheory,
+                      dendrogram = input$GCdendro,
+                      species = input$GCspecies,
+                      usePlotly = TRUE) %>%
+          layout(margin = list(r = 200))
+      }
 
     })
 
