@@ -15,3 +15,4 @@
 - Add transcriptome to GC content
 - Add AdapterContent & Base_SequenceContent plot to app
 - Add plotly version of adapter line plot
+- Add filenames to x-axis

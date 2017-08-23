@@ -62,7 +62,7 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels){
   if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
   maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
-  df$colour <- with(df, rgb(`T` / maxBase, A / maxBase, C / maxBase, 1 - G / maxBase))
+  df$colour <- with(df, rgb(floor(`T`) / maxBase, floor(A) / maxBase, floor(C) / maxBase, 1 - floor(G) / maxBase))
 
   basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
 
