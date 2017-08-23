@@ -5,8 +5,10 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param subset \code{logical}. Return the values for a subset of files.
-#' May be useful to only return totals from R1 files, or any other subset
+#' @param labels An optional named vector of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
+#' @param usePlotly \code{logical}. Generate an interactive plot using plotly
 #'
 #' @return A ggplot2 object
 #'
@@ -22,63 +24,79 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot
-#' plotSequenceContentHeatmap(fdl)
+#' plotSequenceContent(fdl)
 #'
+#' # Interactive
+#' plotSequenceContent(fdl, usePlotly = TRUE)
 #'
-#'
-#' @importFrom dplyr group_by
-#' @importFrom dplyr mutate
-#' @importFrom dplyr ungroup
-#' @importFrom dplyr filter
-#' @importFrom dplyr select
-#' @importFrom dplyr summarise
+#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_y_discrete
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 element_rect
+#' @importFrom scales rescale
 #' @importFrom grDevices rgb
+#' @importFrom magrittr %>%
 #'
 #' @export
 
-plotSequenceContent <- function(x, subset){
+plotSequenceContent <- function(x, usePlotly = FALSE, labels){
 
-  # A basic cautionary check
-  stopifnot(grepl("(Fastqc|character)", class(x)))
 
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-
-  # Get the NContent
-  x <- tryCatch(x[subset])
+  # Get the SequenceContent
   df <- tryCatch(Per_base_sequence_content(x))
-  df <- dplyr::mutate(df,
-                      Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
-                      Start = as.integer(Start))
-  df <- mutate(df, colour = rgb(rescale(A+0.33*G), rescale(T+0.33*G), rescale(C+0.33*G)))
+  df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
 
-  basicStat <- Basic_Statistics(x) %>% dplyr::select(Filename, Longest_sequence)
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                        names = fileName(x))
+  }
+  else{
+    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
-  df <- df %>% dplyr::right_join(basicStat, by = "Filename") %>%
-    dplyr::select(Filename, Start, colour, Longest_sequence)
+  maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
+  df$colour <- with(df, rgb(`T` / maxBase, A / maxBase, C / maxBase, 1 - G / maxBase))
 
-  dfInner <- df %>%
-    split(f = .['Filename']) %>%
+  basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
+
+  df <- dplyr::right_join(df, basicStat, by = "Filename")
+  df <- df[c("Filename", "Start", "colour", "Longest_sequence", "A", "C", "G", "T")]
+
+  df <- split(df, f = df$Filename) %>%
     lapply(function(x){
-      dfFill <- data.frame(Start = 1:x$Longest_sequence[1])
+      dfFill <- data.frame(Start = 1:x[["Longest_sequence"]][1])
       x <- dplyr::right_join(x, dfFill, by = "Start") %>%
         zoo::na.locf()
     }) %>%
-    dplyr::bind_rows() %>%
-    dplyr::mutate(Start = as.integer(Start)) %>%
-    dplyr::select(-Longest_sequence)
+    dplyr::bind_rows()
+  df$Start <- as.integer(df$Start)
+  tileCols <- unique(df$colour)
+  names(tileCols) <- unique(df$colour)
 
-  sequenceContentHeatmap <- ggplot(dfInner,
-                                   aes(x = Start,
-                                       y = Filename,
-                                       fill = colour)) +
-    geom_tile(fill = "black") +
-    geom_tile(alpha = 0.4) +
-    scale_fill_manual(values = dfInner$colour) +
+  sequenceContentHeatmap <- ggplot(df,
+                                   aes_string(x = "Start", y = "Filename",
+                                       fill = "colour", A = "A", C = "C", G = "G", T = "T")) +
+    geom_tile() +
+    scale_fill_manual(values = tileCols) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0), labels = labels) +
     theme(legend.position = "none",
           panel.grid.minor = element_blank(),
-          panel.background = element_blank())
-  sequenceContentHeatmap
+          panel.grid.major = element_blank(),
+          panel.background = element_rect(fill = "black"))
+
+  if (usePlotly){
+    suppressMessages(plotly::ggplotly(sequenceContentHeatmap, tooltip = c("A", "C", "G", "T", "Start", "Filename")))
+  }
+  else{
+    sequenceContentHeatmap
+  }
 }
 

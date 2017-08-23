@@ -2,18 +2,16 @@
 - Set character methods for `runFastQC` & redefine this function as a method for class `FastqFileList`
 - Test the output of `runFastQC` now it hs been changed to a `FastqcFileList`
 - Validation Functions for `fastqcData` and `fastqcDataLists` objects
-- *Convert everything to heatmaps*
-- Implement `pwf`as the colour scheme for all plots
 - Calculate Ranks on each module and summarise
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot
 - Add `plotBaseContent` ***Functional (check)***
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
-- Incorporate bowtie2 & cufflinks output?
 - Write Vignette
-- Add dendrogram to plot in shiny app
-- Flip Total Read Plot
 - make dependencies script for install 
 - make 'output all plots to pdf' function
 - Build tests for classes and methods
 - Remove `subset` from all plots. This can be done before passing a `FastqcDataList` to the function.
+- Add transcriptome to GC content
+- Add AdapterContent & Base_SequenceContent plot to app
+- Add plotly version of adapter line plot

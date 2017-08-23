@@ -4,14 +4,17 @@
 \alias{plotSequenceContent}
 \title{Plot the per base content as a heatmap}
 \usage{
-plotSequenceContent(x, subset)
+plotSequenceContent(x, usePlotly = FALSE, labels)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
+\item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
+
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 }
 \value{
 A ggplot2 object
@@ -32,8 +35,9 @@ fileList <- system.file("extdata", fileList, package = "ngsReports")
 fdl <- getFastqcData(fileList)
 
 # The default plot
-plotSequenceContentHeatmap(fdl)
+plotSequenceContent(fdl)
 
-
+# Interactive
+plotSequenceContent(fdl, usePlotly = TRUE)
 
 }
