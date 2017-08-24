@@ -98,16 +98,17 @@ plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
     nx <- length(x)
     ny <- length(unique(df$Category))
     df$Filename <- labels[df$Filename] # Add the new labels
-    # sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "StatusNum", key = "Status")) +
-    sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status", key = "Status")) +
+    df$StatusNum <- as.integer(df$Status)
+    sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "StatusNum", key = "Status")) +
+    #sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status", key = "Status")) +
       geom_tile(colour = lineCol) +
       geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
       geom_hline(yintercept = seq(1.5, ny), colour = lineCol, size = lineWidth) +
-      # scale_fill_gradientn(colours = c(fillCol["PASS"],
-      #                                  fillCol["WARN"],
-      #                                  fillCol["FAIL"]),
-      #                      values = c(0,1)) +
-      scale_fill_manual(values=fillCol) +
+      scale_fill_gradientn(colours = c(fillCol["PASS"],
+                                       fillCol["WARN"],
+                                       fillCol["FAIL"]),
+                           values = c(0,1)) +
+      # scale_fill_manual(values=fillCol) +
       scale_x_discrete(expand=c(0,0)) +
       scale_y_discrete(expand=c(0,0)) +
       labs(x="Filename", y="QC Category") +

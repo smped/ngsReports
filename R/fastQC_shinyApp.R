@@ -7,7 +7,6 @@
 #'
 #' @param fastqcInput can be a \code{FastqcFileList}, \code{fastqcDataList},
 #' or simply a \code{character} vector of paths to fastqc files.
-#' @param subsetAll a \code{character} vector of length 1 to subset all files input into shiny app by
 #'
 #'
 #' @return UI data for fastQC shiny.
@@ -35,30 +34,31 @@
 #' @importFrom shiny renderUI
 #' @importFrom shiny renderPrint
 #' @importFrom shiny shinyApp
+#' @importFrom shiny textOutput
+#' @importFrom shiny renderText
+#' @importFrom shinyFiles shinyFilesButton
+#' @importFrom shinyFiles shinyFileChoose
+#' @importFrom shinyFiles parseFilePaths
+#' @importFrom shinyFiles getVolumes
 #'
 #' @export
 #' @rdname fastqcShiny
-fastqcShiny <- function(fastqcInput, subsetAll = ""){
-
-  # Shouldn't this just be getFastqcData(fastqcInput)?
-  if(class(fastqcInput) != "FastqcDataList"){
-    fdl <- getFastqcData(fastqcInput)
-  }
-  if(class(fastqcInput) == "FastqcDataList"){
-    fdl <- fastqcInput
-  }
-
-  fdl <- fdl[grepl(subsetAll, fileName(fdl))]
+fastqcShiny <- function(fastqcInput = NULL){
 
   ui <- shinyUI(
     fluidPage(
       navbarPage(
-        "fastqcR",
+        "ngsReports::FASTQC",
         #first panel is summary
         tabPanel(
           "fastQC Flags Summary",
           splitLayout(
-            fixedPanel(),
+            fixedPanel(
+            sidebarPanel(
+              h5("Choose Fastqc Report:"),
+              shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = "Please select a file:"),
+              width = "20%", left = "0%", right = "80%"
+            ), width = "20%"),
             absolutePanel(
               h1("Summary of fastQC Flags"),
               h5("Heatmap of fastQC flags (pass, warning or fail) for each fastQC report"),
@@ -175,15 +175,31 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     )
   )
 
-  server <- function(input, output){
+  server <- function(input, output, session){
+
+
+    #This function is repsonsible for loading in the selected file
+    data <- reactive({
+      volumes <- shinyFiles::getVolumes()
+      shinyFiles::shinyFileChoose(input, "files", roots = volumes, session = session)
+        fileSelected <- shinyFiles::parseFilePaths(volumes, input$files)
+        fileSelected <- as.character(fileSelected$datapath)
+        selectedData <- getFastqcData(fileSelected)
+        if(is.null(input$files)){
+          if(class(fastqcInput) != "FastqcDataList") selectedData <- getFastqcData(fastqcInput)
+          else selectedData <- fastqcInput
+        }
+        selectedData
+    })
+
     output$SummaryFlags <- renderPlotly({
-      plotSummary(fdl, usePlotly = TRUE) %>%
+      plotSummary(data(), usePlotly = TRUE) %>%
         layout(margin = list(r = 200))
     })
 
 
     output$ReadDuplication <- renderPlotly({
-      plotDeduplicatedTotalsPlotly(fdl, bars = input$RDLbar) %>%
+      plotDeduplicatedTotalsPlotly(data(), bars = input$RDLbar) %>%
         layout(margin = list(r = 200))
     })
 
@@ -204,7 +220,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     output$GCheatmap <- renderPlotly({
       GCtype <- input$GCheatType == "Count"
       if(is.null(input$GCdendro)){
-        plotGcHeatmap(fdl,
+        plotGcHeatmap(data(),
                       clusterNames = input$GCcluster,
                       counts = GCtype,
                       GCtheory = input$GCtheory,
@@ -212,7 +228,7 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
                       usePlotly = TRUE) %>%
           layout(margin = list(r = 200))
       }else{
-        plotGcHeatmap(fdl,
+        plotGcHeatmap(data(),
                       clusterNames = input$GCcluster,
                       counts = GCtype,
                       GCtheory = input$GCtheory,
@@ -229,17 +245,17 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
         num <- 1
       }else {
         click <- event_data("plotly_click")
-        num <- which(fileName(fdl) == click$key[[1]])
+        num <- which(fileName(data()) == click$key[[1]])
       }
       GCtype <- input$GCheatType == "Count"
-      sub_fdl <- fdl[num]
+      sub_fdl <- data()[num]
       plotGcContent(sub_fdl, usePlotly = TRUE, counts = GCtype) %>%
         layout(margin = list(r = 200, l = 100),
       legend = list(orientation = 'h', title = ""))
     })
 
     output$overRepHeatmap <- renderPlotly({
-      plotOverrepresentedHeatmapPlotly(fdl,
+      plotOverrepresentedHeatmapPlotly(data(),
                                        clusterNames = input$ORcluster,
                                        method = input$ORType,
                                        nSeq = input$ORslide,
@@ -255,12 +271,12 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$baseQualHeatmap <- renderPlotly({
       if(is.null(input$BQdendro)){
-        plotBaseQualitiesHeatmap(fdl,
+        plotBaseQualitiesHeatmap(data(),
                                  clusterNames = input$BQcluster,
                                  type = input$BQType,
                                  usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }else{
-        plotBaseQualitiesHeatmap(fdl,
+        plotBaseQualitiesHeatmap(data(),
                                  clusterNames = input$BQcluster,
                                  type = input$BQType,
                                  dendrogram = input$BQdendro,
@@ -274,9 +290,9 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
         num <- 1
       }else {
         click <- event_data("plotly_click")
-        num <- which(fileName(fdl) == click$key[[1]])
+        num <- which(fileName(data()) == click$key[[1]])
       }
-      sub_fdl <- fdl[num]
+      sub_fdl <- data()[num]
       plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100))
     })
@@ -290,12 +306,12 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
     output$seqQualHeatmap <- renderPlotly({
       SQtype <- input$SQType == "Counts"
       if(is.null(input$SQdendro)){
-        plotSequenceQualitiesHeatmap(fdl,
+        plotSequenceQualitiesHeatmap(data(),
                                      clusterNames = input$SQcluster,
                                      type = SQtype,
                                      usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }else{
-        plotSequenceQualitiesHeatmap(fdl,
+        plotSequenceQualitiesHeatmap(data(),
                                      clusterNames = input$SQcluster,
                                      type = SQtype,
                                      dendrogram = input$SQdendro,
@@ -308,9 +324,9 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
         num <- 1
       }else {
         click <- event_data("plotly_click")
-        num <- which(fileName(fdl) == click$key[[1]])
+        num <- which(fileName(data()) == click$key[[1]])
       }
-      sub_fdl <- fdl[num]
+      sub_fdl <- data()[num]
       qualPlot <- plotSequenceQualities(sub_fdl, usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100),
                legend = list(orientation = 'h', title = ""))
@@ -324,18 +340,16 @@ fastqcShiny <- function(fastqcInput, subsetAll = ""){
 
     output$NCheatmap <- renderPlotly({
       if(is.null(input$NCdendro)){
-        plotNContentPlotly(fdl,
+        plotNContentPlotly(data(),
                            clusterNames = input$Ncluster,
                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }else{
-        plotNContentPlotly(fdl,
+        plotNContentPlotly(data(),
                            clusterNames = input$Ncluster,
                            dendrogram = input$NCdendro,
                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
       }
     })
-
-
 
   }
 

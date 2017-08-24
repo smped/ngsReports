@@ -31,7 +31,8 @@ Imports:
   tibble,
   viridis,
   viridisLite,
-  zoo
+  zoo,
+  shinyFiles
 LazyData: true
 RoxygenNote: 6.0.1
 Collate: 

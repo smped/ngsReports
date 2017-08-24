@@ -26,8 +26,6 @@
 #' # The default plot
 #' plotSequenceContent(fdl)
 #'
-#' # Interactive
-#' plotSequenceContent(fdl, usePlotly = TRUE)
 #'
 #' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 ggplot
