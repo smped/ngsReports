@@ -170,18 +170,21 @@ plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfC
         scale_x_continuous(expand = c(0,1))
 
       qualPlot <- plotly::subplot(dendro, sideBar, qualPlot,
-                                  widths = c(0.2, 0.1,0.7), margin = 0,
+                                  widths = c(0.1,0.1,0.8), margin = 0,
                                   shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)",
                                      plot_bgcolor = "white"))
     }else{
 
-      qualPlot <- plotly::subplot(sideBar,
+      qualPlot <- plotly::subplot(plotly_empty(),
+                                  sideBar,
                                   qualPlot,
-                                  widths = c(0.1,0.9),
+                                  widths = c(0.1,0.1,0.8),
                                   margin = 0,
                                   shareY = TRUE) %>%
-        plotly::layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"))
+        plotly::layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"),
+                       annotations = list(text = "Filename", showarrow = FALSE,
+                                          textangle = -90))
     }
   }
   qualPlot

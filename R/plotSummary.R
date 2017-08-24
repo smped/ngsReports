@@ -115,7 +115,7 @@ plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
       theme_bw() +
       theme(axis.text.x = element_blank(),
             axis.ticks.x = element_blank(),
-            axis.title = element_blank(),
+            axis.title.y = element_blank(),
             plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
             legend.position = "none")
     # Add any parameters from dotArgs

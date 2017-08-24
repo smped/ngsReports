@@ -45,6 +45,12 @@
 #' @rdname fastqcShiny
 fastqcShiny <- function(fastqcInput = NULL){
 
+  if(!is.null(fastqcInput)){
+    stopifnot(length(fastqcInput) > 1)
+    stopifnot(class(fastqcInput) == "character" | class(fastqcInput)[1] == "FastqcDataList")
+  }
+
+
   ui <- shinyUI(
     fluidPage(
       navbarPage(
@@ -54,11 +60,11 @@ fastqcShiny <- function(fastqcInput = NULL){
           "fastQC Flags Summary",
           splitLayout(
             fixedPanel(
-            sidebarPanel(
-              h5("Choose Fastqc Report:"),
-              shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = "Please select a file:"),
-              width = "20%", left = "0%", right = "80%"
-            ), width = "20%"),
+              sidebarPanel(
+                h5("Choose Fastqc Report:"),
+                shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = "Please select a file:"),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
             absolutePanel(
               h1("Summary of fastQC Flags"),
               h5("Heatmap of fastQC flags (pass, warning or fail) for each fastQC report"),
@@ -178,18 +184,18 @@ fastqcShiny <- function(fastqcInput = NULL){
   server <- function(input, output, session){
 
 
-    #This function is repsonsible for loading in the selected file
+    #rective function repsonsible for loading in the selected files of just using the fdl supplied
     data <- reactive({
       volumes <- shinyFiles::getVolumes()
       shinyFiles::shinyFileChoose(input, "files", roots = volumes, session = session)
-        fileSelected <- shinyFiles::parseFilePaths(volumes, input$files)
-        fileSelected <- as.character(fileSelected$datapath)
-        selectedData <- getFastqcData(fileSelected)
-        if(is.null(input$files)){
-          if(class(fastqcInput) != "FastqcDataList") selectedData <- getFastqcData(fastqcInput)
-          else selectedData <- fastqcInput
-        }
-        selectedData
+      fileSelected <- shinyFiles::parseFilePaths(volumes, input$files)
+      fileSelected <- as.character(fileSelected$datapath)
+      selectedData <- getFastqcData(fileSelected)
+      if(is.null(input$files)){
+        if(class(fastqcInput) != "FastqcDataList") selectedData <- getFastqcData(fastqcInput)
+        else selectedData <- fastqcInput
+      }
+      selectedData
     })
 
     output$SummaryFlags <- renderPlotly({
@@ -251,7 +257,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       sub_fdl <- data()[num]
       plotGcContent(sub_fdl, usePlotly = TRUE, counts = GCtype) %>%
         layout(margin = list(r = 200, l = 100),
-      legend = list(orientation = 'h', title = ""))
+               legend = list(orientation = 'h', title = ""))
     })
 
     output$overRepHeatmap <- renderPlotly({
