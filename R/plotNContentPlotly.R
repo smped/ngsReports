@@ -214,10 +214,12 @@ plotNContentPlotly <- function(x,
     }
     else{
 
-      Nheatmap <- plotly::subplot(sideBar, Nheatmap,
-                                  widths = c(0.1,0.9), margin = 0,
+      Nheatmap <- plotly::subplot(plotly_empty(), sideBar, Nheatmap,
+                                  widths = c(0.1,0.1,0.8), margin = 0,
                                   shareY = TRUE) %>%
-        plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+        plotly::layout(xaxis2 = list(title = "Sequencing Cycle"),
+                       annotations = list(text = "Filename", showarrow = FALSE,
+                                          textangle = -90))
     }
   }
 

@@ -51,6 +51,7 @@
 #' @importFrom reshape2 melt
 #' @importFrom stats as.dendrogram
 #' @importFrom stats order.dendrogram
+#' @importFrom plotly plotly_empty
 #'
 #' @export
 plotBaseQualitiesHeatmap <- function(x, subset, type = "Mean",
@@ -200,10 +201,14 @@ plotBaseQualitiesHeatmap <- function(x, subset, type = "Mean",
       dendro <- plotly::ggplotly(dendro) %>%
         plotly::layout(margin = list(b = 0, t = 0))
 
-      BQheatmap <- plotly::subplot(dendro, sideBar, BQheatmap, widths = c(0.2, 0.1,0.7), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
+      BQheatmap <- plotly::subplot(dendro, sideBar, BQheatmap, widths = c(0.1, 0.1, 0.8), margin = 0, shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
     }
     else{
-      BQheatmap <- plotly::subplot(sideBar, BQheatmap, widths = c(0.1,0.9), margin = 0, shareY = TRUE) %>% plotly::layout(xaxis2 = list(title = "Sequencing Cycle"))
+      BQheatmap <- plotly::subplot(plotly_empty(), sideBar, BQheatmap, widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Sequencing Cycle"),
+                       annotations = list(text = "Filename", showarrow = FALSE,
+                                          textangle = -90))
     }
 
 
