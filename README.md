@@ -8,10 +8,10 @@ An R Package for managing FastQC reports and other NGS related log files inside 
 To install required packages 
 
 ```
-packageList <- c(  "BiocGenerics", "checkmate", "dplyr", "ggdendro", "ggplot2",
-"lubridate", "magrittr", "method"s, "plotly", "readr", "reshape2", "Rsamtools",
-"scales", "shiny", "ShortRead", "stats", "stringr", "tibble", "viridis", "viridisLite",
-"zoo", "shinyFiles")
+packageList <- c("BiocGenerics", "checkmate", "dplyr", "ggdendro", "ggplot2",
+                 "lubridate", "magrittr", "methods", "plotly", "readr", "reshape2", "Rsamtools",
+                 "scales", "shiny", "ShortRead", "stats", "stringr", "tibble", "viridis", "viridisLite",
+                 "zoo", "shinyFiles")
 
 packagesToInstall <- packageList[!(packageList %in% installed.packages()[,"Package"])]
 
