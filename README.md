@@ -48,7 +48,7 @@ Pass fastqcFileList to shinyApp
 
  ```
  fdl <- getFastqcData(fileList)
- fastqcShiny()
+ fastqcShiny(fdl)
  
  ```
 
