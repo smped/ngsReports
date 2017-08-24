@@ -37,7 +37,5 @@ fdl <- getFastqcData(fileList)
 # The default plot
 plotSequenceContent(fdl)
 
-# Interactive
-plotSequenceContent(fdl, usePlotly = TRUE)
 
 }
