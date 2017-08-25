@@ -21,7 +21,6 @@
 #' or whether the top nKmers are selected from each individual file.
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param naCol colour used for missing values
-#' @param flip \code{logical}. Enable a call to \code{coord_flip} to determine the best direction
 #' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
 #' @param pattern \code{character}.
 #' Contains a regular expression which will be captured from fileName.
@@ -61,11 +60,10 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
-#' @importFrom ggplot2 coord_flip
 #'
 #' @export
 plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
-                            pwfCols, naCol = "grey80", flip = TRUE,
+                            pwfCols, naCol = "grey80",
                             trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
 
   # A basic cautionary check
@@ -185,10 +183,6 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       scale_y_discrete(expand = c(0, 0)) +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
                      panel.grid = element_blank())
-
-  if (nKmers > length(x) && flip){
-    heatPlot <- heatPlot + coord_flip()
-  }
 
   # Draw the plot
   heatPlot

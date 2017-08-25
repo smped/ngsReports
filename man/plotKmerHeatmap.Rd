@@ -5,8 +5,7 @@
 \title{Plot Overrepresented Kmers As a Heatmap}
 \usage{
 plotKmerHeatmap(x, subset, nKmers = 12, method = "overall", pwfCols,
-  naCol = "grey80", flip = TRUE, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+  naCol = "grey80", trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -24,8 +23,6 @@ or whether the top nKmers are selected from each individual file.}
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{naCol}{colour used for missing values}
-
-\item{flip}{\code{logical}. Enable a call to \code{coord_flip} to determine the best direction}
 
 \item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
 
