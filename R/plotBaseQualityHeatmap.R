@@ -152,14 +152,16 @@ plotBaseQualitiesHeatmap <- function(x, subset, type = "Mean",
                         Filename = factor(Filename, levels = unique(Filename)))
     BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Mean)) +
       geom_tile() +
-      scale_fill_pwf(df$Mean, pwfCols, breaks = c(0, 20, 30, 40), passLow = FALSE)
+      scale_fill_gradientn(colours = c(col["MAX"], col["FAIL"],col["WARN"], col["WARN"], col["PASS"], col["PASS"]),
+                           values = scales::rescale(c(0,20,20,30,30,40)), limits=c(0, 40), na.value = "white")
   }else{
     df <- dplyr::mutate(df, Median = as.numeric(Data),
                         Start = as.integer(Start),
                         Filename = factor(Filename, levels = unique(Filename)))
     BQheatmap <- ggplot(df, aes(x = Start, y = Filename, fill = Median)) +
       geom_tile() +
-      scale_fill_pwf(df$Median, pwfCols, breaks = c(0, 20, 30, 40), passLow = FALSE)
+      scale_fill_gradientn(colours = c(col["MAX"], col["FAIL"],col["WARN"], col["WARN"], col["PASS"], col["PASS"]),
+                           values = scales::rescale(c(0,20,20,30,30,40)), limits=c(0, 40), na.value = "white")
   }
 
   BQheatmap <- BQheatmap +
