@@ -86,6 +86,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("Duplication levels in reads"),
               h5("Total number of unique and duplicated reads in each sample"),
               plotlyOutput("ReadDuplication"),
+              plotlyOutput("RDSingle"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Per Base Sequence Quality",
@@ -188,7 +189,8 @@ fastqcShiny <- function(fastqcInput = NULL){
     #rective function repsonsible for loading in the selected files of just using the fdl supplied
     data <- reactive({
       volumes <- shinyFiles::getVolumes()
-      shinyFiles::shinyFileChoose(input, "files", roots = volumes, session = session)
+      shinyFiles::shinyFileChoose(input, "files", roots = volumes, session = session,
+                                  filetypes = "zip")
       fileSelected <- shinyFiles::parseFilePaths(volumes, input$files)
       fileSelected <- as.character(fileSelected$datapath)
       selectedData <- getFastqcData(fileSelected)
@@ -209,6 +211,20 @@ fastqcShiny <- function(fastqcInput = NULL){
       plotDeduplicatedTotalsPlotly(data(), bars = input$RDLbar) %>%
         layout(margin = list(r = 200))
     })
+
+    output$RDSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[num]
+      plotDuplicationLevels(sub_fdl, type = "Total sequences", usePlotly = TRUE) %>%
+        layout(margin = list(r = 200),
+               legend = list(orientation = 'h', title = ""))
+    })
+
 
     output$GCspecies <- renderUI({
       if(input$GCtheory){

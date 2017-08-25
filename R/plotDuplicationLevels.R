@@ -18,6 +18,8 @@
 #' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param type A regular expression used to filter which value is plotted.
 #' Patterns should match one of \code{\% Total sequences} or \code{\% Deduplicated sequences}
+#' @param usePlotly \code{logical}
+#'
 #'
 #' @return A standard ggplot2 object
 #'
@@ -39,7 +41,7 @@
 #' r1 <- grepl("R1", fileName(fdl))
 #' plotDuplicationLevels(fdl, subset = r1, type = "Total")
 #'
-#' 
+#'
 #' @importFrom stringr str_detect
 #' @importFrom stringr str_to_title
 #' @importFrom reshape2 melt
@@ -47,7 +49,8 @@
 #'
 #' @export
 plotDuplicationLevels <- function(x, subset, type = ".+",
-                                  trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+                                  trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
+                                  usePlotly = FALSE){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -102,6 +105,14 @@ plotDuplicationLevels <- function(x, subset, type = ".+",
     theme_bw() +
     theme(panel.grid.major.x = element_blank(),
                    panel.grid.minor.x = element_blank())
+
+    if(usePlotly){
+
+      if(length(x) == 1) dupPlot <- dupPlot + labs(colour = "")
+
+      dupPlot <- ggplotly(dupPlot)  %>% layout(legend = list(orientation = "h"))
+
+    }
 
     # And draw the plot
     dupPlot
