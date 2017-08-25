@@ -4,15 +4,19 @@
 - Validation Functions for `fastqcData` and `fastqcDataLists` objects
 - Calculate Ranks on each module and summarise
 - Add a function to merge kMers
-- Add Fastq Illumina Filter plot
-- Add `plotBaseContent` ***Functional (check)***
+- Add Fastq Illumina Filter plot/status
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Write Vignette
-- make dependencies script for install 
 - make 'output all plots to pdf' function
 - Build tests for classes and methods
 - Remove `subset` from all plots. This can be done before passing a `FastqcDataList` to the function.
-- Add transcriptome to GC content
-- Add AdapterContent & Base_SequenceContent plot to app
-- Add plotly version of adapter line plot
-- Add filenames to x-axis
+- GC content
+    - Add transcriptome to GC content
+    - Add theoretical to line plot
+- Shiny app
+    - Add AdapterContent
+    - Add Base_SequenceContent plot to app
+    - Add summary info to LHS on load
+- Adapter Content
+    - Add plotly version of line plot
+- Add Sequence Length Distribution plots (heatmap & line)
