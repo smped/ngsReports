@@ -21,10 +21,20 @@
 #' or whether the top nKmers are selected from each individual file.
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param naCol colour used for missing values
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using heirachial clustering
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using heirachial clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
+#' @param labels An optional named vector of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
+#' If \code{TRUE} plot will be rendered with plotly
+#' @param ... Used to pass various potting parameters to theme.
+#' Can also be used to set size and colour for box outlines.
 #'
 #' @return A standard ggplot2 object
 #'
@@ -61,35 +71,58 @@
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
 #' @importFrom ggplot2 coord_flip
+#' @importFrom plotly subplot
+#' @importFrom plotly layout
 #'
 #' @export
 plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
-                            pwfCols, naCol = "grey80",
-                            trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*"){
+                            pwfCols, labels, naCol = "grey80",
+                            usePlotly = FALSE, clusterNames = FALSE,
+                            dendrogram = FALSE, ...){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
-  stopifnot(is.logical(trimNames))
   stopifnot(is.numeric(nKmers))
   stopifnot(method %in% c("overall", "individual"))
 
   # Sort out the colours
   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
   stopifnot(isValidPwf(pwfCols))
+  col <- getColours(pwfCols)
 
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
 
-  x <- tryCatch(x[subset])
   df <- tryCatch(Kmer_Content(x))
 
-  # Check the pattern contains a capture
-  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
-    # These need to be checked to ensure non-duplicated names
-    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                        names = fileName(x))
   }
+  else{
+    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  if ("size" %in% names(dotArgs)){
+    lineWidth <- dotArgs$size
+  }
+  else{
+    lineWidth <- 0.2
+  }
+  if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
+    i <- which(names(dotArgs) %in% c("colour", "color"))
+    lineCol <- dotArgs[[i]]
+  }
+  else{
+    lineCol <- "grey20"
+  }
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
 
   # Get the top kMers
   nKmers <- as.integer(nKmers)
@@ -117,7 +150,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
     dplyr::arrange(`Max_Obs/Exp_Position`) %>%
     dplyr::distinct(Sequence) %>%
     magrittr::extract2("Sequence")
-  df$Sequence <- factor(df$Sequence, levels = rev(kMerLevels))
+  df$Sequence <- factor(df$Sequence, levels = kMerLevels)
 
   if (length(kMerLevels) < nKmers) {
     message(paste("There is only data in the FASTQC reports for the top",
@@ -131,6 +164,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
   if (allInf) {
     message(paste("All PValues for the top", nKmers, "Kmers are zero.\n",
                   "This plot will be relatively uninformative."))
+    #if(usePlotly) stop(All kmer P-values equal zero)
     df$PValue <- 0
   }
   else{
@@ -138,54 +172,121 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
     # just add 1 to the the infinite ones
     df$PValue[is.infinite(df$PValue)] <- max(df$PValue[is.finite(df$PValue)]) + 1
   }
-  # Ensure that all files are included on the plot
-  if (trimNames){
-    allNames <- gsub(pattern[1], "\\1", fileName(x))
-  }
-  else{
-    allNames <- fileName(x)
-  }
-  df$Filename <- factor(df$Filename, levels = rev(allNames))
 
-  # The inclusion of files without values needs to be worked on
+
+  df <- reshape2::dcast(df, Filename~Sequence, value.var = "PValue")
+
+  if(clusterNames){
+    xx <- dplyr::select(df, -Filename)
+    xx[is.na(xx)] <- 0
+    clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+    row.ord <- order.dendrogram(clus)
+    df <- df[row.ord,]
+  }
+  key <- df$Filename
+  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Sequence", value.name = "PValue")
+  df$Filename <- labels[df$Filename]
+  df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+
+
+   # The inclusion of files without values needs to be worked on
   # Maybe columns should be added during a dcast somewhere
   if (allInf) {
     # First change the missing values to ">0" as this is all the information we have
     # This is done by gaining explicit NA values, then transforming
-    heatPlot <- df %>%
-      reshape2::dcast(Filename~Sequence, value.var = "PValue") %>%
-      reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
-      dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
-      dplyr::mutate(PValue = dplyr::if_else(is.na(PValue), ">0", "=0")) %>%
-      ggplot(aes(x = Sequence, y = Filename, fill = PValue)) +
+
+    df <- dplyr::mutate(df, PValue = dplyr::if_else(is.na(PValue), ">0", "=0"))
+
+    heatPlot <-  ggplot(df, aes(x = Sequence, y = Filename, fill = PValue)) +
       geom_tile(colour = "grey30", alpha = 0.9) +
-      scale_fill_manual(values = c(`=0` = warn, `>0` = naCol)) +
+      scale_fill_manual(values = c(`=0` = getColours(pwfCols)["WARN"][[1]], `>0` = naCol)) +
       labs(fill = "PValue")
   }
   else{
     # First get explicit NA values
-    heatPlot <- df %>%
-      reshape2::dcast(Filename~Sequence, value.var = "PValue") %>%
-      reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
-      dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
-      ggplot(aes(x = Sequence, y = Filename, fill = PValue)) +
+
+    heatPlot <- ggplot(df, aes(x = Sequence, y = Filename, fill = PValue)) +
       geom_tile(colour = "grey30", alpha = 0.9) +
       scale_fill_gradient2(low = getColours(pwfCols)["PASS"],
-                                    mid = getColours(pwfCols)["WARN"],
-                                    high = getColours(pwfCols)["FAIL"],
-                                    na.value = naCol,
-                                    midpoint = max(df$PValue)/2) +
+                           mid = getColours(pwfCols)["WARN"],
+                           high = getColours(pwfCols)["FAIL"],
+                           na.value = naCol,
+                           midpoint = max(df$PValue, na.rm = TRUE)/2) +
       labs(fill = expression(paste(-log[10], "P")))
   }
 
   heatPlot <- heatPlot +
-    theme_bw() +
-      scale_x_discrete(expand = c(0, 0)) +
-      scale_y_discrete(expand = c(0, 0)) +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-                     panel.grid = element_blank())
+    scale_x_discrete(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0)) +
+    theme(panel.grid = element_blank(),
+          panel.background = element_blank())
 
+
+  if(usePlotly){
+    nx <- length(unique(df$Filename))
+    heatPlot <- heatPlot +
+      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
+      theme(axis.text = element_blank(), axis.ticks = element_blank(),
+            axis.title.y = element_blank()) +
+      labs(fill = "-log(10) P")
+
+    t <- dplyr::filter(getSummary(x), Category == "Kmer Content")
+    t$Filename <- labels[t$Filename]
+    t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
+    t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+
+
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key, fill = Status)) +
+      geom_tile() +
+      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
+      scale_fill_manual(values = col) +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_blank(),
+            legend.position="none",
+            axis.title=element_blank(),
+            axis.text=element_blank(),
+            axis.ticks=element_blank())
+
+    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+
+    #plot dendrogram
+    if(dendrogram && clusterNames){
+      ggdend <- function(df) {
+        ggplot() +
+          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
+          theme_dendro()
+      }
+
+      dx <- ggdendro::dendro_data(clus)
+      dendro <- ggdend(dx$segments) +
+        coord_flip() +
+        scale_y_reverse(expand = c(0, 1)) +
+        scale_x_continuous(expand = c(0,1))
+
+      heatPlot <- plotly::subplot(dendro, sideBar, heatPlot,
+                                  widths = c(0.1,0.1,0.8), margin = 0,
+                                  shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)",
+                                     plot_bgcolor = "white"))
+    }else{
+
+      heatPlot <- plotly::subplot(plotly_empty(),
+                                  sideBar,
+                                  heatPlot,
+                                  widths = c(0.1,0.1,0.8),
+                                  margin = 0,
+                                  shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)"),
+                       annotations = list(text = "Filename", showarrow = FALSE,
+                                          textangle = -90))
+  }
+
+  }else{
+    heatPlot <- heatPlot +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+
+  }
   # Draw the plot
   heatPlot
-
 }
+
