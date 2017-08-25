@@ -221,7 +221,7 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
         plotly::layout(xaxis3 = list(title = "GC Content (%)"))
     }else{
       GCheatmap <- plotly::subplot(plotly_empty(), sideBar, GCheatmap, widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
-        plotly::layout(xaxis2 = list(title = "GC Content (%)"),
+        plotly::layout(xaxis3 = list(title = "GC Content (%)"),
                        annotations = list(text = "Filename", showarrow = FALSE,
                                           textangle = -90))
     }

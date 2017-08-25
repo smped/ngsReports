@@ -215,7 +215,7 @@ plotOverrepresentedHeatmapPlotly <- function(x,
     }else{
       ORheatmap <- plotly::subplot(plotly_empty(), sideBar, ORheatmap, widths = c(0.1,0.1,0.8),
                                    margin = 0, shareY = TRUE) %>%
-        plotly::layout(xaxis2 = list(title = "Overrepresented Sequence",
+        plotly::layout(xaxis3 = list(title = "Overrepresented Sequence",
                                      plot_bgcolor = "white"),
                        annotations = list(text = "Filename", showarrow = FALSE,
                                           textangle = -90))

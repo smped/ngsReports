@@ -65,6 +65,7 @@
 plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
                         lineWidth = 0.2, lineCol = "grey20"){
 
+
   if (typeof(x) == "character") x <- getFastqcData(x)
 
   df <- tryCatch(getSummary(x))

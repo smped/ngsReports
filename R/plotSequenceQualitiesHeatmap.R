@@ -182,7 +182,7 @@ plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfC
                                   widths = c(0.1,0.1,0.8),
                                   margin = 0,
                                   shareY = TRUE) %>%
-        plotly::layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"),
+        plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)"),
                        annotations = list(text = "Filename", showarrow = FALSE,
                                           textangle = -90))
     }
