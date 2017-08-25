@@ -60,6 +60,7 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 coord_flip
 #'
 #' @export
 plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
@@ -156,7 +157,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
       dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
       dplyr::mutate(PValue = dplyr::if_else(is.na(PValue), ">0", "=0")) %>%
-      ggplot(aes(x =Filename, y = Sequence, fill = PValue)) +
+      ggplot(aes(x = Sequence, y = Filename, fill = PValue)) +
       geom_tile(colour = "grey30", alpha = 0.9) +
       scale_fill_manual(values = c(`=0` = warn, `>0` = naCol)) +
       labs(fill = "PValue")
@@ -167,7 +168,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       reshape2::dcast(Filename~Sequence, value.var = "PValue") %>%
       reshape2::melt(id.vars = "Filename", variable.name = "Sequence", value.name = "PValue") %>%
       dplyr::mutate(Filename = factor(Filename, levels = rev(allNames))) %>%
-      ggplot(aes(x =Filename, y = Sequence, fill = PValue)) +
+      ggplot(aes(x = Sequence, y = Filename, fill = PValue)) +
       geom_tile(colour = "grey30", alpha = 0.9) +
       scale_fill_gradient2(low = getColours(pwfCols)["PASS"],
                                     mid = getColours(pwfCols)["WARN"],
