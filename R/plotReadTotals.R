@@ -90,12 +90,7 @@ plotReadTotals <- function(x, subset, millions,
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
   if(usePlotly){
-    rtPlot <- rtPlot + theme(axis.text = element_blank(),
-                             axis.ticks = element_blank(),
-                             axis.title.y = element_blank()) +
-      labs(fill = "P-value")
-
-    rtPlot <- ggplotly(rtPlot)
+        rtPlot <- ggplotly(rtPlot)
   }
   # Draw the plot
   rtPlot

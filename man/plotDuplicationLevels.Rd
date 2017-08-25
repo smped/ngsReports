@@ -5,7 +5,7 @@
 \title{Plot the combined Sequence_Duplication_Levels information}
 \usage{
 plotDuplicationLevels(x, subset, type = ".+", trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -22,6 +22,8 @@ Patterns should match one of \code{\% Total sequences} or \code{\% Deduplicated 
 \item{pattern}{\code{character}.
 Contains a regular expression which will be captured from fileName.
 The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+
+\item{usePlotly}{\code{logical}}
 }
 \value{
 A standard ggplot2 object
