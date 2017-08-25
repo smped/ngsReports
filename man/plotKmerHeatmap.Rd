@@ -4,8 +4,9 @@
 \alias{plotKmerHeatmap}
 \title{Plot Overrepresented Kmers As a Heatmap}
 \usage{
-plotKmerHeatmap(x, subset, nKmers = 12, method = "overall", pwfCols,
-  naCol = "grey80", trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*")
+plotKmerHeatmap(x, subset, nKmers = 12, method = "overall", pwfCols, labels,
+  naCol = "grey80", usePlotly = FALSE, clusterNames = FALSE,
+  dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -22,13 +23,26 @@ or whether the top nKmers are selected from each individual file.}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{naCol}{colour used for missing values}
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
+\item{naCol}{colour used for missing values
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using heirachial clustering}
 
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using heirachial clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
+
+\item{...}{Used to pass various potting parameters to theme.
+Can also be used to set size and colour for box outlines.}
 }
 \value{
 A standard ggplot2 object
