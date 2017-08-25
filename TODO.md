@@ -20,3 +20,4 @@
 - Adapter Content
     - Add plotly version of line plot
 - Add Sequence Length Distribution plots (heatmap & line)
+    - `usePlotly` needs to be implemented in function
