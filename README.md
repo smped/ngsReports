@@ -8,23 +8,9 @@ An R Package for managing FastQC reports and other NGS related log files inside 
 To install required packages 
 
 ```
-packageList <- c("BiocGenerics", "checkmate", "dplyr", "ggdendro", "ggplot2",
-                 "lubridate", "magrittr", "methods", "plotly", "readr", "reshape2", "Rsamtools",
-                 "scales", "shiny", "ShortRead", "stats", "stringr", "tibble", "viridis", "viridisLite",
-                 "zoo", "shinyFiles")
-
-packagesToInstall <- packageList[!(packageList %in% installed.packages()[,"Package"])]
-
-if(length(packagesToInstall)) install.packages(packagesToInstall)
-```
-
-Install ngsReports from GitHub and load library
-
-```
-library(devtools)
-
-install_github('UofABioinformaticsHub/ngsReports')
-
+source("https://bioconductor.org/biocLite.R")
+biocLite(c("BiocGenerics", "checkmate", "devtools", "dplyr", "ggdendro", "ggplot2", "lubridate", "magrittr", "methods", "plotly", "readr", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "stats", "stringr", "tibble",  "viridis", "viridisLite", "zoo", "shinyFiles"))
+devtools::install_github('UofABioinformaticsHub/ngsReports')
 library(ngsReports)
 ```
 
@@ -49,7 +35,6 @@ Pass fastqcFileList to shinyApp
  ```
  fdl <- getFastqcData(fileList)
  fastqcShiny(fdl)
- 
  ```
 
 
