@@ -13,9 +13,7 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param subset \code{logical}. Return the values for a subset of files.
-#' May be useful to only return totals from R1 files, or any other subset
-#' @param adapterType A regular expression used to filter which adapter(s) are plotted
+#' @param adapterType A regular expression matching the adapter(s) to be plotted
 #' @param plotType \code{character}. Can only take the values \code{plotType = "heatmap"}
 #' or \code{plotType = "line"}
 #' @param warn,fail The default values for warn and fail are 5 and 10 respectively (i.e. precentages)
@@ -44,7 +42,7 @@
 #'
 #' # Also subset the reads to just the R1 files
 #' r1 <- grepl("R1", fileName(fdl))
-#' plotAdapterContent(fdl, subset = r1)
+#' plotAdapterContent(fdl[r1])
 #'
 #' # Plot just the Universal Adapter
 #' # and change the y-axis using ggplot2::scale_y_continuous
@@ -70,21 +68,12 @@
 #' @importFrom dplyr funs
 #'
 #' @export
-plotAdapterContent <- function(x, subset,
+plotAdapterContent <- function(x, usePlotly = FALSE, labels,
                                adapterType, plotType = "heatmap",
-                               warn = 5, fail = 10,
                                pwfCols,
-                               labels,
-                               usePlotly = FALSE,
+                               warn = 5, fail = 10,
                                ...){
 
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-  stopifnot(plotType %in% c("line", "heatmap"))
-
-  # Get the AdapterContent
-  x <- tryCatch(x[subset])
   df <- tryCatch(Adapter_Content(x))
 
   # Sort out the colours & pass/warn/fail breaks

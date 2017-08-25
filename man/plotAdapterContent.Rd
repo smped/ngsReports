@@ -4,30 +4,27 @@
 \alias{plotAdapterContent}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, subset, adapterType, plotType = "heatmap", warn = 5,
-  fail = 10, pwfCols, labels, usePlotly = FALSE, ...)
+plotAdapterContent(x, usePlotly = FALSE, labels, adapterType,
+  plotType = "heatmap", pwfCols, warn = 5, fail = 10, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
-
-\item{adapterType}{A regular expression used to filter which adapter(s) are plotted}
-
-\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
-or \code{plotType = "line"}}
-
-\item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
-
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+\item{usePlotly}{\code{logical}. Output as ggplot2 or plotly object.}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{usePlotly}{\code{logical}. Output as ggplot2 or plotly object.}
+\item{adapterType}{A regular expression matching the adapter(s) to be plotted}
+
+\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
+or \code{plotType = "line"}}
+
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+
+\item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
 
 \item{...}{Used to pass additional attributes to theme()}
 }
@@ -62,7 +59,7 @@ plotAdapterContent(fdl)
 
 # Also subset the reads to just the R1 files
 r1 <- grepl("R1", fileName(fdl))
-plotAdapterContent(fdl, subset = r1)
+plotAdapterContent(fdl[r1])
 
 # Plot just the Universal Adapter
 # and change the y-axis using ggplot2::scale_y_continuous
