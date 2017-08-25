@@ -36,6 +36,7 @@
 #' @importFrom shiny shinyApp
 #' @importFrom shiny textOutput
 #' @importFrom shiny renderText
+#' @importFrom shiny reactive
 #' @importFrom shinyFiles shinyFilesButton
 #' @importFrom shinyFiles shinyFileChoose
 #' @importFrom shinyFiles parseFilePaths

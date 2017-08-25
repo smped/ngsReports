@@ -4,7 +4,7 @@
 \alias{fastqcShiny}
 \title{Run fastQC shiny app}
 \usage{
-fastqcShiny(fastqcInput = NA)
+fastqcShiny(fastqcInput = NULL)
 }
 \arguments{
 \item{fastqcInput}{can be a \code{FastqcFileList}, \code{fastqcDataList},
