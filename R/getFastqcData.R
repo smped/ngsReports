@@ -145,6 +145,14 @@ setMethod("getFastqcData", "FastqcFile",
 
           })
 
+#' @name getFastqcData
+#' @aliases getFastqcData,NULL-method
+#' @rdname getFastqcData-methods
+#' @export
+setMethod("getFastqcData", "NULL",
+          function(object){
+            if(is.null(object))stop("No files have been provided, please read in files")
+          })
 
 #' @name getFastqcData
 #' @aliases getFastqcData,character-method

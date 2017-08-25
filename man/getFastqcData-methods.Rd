@@ -6,6 +6,8 @@
 \alias{getFastqcData}
 \alias{getFastqcData,FastqcFile-method}
 \alias{getFastqcData}
+\alias{getFastqcData,NULL-method}
+\alias{getFastqcData}
 \alias{getFastqcData,character-method}
 \alias{getFastqcData}
 \alias{getFastqcData,FastqcFileList-method}
@@ -14,6 +16,8 @@
 getFastqcData(object)
 
 \S4method{getFastqcData}{FastqcFile}(object)
+
+\S4method{getFastqcData}{`NULL`}(object)
 
 \S4method{getFastqcData}{character}(object)
 
