@@ -90,6 +90,7 @@ Collate:
     'plotOverrepresentedSummary.R'
     'plotReadTotals.R'
     'plotSequenceContentHeatmap.R'
+    'plotSequenceLengthDistribution.R'
     'plotSequenceQualities.R'
     'plotSequenceQualitiesHeatmap.R'
     'plotSummary.R'

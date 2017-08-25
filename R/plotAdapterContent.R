@@ -13,6 +13,7 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
+#' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
 #' @param adapterType A regular expression matching the adapter(s) to be plotted
 #' @param plotType \code{character}. Can only take the values \code{plotType = "heatmap"}
 #' or \code{plotType = "line"}
@@ -21,10 +22,9 @@
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
 #' @param ... Used to pass additional attributes to theme()
 #'
-#' @return A standard ggplot2 object
+#' @return A standard ggplot2 object, or an interactive plotly object
 #'
 #' @examples
 #'
@@ -81,6 +81,9 @@ plotAdapterContent <- function(x, usePlotly = FALSE, labels,
   stopifnot(isValidPwf(pwfCols))
   stopifnot(is.numeric(c(warn, fail)))
   stopifnot(all(fail < 100, warn < fail,  warn > 0))
+
+  # Check for valid plotType
+  stopifnot(plotType %in% c("line", "heatmap"))
 
   # Drop the suffix, or check the alternate labels
   if (missing(labels)){

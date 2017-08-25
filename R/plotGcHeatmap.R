@@ -139,10 +139,13 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
       dplyr::select(Filename, GC_Content, Value = Freq)
 
     if(GCtheory){
-      df <- df %>% split(.["Filename"]) %>% lapply(function(x){
-        gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, name = species, type = GCtheoryType)
-        x <- dplyr::mutate(x, Value = Value - unlist(gcTheoryDF[species]))
-      }) %>% dplyr::bind_rows(.)
+      df <- df %>%
+        split(.["Filename"]) %>%
+        lapply(function(x){
+          gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, name = species, type = GCtheoryType)
+          x <- dplyr::mutate(x, Value = Value - unlist(gcTheoryDF[species]))
+        }) %>%
+        dplyr::bind_rows()
     }
   }else{
     df <- dplyr::select(df, Filename, GC_Content, Value = Count)
@@ -178,35 +181,46 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
     theme(panel.grid.minor = element_blank(),
           panel.background = element_blank())
 
-  if(GCtheory){GCheatmap <- GCheatmap + scale_fill_gradient2(low = inferno(1, begin = 0.4), high = inferno(1, begin = 0.9), midpoint = 0, mid = inferno(1, begin = 0))
-  }else{GCheatmap <- GCheatmap + scale_fill_gradientn(colours = viridisLite::inferno(50))
+  if(GCtheory){
+    GCheatmap <- GCheatmap +
+      scale_fill_gradient2(low = inferno(1, begin = 0.4),
+                           high = inferno(1, begin = 0.9),
+                           midpoint = 0, mid = inferno(1, begin = 0))
+  }
+  else{
+    GCheatmap <- GCheatmap +
+      scale_fill_gradientn(colours = viridisLite::inferno(50))
   }
 
   if(usePlotly){
 
-    GCheatmap <- GCheatmap + theme(axis.text.y = element_blank(),
-                                 axis.ticks.y = element_blank())
+    GCheatmap <- GCheatmap +
+      theme(axis.text.y = element_blank(),
+            axis.ticks.y = element_blank())
 
 
     t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
     t$Filename <- labels[t$Filename]
-    t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
+    t$Filename <- factor(t$Filename, levels = unique(df$Filename))
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
-    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) + geom_tile(aes(fill = Status)) +
-      scale_fill_manual(values = col) + theme(panel.grid.minor = element_blank(),
-                                              panel.background = element_blank(),
-                                              legend.position="none",
-                                              axis.title=element_blank(),
-                                              axis.text=element_blank(),
-                                              axis.ticks=element_blank())
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
+      geom_tile(aes(fill = Status)) +
+      scale_fill_manual(values = col) +
+      theme(panel.grid.minor = element_blank(),
+            panel.background = element_blank(),
+            legend.position="none",
+            axis.title=element_blank(),
+            axis.text=element_blank(),
+            axis.ticks=element_blank())
     sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
 
     #plot dendrogram
     if(dendrogram){
       ggdend <- function(df) {
         ggplot() +
-          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) + ggdendro::theme_dendro()
+          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
+          ggdendro::theme_dendro()
       }
 
       dx <- ggdendro::dendro_data(clus)
