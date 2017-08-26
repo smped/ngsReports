@@ -87,11 +87,11 @@ plotAdapterContent <- function(x, usePlotly = FALSE, labels,
 
   # Drop the suffix, or check the alternate labels
   if (missing(labels)){
-    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
-                        names = fileName(x))
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)),
+                        names = unique(df$Filename))
   }
   else{
-    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+    if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
   }
   if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
