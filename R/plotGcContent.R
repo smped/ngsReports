@@ -9,16 +9,16 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param subset \code{logical}. Return the values for a subset of files.
-#' May be useful to only return totals from R1 files, or any other subset
-#' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
-#' If \code{counts = FALSE} the frequencies will be plotted
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
+#' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
+#' If \code{counts = FALSE} the frequencies will be plotted
+#' @param labels An optional named factor of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
+#' @param ... Used to pass various potting parameters to theme.
+#' Can also be used to set size and colour for box outlines.
+#' @return A plotly object
 #'
 #' @return A ggplot2 object
 #'
@@ -38,8 +38,6 @@
 #'
 #' # Plot the R1 files using counts
 #' r1 <- grepl("R1", fileName(fdl))
-#' plotGcContent(fdl, subset = r1 , counts = TRUE)
-#'
 #'
 #'
 #' @importFrom dplyr group_by
@@ -51,34 +49,32 @@
 #' @importFrom plotly ggplotly
 #'
 #' @export
-plotGcContent <- function(x, subset, counts = FALSE,
-                          trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                          usePlotly = FALSE){
+plotGcContent <- function(x, usePlotly = FALSE, labels, counts = FALSE, ...){
 
-  stopifnot(grepl("(Fastqc|character)", class(x)))
-
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-  stopifnot(is.logical(trimNames))
-
-  x <- x[subset]
   df <- tryCatch(Per_sequence_GC_content(x))
-
-  # Check the pattern contains a capture
-  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
-    # These need to be checked to ensure non-duplicated names
-    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
-  }
 
   # Get the correct y-axis label
   ylab <- c("Frequency", "Count")[counts + 1]
 
   # Remove zero counts
   df <- dplyr::filter(df, Count > 0)
+
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                        names = fileName(x))
+  }
+  else{
+    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   if (!counts){
 
@@ -102,8 +98,10 @@ plotGcContent <- function(x, subset, counts = FALSE,
 
   # Add the rest of the plotting detail
   gcPlot <- gcPlot +
+    scale_colour_discrete(labels = labels) +
     ylab(ylab) +
     theme_bw()
+  if (!is.null(userTheme)) gcPlot <- gcPlot + userTheme
 
   if(usePlotly){
     if(!counts) value <- "Freq"

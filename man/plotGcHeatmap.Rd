@@ -4,16 +4,16 @@
 \alias{plotGcHeatmap}
 \title{Plot GC Content for each file}
 \usage{
-plotGcHeatmap(x, subset, counts = FALSE, clusterNames = FALSE, pwfCols,
-  labels, GCtheory = FALSE, GCtheoryType = "Genome", species = "Hsapiens",
-  usePlotly = FALSE, dendrogram = FALSE, ...)
+plotGcHeatmap(x, usePlotly = FALSE, counts = FALSE, clusterNames = FALSE,
+  pwfCols, labels, GCtheory = FALSE, GCtheoryType = "Genome",
+  species = "Hsapiens", GCobject, dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
 
 \item{counts}{\code{logical}. Display counts of GC content rather than frequency}
 
@@ -34,14 +34,10 @@ values of GC_Content by the theoretical values using \code{\link{gcTheoretical}}
 "Transcriptome" Default is "Genome"}
 
 \item{species}{\code{character} if \code{gcTheory} is \code{TRUE} its must be accompanied by a species
-Currently supports Genome only (transcriptome to come). Species currently supported: A. lyrata, A. mellifera, A. thaliana,
-B. taurus, C. elegans, C. familiaris, D. melanogaster, D. rerio, E. coli, G. aculeatus, G. gallus, H. sapiens, M. fascicularis,
-M. furo, M. mulatta, M. musculus, O. sativa, P. troglodytes, R. norvegicus, S. cerevisiae, S scrofa, T. gondii,
-T. guttata, V. vinifera. Use \code{ngsReports::genomes(ngsReports::gcTheoretical)} to display the corresponding names for
-each species.}
+Species currently supported can be obtained using \code{mData(gcTheoretical)}}
 
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
+\item{GCobject}{an object of class GCTheoretical.
+Defaults to the gcTheoretical object supplied witht= the package}
 
 \item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
 if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
@@ -77,7 +73,6 @@ plotGcHeatmap(fdl)
 
 # Using counts
 plotGcHeatmap(fdl, counts = TRUE)
-
 
 
 }

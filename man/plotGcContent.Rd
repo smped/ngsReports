@@ -4,29 +4,28 @@
 \alias{plotGcContent}
 \title{Plot the Per Sequence GC Content}
 \usage{
-plotGcContent(x, subset, counts = FALSE, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
+plotGcContent(x, usePlotly = FALSE, labels, counts = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
+
+\item{labels}{An optional named factor of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
 If \code{counts = FALSE} the frequencies will be plotted}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
-
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
-
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
+\item{...}{Used to pass various potting parameters to theme.
+Can also be used to set size and colour for box outlines.}
 }
 \value{
+A plotly object
+
 A ggplot2 object
 }
 \description{
@@ -53,8 +52,6 @@ plotGcContent(fdl)
 
 # Plot the R1 files using counts
 r1 <- grepl("R1", fileName(fdl))
-plotGcContent(fdl, subset = r1 , counts = TRUE)
-
 
 
 }

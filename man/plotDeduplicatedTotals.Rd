@@ -4,16 +4,20 @@
 \alias{plotDeduplicatedTotals}
 \title{Plot the read totals after de-duplication}
 \usage{
-plotDeduplicatedTotals(x, subset, millions, bars = "stacked",
-  col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2), trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
+plotDeduplicatedTotals(x, usePlotly = FALSE, labels, millions,
+  bars = "stacked", dupCol = rgb(0.2, 0.2, 0.8), uniqCol = rgb(0.9, 0.2,
+  0.2), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
+\item{usePlotly}{\code{logical}. If \code{TRUE} the plot will render as an interactive plot in the Viewer pane.
+Otherwise the plot will be generated using the current plot device.}
+
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{millions}{\code{logical}. Use Millions of reads as the scale for the y-axis.
 Unless specified, will be set as TRUE automatically if the highest total is > 2e06.}
@@ -22,21 +26,14 @@ Unless specified, will be set as TRUE automatically if the highest total is > 2e
 Specifying \code{bars = "stacked"} will plot stacked bars with Duplicated and Unique reads.
 Specifying \code{bars = "adjacent"} will plot Totals before and after de-duplication.}
 
-\item{col1}{The colour to use for the Total values}
+\item{dupCol}{The colour to use for the Total values}
 
-\item{col2}{The colour to use for the Deduplicated values}
+\item{uniqCol}{The colour to use for the Deduplicated values}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
-
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
-
-\item{usePlotly}{\code{logical}. If \code{TRUE} the plot will render as an interactive plot in the Viewer pane.
-Otherwise the plot will be generated using the current plot device.}
+\item{...}{Used to pass additional attributes to theme()}
 }
 \value{
-Returns a ggplot object.
+Returns a ggplot object, or interactive plotly object
 }
 \description{
 Plot the expected read totals after de-duplication
@@ -63,11 +60,7 @@ fileList <- system.file("extdata", fileList, package = "ngsReports")
 # Load the FASTQC data as a FastqcDataList
 fdl <- getFastqcData(fileList)
 
-# Draw the plot with adjacent bars
-plotDeduplicatedTotals(fdl)
-
 # Draw the plot with stacked bars
-plotDeduplicatedTotals(fdl, bars = "stacked")
-
+plotDeduplicatedTotals(fdl)
 
 }
