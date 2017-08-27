@@ -4,27 +4,23 @@
 \alias{plotReadTotals}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(x, subset, millions, trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
+plotReadTotals(x, usePlotly = FALSE, labels, millions, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
+
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{millions}{\code{logical}. Use Millions of reads as the scale for the y-axis.
 Unless specified, will be set as TRUE automatically if the highest total is > 2e06.}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
-
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
-
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
+\item{...}{Used to pass additional attributes to theme()}
 }
 \value{
 Returns a ggplot object.
@@ -51,9 +47,5 @@ fdl <- getFastqcData(fileList)
 # Plot the Read Totals
 plotReadTotals(fdl)
 
-# Change the scale so it is not in millions
-# Also subset the reads to just the R1 files
-r1 <- grepl("R1", fileName(fdl))
-plotReadTotals(fdl, subset = r1, millions = FALSE)
 
 }

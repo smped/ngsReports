@@ -8,17 +8,14 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param subset \code{logical}. Return the values for a subset of files.
-#' May be useful to only return totals from R1 files, or any other subset
-#' @param millions \code{logical}. Use Millions of reads as the scale for the y-axis.
-#' Unless specified, will be set as TRUE automatically if the highest total is > 2e06.
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
-#'
+#' @param labels An optional named vector of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
+#' @param millions \code{logical}. Use Millions of reads as the scale for the y-axis.
+#' Unless specified, will be set as TRUE automatically if the highest total is > 2e06.
+#' @param ... Used to pass additional attributes to theme()
 #'
 #' @examples
 #'
@@ -34,10 +31,6 @@
 #' # Plot the Read Totals
 #' plotReadTotals(fdl)
 #'
-#' # Change the scale so it is not in millions
-#' # Also subset the reads to just the R1 files
-#' r1 <- grepl("R1", fileName(fdl))
-#' plotReadTotals(fdl, subset = r1, millions = FALSE)
 #'
 #' @return Returns a ggplot object.
 #'
@@ -52,26 +45,35 @@
 #' @importFrom plotly ggplotly
 #'
 #' @export
-plotReadTotals <- function(x, subset, millions,
-                           trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                           usePlotly = FALSE){
+plotReadTotals <- function(x, usePlotly = FALSE, labels, millions, ...){
 
-  stopifnot(grepl("(Fastqc|character)", class(x)))
+  df <- tryCatch(readTotals(x))
 
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-  stopifnot(is.logical(trimNames))
-
-  df <- readTotals(x, subset = subset, trimNames = trimNames, pattern = pattern)
-
+  # Automatically determine whether to convert to millions
   # Automatically determine whether to convert to millions
   if (missing(millions)) {
     millions <- ifelse(max(df$Total_Sequences) > 2e06, TRUE, FALSE)
   }
+  millions <- millions[1]
   stopifnot(is.logical(millions))
+  ylab <- c("Read Totals", "Read Totals (millions)")[millions + 1]
+
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)),
+                        names = unique(df$Filename))
+  }
+  else{
+    if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   # Setup the basic plot in millions or not
   if (millions){
@@ -86,8 +88,10 @@ plotReadTotals <- function(x, subset, millions,
   # Add the rest of the parameters
   rtPlot <- rtPlot +
     geom_bar(stat = "identity") +
+    scale_x_discrete(labels = labels) +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+  if (!is.null(userTheme)) rtPlot <- rtPlot + userTheme
 
   if(usePlotly){
         rtPlot <- ggplotly(rtPlot)

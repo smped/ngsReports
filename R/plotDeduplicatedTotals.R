@@ -16,23 +16,21 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param subset \code{logical}. Return the values for a subset of files.
-#' May be useful to only return totals from R1 files, or any other subset
+#' @param usePlotly \code{logical}. If \code{TRUE} the plot will render as an interactive plot in the Viewer pane.
+#' Otherwise the plot will be generated using the current plot device.
+#' @param labels An optional named vector of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
 #' @param millions \code{logical}. Use Millions of reads as the scale for the y-axis.
 #' Unless specified, will be set as TRUE automatically if the highest total is > 2e06.
 #' @param bars \code{character} Can take the values \code{bars = "stacked"} or \code{bars = "adjacent"}.
 #' Specifying \code{bars = "stacked"} will plot stacked bars with Duplicated and Unique reads.
 #' Specifying \code{bars = "adjacent"} will plot Totals before and after de-duplication.
-#' @param col1 The colour to use for the Total values
-#' @param col2 The colour to use for the Deduplicated values
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
-#' @param usePlotly \code{logical}. If \code{TRUE} the plot will render as an interactive plot in the Viewer pane.
-#' Otherwise the plot will be generated using the current plot device.
+#' @param dupCol The colour to use for the Total values
+#' @param uniqCol The colour to use for the Deduplicated values
+#' @param ... Used to pass additional attributes to theme()
 #'
-#' @return Returns a ggplot object.
+#' @return Returns a ggplot object, or interactive plotly object
 #'
 #' @examples
 #' # Get the files included with the package
@@ -44,46 +42,30 @@
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
 #'
-#' # Draw the plot with adjacent bars
+#' # Draw the plot with stacked bars
 #' plotDeduplicatedTotals(fdl)
 #'
-#' # Draw the plot with stacked bars
-#' plotDeduplicatedTotals(fdl, bars = "stacked")
-#'
-#'
-#' @importFrom stringr str_detect
-#' @importFrom dplyr rename
-#' @importFrom dplyr left_join
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#' @importFrom reshape2 melt
-#' @importFrom plotly ggplotly
 #' @importFrom grDevices rgb
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
+#' @importFrom magrittr %>%
 #'
 #' @export
-plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
-                                   col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2),
-                                   trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                                   usePlotly = FALSE){
+plotDeduplicatedTotals <- function(x, usePlotly = FALSE, labels,
+                                   millions, bars = "stacked",
+                                   dupCol = rgb(0.2, 0.2, 0.8), uniqCol = rgb(0.9, 0.2, 0.2),
+                                   ...
+                                   ){
 
-  stopifnot(grepl("(Fastqc|character)", class(x)))
-
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-  stopifnot(is.logical(trimNames))
-  stopifnot(bars %in% c("adjacent", "stacked"))
-
-  x <- x[subset]
-  rt <- tryCatch(readTotals(x, subset = subset, trimNames = trimNames, pattern = pattern))
+  rt <- tryCatch(readTotals(x))
   deDup <- tryCatch(Total_Deduplicated_Percentage(x))
-
-  # Check the pattern contains a capture
-  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    deDup$Filename <- gsub(pattern[1], "\\1", deDup$Filename)
-  }
 
   # Automatically determine whether to convert to millions
   if (missing(millions)) {
@@ -92,6 +74,23 @@ plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
   millions <- millions[1]
   stopifnot(is.logical(millions))
   ylab <- c("Read Totals", "Read Totals (millions)")[millions + 1]
+
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(rt$Filename)),
+                        names = unique(rt$Filename))
+  }
+  else{
+    if (!all(unique(rt$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   if (bars == "adjacent"){
     joinedDf <- deDup %>%
@@ -103,9 +102,10 @@ plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
       reshape2::melt(id.vars = "Filename", variable.name = "Type", value.name = "Total") %>%
       dplyr::mutate(Total = Total / (10^(millions*6)))
 
-    deDupPlot <- ggplot(joinedDf, aes(x = Filename, y = Total, fill = Type)) +
+    deDupPlot <- ggplot(joinedDf, aes_string(x = "Filename", y = "Total", fill = "Type")) +
       geom_bar(stat = "identity", position = "dodge") +
-      scale_fill_manual(values = (c(Total = col1, Deduplicated = col2)))
+      scale_fill_manual(values = (c(Total = dupCol, Deduplicated = uniqCol))) +
+      scale_x_discrete(labels = labels)
 
   }
   if (bars == "stacked"){
@@ -120,24 +120,24 @@ plotDeduplicatedTotals <- function(x, subset, millions, bars = "stacked",
       dplyr::mutate(Total = Total / (10^(millions*6)),
                     Type = factor(Type, levels = c("Duplicated", "Unique")))
 
-    deDupPlot <- ggplot(joinedDf, aes(x = Filename, y = Total, fill = Type)) +
+    deDupPlot <- ggplot(joinedDf, aes_string(x = "Filename", y = "Total", fill = "Type")) +
       geom_bar(stat = "identity") +
-      scale_fill_manual(values = (c(Duplicated = col1, Unique = col2)))
+      scale_fill_manual(values = (c(Duplicated = dupCol, Unique = uniqCol))) +
+      scale_x_discrete(labels = labels)
 
   }
 
   # Add the basic layout
   deDupPlot <- deDupPlot +
-    ylab(ylab) +
+    labs(y = ylab) +
     theme_bw() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+  if (!is.null(userTheme)) deDupPlot <- deDupPlot + userTheme
 
   # Draw the plot
   if (usePlotly) {
-    plotly::ggplotly(deDupPlot)
-  }
-  else {
-    deDupPlot
+    deDupPlot <- plotly::ggplotly(deDupPlot)
   }
 
+  deDupPlot
 }

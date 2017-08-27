@@ -8,8 +8,6 @@
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param subset \code{logical}. Return the values for a subset of files.
-#' May be useful to only return totals from R1 files, or any other subset
 #' @param counts \code{logical}. Display counts of GC content rather than frequency
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
@@ -17,12 +15,10 @@
 #' values of GC_Content by the theoretical values using \code{\link{gcTheoretical}}. \code{species} must be specified.
 #' @param GCtheoryType \code{"character"} Select type of data to normalize GC content% agianst accepts either "Genome" or
 #' "Transcriptome" Default is "Genome"
+#' @param GCobject an object of class GCTheoretical.
+#'  Defaults to the gcTheoretical object supplied witht= the package
 #' @param species \code{character} if \code{gcTheory} is \code{TRUE} its must be accompanied by a species
-#' Currently supports Genome only (transcriptome to come). Species currently supported: A. lyrata, A. mellifera, A. thaliana,
-#' B. taurus, C. elegans, C. familiaris, D. melanogaster, D. rerio, E. coli, G. aculeatus, G. gallus, H. sapiens, M. fascicularis,
-#' M. furo, M. mulatta, M. musculus, O. sativa, P. troglodytes, R. norvegicus, S. cerevisiae, S scrofa, T. gondii,
-#' T. guttata, V. vinifera. Use \code{ngsReports::genomes(ngsReports::gcTheoretical)} to display the corresponding names for
-#' each species.
+#' Species currently supported can be obtained using \code{mData(gcTheoretical)}
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
@@ -55,7 +51,6 @@
 #' plotGcHeatmap(fdl, counts = TRUE)
 #'
 #'
-#'
 #' @importFrom dplyr group_by
 #' @importFrom dplyr mutate
 #' @importFrom dplyr ungroup
@@ -66,37 +61,33 @@
 #' @importFrom stats order.dendrogram
 #'
 #' @export
-plotGcHeatmap <- function(x, subset, counts = FALSE,
+plotGcHeatmap <- function(x, usePlotly = FALSE, counts = FALSE,
                           clusterNames = FALSE, pwfCols, labels,
                           GCtheory = FALSE, GCtheoryType = "Genome",
-                          species = "Hsapiens", usePlotly = FALSE,
+                          species = "Hsapiens", GCobject,
                           dendrogram = FALSE, ...){
-  stopifnot(grepl("(Fastqc|character)", class(x)))
+
+  if(GCtheory & missing(GCobject)){
+    GCobject <- ngsReports::gcTheoretical
+  }
 
   if(GCtheory & GCtheoryType == "Genome"){
-    spp <- ngsReports::genomes(ngsReports::gcTheoretical)
+    spp <- genomes(GCobject)
     if(!species %in% spp$Name){
       stop(cat("Currently only supports genomes for", spp$Name, sep = ", "))
     }
   }
 
   if(GCtheory & GCtheoryType == "Transcriptome"){
-    spp <- ngsReports::transcriptomes(ngsReports::gcTheoretical)
+    spp <- transcriptomes(GCobject)
     if(!species %in% spp$Name){
       stop(cat("Currently only supports transcriptomes for", spp$Name, sep = ", "))
     }
   }
 
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-
   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-  col <- ngsReports::getColours(pwfCols)
+  col <- getColours(pwfCols)
 
-  x <- x[subset]
   df <- tryCatch(Per_sequence_GC_content(x))
 
   # Drop the suffix, or check the alternate labels
@@ -142,7 +133,7 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
       df <- df %>%
         split(.["Filename"]) %>%
         lapply(function(x){
-          gcTheoryDF <- ngsReports::getGC(ngsReports::gcTheoretical, name = species, type = GCtheoryType)
+          gcTheoryDF <- getGC(GCobject, name = species, type = GCtheoryType)
           x <- dplyr::mutate(x, Value = Value - unlist(gcTheoryDF[species]))
         }) %>%
         dplyr::bind_rows()
@@ -170,7 +161,8 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
                         GC_Content = as.integer(GC_Content),
                         Filename = factor(Filename, levels = unique(Filename)))
     GCheatmap <- ggplot(df, aes(x = GC_Content, y = Filename, fill = Frequency))
-  }else{
+  }
+  else{
     df <- dplyr::mutate(df, Counts = as.numeric(Value),
                         GC_Content = as.integer(GC_Content),
                         Filename = factor(Filename, levels = unique(Filename)))
@@ -191,13 +183,13 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
     GCheatmap <- GCheatmap +
       scale_fill_gradientn(colours = viridisLite::inferno(50))
   }
+  if (!is.null(userTheme)) GCheatmap <- GCheatmap + userTheme
 
   if(usePlotly){
 
     GCheatmap <- GCheatmap +
       theme(axis.text.y = element_blank(),
             axis.ticks.y = element_blank())
-
 
     t <- getSummary(x) %>% dplyr::filter(Category == "Per sequence GC content")
     t$Filename <- labels[t$Filename]
@@ -233,15 +225,15 @@ plotGcHeatmap <- function(x, subset, counts = FALSE,
       GCheatmap <- plotly::subplot(dendro, sideBar, GCheatmap, widths = c(0.1,0.1,0.8),
                                    margin = 0, shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "GC Content (%)"))
-    }else{
+    }
+    else{
       GCheatmap <- plotly::subplot(plotly_empty(), sideBar, GCheatmap, widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "GC Content (%)"),
                        annotations = list(text = "Filename", showarrow = FALSE,
                                           textangle = -90))
     }
 
-  }else{
-    GCheatmap
   }
+
   GCheatmap
 }
