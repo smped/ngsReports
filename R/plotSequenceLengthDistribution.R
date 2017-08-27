@@ -48,7 +48,6 @@
 #' @importFrom ggplot2 scale_x_discrete
 #' @importFrom ggplot2 scale_y_discrete
 #' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 scale_colour_discrete
 #' @importFrom ggplot2 scale_fill_gradientn
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 theme
@@ -80,7 +79,7 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
     lapply(split(df, f = df$Filename) ,
            function(x){
              dplyr::bind_rows(x,
-                              data_frame(Filename = x$Filename,
+                              dplyr::data_frame(Filename = x$Filename[1],
                                          Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
                                          Upper = Lower,
                                          Length = as.character(Lower),
@@ -109,6 +108,7 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
   if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   if (plotType == "line"){
+    df$Filename <- labels[df$Filename]
     if (counts){
       lenPlot <- ggplot(df, aes_string("Length", "Count", colour = "Filename", group = "Filename")) +
         geom_line() +
@@ -117,7 +117,7 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
     else{
       lenPlot <- ggplot(df, aes_string("Length", "Freq", colour = "Filename", group = "Filename")) +
         geom_line() +
-        scale_y_continuous(limits = c(0, 100)) +
+        scale_y_continuous() +
         labs(y = "Percent (%)")
     }
   }
