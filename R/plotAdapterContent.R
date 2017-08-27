@@ -24,7 +24,7 @@
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param ... Used to pass additional attributes to theme()
+#' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
@@ -56,6 +56,7 @@
 #' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 geom_tile
 #' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 geom_rect
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 scale_y_continuous
 #' @importFrom ggplot2 scale_x_continuous
@@ -75,32 +76,32 @@
 #' @name plotAdapterContent
 #' @rdname plotAdapterContent-methods
 #' @export
-setGeneric("plotAdapterContent",function(x, ...){standardGeneric("plotAdapterContent")})
+setGeneric("plotAdapterContent",function(x, usePlotly = FALSE, ...){standardGeneric("plotAdapterContent")})
 #' @aliases plotAdapterContent,character
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "character",
-          function(x, ...){
+          function(x, usePlotly = FALSE, ...){
             x <- getFastqcData(x)
-            plotAdapterContent(x, ...)
+            plotAdapterContent(x, usePlotly,...)
           }
 )
 #' @aliases plotAdapterContent,FastqcFile
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcFile",
-          function(x, ...){
+          function(x, usePlotly = FALSE, ...){
             x <- getFastqcData(x)
-            plotAdapterContent(x, ...)
+            plotAdapterContent(x, usePlotly,...)
           }
 )
 #' @aliases plotAdapterContent,FastqcFileList
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcFileList",
-          function(x, ...){
+          function(x, usePlotly = FALSE, ...){
             x <- getFastqcData(x)
-            plotAdapterContent(x, ...)
+            plotAdapterContent(x, usePlotly,...)
           }
 )
 #' @aliases plotAdapterContent,FastqcData
@@ -186,7 +187,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, adapterType, plotType = "heatmap",
+          function(x, usePlotly = FALSE, plotType = "heatmap", labels, adapterType,
                    pwfCols, warn = 5, fail = 10, ...){
 
             df <- Adapter_Content(x)
@@ -312,36 +313,50 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
             }
 
             if (plotType == "line") {
-              df$x <- as.integer(df$Position)
+
+              # Define position as an integer
+              df$Position <- gsub("([0-9]*)-.+", "\\1", df$Position)
+              df$Position <- as.numeric(df$Position)
+
+              # Set the transparency & position of bg rectangles
+              pwfCols <- setAlpha(pwfCols, 0.2)
+              rects <- data_frame(xmin = 0,
+                                  xmax = max(df$Position),
+                                  ymin = c(0, warn, fail),
+                                  ymax = c(warn, fail, 100),
+                                  Status = c("PASS", "WARN", "FAIL"))
+
               # Create the basic plot
-              acPlot <- ggplot(df,
-                               aes_string(x = "x", y = "Percent", colour = "Filename")) +
-                annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = warn,
-                         fill = getColours(pwfCols)["PASS"], alpha = 0.2) +
-                annotate("rect", xmin = -Inf, xmax = Inf, ymin = warn, ymax = fail,
-                         fill = getColours(pwfCols)["WARN"], alpha = 0.2) +
-                annotate("rect", xmin = -Inf, xmax = Inf, ymin = fail, ymax = Inf,
-                         fill = getColours(pwfCols)["FAIL"], alpha = 0.2) +
-                geom_line() +
-                scale_y_continuous(limits = c(0, 100)) +
-                scale_x_continuous(breaks = seq_along(levels(df$Position)),
-                                   labels = unique(df$Position),
-                                   expand = c(0, 0)) +
+              acPlot <- ggplot(df) +
+                geom_rect(data = rects,
+                          aes_string(xmin = "xmin", xmax = "xmax",
+                                     ymin = "ymin", ymax = "ymax", fill = "Status")) +
+                geom_line(aes_string(x = "Position", y = "Percent", colour = "Filename")) +
+                scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+                scale_x_continuous(expand = c(0, 0)) +
                 scale_colour_discrete(labels = labels) +
-                labs(y = "Percent (%)")
-
-              # Add the basic customisations
-              acPlot <- acPlot + facet_wrap(~Type, ncol = 1)
-
-            }
-
-            # And draw the plot
-            if (!usePlotly){
-              acPlot <- acPlot +
-                labs(x = "Position in read (bp)") +
-                theme_bw() +
-                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+                scale_fill_manual(values = getColours(pwfCols)) +
+                guides(fill = FALSE) +
+                labs(x = "Position in read (bp)",
+                     y = "Percent (%)") +
+                facet_wrap(~Type, ncol = 1) +
+                theme_bw()
               if (!is.null(userTheme)) acPlot <- acPlot + userTheme
+
+              # And draw the plot
+              if (usePlotly){
+                acPlot <- acPlot + theme(legend.position = "none")
+                acPlot <- suppressMessages(
+                  plotly::ggplotly(acPlot,
+                                   hoverinfo = c("x", "y", "colour"))
+                )
+                # Set the hoverinfo for bg rectangles to the vertices only,
+                # This will effectively hide them
+                acPlot$x$data[[1]]$hoveron <- "points"
+                acPlot$x$data[[2]]$hoveron <- "points"
+                acPlot$x$data[[3]]$hoveron <- "points"
+              }
+
             }
             acPlot
           }
