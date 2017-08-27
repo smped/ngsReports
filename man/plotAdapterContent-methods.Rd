@@ -15,40 +15,41 @@
 \alias{plotAdapterContent,FastqcDataList}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, ...)
+plotAdapterContent(x, usePlotly = FALSE, ...)
 
-\S4method{plotAdapterContent}{character}(x, ...)
+\S4method{plotAdapterContent}{character}(x, usePlotly = FALSE, ...)
 
-\S4method{plotAdapterContent}{FastqcFile}(x, ...)
+\S4method{plotAdapterContent}{FastqcFile}(x, usePlotly = FALSE, ...)
 
-\S4method{plotAdapterContent}{FastqcFileList}(x, ...)
+\S4method{plotAdapterContent}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
 \S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, pwfCols,
   warn = 5, fail = 10, ...)
 
-\S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  adapterType, plotType = "heatmap", pwfCols, warn = 5, fail = 10, ...)
+\S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
+  plotType = "heatmap", labels, adapterType, pwfCols, warn = 5, fail = 10,
+  ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{...}{Used to pass additional attributes to theme()}
-
 \item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly object.}
+
+\item{...}{Used to pass additional attributes to theme() and between methods}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
+
+\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
+or \code{plotType = "line"}}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
 \item{adapterType}{A regular expression matching the adapter(s) to be plotted}
-
-\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
-or \code{plotType = "line"}}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
