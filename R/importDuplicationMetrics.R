@@ -41,6 +41,9 @@ importDuplicationMetrics <- function(x){
   })
 
   df <- dplyr::bind_rows(lapply(data, function(x){x$df}))
+  intCols <- setdiff(colnames(df), c("LIBRARY", "PERCENT_DUPLICATION"))
+  df[intCols] <- lapply(df[intCols], as.integer)
+  df$PERCENT_DUPLICATION <- as.numeric(df$PERCENT_DUPLICATION)
   histogram <- dplyr::bind_rows(lapply(data, function(x){x$histogram}))
   histogram <- dplyr::select(histogram, dplyr::one_of("LIBRARY"), dplyr::everything())
   list(metrics = df, histogram = histogram)
