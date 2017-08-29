@@ -67,6 +67,7 @@ Collate:
     'getSummary.R'
     'importBowtieLogs.R'
     'importHisat2Logs.R'
+    'importMarkDuplicates.R'
     'importStarLogs.R'
     'isCompressed.R'
     'maxAdapterContent.R'
