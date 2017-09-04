@@ -8,8 +8,6 @@
 #' Indel and substitution rates are left as character values showing percentages.
 #'
 #' @param x \code{character}. Vector of filenames
-#' @param tidyNames \code{logical}(1). Return names in slightly more convenient format (TRUE)
-#' or mostly as provided on the original file
 #'
 #' @return A \code{data_frame}.
 #' Column names are broadly similar to those in the supplied files,
@@ -23,7 +21,7 @@
 #' df <- importStarLogs(starLog)
 #'
 #' @export
-importStarLogs <- function(x, tidyNames = TRUE){
+importStarLogs <- function(x){
 
   stopifnot(file.exists(x))
   ln <- lapply(x, readLines)
@@ -77,11 +75,6 @@ importStarLogs <- function(x, tidyNames = TRUE){
                       dplyr::ends_with("On"),
                       dplyr::contains("Mapping"),
                       dplyr::everything())
-
-  if (tidyNames){
-    names(df) <- gsub("(Number_Of_|_Number)", "", names(df))
-    names(df) <- gsub("Percent_Of_(.+)", "\\1_(%)", names(df))
-  }
 
   tibble::as_tibble(df)
 }

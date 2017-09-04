@@ -15,7 +15,6 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr bind_rows
 #'
 #' @export
 #' @rdname Basic_Statistics

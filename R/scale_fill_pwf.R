@@ -4,8 +4,9 @@
 # #'
 # #' @details This constructs a ggplot scale using the values contained in the fill aesthetic
 # #' and the supplied breaks for PASS/WARN/FAIL criteria.
-# #' As this doesn't follow the conventional ggplot syntax using more of functional approach,
+# #' As this doesn't follow the conventional ggplot syntax, using more of functional approach,
 # #' it will be a hidden function
+# #'
 # #' @include PwfCols.R
 # #' @importFrom ggplot2 scale_fill_gradientn
 scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = TRUE){

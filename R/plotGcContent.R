@@ -13,6 +13,14 @@
 #' If \code{TRUE} plot will be rendered with plotly
 #' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
 #' If \code{counts = FALSE} the frequencies will be plotted
+#' @param GCtheory \code{logical} default is \code{FALSE} to give the true GC content%, set to \code{TRUE} to normalize
+#' values of GC_Content by the theoretical values using \code{\link{gcTheoretical}}. \code{species} must be specified.
+#' @param GCtheoryType \code{"character"} Select type of data to normalize GC content% agianst accepts either "Genome" or
+#' "Transcriptome" Default is "Genome"
+#' @param GCobject an object of class GCTheoretical.
+#'  Defaults to the gcTheoretical object supplied witht= the package
+#' @param species \code{character} if \code{gcTheory} is \code{TRUE} its must be accompanied by a species
+#' Species currently supported can be obtained using \code{mData(gcTheoretical)}
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
