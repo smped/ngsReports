@@ -12,7 +12,6 @@
 #'
 #' @docType methods
 #'
-#'
 #' @export
 #' @rdname Per_sequence_quality_scores
 #' @aliases Per_sequence_quality_scores

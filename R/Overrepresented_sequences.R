@@ -10,12 +10,6 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
-#' @docType methods
-#'
-#' @importFrom dplyr mutate
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr everything
-#' @importFrom dplyr select
 #'
 #' @export
 #' @rdname Overrepresented_sequences
