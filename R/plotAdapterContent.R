@@ -139,11 +139,11 @@ setMethod("plotAdapterContent", signature = "FastqcData",
             # Add transparency to background colours & define the rectangles
             pwfCols <- setAlpha(pwfCols, 0.2)
             x <- list(min = min(df$Position), max = max(df$Position))
-            rects <- data_frame(xmin = 0,
-                                xmax = max(df$Position),
-                                ymin = c(0, warn, fail),
-                                ymax = c(warn, fail, 100),
-                                Status = c("PASS", "WARN", "FAIL"))
+            rects <- dplyr::data_frame(xmin = 0,
+                                       xmax = max(df$Position),
+                                       ymin = c(0, warn, fail),
+                                       ymax = c(warn, fail, 100),
+                                       Status = c("PASS", "WARN", "FAIL"))
 
             # Create the basic plot
             acPlot <- ggplot(df) +
