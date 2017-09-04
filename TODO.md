@@ -10,9 +10,6 @@
 - make 'output all plots to pdf' function
 - Build tests for classes and methods
 - Remove `subset` from all plots. This can be done before passing a `FastqcDataList` to the function.
-- GC content
-    - Add transcriptome to GC content
-    - Add theoretical to line plot
 - Shiny app
     - Add AdapterContent
     - Add Base_SequenceContent plot to app

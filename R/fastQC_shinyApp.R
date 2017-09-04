@@ -11,6 +11,8 @@
 #'
 #' @return UI data for fastQC shiny.
 #'
+#' @importFrom reshape2 dcast
+#' @importFrom magrittr %>%
 #' @importFrom plotly layout
 #' @importFrom plotly plotlyOutput
 #' @importFrom plotly renderPlotly
@@ -63,7 +65,9 @@ fastqcShiny <- function(fastqcInput = NULL){
             fixedPanel(
               sidebarPanel(
                 h5("Choose Fastqc Report:"),
-                shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = "Please select a file:"),
+                shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = ""),
+                h5(""),
+                textOutput("report"),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -131,8 +135,10 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
+                radioButtons(inputId="GCtheoryType", label="What type of data?",
+                             choices=c("Genome","Transcriptome"), selected = "Genome"),
                 radioButtons(inputId="GCheatType", label="Value to plot",
-                             choices=c("Count","Frequency"), selected = "Frequency"),
+                             choices=c("Frequency","Count"), selected = "Frequency"),
                 checkboxInput("GCcluster", "Cluster Filenames", value = FALSE),
                 htmlOutput("GCdendro"),
                 htmlOutput("GCtheory"),
@@ -185,6 +191,7 @@ fastqcShiny <- function(fastqcInput = NULL){
 
   server <- function(input, output, session){
 
+    autoInvalidate <- reactiveTimer(3000)
 
     #rective function repsonsible for loading in the selected files of just using the fdl supplied
     data <- reactive({
@@ -201,9 +208,12 @@ fastqcShiny <- function(fastqcInput = NULL){
       selectedData
     })
 
-    output$SummaryFlags <- renderPlotly({
-      plotSummary(data(), usePlotly = TRUE) %>%
-        layout(margin = list(r = 200))
+    output$report <- renderText({
+      if(!length(data())){
+        print("No Files Loaded")
+      }else{
+        paste(length(data()), "Files Loaded")
+      }
     })
 
 
@@ -228,21 +238,24 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$GCtheory <- renderUI({
       if(input$GCheatType == "Frequency"){
         checkboxInput("GCtheory", "Normalize Using Theoretical GC", value = FALSE)
-      }else{
-        observe()
       }
     })
 
 
     output$GCspecies <- renderUI({
+      if(!is.null(input$GCtheory)){
       if(input$GCtheory){
+        if(input$GCtheoryType == "Genome"){
         selectInput("GCspecies", "Select species for Theoretical GC",
                     choices = genomes(gcTheoretical)$Name,
                     selected = "Hsapiens")
       }else{
-        observe()
+        selectInput("GCspecies", "Select species for Theoretical GC",
+                    choices = transcriptomes(gcTheoretical)$Name,
+                    selected = "Hsapiens")
       }
-    })
+      }
+    }})
 
 
 
@@ -256,21 +269,30 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     output$GCheatmap <- renderPlotly({
       GCtype <- input$GCheatType == "Count"
+      if(is.null(input$GCtheory)){
+        GCspecies <- "Hsapiens"
+        GCtheory <- FALSE
+      }else{
+        GCspecies <- input$GCspecies
+        GCtheory <- input$GCtheory
+      }
       if(is.null(input$GCdendro)){
         plotGcHeatmap(data(),
                       clusterNames = input$GCcluster,
                       counts = GCtype,
-                      GCtheory = input$GCtheory,
-                      species = input$GCspecies,
+                      GCtheoryType = input$GCtheoryType,
+                      GCtheory = GCtheory,
+                      species = GCspecies,
                       usePlotly = TRUE) %>%
           layout(margin = list(r = 200))
       }else{
         plotGcHeatmap(data(),
                       clusterNames = input$GCcluster,
                       counts = GCtype,
-                      GCtheory = input$GCtheory,
+                      GCtheoryType = input$GCtheoryType,
+                      GCtheory = GCtheory,
                       dendrogram = input$GCdendro,
-                      species = input$GCspecies,
+                      species = GCspecies,
                       usePlotly = TRUE) %>%
           layout(margin = list(r = 200))
       }
@@ -278,6 +300,13 @@ fastqcShiny <- function(fastqcInput = NULL){
     })
 
     output$GCSingle <- renderPlotly({
+      if(is.null(input$GCtheory)){
+        GCspecies <- "Hsapiens"
+        GCtheory <- FALSE
+      }else{
+        GCspecies <- input$GCspecies
+        GCtheory <- input$GCtheory
+      }
       if(is.null(event_data("plotly_click")$key[[1]])){
         num <- 1
       }else {
@@ -288,6 +317,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       sub_fdl <- data()[num]
       plotGcContent(sub_fdl, usePlotly = TRUE,
                     counts = GCtype, GCtheory = input$GCtheory,
+                    GCtheoryType = input$GCtheoryType,
                     species = input$GCspecies) %>%
         layout(margin = list(r = 200, l = 100),
                legend = list(orientation = 'h', title = ""))
