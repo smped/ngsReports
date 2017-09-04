@@ -126,7 +126,7 @@ plotGcContent <- function(x, usePlotly = FALSE, labels,
         df <- bind_rows(df, gcTheoryDF)
 
      }
-
+    df$Filename <- factor(df$Filename, levels = unique(df$Filename))
     gcPlot <- ggplot(df, aes(x = GC_Content, y = Freq, colour = Filename)) +
       geom_line()
 
