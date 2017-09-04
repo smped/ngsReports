@@ -49,7 +49,9 @@
 #' @importFrom plotly ggplotly
 #'
 #' @export
-plotGcContent <- function(x, usePlotly = FALSE, labels, counts = FALSE, ...){
+plotGcContent <- function(x, usePlotly = FALSE, labels,
+                          GCtheory = FALSE, GCtheoryType = "Genome",
+                          species = "Hsapiens", GCobject, counts = FALSE, ...){
 
   df <- tryCatch(Per_sequence_GC_content(x))
 
@@ -57,7 +59,7 @@ plotGcContent <- function(x, usePlotly = FALSE, labels, counts = FALSE, ...){
   ylab <- c("Frequency", "Count")[counts + 1]
 
   # Remove zero counts
-  df <- dplyr::filter(df, Count > 0)
+  # df <- dplyr::filter(df, Count > 0)
 
   # Drop the suffix, or check the alternate labels
   if (missing(labels)){
@@ -76,6 +78,29 @@ plotGcContent <- function(x, usePlotly = FALSE, labels, counts = FALSE, ...){
   userTheme <- c()
   if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
+  # Tidy up the GC content variables
+  if(GCtheory & missing(GCobject)){
+    GCobject <- ngsReports::gcTheoretical
+  }
+
+  if(GCtheory & GCtheoryType == "Genome"){
+    spp <- genomes(GCobject)
+    if(!species %in% spp$Name){
+      stop(cat("Currently only supports genomes for", spp$Name, sep = ", "))
+    }
+  }
+
+  if(GCtheory & GCtheoryType == "Transcriptome"){
+    spp <- transcriptomes(GCobject)
+    if(!species %in% spp$Name){
+      stop(cat("Currently only supports transcriptomes for", spp$Name, sep = ", "))
+    }
+  }
+
+
+  df$Filename <- labels[df$Filename]
+
+
   if (!counts){
 
     # Summarise to frequencies & initialise the plot
@@ -83,6 +108,16 @@ plotGcContent <- function(x, usePlotly = FALSE, labels, counts = FALSE, ...){
       dplyr::mutate(Freq = Count / sum(Count)) %>%
       dplyr::ungroup() %>%
       dplyr::select(Filename, GC_Content, Freq)
+
+     if(GCtheory){
+        gcTheoryDF <- getGC(GCobject, name = species, type = GCtheoryType)
+        names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
+
+        gcTheoryDF$Filename <- paste("Theoretical GC for", species)
+
+        df <- bind_rows(df, gcTheoryDF)
+
+     }
 
     gcPlot <- ggplot(df, aes(x = GC_Content, y = Freq, colour = Filename)) +
       geom_line()
@@ -112,6 +147,4 @@ plotGcContent <- function(x, usePlotly = FALSE, labels, counts = FALSE, ...){
 
   # Draw the plot
   gcPlot
-
-
 }

@@ -79,7 +79,7 @@ plotDeduplicatedTotalsPlotly <- function(x, subset, millions, bars = "stacked",
   col <- getColours(pwfCols)
 
   x <- x[subset]
-  rt <- tryCatch(readTotals(x, subset = subset, trimNames = trimNames, pattern = pattern))
+  rt <- tryCatch(readTotals(x))
   deDup <- tryCatch(Total_Deduplicated_Percentage(x))
 
   # Check the pattern contains a capture
