@@ -164,7 +164,7 @@ plotGcHeatmap <- function(x, usePlotly = FALSE, counts = FALSE,
     df$Value <- as.numeric(df$Value)
     df$GC_Content <- as.integer(df$GC_Content)
   }
-
+  key <- unique(df$Filename)
   df$Filename <- labels[df$Filename]
   df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 
@@ -175,7 +175,7 @@ plotGcHeatmap <- function(x, usePlotly = FALSE, counts = FALSE,
     theme(panel.grid.minor = element_blank(),
           panel.background = element_blank())
 
-  if(GCtheory){
+  if(GCtheory & !counts){
     GCheatmap <- GCheatmap +
       labs(fill = "Difference from\nTheoretical GC") +
       scale_fill_gradient2(low = inferno(1, begin = 0.4),
@@ -200,7 +200,7 @@ plotGcHeatmap <- function(x, usePlotly = FALSE, counts = FALSE,
     t$Filename <- factor(labels[t$Filename], levels = unique(df$Filename))
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     t$x <- 1
-    t$key <- labels[as.character(t$Filename)]
+    t$key <- as.character(key)
 
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
     col <- getColours(pwfCols)
