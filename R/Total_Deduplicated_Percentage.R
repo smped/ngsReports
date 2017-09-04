@@ -12,8 +12,6 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr data_frame
-#' @importFrom dplyr bind_rows
 #'
 #' @export
 #' @rdname Total_Deduplicated_Percentage

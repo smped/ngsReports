@@ -12,9 +12,6 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr mutate
-#' @importFrom dplyr select
-#' @importFrom dplyr bind_rows
 #'
 #' @export
 #' @rdname Kmer_Content

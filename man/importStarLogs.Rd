@@ -4,13 +4,10 @@
 \alias{importStarLogs}
 \title{Import STAR log files}
 \usage{
-importStarLogs(x, tidyNames = TRUE)
+importStarLogs(x)
 }
 \arguments{
 \item{x}{\code{character}. Vector of filenames}
-
-\item{tidyNames}{\code{logical}(1). Return names in slightly more convenient format (TRUE)
-or mostly as provided on the original file}
 }
 \value{
 A \code{data_frame}.
