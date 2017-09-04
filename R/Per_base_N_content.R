@@ -12,11 +12,6 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr mutate
-#' @importFrom dplyr bind_rows
-#' @importFrom dplyr everything
-#' @importFrom dplyr select
-#'
 #' @export
 #' @rdname Per_base_N_content
 #' @aliases Per_base_N_content
