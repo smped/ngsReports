@@ -42,7 +42,7 @@ If \code{TRUE} plot will be rendered with plotly}
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
 
-\item{warn, fail}{The default values for warn and fail are 30 and 20 respectively (i.e. precentages)}
+\item{warn, fail}{The default values for warn and fail are 30 and 20 respectively (i.e. percentages)}
 
 \item{plotType}{\code{character} Can be either \code{"boxplot"} or \code{"heatmap"}}
 

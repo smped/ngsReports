@@ -12,7 +12,7 @@
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
 #' @param nc \code{numeric}. The number of columns to create in the plot layout
-#' @param warn,fail The default values for warn and fail are 30 and 20 respectively (i.e. precentages)
+#' @param warn,fail The default values for warn and fail are 30 and 20 respectively (i.e. percentages)
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
@@ -272,6 +272,11 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                                                            "Upper_Quartile", "Lower_Quartile",
                                                            "`10th_Percentile`","`90th_Percentile`"))
                 )
+                # Set the hoverinfo for bg rectangles to the vertices only,
+                # This will effectively hide them
+                qualPlot$x$data[[1]]$hoveron <- "points"
+                qualPlot$x$data[[2]]$hoveron <- "points"
+                qualPlot$x$data[[3]]$hoveron <- "points"
               }
             }
 
