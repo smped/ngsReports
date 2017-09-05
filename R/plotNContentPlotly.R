@@ -147,8 +147,7 @@ plotNContentPlotly <- function(x,
     clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
     row.ord <- order.dendrogram(clus)
     df <- df[row.ord,]
-    df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percentage")
-  }
+    }
 
   key <- df$Filename
   df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percentage")

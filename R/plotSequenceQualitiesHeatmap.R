@@ -47,7 +47,8 @@
 #' @export
 plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfCols,
                                          usePlotly = FALSE, dendrogram = FALSE,
-                                         clusterNames = FALSE, ...){
+                                         clusterNames = FALSE,lineCol = "grey20",
+                                         lineWidth = 0.2, ...){
 
   stopifnot(grepl("(Fastqc|character)", class(x)))
 
@@ -73,19 +74,7 @@ plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfC
 
   # Get any arguments for dotArgs that have been set manually
   dotArgs <- list(...)
-  if ("size" %in% names(dotArgs)){
-    lineWidth <- dotArgs$size
-  }
-  else{
-    lineWidth <- 0.2
-  }
-  if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
-    i <- which(names(dotArgs) %in% c("colour", "color"))
-    lineCol <- dotArgs[[i]]
-  }
-  else{
-    lineCol <- "grey20"
-  }
+
   allowed <- names(formals(ggplot2::theme))
   keepArgs <- which(names(dotArgs) %in% allowed)
   userTheme <- c()

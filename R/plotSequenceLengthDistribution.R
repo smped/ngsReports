@@ -20,8 +20,15 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param counts \code{logical} Should distributions be shown as counts or frequencies (percentages)
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using heirachial clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param ... Used to pass additional attributes to theme()
 #' @param expand.x Passed to \code{scale_x_discrete}
+#' @param lineWidth,lineCol Passed to geom_hline and geom_vline to determine
+#' width and colour of gridlines
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
@@ -40,6 +47,8 @@
 #' plotSequenceLengthDistribution(fdl)
 #'
 #' @importFrom dplyr vars
+#' @importFrom reshape2 dcast
+#' @importFrom reshape2 melt
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 geom_line
@@ -52,12 +61,16 @@
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 theme_bw
+#' @importFrom plotly ggplotly
+#' @importFrom plotly layout
+#' @importFrom plotly subplot
 #'
 #' @export
 plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts = FALSE,
-                                           plotType = "heatmap",
-                                           ...,
-                                           expand.x = c(0,0.2)){
+                                           plotType = "heatmap", clusterNames = FALSE,
+                                           dendrogram = FALSE, ...,
+                                           expand.x = c(0,0.2), lineCol = "grey20",
+                                           lineWidth = 0.2){
 
   df <- tryCatch(Sequence_Length_Distribution(x))
 
@@ -80,14 +93,32 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
            function(x){
              dplyr::bind_rows(x,
                               dplyr::data_frame(Filename = x$Filename[1],
-                                         Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
-                                         Upper = Lower,
-                                         Length = as.character(Lower),
-                                         Count = 0)
+                                                Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
+                                                Upper = Lower,
+                                                Length = as.character(Lower),
+                                                Count = 0)
              )
            })
   )
 
+  df$Length <- as.integer(df$Length)
+  df <- dcast(df, Filename ~ Length)
+  df[is.na(df)] <- 0
+
+
+  if(clusterNames){
+    xx <- dplyr::select(df, -Filename)
+    clus <- as.dendrogram(hclust(dist(xx)))
+    row.ord <- order.dendrogram(clus)
+    df <- df[row.ord,]
+  }
+  key <- df$Filename
+  df$Filename <- labels[df$Filename]
+  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Length", value.name = "Count")
+  df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+
+
+  df$Count <- as.numeric(df$Count)
   # Convert the counts to frequencies
   df <- dplyr::bind_rows(
     lapply(split(df, f = df$Filename),
@@ -97,8 +128,10 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
            }))
 
   # Arrange in position
-  df <- dplyr::arrange_at(df, vars("Filename", "Lower"))
+  df <- dplyr::arrange_at(df, vars("Filename", "Length"))
   df$Length <- factor(df$Length, levels = unique(df$Length))
+
+
 
   # Get any arguments for dotArgs that have been set manually
   dotArgs <- list(...)
@@ -108,33 +141,32 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
   if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   if (plotType == "line"){
-    df$Filename <- labels[df$Filename]
     if (counts){
       lenPlot <- ggplot(df, aes_string("Length", "Count", colour = "Filename", group = "Filename")) +
         geom_line() +
-        labs(y = "Count")
+        labs(y = "Count") +
+        theme_bw()
     }
     else{
       lenPlot <- ggplot(df, aes_string("Length", "Freq", colour = "Filename", group = "Filename")) +
         geom_line() +
         scale_y_continuous() +
-        labs(y = "Percent (%)")
+        labs(y = "Percent (%)") +
+        theme_bw()
     }
   }
 
   if (plotType == "heatmap"){
 
-    df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
-
     if (counts){
       lenPlot <- ggplot(df, aes_string("Length","Filename", fill = "Count")) +
-        geom_tile() +
+        geom_tile(colour = lineCol) +
         scale_fill_gradientn(colours = viridisLite::inferno(50)) +
         scale_y_discrete(labels = labels, expand = c(0, 0))
     }
     else{
       lenPlot <- ggplot(df, aes_string("Length","Filename", fill = "Freq")) +
-        geom_tile() +
+        geom_tile(colour = lineCol) +
         labs(fill = "Percent (%)") +
         scale_fill_gradientn(colours = viridisLite::inferno(50)) +
         scale_y_discrete(labels = labels, expand = c(0, 0))
@@ -144,9 +176,66 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
   lenPlot <- lenPlot +
     scale_x_discrete(expand = expand.x) +
     labs(x = "Sequence Length") +
-    theme_bw() +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-  if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
+
+  if(usePlotly){
+    if(plotType == "line") {
+      lenPlot <- ggplotly(lenPlot, tooltip = c("x", "y", "colour"))
+    }else{
+      pwfCols <- ngsReports::pwf
+
+      nx <- length(x)
+      lenPlot <- lenPlot +
+        geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
+        theme(panel.background = element_blank())
+
+      t <- getSummary(x)
+      t <- t[t$Category == "Sequence Length Distribution",]
+      t$Filename <- labels[t$Filename]
+      t$Filename <- factor(t$Filename, levels = levels(df$Filename))
+      t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+
+      sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
+        geom_tile(aes_string(fill = "Status")) +
+        scale_fill_manual(values = getColours(pwfCols)) +
+        theme(panel.grid.minor = element_blank(),
+              panel.background = element_blank(),
+              legend.position="none",
+              axis.title=element_blank(),
+              axis.text=element_blank(),
+              axis.ticks=element_blank())
+      sideBar <- suppressMessages(
+        plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+      )
+
+      #plot dendrogram
+      if(dendrogram && clusterNames){
+
+        dx <- ggdendro::dendro_data(clus)
+        dendro <- ggdend(dx$segments) +
+          coord_flip() +
+          scale_y_reverse(expand = c(0, 1)) +
+          scale_x_continuous(expand = c(0,2))
+
+        lenPlot <- suppressMessages(
+          plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.1, 0.8), margin = 0, shareY = TRUE) %>%
+            plotly::layout(xaxis3 = list(title = "Sequence Length (bp)"))
+        )
+      }
+      else{
+        lenPlot <- suppressMessages(
+          plotly::subplot(plotly::plotly_empty(),
+                          sideBar, lenPlot,
+                          widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
+            plotly::layout(xaxis3 = list(title = "Sequence Length (bp)"),
+                           annotations = list(text = "Filename", showarrow = FALSE,
+                                              textangle = -90))
+        )
+      }
+    }
+  }else{
+    if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
+  }
 
   lenPlot
 
