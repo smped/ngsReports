@@ -246,7 +246,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
               if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
             }
             if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
-            df$Filename <- labels[df$Filename]
+
 
             # Always use frequencies
             df <- lapply(split(df, f = df$Filename), function(x){
@@ -301,6 +301,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
             plotType <- match.arg(plotType, c("line", "heatmap"))
 
             if (plotType == "line"){
+              df$Filename <- labels[df$Filename]
               # Setup a palette with black as the first colour.
               # Use the paired palette for easier visualisation of paired data
               n <- length(x)
@@ -368,8 +369,8 @@ setMethod("plotGcContent", signature = "FastqcDataList",
               }
 
               key <- unique(df$Filename)
+              df$Filename <- labels[df$Filename]
               df$Filename <- factor(df$Filename, levels = unique(df$Filename))
-
               # Draw the heatmap
               gcPlot <- ggplot(df, aes_string(x = "GC_Content", y = "Filename", fill = "Freq")) +
                 geom_tile() +
@@ -391,7 +392,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
 
                 t <- getSummary(x)
                 t <- t[t$Category == "Per sequence GC content",]
-                t$Filename <- factor(labels[t$Filename], levels = unique(df$Filename))
+                t$Filename <- factor(labels[t$Filename], levels = levels(df$Filename))
                 t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
                 if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -406,7 +407,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                         axis.text=element_blank(),
                         axis.ticks=element_blank())
                 sideBar <- suppressMessages(
-                  plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+                  plotly::ggplotly(sideBar, tooltip = c("Filename", "Status"))
                 )
 
                 #plot dendrogram
