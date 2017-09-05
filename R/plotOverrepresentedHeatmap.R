@@ -59,6 +59,7 @@
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
 #' @importFrom ggplot2 coord_flip
+#' @importFrom dplyr desc
 #'
 #' @export
 plotOverrepresentedHeatmap <- function(x,

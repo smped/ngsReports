@@ -214,7 +214,7 @@ plotNContentPlotly <- function(x,
     }
     else{
 
-      Nheatmap <- plotly::subplot(plotly_empty(), sideBar, Nheatmap,
+      Nheatmap <- plotly::subplot(plotly::plotly_empty(), sideBar, Nheatmap,
                                   widths = c(0.1,0.1,0.8), margin = 0,
                                   shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Sequencing Cycle"),

@@ -176,7 +176,7 @@ plotSequenceQualitiesHeatmap <- function(x, subset, labels, counts = FALSE, pwfC
                                      plot_bgcolor = "white"))
     }else{
 
-      qualPlot <- plotly::subplot(plotly_empty(),
+      qualPlot <- plotly::subplot(plotly::plotly_empty(),
                                   sideBar,
                                   qualPlot,
                                   widths = c(0.1,0.1,0.8),

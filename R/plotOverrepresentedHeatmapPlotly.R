@@ -50,6 +50,7 @@
 #' @importFrom ggplot2 element_blank
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 coord_flip
+#' @importFrom dplyr desc
 #'
 #' @export
 plotOverrepresentedHeatmapPlotly <- function(x,
@@ -213,7 +214,7 @@ plotOverrepresentedHeatmapPlotly <- function(x,
         plotly::layout(xaxis3 = list(title = "Overrepresented Sequence",
                                      plot_bgcolor = "white"))
     }else{
-      ORheatmap <- plotly::subplot(plotly_empty(), sideBar, ORheatmap, widths = c(0.1,0.1,0.8),
+      ORheatmap <- plotly::subplot(plotly::plotly_empty(), sideBar, ORheatmap, widths = c(0.1,0.1,0.8),
                                    margin = 0, shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Overrepresented Sequence",
                                      plot_bgcolor = "white"),
