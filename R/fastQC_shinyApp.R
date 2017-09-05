@@ -87,17 +87,17 @@ fastqcShiny <- function(fastqcInput = NULL){
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
-              h1("Duplication levels in reads"),
+              h1("Read Totals"),
               h5("Total number of unique and duplicated reads in each sample"),
-              plotlyOutput("ReadDuplication"),
-              plotlyOutput("RDSingle"),
+              plotlyOutput("ReadTotals"),
+              # plotlyOutput("RDSingle"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Per Base Sequence Quality",
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                radioButtons(inputId="BQType", label="Base Quality",
+                radioButtons(inputId="BQplotValue", label="Base Quality",
                              choices=c("Mean","Median"), selected = "Mean"),
                 checkboxInput("BQcluster", "Cluster Filenames", value = FALSE),
                 htmlOutput("BQdendro"),
@@ -216,23 +216,25 @@ fastqcShiny <- function(fastqcInput = NULL){
     })
 
 
-    output$ReadDuplication <- renderPlotly({
-      plotDeduplicatedTotalsPlotly(data(), bars = input$RDLbar) %>%
+    output$ReadTotals <- renderPlotly({
+      # plotDeduplicatedTotalsPlotly(data(), bars = input$RDLbar) %>%
+      #   layout(margin = list(r = 200))
+      plotReadTotals(data(), usePlotly = TRUE, duplicated = TRUE, bars = input$RDLbar) %>%
         layout(margin = list(r = 200))
     })
 
-    output$RDSingle <- renderPlotly({
-      if(is.null(event_data("plotly_click")$key[[1]])){
-        num <- 1
-      }else {
-        click <- event_data("plotly_click")
-        num <- which(fileName(data()) == click$key[[1]])
-      }
-      sub_fdl <- data()[num]
-      plotDuplicationLevels(sub_fdl, type = "Total sequences", usePlotly = TRUE) %>%
-        layout(margin = list(r = 200),
-               legend = list(orientation = 'h', title = ""))
-    })
+    # output$RDSingle <- renderPlotly({
+    #   if(is.null(event_data("plotly_click")$key[[1]])){
+    #     num <- 1
+    #   }else {
+    #     click <- event_data("plotly_click")
+    #     num <- which(fileName(data()) == click$key[[1]])
+    #   }
+    #   sub_fdl <- data()[num]
+    #   plotDuplicationLevels(sub_fdl, type = "Total sequences", usePlotly = TRUE) %>%
+    #     layout(margin = list(r = 200),
+    #            legend = list(orientation = 'h', title = ""))
+    # })
 
     output$GCtheory <- renderUI({
       if(input$GCheatType == "Frequency"){
@@ -343,11 +345,13 @@ fastqcShiny <- function(fastqcInput = NULL){
       }else{
         BQdendro <- input$BQdendro
       }
-        plotBaseQualitiesHeatmap(data(),
-                                 clusterNames = input$BQcluster,
-                                 type = input$BQType,
-                                 dendrogram = BQdendro,
-                                 usePlotly = TRUE) %>% layout(margin = list(r = 200))
+      plotBaseQualities(data(),
+                        usePlotly = TRUE,
+                        plotType = "heatmap",
+                        plotValue = input$BQplotValue,
+                        clusterNames = input$BQcluster,
+                        dendrogram = BQdendro) %>%
+        layout(margin = list(r = 200))
     })
 
     output$BaseQualitiesSingle <- renderPlotly({
@@ -357,7 +361,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         click <- event_data("plotly_click")
         num <- which(fileName(data()) == click$key[[1]])
       }
-      sub_fdl <- data()[num]
+      sub_fdl <- data()[[num]]
       plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100))
     })
