@@ -214,12 +214,7 @@ plotGcHeatmap <- function(x, usePlotly = FALSE, counts = FALSE,
     sideBar <- suppressMessages(plotly::ggplotly(sideBar, tooltip = c("Status", "Filename")))
 
     #plot dendrogram
-    if(dendrogram){
-      ggdend <- function(df) {
-        ggplot() +
-          geom_segment(data = df, aes_string("x","y", xend = "xend", yend = "yend")) +
-          ggdendro::theme_dendro()
-      }
+    if(dendrogram && clusterNames){
 
       dx <- ggdendro::dendro_data(clus)
       dendro <- ggdend(dx$segments) +

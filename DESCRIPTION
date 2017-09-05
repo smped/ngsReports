@@ -65,6 +65,7 @@ Collate:
     'fileName.R'
     'getFastqcData.R'
     'getSummary.R'
+    'ggdend.R'
     'importBowtieLogs.R'
     'importDuplicationMetrics.R'
     'importHisat2Logs.R'
