@@ -191,7 +191,6 @@ fastqcShiny <- function(fastqcInput = NULL){
 
   server <- function(input, output, session){
 
-    autoInvalidate <- reactiveTimer(3000)
 
     #rective function repsonsible for loading in the selected files of just using the fdl supplied
     data <- reactive({
