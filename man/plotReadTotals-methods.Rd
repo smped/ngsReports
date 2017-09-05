@@ -79,7 +79,7 @@ fdl <- getFastqcData(fileList)
 # Plot the Read Totals showing estimated duplicates
 plotReadTotals(fdl)
 
-# Plot the Read Totals withou estimated duplicates
+# Plot the Read Totals without estimated duplicates
 plotReadTotals(fdl, duplicated = FALSE)
 
 }
