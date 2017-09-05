@@ -76,7 +76,6 @@ Collate:
     'plotAdapterContent.R'
     'plotBaseQualities.R'
     'plotBaseQualityHeatmap.R'
-    'plotCombinedBaseQualities.R'
     'plotDeduplicatedTotals.R'
     'plotDeduplicatedTotalsPlotly.R'
     'plotDuplicationLevels.R'
