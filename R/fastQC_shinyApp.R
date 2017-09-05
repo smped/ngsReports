@@ -184,6 +184,26 @@ fastqcShiny <- function(fastqcInput = NULL){
               plotlyOutput("NCheatmap"),
               width = "70%", left = "30%", right = "0%")
           )
+        ),
+        tabPanel(
+          "Adapter Content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                selectInput("ACtype", "Choose Adapter Type",
+                            choices = c("Illumina Universal",
+                                        "Illumina Small RNA",
+                                        "Nextera Transposase")),
+              # checkboxInput("ACcluster", "Cluster Filenames", value = FALSE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Adapter content"),
+              h5("Adapter content (%) across all reads"),
+              plotlyOutput("ACheatmap"),
+              plotlyOutput("ACsingle"),
+              width = "70%", left = "30%", right = "0%")
+          )
         )
       )
     )
@@ -434,6 +454,35 @@ fastqcShiny <- function(fastqcInput = NULL){
                            dendrogram = NCdendro,
                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
       })
+
+    output$ACheatmap <- renderPlotly({
+      ACplot <- plotAdapterContent(data(),
+                         adapterType = input$ACtype,
+                         usePlotly = TRUE)
+      if(!is.null(ACplot)) ACplot %>% layout(margin = list(r = 200))
+      else stop(paste("Sequences did not contain any", input$ACtype, "content, please select another."))
+    })
+
+    output$ACsingle<- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[num]
+      ACsing <- plotAdapterContent(sub_fdl,
+                                   adapterType = input$ACtype,
+                                   plotType = "line",
+                                   usePlotly = TRUE)
+
+      if(!is.null(ACsing)) ACsing %>%
+        layout(margin = list(r = 200, l = 100),
+               legend = list(orientation = 'h', title = ""))
+      else stop(paste("Sequences did not contain any",
+                      input$ACtype, "content, please select another."))
+    })
+
 
   }
 
