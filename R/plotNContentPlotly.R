@@ -34,11 +34,6 @@
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
 #'
-#' # The default plot
-#' plotGcHeatmap(fdl)
-#'
-#' # Using counts
-#' plotGcHeatmap(fdl, counts = TRUE)
 #'
 #'
 #' @importFrom stats as.dendrogram
