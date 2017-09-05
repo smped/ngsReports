@@ -4,7 +4,9 @@
 \alias{plotReadTotals}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(x, usePlotly = FALSE, labels, millions, ...)
+plotReadTotals(x, usePlotly = FALSE, labels, millions, duplicated = TRUE,
+  bars = "stacked", pwfCols, dupCol = rgb(0.2, 0.2, 0.8),
+  uniqCol = rgb(0.9, 0.2, 0.2), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -20,10 +22,19 @@ File extensions are dropped by default.}
 \item{millions}{\code{logical}. Use Millions of reads as the scale for the y-axis.
 Unless specified, will be set as TRUE automatically if the highest total is > 2e06.}
 
+\item{duplicated}{\code{logical}. Include deduplicated read total estimates to plot charts}
+
+\item{bars}{If \code{duplicated = TRUE}, show unique and deduplicated reads as "stacked" or "adjacent".}
+
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+values in plot}
+
+\item{dupCol, uniqCol}{Colours for duplicated and unique reads. Ignored if \code{duplicated = FALSE}}
+
 \item{...}{Used to pass additional attributes to theme()}
 }
 \value{
-Returns a ggplot object.
+Returns a ggplot or plotly object
 }
 \description{
 Draw a barplot of read totals
@@ -32,6 +43,11 @@ Draw a barplot of read totals
 Draw a barplot of read totals using the standard ggplot2 syntax.
 Read totals will be plotted in millions as this is the most common.
 The raw data from \code{\link{readTotals}} can otherwise be used to manually create a plot.
+
+By default, the estimated percentage of dupicated and unique sequences will be drawn.
+However, this is based on the value shown on FASTQC reports at the top of DeDuplicatedTotals plot,
+and is known to be inaccurate.
+As it still gives a good guide as to sequence diversity it is included as the default.
 }
 \examples{
 
@@ -44,8 +60,10 @@ fileList <- system.file("extdata", fileList, package = "ngsReports")
 # Load the FASTQC data as a FastqcDataList
 fdl <- getFastqcData(fileList)
 
-# Plot the Read Totals
+# Plot the Read Totals showing estimated duplicates
 plotReadTotals(fdl)
 
+# Plot the Read Totals withou estimated duplicates
+plotReadTotals(fdl, duplicates = FALSE)
 
 }
