@@ -135,13 +135,13 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                radioButtons(inputId="GCtheoryType", label="What type of data?",
+                radioButtons(inputId="theoreticalType", label="What type of data?",
                              choices=c("Genome","Transcriptome"), selected = "Genome"),
                 radioButtons(inputId="GCheatType", label="Value to plot",
                              choices=c("Frequency","Count"), selected = "Frequency"),
                 checkboxInput("GCcluster", "Cluster Filenames", value = FALSE),
                 htmlOutput("GCdendro"),
-                htmlOutput("GCtheory"),
+                htmlOutput("theoreticalGC"),
                 htmlOutput("GCspecies"),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
@@ -303,17 +303,17 @@ fastqcShiny <- function(fastqcInput = NULL){
 
 
     # start rendering the input buttons for
-    output$GCtheory <- renderUI({
+    output$theoreticalGC <- renderUI({
       if(input$GCheatType == "Frequency"){
-        checkboxInput("GCtheory", "Normalize Using Theoretical GC", value = FALSE)
+        checkboxInput("theoreticalGC", "Normalize Using Theoretical GC", value = FALSE)
       }
     })
 
 
     output$GCspecies <- renderUI({
-      if(!is.null(input$GCtheory)){
-      if(input$GCtheory){
-        if(input$GCtheoryType == "Genome"){
+      if(!is.null(input$theoreticalGC)){
+      if(input$theoreticalGC){
+        if(input$theoreticalType == "Genome"){
         selectInput("GCspecies", "Select species for Theoretical GC",
                     choices = genomes(gcTheoretical)$Name,
                     selected = "Hsapiens")
@@ -342,26 +342,26 @@ fastqcShiny <- function(fastqcInput = NULL){
 
       GCtype <- input$GCheatType == "Count"
 
-      if(is.null(input$BQdendro)){
+      if(is.null(input$GCdendro)){
         GCdendro <- FALSE
       }else{
         GCdendro <- input$GCdendro
       }
 
-      if(is.null(input$GCtheory)){
-        plotGcHeatmap(data(),
+      if(is.null(input$theoreticalGC)){
+        plotGcContent(data(),
                       clusterNames = input$GCcluster,
-                      counts = GCtype,
-                      GCtheoryType = input$GCtheoryType,
+                      plotType = "heatmap",
+                      theoreticalType = input$theoreticalType,
                       dendrogram = GCdendro,
                       usePlotly = TRUE) %>%
           layout(margin = list(r = 200))
       }else{
-        plotGcHeatmap(data(),
+        plotGcContent(data(),
                       clusterNames = input$GCcluster,
-                      counts = GCtype,
-                      GCtheoryType = input$GCtheoryType,
-                      GCtheory = input$GCtheory,
+                      plotType = "heatmap",
+                      theoreticalType = input$theoreticalType,
+                      theoreticalGC = input$theoreticalGC,
                       dendrogram = GCdendro,
                       species = GCspecies,
                       usePlotly = TRUE) %>%
@@ -379,17 +379,18 @@ fastqcShiny <- function(fastqcInput = NULL){
         num <- 1
       }else {
         click <- event_data("plotly_click")
+        #I've broken this sorry. Not sure how to fix this
         num <- which(fileName(data()) == click$key[[1]])
       }
       GCtype <- input$GCheatType == "Count"
-      sub_fdl <- data()[num]
-      if(is.null(input$GCtheory)){
+      sub_fdl <- data()[[num]]
+      if(is.null(input$theoreticalGC)){
         GCSingle <- plotGcContent(sub_fdl, usePlotly = TRUE,
                                   counts = GCtype)
       }else{
         GCSingle <- plotGcContent(sub_fdl, usePlotly = TRUE,
-                                  counts = GCtype, GCtheory = input$GCtheory,
-                                  GCtheoryType = input$GCtheoryType,
+                                  counts = GCtype, theoreticalGC = input$theoreticalGC,
+                                  theoreticalType = input$theoreticalType,
                                   species = GCspecies)
       }
       GCSingle %>%
