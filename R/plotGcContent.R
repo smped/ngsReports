@@ -123,7 +123,7 @@ plotGcContent <- function(x, usePlotly = FALSE, labels,
 
         gcTheoryDF$Filename <- paste("Theoretical GC for", species)
 
-        df <- bind_rows(df, gcTheoryDF)
+        df <- dplyr::bind_rows(df, gcTheoryDF)
 
      }
     df$Filename <- factor(df$Filename, levels = unique(df$Filename))
