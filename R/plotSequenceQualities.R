@@ -161,7 +161,7 @@ plotSequenceQualities <- function(x, usePlotly = FALSE, labels, counts = FALSE, 
                 xmin = -Inf, xmax = Inf,
                 name = "FAIL", ymin = -Inf, ymax = 0, hoverinfo = "none"))
 
-    }
+  }
 
   # Draw the plot
   qualPlot
