@@ -266,7 +266,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       heatPlot <- plotly::subplot(dendro, sideBar, heatPlot,
                                   widths = c(0.1,0.1,0.8), margin = 0,
                                   shareY = TRUE) %>%
-        plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)",
+        plotly::layout(xaxis3 = list(title = "Kmer Sequence",
                                      plot_bgcolor = "white"))
     }else{
 
@@ -276,7 +276,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
                                   widths = c(0.1,0.1,0.8),
                                   margin = 0,
                                   shareY = TRUE) %>%
-        plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)"),
+        plotly::layout(xaxis3 = list(title = "Kmer Sequence"),
                        annotations = list(text = "Filename", showarrow = FALSE,
                                           textangle = -90))
   }

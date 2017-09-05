@@ -204,6 +204,22 @@ fastqcShiny <- function(fastqcInput = NULL){
               plotlyOutput("ACsingle"),
               width = "70%", left = "30%", right = "0%")
           )
+        ),
+        tabPanel(
+          "Kmer Content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                # checkboxInput("ACcluster", "Cluster Filenames", value = FALSE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Kmer Content"),
+              h5("-log(10) P-value for Kmers"),
+              plotlyOutput("Kheatmap"),
+              plotlyOutput("Ksingle"),
+              width = "70%", left = "30%", right = "0%")
+          )
         )
       )
     )
@@ -481,6 +497,13 @@ fastqcShiny <- function(fastqcInput = NULL){
                legend = list(orientation = 'h', title = ""))
       else stop(paste("Sequences did not contain any",
                       input$ACtype, "content, please select another."))
+    })
+
+    output$Kheatmap <- renderPlotly({
+      Kplot <- plotKmerHeatmap(data(),
+                                   usePlotly = TRUE)
+      if(!is.null(Kplot)) Kplot %>% layout(margin = list(r = 200))
+      else stop(paste("Samples have no Kmer content"))
     })
 
 

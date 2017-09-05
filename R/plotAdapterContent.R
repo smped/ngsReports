@@ -347,7 +347,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
               # And draw the plot
               if (usePlotly){
-                acPlot <- acPlot
+                acPlot <- acPlot + theme(legend.position = "none")
                 acPlot <- suppressMessages(
                   plotly::ggplotly(acPlot,
                                    hoverinfo = c("x", "y", "colour"))
