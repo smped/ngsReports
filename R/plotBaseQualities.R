@@ -378,13 +378,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   )
 
                 #plot dendrogram
-                if(dendrogram){
-                  ggdend <- function(df) {
-                    ggplot() +
-                      geom_segment(data = df,
-                                   aes_string(x= "x", y = "y", xend = "xend", yend = "yend")) +
-                      ggdendro::theme_dendro()
-                  }
+                if(dendrogram && clusterNames){
 
                   dx <- ggdendro::dendro_data(clus)
                   dendro <- ggdend(dx$segments) +

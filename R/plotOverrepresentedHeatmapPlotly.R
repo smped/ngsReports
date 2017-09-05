@@ -193,11 +193,6 @@ plotOverrepresentedHeatmapPlotly <- function(x,
 
     #plot dendrogram
     if(dendrogram && clusterNames){
-      ggdend <- function(df) {
-        ggplot() +
-          geom_segment(data = df, aes(x=x, y=y, xend=xend, yend=yend)) +
-          theme_dendro()
-      }
 
       dx <- ggdendro::dendro_data(clus)
       dendro <- ggdend(dx$segments) +

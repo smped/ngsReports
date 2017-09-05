@@ -46,6 +46,27 @@
 #'
 #' plotDuplicationLevels(fdl)
 #'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 geom_segment
+#' @importFrom ggplot2 scale_x_continuous
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 scale_y_discrete
+#' @importFrom ggplot2 scale_y_reverse
+#' @importFrom ggplot2 scale_fill_gradientn
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 scale_colour_manual
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 coord_flip
+#' @importFrom ggplot2 guides
+#' @importFrom ggplot2 ggtitle
+#'
+#'
 #' @name plotDuplicationLevels
 #' @rdname plotDuplicationLevels-methods
 #' @export
@@ -242,11 +263,6 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
 
               #plot dendrogram
               if(dendrogram && clusterNames){
-                ggdend <- function(df) {
-                  ggplot() +
-                    geom_segment(data = df, aes_string("x","y", xend = "xend", yend = "yend")) +
-                    ggdendro::theme_dendro()
-                }
 
                 dx <- ggdendro::dendro_data(clus)
                 dendro <- ggdend(dx$segments) +
