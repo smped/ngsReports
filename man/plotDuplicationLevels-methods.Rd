@@ -7,8 +7,12 @@
 \alias{plotDuplicationLevels,character}
 \alias{plotDuplicationLevels,FastqcFile-method}
 \alias{plotDuplicationLevels,FastqcFile}
+\alias{plotDuplicationLevels,FastqcFileList-method}
+\alias{plotDuplicationLevels,FastqcFileList}
 \alias{plotDuplicationLevels,FastqcData-method}
 \alias{plotDuplicationLevels,FastqcData}
+\alias{plotDuplicationLevels,FastqcDataList-method}
+\alias{plotDuplicationLevels,FastqcDataList}
 \title{Plot the combined Sequence_Duplication_Levels information}
 \usage{
 plotDuplicationLevels(x, usePlotly = FALSE, ...)
@@ -17,8 +21,14 @@ plotDuplicationLevels(x, usePlotly = FALSE, ...)
 
 \S4method{plotDuplicationLevels}{FastqcFile}(x, usePlotly = FALSE, ...)
 
+\S4method{plotDuplicationLevels}{FastqcFileList}(x, usePlotly = FALSE, ...)
+
 \S4method{plotDuplicationLevels}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)
+
+\S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE,
+  deduplication = "pre", clusterNames = FALSE, dendrogram = FALSE, labels,
+  pwfCols, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -39,6 +49,15 @@ values in plot}
 \item{warn, fail}{The default values for warn and fail are 20 and 50 respectively (i.e. percentages)}
 
 \item{lineCols}{Colours of the lines drawn for individual libraries}
+
+\item{deduplication}{Plot Duplication levels 'pre' or 'post' deduplication. Can only take values "pre" and "post"}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using heirachial clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
 }
 \value{
 A standard ggplot2 or plotly object
@@ -64,5 +83,7 @@ fdl <- getFastqcData(fileList)
 
 # Draw the default plot for a single file
 plotDuplicationLevels(fdl[[1]])
+
+plotDuplicationLevels(fdl)
 
 }
