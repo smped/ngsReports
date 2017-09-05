@@ -270,7 +270,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
                                      plot_bgcolor = "white"))
     }else{
 
-      heatPlot <- plotly::subplot(plotly_empty(),
+      heatPlot <- plotly::subplot(plotly::plotly_empty(),
                                   sideBar,
                                   heatPlot,
                                   widths = c(0.1,0.1,0.8),

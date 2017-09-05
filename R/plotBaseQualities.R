@@ -306,8 +306,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               # Get the longest sequence
               df$Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1",df$Base)))
               # Select the Mean or Median
-              df$Data <- df[[plotValue]]
-              df <- df[c("Filename", "Start", "Data", "Longest_sequence")]
+              df <- df[c("Filename", "Start", plotValue, "Longest_sequence")]
 
               #split data into correct lengths and fill NA's
               df <- split(df, f = df$Filename) %>%
@@ -319,7 +318,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 dplyr::bind_rows()
               df$Start <- as.integer(df$Start)
               df <- df[!colnames(df) == "Longest_sequence"]
-              df <- reshape2::dcast(df, Filename ~ Start, value.var = "Data")
+              df <- reshape2::dcast(df, Filename ~ Start, value.var = plotValue)
 
               #cluster names true hclust names
               if(clusterNames){
@@ -339,11 +338,12 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               df[[plotValue]] <- as.numeric(df$Data)
               df$Start <- as.integer(df$Start)
               df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+              maxVal <- ceiling(max(df[[plotValue]]) + 1)
 
               # Start the heatmap
               qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = plotValue)) +
                 geom_tile() +
-                scale_fill_pwf(df[[plotValue]], pwfCols, c(0, fail, warn, 41), FALSE ) +
+                scale_fill_pwf(df[[plotValue]], pwfCols, c(0, fail, warn, maxVal), FALSE ) +
                 theme(panel.grid.minor = element_blank(),
                       panel.background = element_blank())
 
@@ -357,10 +357,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 t <- t[t$Category == "Per base sequence quality",]
                 t$Filename <- labels[t$Filename]
                 t$Filename <- factor(t$Filename, levels = unique(df$Filename))
-                t$`1` <- 1
-                t$key <- names(labels)[match(t$Filename, labels)]
+                t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
-                sideBar <- ggplot(t, aes_string(x = "1", y = "Filename", key = "key")) +
+                sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
                   geom_tile(aes_string(fill = "Status")) +
                   scale_fill_manual(values = getColours(pwfCols)) +
                   theme(panel.grid.minor = element_blank(),
@@ -369,7 +368,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                         axis.title=element_blank(),
                         axis.text=element_blank(),
                         axis.ticks=element_blank())
-                sideBar <- suppressMessages(plotly::ggplotly(sideBar, tooltip = c("Status", "Filename")))
+                sideBar <- suppressMessages(
+                  plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+                  )
 
                 #plot dendrogram
                 if(dendrogram){
