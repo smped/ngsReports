@@ -199,15 +199,12 @@ plotGcHeatmap <- function(x, usePlotly = FALSE, counts = FALSE,
     t <- t[t$Category == "Per sequence GC content",]
     t$Filename <- factor(labels[t$Filename], levels = unique(df$Filename))
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
-    t$x <- 1
-    t$key <- as.character(key)
 
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-    col <- getColours(pwfCols)
 
-    sideBar <- ggplot(t, aes_string(x = "x", y = "Filename", key = "key")) +
+    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
       geom_tile(aes_string(fill = "Status")) +
-      scale_fill_manual(values = col) +
+      scale_fill_manual(values = getColours(pwfCols)) +
       theme(panel.grid.minor = element_blank(),
             panel.background = element_blank(),
             legend.position="none",
