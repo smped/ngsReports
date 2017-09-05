@@ -256,6 +256,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
               # Reverse the factor levels for a better looking plot
               df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+              key <- levels(df$Filename)
 
               if (!usePlotly){
                 acPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "Percent")) +
@@ -274,9 +275,10 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   status$Status <- cut(status$Percent, breaks = breaks, include.lowest = TRUE,
                                        labels = c("PASS", "WARN", "FAIL"))
                   status$x <- 1
+                  status$key <- key
 
                   # Form the sideBar for each adapter
-                  sideBar <- ggplot(status, aes_string("x", "Filename")) +
+                  sideBar <- ggplot(status, aes_string("x", "Filename", key = "key")) +
                     geom_tile(aes_string(fill = "Status")) +
                     scale_fill_manual(values = getColours(pwfCols)) +
                     scale_y_discrete(expand = c(0, 0)) +
