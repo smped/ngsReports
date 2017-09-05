@@ -237,8 +237,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               scale_fill_gradientn(colours = inferno(50)) +
               labs(x = "Sequence Duplication Level",
                    fill = fillLabel) +
-              theme_bw() +
-              theme(panel.grid.minor = element_blank(),
+              theme(panel.grid = element_blank(),
                     panel.background = element_blank())
 
             if (usePlotly){
@@ -268,7 +267,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                 dendro <- ggdend(dx$segments) +
                   coord_flip() +
                   scale_y_reverse(expand = c(0, 1)) +
-                  scale_x_continuous(expand = c(0,2))
+                  scale_x_continuous(expand = c(0,1))
 
                 dupPlot <- suppressWarnings(
                   suppressMessages(
