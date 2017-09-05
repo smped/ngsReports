@@ -40,9 +40,11 @@
 #' # Load the FASTQC data as a FastqcDataList
 #' fdl <- getFastqcData(fileList)
 #'
-#' # The default and subset plot
+#' # The default plot for multiple libraries is a heatmap
 #' plotBaseQualities(fdl)
 #'
+#' # The default plot for a single library is the standard boxplot
+#' plotBaseQualities(fdl[[1]])
 #'
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes_string
