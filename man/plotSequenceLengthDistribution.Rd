@@ -5,7 +5,8 @@
 \title{Draw an Adapter Content Plot}
 \usage{
 plotSequenceLengthDistribution(x, usePlotly = FALSE, labels, counts = FALSE,
-  plotType = "heatmap", ..., expand.x = c(0, 0.2))
+  plotType = "heatmap", clusterNames = FALSE, dendrogram = FALSE, ...,
+  expand.x = c(0, 0.2), lineCol = "grey20", lineWidth = 0.2)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -22,9 +23,19 @@ File extensions are dropped by default.}
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
 or \code{plotType = "line"}}
 
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using heirachial clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
+
 \item{...}{Used to pass additional attributes to theme()}
 
 \item{expand.x}{Passed to \code{scale_x_discrete}}
+
+\item{lineWidth, lineCol}{Passed to geom_hline and geom_vline to determine
+width and colour of gridlines}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
