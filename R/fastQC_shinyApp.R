@@ -406,13 +406,30 @@ fastqcShiny <- function(fastqcInput = NULL){
     })
 
     output$SLHeatmap <- renderPlotly({
+      if(is.null(input$SLdendro)){
+        SLdendro <- FALSE
+      }else{
+        SLdendro <- input$SLdendro
+      }
       SLtype <- input$SLType == "Counts"
       plotSequenceLengthDistribution(data(),
                                      clusterNames = input$SLcluster,
-                                     denrogram = input$SLdendro,
-                                     counts= SLType,
+                                     dendrogram = SLdendro,
+                                     counts= SLtype,
                                      usePlotly = TRUE) %>%
-        layout(margin = list(r = 200))
+        layout(margin = list(r = 200, l = 0))
+    })
+
+    output$SLSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotSequenceLengthDistribution(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
+        layout(margin = list(r = 200, l = 100))
     })
 
     output$overRepHeatmap <- renderPlotly({
