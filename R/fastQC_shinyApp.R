@@ -264,7 +264,7 @@ fastqcShiny <- function(fastqcInput = NULL){
 
 # Summary heatmap in first tab
     output$SummaryFlags <- renderPlotly({
-      plotSummary(fdl, usePlotly = TRUE) %>%
+      plotSummary(data(), usePlotly = TRUE) %>%
         layout(margin = list(r = 200))
     })
 
