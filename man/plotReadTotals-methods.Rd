@@ -21,8 +21,8 @@ plotReadTotals(x, usePlotly = FALSE, duplicated = TRUE, bars = "stacked",
   duplicated = TRUE, bars = "stacked", ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(x, usePlotly = FALSE,
-  duplicated = TRUE, bars = "stacked", labels, millions, pwfCols,
-  dupCol = rgb(0.2, 0.2, 0.8), uniqCol = rgb(0.9, 0.2, 0.2), ...)
+  duplicated = TRUE, bars = "stacked", labels, millions, pwfCols, barCols,
+  ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -47,7 +47,7 @@ Unless specified, will be set as TRUE automatically if the highest total is > 2e
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
 
-\item{dupCol, uniqCol}{Colours for duplicated and unique reads. Ignored if \code{duplicated = FALSE}}
+\item{barCols}{Colours for duplicated and unique reads.}
 }
 \value{
 Returns a ggplot or plotly object

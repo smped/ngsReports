@@ -24,7 +24,7 @@
 #' @param bars If \code{duplicated = TRUE}, show unique and deduplicated reads as "stacked" or "adjacent".
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param dupCol,uniqCol Colours for duplicated and unique reads. Ignored if \code{duplicated = FALSE}
+#' @param barCols Colours for duplicated and unique reads.
 #' @param ... Used to pass additional attributes to theme()
 #'
 #' @examples
@@ -90,9 +90,7 @@ setMethod("plotReadTotals", signature = "FastqcFileList",
 #' @export
 setMethod("plotReadTotals", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, duplicated = TRUE, bars = "stacked",
-                   labels, millions, pwfCols,
-                   dupCol = rgb(0.2, 0.2, 0.8), uniqCol = rgb(0.9, 0.2, 0.2),
-                   ...){
+                   labels, millions, pwfCols, barCols, ...){
 
             df <- tryCatch(readTotals(x))
 
@@ -127,11 +125,19 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
             # Setup the basic plot in millions or not
             if (millions) df$Total_Sequences <- df$Total_Sequences / 1e06
 
+            # Get the colours for the barplot
+            if (missing(barCols)){
+              barCols <- c(rgb(0.9, 0.2, 0.2), rgb(0.2, 0.2, 0.8))
+            }
+            else{
+              stopifnot(length(barCols) > 2)
+            }
+
 
             if (!duplicated){
               # Add the rest of the parameters
               rtPlot <- ggplot(df, aes_string(x = "Filename", y = "Total_Sequences")) +
-                geom_bar(stat = "identity") +
+                geom_bar(stat = "identity", fill = barCols[1]) +
                 labs(y = ylab) +
                 theme_bw() +
                 theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
@@ -139,7 +145,9 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
 
               if(usePlotly){
                 rtPlot <- rtPlot +
-                  theme(axis.title.x = element_blank())
+                  theme(axis.title.x = element_blank(),
+                        axis.text.x = element_blank(),
+                        axis.ticks.x = element_blank())
                 rtPlot <- suppressMessages(
                   plotly::ggplotly(rtPlot)
                 )
@@ -164,11 +172,12 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                 colnames(joinedDf)[which(colnames(joinedDf) == "Total_Sequences")] <- "Total"
                 joinedDf <- joinedDf[c("Filename", "Total", "Deduplicated")]
                 joinedDf <- reshape2::melt(joinedDf, id.vars = "Filename", variable.name = "Type", value.name = "Total")
+                joinedDf$Type <- factor(joinedDf$Type, levels = c("Deduplicated", "Total"))
 
                 # Draw the plot
                 rtPlot <- ggplot(joinedDf, aes_string(x = "Filename", y = "Total", fill = "Type")) +
                   geom_bar(stat = "identity", position = "dodge") +
-                  scale_fill_manual(values = (c(Total = dupCol, Deduplicated = uniqCol)))
+                  scale_fill_manual(values = barCols)
               }
               if (bars == "stacked"){
 
@@ -183,7 +192,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                 # Draw the plot
                 rtPlot <- ggplot(joinedDf, aes_string(x = "Filename", y = "Total", fill = "Type")) +
                   geom_bar(stat = "identity") +
-                  scale_fill_manual(values = (c(Duplicated = dupCol, Unique = uniqCol)))
+                  scale_fill_manual(values = barCols)
               }
 
               # Add common themes & labels
@@ -195,44 +204,19 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
 
               if (usePlotly){
 
-                # Sort out the colours
-                if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-                stopifnot(isValidPwf(pwfCols))
-
-                key <- unique(deDup["Filename"])
-                t <- getSummary(x)
-                t <- t[t$Category == "Sequence Duplication Levels",]
-                t$Filename <- labels[t$Filename]
-                t <- dplyr::full_join(key["Filename"], t, by = "Filename")
-                t$Filename <- with(t, factor(Filename, levels=Filename))
-
-                sideBar <- ggplot(t, aes(x = Filename, y = 1, key = key)) +
-                  geom_tile(aes_string(fill = "Status")) +
-                  scale_fill_manual(values = getColours(pwfCols)) +
-                  theme(panel.grid.minor = element_blank(),
-                        panel.background = element_blank(),
-                        axis.title=element_blank(),
-                        axis.text=element_blank(),
-                        axis.ticks=element_blank(),
-                        legend.title = element_blank())
-                sideBar <- suppressMessages(
-                  plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
-                )
-
+                nc <- max(nchar(labels))
                 # Add the basic layout
                 rtPlot <- rtPlot +
                   theme(axis.title.x = element_blank(),
+                        # axis.title.y = element_text(vjust = 1),
                         axis.text.x =element_blank(),
                         axis.ticks.x=element_blank(),
                         legend.position = "none")
                 rtPlot <- suppressMessages(
-                  plotly::ggplotly(rtPlot)
+                  plotly::ggplotly(rtPlot) %>%
+                    layout(margin(b = 9*nc))
                 )
 
-                # Make the final layout for the plot
-                rtPlot <- plotly::subplot(sideBar, rtPlot,
-                                          nrows = 2, shareX = TRUE, heights = c(0.15, 0.85)) %>%
-                  plotly::layout(showlegend = FALSE, yaxis2 = list(title = ylab))
               }
 
             }
