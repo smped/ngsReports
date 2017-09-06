@@ -153,25 +153,25 @@ fastqcShiny <- function(fastqcInput = NULL){
               plotlyOutput("GCheatmap"),
               plotlyOutput("GCSingle"),
               width = "70%", left = "30%", right = "0%"))),
-        # tabPanel(
-        #   "Sequence Length Distribution",
-        #   splitLayout(
-        #     fixedPanel(
-        #       sidebarPanel(
-        #         radioButtons(inputId="SLType", label="Value to plot",
-        #                      choices=c("Frequency","Count"), selected = "Frequency"),
-        #         checkboxInput("SQcluster", "Cluster Filenames", value = FALSE),
-        #         htmlOutput("SQdendro"),
-        #         width = "20%", left = "0%", right = "80%"
-        #       ), width = "20%"),
-        #     absolutePanel(
-        #       h1("Sequence Length Distribution for all reads"),
-        #       h5("Sequence length distribution in each sample, can either view total count or frequency"),
-        #       h5("Click sidebar on heatmap to change line plots"),
-        #       h5("If dendrogram is truncated double click on dendrogram to resize"),
-        #       plotlyOutput("SLHeatmap"),
-        #       plotlyOutput("SLSingle"),
-        #       width = "70%", left = "30%", right = "0%"))),
+        tabPanel(
+          "Sequence Length Distribution",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                radioButtons(inputId="SLType", label="Value to plot",
+                             choices=c("Frequency","Count"), selected = "Frequency"),
+                checkboxInput("SLcluster", "Cluster Filenames", value = FALSE),
+                htmlOutput("SLdendro"),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Sequence Length Distribution for all reads"),
+              h5("Sequence length distribution in each sample, can either view total count or frequency"),
+              h5("Click sidebar on heatmap to change line plots"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
+              plotlyOutput("SLHeatmap"),
+              plotlyOutput("SLSingle"),
+              width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Overrepresented Sequences",
           splitLayout(
