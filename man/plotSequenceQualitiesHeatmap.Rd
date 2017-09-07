@@ -5,7 +5,8 @@
 \title{Plot the Per Sequence Quality Scores}
 \usage{
 plotSequenceQualitiesHeatmap(x, subset, labels, counts = FALSE, pwfCols,
-  usePlotly = FALSE, dendrogram = FALSE, clusterNames = FALSE, ...)
+  usePlotly = FALSE, dendrogram = FALSE, clusterNames = FALSE,
+  lineCol = "grey20", lineWidth = 0.2, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
