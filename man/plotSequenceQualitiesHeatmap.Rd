@@ -34,6 +34,9 @@ will be displayed.}
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using heirachial clustering}
 
+\item{lineWidth, lineCol}{Passed to geom_hline and geom_vline to determine
+width and colour of gridlines}
+
 \item{...}{Used to pass various potting parameters to theme.
 Can also be used to set size and colour for box outlines.}
 }

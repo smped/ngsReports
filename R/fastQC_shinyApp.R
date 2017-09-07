@@ -153,25 +153,25 @@ fastqcShiny <- function(fastqcInput = NULL){
               plotlyOutput("GCheatmap"),
               plotlyOutput("GCSingle"),
               width = "70%", left = "30%", right = "0%"))),
-        # tabPanel(
-        #   "Sequence Length Distribution",
-        #   splitLayout(
-        #     fixedPanel(
-        #       sidebarPanel(
-        #         radioButtons(inputId="SLType", label="Value to plot",
-        #                      choices=c("Frequency","Count"), selected = "Frequency"),
-        #         checkboxInput("SQcluster", "Cluster Filenames", value = FALSE),
-        #         htmlOutput("SQdendro"),
-        #         width = "20%", left = "0%", right = "80%"
-        #       ), width = "20%"),
-        #     absolutePanel(
-        #       h1("Sequence Length Distribution for all reads"),
-        #       h5("Sequence length distribution in each sample, can either view total count or frequency"),
-        #       h5("Click sidebar on heatmap to change line plots"),
-        #       h5("If dendrogram is truncated double click on dendrogram to resize"),
-        #       plotlyOutput("SLHeatmap"),
-        #       plotlyOutput("SLSingle"),
-        #       width = "70%", left = "30%", right = "0%"))),
+        tabPanel(
+          "Sequence Length Distribution",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                radioButtons(inputId="SLType", label="Value to plot",
+                             choices=c("Frequency","Count"), selected = "Frequency"),
+                checkboxInput("SLcluster", "Cluster Filenames", value = FALSE),
+                htmlOutput("SLdendro"),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Sequence Length Distribution for all reads"),
+              h5("Sequence length distribution in each sample, can either view total count or frequency"),
+              h5("Click sidebar on heatmap to change line plots"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
+              plotlyOutput("SLHeatmap"),
+              plotlyOutput("SLSingle"),
+              width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Overrepresented Sequences",
           splitLayout(
@@ -264,7 +264,7 @@ fastqcShiny <- function(fastqcInput = NULL){
 
 # Summary heatmap in first tab
     output$SummaryFlags <- renderPlotly({
-      plotSummary(fdl, usePlotly = TRUE) %>%
+      plotSummary(data(), usePlotly = TRUE) %>%
         layout(margin = list(r = 200))
     })
 
@@ -406,13 +406,30 @@ fastqcShiny <- function(fastqcInput = NULL){
     })
 
     output$SLHeatmap <- renderPlotly({
+      if(is.null(input$SLdendro)){
+        SLdendro <- FALSE
+      }else{
+        SLdendro <- input$SLdendro
+      }
       SLtype <- input$SLType == "Counts"
       plotSequenceLengthDistribution(data(),
                                      clusterNames = input$SLcluster,
-                                     denrogram = input$SLdendro,
-                                     counts= SLType,
+                                     dendrogram = SLdendro,
+                                     counts= SLtype,
                                      usePlotly = TRUE) %>%
-        layout(margin = list(r = 200))
+        layout(margin = list(r = 200, l = 0))
+    })
+
+    output$SLSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotSequenceLengthDistribution(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
+        layout(margin = list(r = 200, l = 100))
     })
 
     output$overRepHeatmap <- renderPlotly({

@@ -25,6 +25,8 @@
 #' fastqc data will be clustered using heirachial clustering
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
+#' @param lineWidth,lineCol Passed to geom_hline and geom_vline to determine
+#' width and colour of gridlines
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
 #'
