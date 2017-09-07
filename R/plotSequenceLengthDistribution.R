@@ -29,6 +29,7 @@
 #' @param expand.x Passed to \code{scale_x_discrete}
 #' @param lineWidth,lineCol Passed to geom_hline and geom_vline to determine
 #' width and colour of gridlines
+#' @param heatCol The colour scheme for the heatmap
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
@@ -47,8 +48,6 @@
 #' plotSequenceLengthDistribution(fdl)
 #'
 #' @importFrom dplyr vars
-#' @importFrom reshape2 dcast
-#' @importFrom reshape2 melt
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 geom_line
@@ -64,13 +63,14 @@
 #' @importFrom plotly ggplotly
 #' @importFrom plotly layout
 #' @importFrom plotly subplot
+#' @importFrom viridisLite inferno
 #'
 #' @export
 plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts = FALSE,
                                            plotType = "heatmap", clusterNames = FALSE,
                                            dendrogram = FALSE, ...,
                                            expand.x = c(0,0.2), lineCol = "grey20",
-                                           lineWidth = 0.2){
+                                           lineWidth = 0.2, heatCol = inferno(50)){
 
   df <- tryCatch(Sequence_Length_Distribution(x))
 
@@ -102,7 +102,7 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
   )
 
   df$Length <- as.integer(df$Length)
-  df <- dcast(df, Filename ~ Length)
+  df <- reshape2::dcast(df, Filename ~ Length, value.var = "Count")
   df[is.na(df)] <- 0
 
 
@@ -112,7 +112,6 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
     row.ord <- order.dendrogram(clus)
     df <- df[row.ord,]
   }
-  key <- df$Filename
   df$Filename <- labels[df$Filename]
   df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Length", value.name = "Count")
   df$Filename <- factor(df$Filename, levels = unique(df$Filename))
@@ -161,14 +160,14 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
     if (counts){
       lenPlot <- ggplot(df, aes_string("Length","Filename", fill = "Count")) +
         geom_tile(colour = lineCol) +
-        scale_fill_gradientn(colours = viridisLite::inferno(50)) +
+        scale_fill_gradientn(colours = heatCol) +
         scale_y_discrete(labels = labels, expand = c(0, 0))
     }
     else{
       lenPlot <- ggplot(df, aes_string("Length","Filename", fill = "Freq")) +
         geom_tile(colour = lineCol) +
         labs(fill = "Percent (%)") +
-        scale_fill_gradientn(colours = viridisLite::inferno(50)) +
+        scale_fill_gradientn(colours = heatCol) +
         scale_y_discrete(labels = labels, expand = c(0, 0))
     }
   }
@@ -194,6 +193,9 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
       t$Filename <- labels[t$Filename]
       t$Filename <- factor(t$Filename, levels = levels(df$Filename))
       t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+
+      # Set the key for extracting individual files on click
+      key <- names(labels[match(levels(df$Filename), labels)])
 
       sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
         geom_tile(aes_string(fill = "Status")) +

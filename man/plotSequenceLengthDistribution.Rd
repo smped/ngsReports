@@ -6,7 +6,8 @@
 \usage{
 plotSequenceLengthDistribution(x, usePlotly = FALSE, labels, counts = FALSE,
   plotType = "heatmap", clusterNames = FALSE, dendrogram = FALSE, ...,
-  expand.x = c(0, 0.2), lineCol = "grey20", lineWidth = 0.2)
+  expand.x = c(0, 0.2), lineCol = "grey20", lineWidth = 0.2,
+  heatCol = inferno(50))
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -36,6 +37,8 @@ will be displayed.}
 
 \item{lineWidth, lineCol}{Passed to geom_hline and geom_vline to determine
 width and colour of gridlines}
+
+\item{heatCol}{The colour scheme for the heatmap}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
