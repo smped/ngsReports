@@ -89,7 +89,7 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
 
   # Add zero counts for lengths either side of the included range
   df <- dplyr::bind_rows(
-    lapply(split(df, f = df$Filename) ,
+    lapply(split(df, f = df$Filename),
            function(x){
              dplyr::bind_rows(x,
                               dplyr::data_frame(Filename = x$Filename[1],
@@ -101,8 +101,8 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
            })
   )
 
-  df$Length <- as.integer(df$Length)
-  df <- reshape2::dcast(df, Filename ~ Length, value.var = "Count")
+  df$Lower <- as.integer(df$Lower)
+  df <- reshape2::dcast(df, Filename ~ Lower, value.var = "Count")
   df[is.na(df)] <- 0
 
 
@@ -113,7 +113,10 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
     df <- df[row.ord,]
   }
   df$Filename <- labels[df$Filename]
-  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Length", value.name = "Count")
+  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Lower", value.name = "Count")
+
+
+
   df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 
 
@@ -127,8 +130,8 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
            }))
 
   # Arrange in position
-  df <- dplyr::arrange_at(df, vars("Filename", "Length"))
-  df$Length <- factor(df$Length, levels = unique(df$Length))
+  df <- dplyr::arrange_at(df, vars("Filename", "Lower"))
+  df$Lower <- factor(df$Lower, levels = unique(df$Lower))
 
   # Get any arguments for dotArgs that have been set manually
   dotArgs <- list(...)
@@ -139,13 +142,13 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
 
   if (plotType == "line"){
     if (counts){
-      lenPlot <- ggplot(df, aes_string("Length", "Count", colour = "Filename", group = "Filename")) +
+      lenPlot <- ggplot(df, aes_string("Lower", "Count", colour = "Filename", group = "Filename")) +
         geom_line() +
         labs(y = "Count") +
         theme_bw()
     }
     else{
-      lenPlot <- ggplot(df, aes_string("Length", "Freq", colour = "Filename", group = "Filename")) +
+      lenPlot <- ggplot(df, aes_string("Lower", "Freq", colour = "Filename", group = "Filename")) +
         geom_line() +
         scale_y_continuous() +
         labs(y = "Percent (%)") +
@@ -156,13 +159,13 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
   if (plotType == "heatmap"){
 
     if (counts){
-      lenPlot <- ggplot(df, aes_string("Length","Filename", fill = "Count")) +
+      lenPlot <- ggplot(df, aes_string("Lower","Filename", fill = "Count")) +
         geom_tile(colour = lineCol) +
         scale_fill_gradientn(colours = heatCol) +
         scale_y_discrete(labels = labels, expand = c(0, 0))
     }
     else{
-      lenPlot <- ggplot(df, aes_string("Length","Filename", fill = "Freq")) +
+      lenPlot <- ggplot(df, aes_string(x = "Lower",y ="Filename", fill = "Freq")) +
         geom_tile(colour = lineCol) +
         labs(fill = "Percent (%)") +
         scale_fill_gradientn(colours = heatCol) +
@@ -178,6 +181,8 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
 
   if(usePlotly){
     if(plotType == "line") {
+      lenPlot <- lenPlot +
+        theme(legend.position = "none")
       lenPlot <- ggplotly(lenPlot, tooltip = c("x", "y", "colour"))
     }else{
       pwfCols <- ngsReports::pwf

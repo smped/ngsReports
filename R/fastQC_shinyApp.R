@@ -93,6 +93,22 @@ fastqcShiny <- function(fastqcInput = NULL){
               # plotlyOutput("RDSingle"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
+          "Duplicated sequences",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("Dupcluster", "Cluster Filenames", value = FALSE),
+                htmlOutput("Dupdendro"),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Sequence Duplication levels"),
+              h5("Sequence duplication in each sample"),
+              h5("Click sidebar on heatmap to change line plots"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
+              plotlyOutput("DupHeatmap"),
+              width = "70%", left = "30%", right = "0%"))),
+        tabPanel(
           "Per Base Sequence Quality",
           splitLayout(
             fixedPanel(
@@ -159,7 +175,7 @@ fastqcShiny <- function(fastqcInput = NULL){
             fixedPanel(
               sidebarPanel(
                 radioButtons(inputId="SLType", label="Value to plot",
-                             choices=c("Frequency","Count"), selected = "Frequency"),
+                             choices=c("Frequency","Counts"), selected = "Frequency"),
                 checkboxInput("SLcluster", "Cluster Filenames", value = FALSE),
                 htmlOutput("SLdendro"),
                 width = "20%", left = "0%", right = "80%"
@@ -288,19 +304,27 @@ fastqcShiny <- function(fastqcInput = NULL){
         layout(margin = list(r = 200))
     })
 
-    # output$RDSingle <- renderPlotly({
-    #   if(is.null(event_data("plotly_click")$key[[1]])){
-    #     num <- 1
-    #   }else {
-    #     click <- event_data("plotly_click")
-    #     num <- which(fileName(data()) == click$key[[1]])
-    #   }
-    #   sub_fdl <- data()[num]
-    #   plotDuplicationLevels(sub_fdl, type = "Total sequences", usePlotly = TRUE) %>%
-    #     layout(margin = list(r = 200),
-    #            legend = list(orientation = 'h', title = ""))
-    # })
 
+
+
+    output$Dupdendro <- renderUI({
+      if(input$Dupcluster) {
+        checkboxInput("SLdendro", "Plot Dendrogram?", value = FALSE)
+      }
+    })
+
+    output$DupHeatmap <- renderPlotly({
+      if(is.null(input$Dupdendro)){
+        Dupdendro <- FALSE
+      }else{
+        Dupdendro <- input$SLdendro
+      }
+      plotDuplicationLevels(data(),
+                                     clusterNames = input$Dupcluster,
+                                     dendrogram = Dupdendro,
+                                     usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 0))
+    })
 
     # start rendering the input buttons for
     output$theoreticalGC <- renderUI({
