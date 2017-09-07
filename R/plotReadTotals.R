@@ -213,8 +213,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                         axis.ticks.x=element_blank(),
                         legend.position = "none")
                 rtPlot <- suppressMessages(
-                  plotly::ggplotly(rtPlot) %>%
-                    layout(margin(b = 9*nc))
+                  plotly::ggplotly(rtPlot)
                 )
 
               }
