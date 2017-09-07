@@ -213,11 +213,16 @@ setMethod("plotGcContent", signature = "FastqcData",
             if(usePlotly){
               value <- c("Freq", "Count")[counts + 1]
               gcPlot <- gcPlot +
-                theme(legend.position = "none") +
+                theme(legend.position = "none",
+                      axis.text.y = element_blank(),
+                      axis.ticks.y = element_blank()) +
                 ggtitle(label = labels, subtitle = c())
               gcPlot <- suppressWarnings(
                 suppressMessages(
-                  plotly::ggplotly(gcPlot, tooltip = c("GC_Content", value, "Type"))
+                  # Try using subplot with plotly_empty to align with the heatmap in the app
+                  plotly::subplot(plotly::plotly_empty(),
+                                  plotly::ggplotly(gcPlot, tooltip = c("GC_Content", value, "Type")),
+                                  widths = c(0.2, 0.8), margin = 0)
                 )
               )
             }
@@ -419,23 +424,15 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                     scale_y_reverse(expand = c(0, 1)) +
                     scale_x_continuous(expand = c(0,2))
 
-                  gcPlot <- suppressMessages(
-                    plotly::subplot(dendro, sideBar, gcPlot, widths = c(0.1,0.1,0.8),
-                                    margin = 0, shareY = TRUE) %>%
-                      plotly::layout(xaxis3 = list(title = "GC Content (%)"))
-                  )
                 }
                 else{
-                  gcPlot <- suppressWarnings(
-                    suppressMessages(
-                      plotly::subplot(plotly::plotly_empty(), sideBar, gcPlot,
-                                      widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
-                        plotly::layout(xaxis3 = list(title = "GC Content (%)"),
-                                       annotations = list(text = "Filename", showarrow = FALSE,
-                                                          textangle = -90))
-                    )
-                  )
+                  dendro <- plotly::plotly_empty()
                 }
+
+                gcPlot <- suppressMessages(
+                  plotly::subplot(dendro, sideBar, gcPlot, widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
+                    plotly::layout(xaxis3 = list(title = "GC Content (%)"))
+                )
 
               }
             }

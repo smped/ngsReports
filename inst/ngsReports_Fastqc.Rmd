@@ -1,0 +1,196 @@
+---
+title: "ngsReports::FastQC"
+subtitle: "`r getwd()`"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  html_document: 
+    fig_caption: yes
+    fig_height: 6
+    fig_width: 10
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+											results = "asis",
+											message = FALSE, warning = FALSE,
+											error = FALSE)
+```
+
+
+# Setup
+
+```{r}
+library(ngsReports)
+library(dplyr)
+library(ggplot2)
+library(tibble)
+library(pander)
+library(scales)
+library(magrittr)
+library(stringr)
+library(readr)
+```
+
+```{r setGlobals}
+globals <- list(usePlotly = TRUE,
+								clusterNames = TRUE,
+								dendrogram = TRUE,
+								theoreticalGC = TRUE,
+								theoreticalType = "Transcriptome",
+								species = "Drerio")
+```
+
+
+```{r rawFastqcData}
+rawFastqcFiles <- list.files(pattern = "(fastqc.zip|fastqc)$")
+stopifnot(length(rawFastqcFiles) > 1)
+message("FastQC files found. Loading FastQC data")
+rawFastqcData <- tryCatch(getFastqcData(rawFastqcFiles))
+plotLabels <- structure(gsub(".(fastq|fastq.gz|bam)", "", fileName(rawFastqcData)),
+												names = fileName(rawFastqcData))
+```
+
+
+```{r}
+message("Checking for targets.csv")
+tgtsFile <- "targets.csv"
+if (file.exists(tgtsFile)){
+	message("Found targets.csv...checking columns")
+	targets <- read_csv(tgtsFile)
+	fCol <- grep("[Ff]ile[Nn]ame", colnames(targets))
+	lCol <- grep("[Ll]abel", colnames(targets))
+	if (length(fCol) == 1 && length(lCol) == 1){
+		stopifnot(all(fileName(rawFastqcData) %in% targets[[fCol]]))
+		message("Alternate labels found")
+		plotLabels <- structure(targets[[lCol]], names = targets[[fCol]])
+	}
+	else{
+		message("No valid labels found")
+	}
+}
+if (!file.exists(tgtsFile)){
+	message("targets.csv not found. Using default labels")
+}
+```
+
+
+# FastQC Summary
+
+
+```{r}
+Basic_Statistics(rawFastqcData) %>%
+	mutate(Sequence_length = paste(Shortest_sequence, Longest_sequence, sep = "-")) %>%
+	dplyr::select(Filename, contains("sequence"), `%GC`, -contains("est")) %>%
+	set_names(gsub("_", " ", names(.))) %>%
+	set_names(str_to_title(names(.))) %>%
+	set_names(gsub("Sequences", "", names(.))) %>%
+	set_names(str_trim(names(.))) %>%
+	rename(`%GC` = `%Gc`) %>%
+	pander(big.mark = ",",
+				 split.tables = Inf,
+				 style = "rmarkdown",
+				 justify = "lrrrr",
+				 caption = "Summary statistics for all libraries")
+```
+
+## Read Totals
+
+Library Sizes ranged between `r pander(comma(range(readTotals(rawFastqcData)$Total_Sequences)))` reads.
+
+```{r plotReadTotals, fig.cap = "Read totals for each library. Duplicated reads are conventionally an high overestimate at this point."}
+plotReadTotals(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
+```
+
+
+## FastQC Summary
+
+```{r plotSummary, fig.cap="Summary of FastQC flags for each parameter"}
+plotSummary(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
+```
+
+## Per Base Sequence Quality
+
+```{r plotBaseQualities, fig.cap = "Heatmap showing mean base qualities for each library"}
+plotBaseQualities(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```
+
+## Per Sequence Quality Scores
+
+```{r plotSequenceQualitiesHeatmap, fig.cap = "Heatmap showing mean sequence qualities for each library"}
+plotSequenceQualitiesHeatmap(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```
+
+## Per Base Sequence Content
+
+```{r plotSequenceContent, fig.cap = "Heatmap of summed base distributions along each read"}
+plotSequenceContent(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
+```
+
+## Per Sequence GC Content
+
+```{r plotGCHeat, fig.cap = "GC Content Heatmap"}
+plotGcContent(rawFastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, theoreticalType = globals$theoreticalType, species = globals$species, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```
+
+
+```{r plotGCLine, fig.cap = "GC Content Distributions for all reads"}
+plotGcContent(rawFastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, theoreticalType = globals$theoreticalType, species = globals$species, plotType = "line", usePlotly = globals$usePlotly)
+```
+
+## Sequence Length Distribution
+
+```{r plotSequenceLengthDistribution}
+plotSequenceLengthDistribution(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```
+
+## Sequence Duplication Levels
+
+```{r plotDuplicationLevels}
+plotDuplicationLevels(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```
+
+## Overrepresented Sequences
+
+```{r Overrepresented_sequences, echo=FALSE, results='asis'}
+nOver <- 30
+Overrepresented_sequences(rawFastqcData) %>% 
+	mutate(Filename = plotLabels[Filename]) %>%
+	arrange(Sequence) %>%
+	dplyr::slice(1:nOver) %>%
+	pander(split.tables = Inf,
+				 style = "rmarkdown",
+				 justify = "llrrl",
+				 big.mark = ",",
+				 caption = paste("Summary of Overrepresented Sequences in all files.",
+				 								"A maximum of", nOver, "seqences are shown."))
+```
+
+## Adapter Content
+
+```{r plotAdapterContent, fig.cap="Universal Adapter Content"}
+plotAdapterContent(rawFastqcData, labels = plotLabels, adapterType = "Universal", plotType = "line", usePlotly = globals$usePlotly) 
+```
+
+## Kmer Content
+
+```{r plotKmerHeatmap}
+plotKmerHeatmap(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram)
+```
+
+```{r Kmer_Content}
+nK <- 30
+Kmer_Content(rawFastqcData) %>%
+	arrange(desc(Count)) %>%
+	dplyr::slice(1:nK) %>%
+	arrange(Sequence) %>%
+	mutate(Filename = plotLabels[Filename]) %>%
+	pander(split.tables = Inf,
+				 style = "rmarkdown",
+				 justify = "llrrrr",
+				 big.mark = ",",
+				 caption = paste("Summary of Overrepresented Sequences in all files.",
+				 								"A maximum of", nK, "Kmers are shown."))
+```
+
+

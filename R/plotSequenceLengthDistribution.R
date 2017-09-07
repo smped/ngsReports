@@ -130,8 +130,6 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
   df <- dplyr::arrange_at(df, vars("Filename", "Length"))
   df$Length <- factor(df$Length, levels = unique(df$Length))
 
-
-
   # Get any arguments for dotArgs that have been set manually
   dotArgs <- list(...)
   allowed <- names(formals(ggplot2::theme))
@@ -176,6 +174,7 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
     scale_x_discrete(expand = expand.x) +
     labs(x = "Sequence Length") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+  if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
 
   if(usePlotly){
     if(plotType == "line") {
@@ -218,25 +217,17 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
           coord_flip() +
           scale_y_reverse(expand = c(0, 1)) +
           scale_x_continuous(expand = c(0,2))
-
-        lenPlot <- suppressMessages(
-          plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.1, 0.8), margin = 0, shareY = TRUE) %>%
-            plotly::layout(xaxis3 = list(title = "Sequence Length (bp)"))
-        )
       }
       else{
-        lenPlot <- suppressMessages(
-          plotly::subplot(plotly::plotly_empty(),
-                          sideBar, lenPlot,
-                          widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
-            plotly::layout(xaxis3 = list(title = "Sequence Length (bp)"),
-                           annotations = list(text = "Filename", showarrow = FALSE,
-                                              textangle = -90))
-        )
+        dendro <- plotly::plotly_empty()
       }
+
+      lenPlot <- suppressMessages(
+        plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.1, 0.8), margin = 0, shareY = TRUE) %>%
+          plotly::layout(xaxis3 = list(title = "Sequence Length (bp)"))
+      )
     }
-  }else{
-    if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
+
   }
 
   lenPlot
