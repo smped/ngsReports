@@ -7,14 +7,8 @@
 - Add Fastq Illumina Filter plot/status
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Write Vignette
-- make 'output all plots to pdf' function
 - Build tests for classes and methods
 - Remove `subset` from all plots. This can be done before passing a `FastqcDataList` to the function.
-- Shiny app
-    - Add AdapterContent
-    - Add Base_SequenceContent plot to app
-    - Add summary info to LHS on load
 - Adapter Content
-    - Add plotly version of line plot
-- Add Sequence Length Distribution plots (heatmap & line)
-    - `usePlotly` needs to be implemented in function
+    - add clustering
+
