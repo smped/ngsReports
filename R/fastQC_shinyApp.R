@@ -109,6 +109,21 @@ fastqcShiny <- function(fastqcInput = NULL){
               plotlyOutput("DupHeatmap"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
+          "Per Base Sequence Content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Per Base Sequence Content"),
+              h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
+              h5("1 - G = opacity, T = Green, A = Blue, C = Red"),
+              h5("if each base is equally represented then should be dark grey-black"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
+              plotlyOutput("SCHeatmap"),
+              width = "70%", left = "30%", right = "0%"))),
+        tabPanel(
           "Per Base Sequence Quality",
           splitLayout(
             fixedPanel(
@@ -323,6 +338,13 @@ fastqcShiny <- function(fastqcInput = NULL){
                                      clusterNames = input$Dupcluster,
                                      dendrogram = Dupdendro,
                                      usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 0))
+    })
+
+    output$SCHeatmap <- renderPlotly({
+
+      plotSequenceContent(data(),
+                            usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 0))
     })
 
