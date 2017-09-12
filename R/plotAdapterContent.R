@@ -189,7 +189,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, plotType = "heatmap", labels, adapterType,
-                   pwfCols, warn = 5, fail = 10, clusterNames = FALSE,
+                   pwfCols, warn = 5, fail = 10,
                    ...){
 
             df <- Adapter_Content(x)
