@@ -308,15 +308,14 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               # Sort out the start positions
               df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
 
-              # Get the longest sequence
-              df$Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1",df$Base)))
               # Select the Mean or Median
-              df <- df[c("Filename", "Start", plotValue, "Longest_sequence")]
+              df <- df[c("Filename", "Start", plotValue, "Base")]
 
               #split data into correct lengths and fill NA's
               df <- split(df, f = df$Filename) %>%
                 lapply(function(x){
-                  dfFill <- data.frame(Start = 1:x$Longest_sequence[1])
+                  Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1", x$Base)))
+                  dfFill <- data.frame(Start = 1:Longest_sequence)
                   x <- dplyr::right_join(x, dfFill, by = "Start") %>%
                     zoo::na.locf()
                 }) %>%
@@ -348,7 +347,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               # Start the heatmap
               qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = plotValue)) +
                 geom_tile() +
-                scale_fill_pwf(df[[plotValue]], pwfCols, c(0, fail, warn, maxVal), FALSE ) +
+                scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, maxVal), FALSE ) +
                 theme(panel.grid.minor = element_blank(),
                       panel.background = element_blank())
 

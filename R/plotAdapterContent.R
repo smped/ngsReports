@@ -108,7 +108,8 @@ setMethod("plotAdapterContent", signature = "FastqcFileList",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcData",
-          function(x, usePlotly = FALSE, pwfCols, warn = 5, fail = 10, ...){
+          function(x, usePlotly = FALSE, pwfCols, warn = 5, fail = 10,
+                   ...){
 
             df <- Adapter_Content(x)
 
@@ -188,7 +189,8 @@ setMethod("plotAdapterContent", signature = "FastqcData",
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, plotType = "heatmap", labels, adapterType,
-                   pwfCols, warn = 5, fail = 10, ...){
+                   pwfCols, warn = 5, fail = 10, clusterNames = FALSE,
+                   ...){
 
             df <- Adapter_Content(x)
 
@@ -254,12 +256,44 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
             if (plotType == "heatmap"){
 
+              # Get the longest sequence
+              df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Position))
+              df <- df[c("Filename", "Start", "Percent", "Position", "Type")]
+
+              df <- split(df, f = df$Filename) %>%
+                lapply(function(x){
+                   splitType <- split(x, f = x$Type)
+                   lapply(splitType, function(sp){
+                  Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1", sp$Position)))
+                  dfFill <- data.frame(Start = 1:Longest_sequence)
+                  x <- dplyr::right_join(x, dfFill, by = "Start") %>%
+                    zoo::na.locf()}) %>%
+                     dplyr::bind_rows()
+                }) %>%
+                dplyr::bind_rows()
+              df$Start <- as.integer(df$Start)
+              df$Percent <- as.numeric(df$Percent)
+
+
+              ## talk to steve about this
+              # if(clusterNames){
+              #   df <- reshape2::dcast(df, Filename ~ Start)
+              #   df[is.na(df)] <- 0
+              #   xx <- dplyr::select(df, -Filename)
+              #   clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+              #   row.ord <- order.dendrogram(clus)
+              #   df <- df[row.ord,]
+              #   df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Position", value.name = "Percent")
+              # }
+
+              key <- rev(unique(df$Filename))
+              df$Filename <- labels[df$Filename]
               # Reverse the factor levels for a better looking plot
               df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
-              key <- levels(df$Filename)
+
 
               if (!usePlotly){
-                acPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "Percent")) +
+                acPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
                   scale_y_discrete(labels = labels) +
                   geom_tile() +
                   facet_wrap(~Type, ncol = 1) +
@@ -292,19 +326,19 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   sideBar <- suppressMessages(ggplotly(sideBar, tooltip = c("Status", "Filename")))
 
                   # Make the individual heatmap
-                  p <- ggplot(x, aes_string(x = "Position", y = "Filename", fill = "Percent")) +
+                  p <- ggplot(x, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
                     scale_y_discrete(labels = labels) +
                     geom_tile() +
                     scale_fill_pwf(x$Percent, pwfCols, breaks =c(0, warn, fail, 100)) +
                     facet_wrap(~Type, ncol = 1) +
-                    theme_bw() +
-                    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                    theme(panel.background = element_blank(),
+                          axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
                           axis.text.y = element_blank(),
                           axis.ticks.y = element_blank())
 
                   # Return each plotly object into a list
                   suppressMessages(
-                    plotly::subplot(sideBar, p, widths = c(0.1,0.9), margin = 0.01, shareY = TRUE)
+                    plotly::subplot(sideBar, p, widths = c(0.1,0.9), margin = 0, shareY = TRUE)
                   )
                 })
                 acPlot <- suppressMessages(
