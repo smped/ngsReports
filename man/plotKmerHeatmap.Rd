@@ -29,13 +29,13 @@ File extensions are dropped by default.}
 
 \item{naCol}{colour used for missing values
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
-fastqc data will be clustered using heirachial clustering}
+fastqc data will be clustered using hierarchical clustering}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
-fastqc data will be clustered using heirachial clustering}
+fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
 if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram

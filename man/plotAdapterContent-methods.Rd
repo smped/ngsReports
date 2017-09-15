@@ -27,8 +27,8 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
   warn = 5, fail = 10, ...)
 
 \S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
-  plotType = "heatmap", labels, adapterType, pwfCols, warn = 5, fail = 10,
-  ...)
+  plotType = "heatmap", labels, adapterType = "Total", pwfCols, warn = 5,
+  fail = 10, clusterNames = TRUE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -49,7 +49,12 @@ or \code{plotType = "line"}}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{adapterType}{A regular expression matching the adapter(s) to be plotted}
+\item{adapterType}{A regular expression matching the adapter(s) to be plotted.
+To plot all adapters summed, specify \code{adapterType = "Total"}.
+This is the default behaviour.}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using hierarchical clustering}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object

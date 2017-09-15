@@ -12,7 +12,7 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
-#' fastqc data will be clustered using heirachial clustering
+#' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
 #' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.

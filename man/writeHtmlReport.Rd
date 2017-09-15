@@ -26,8 +26,4 @@ Compiles an HTML report using a supplied template
 \details{
 This will take a user supplied template, or the file supplied with the package and create an HTML
 summary of all standard FASTQC plots for all files in the supplied directory.
-
-Compilation of an html report may require the package \code{webshot}.
-This in turn requires an a installation of PhantomJS, which can be installed using \code{webshot::install_phantomjs()}.
-If errors are received during compilation, please address this.
 }

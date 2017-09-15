@@ -38,7 +38,7 @@ globals <- list(usePlotly = TRUE,
 								dendrogram = TRUE,
 								theoreticalGC = TRUE,
 								theoreticalType = "Transcriptome",
-								species = "Drerio")
+								species = "Hsapiens")
 ```
 
 
@@ -129,12 +129,12 @@ plotSequenceContent(rawFastqcData, labels = plotLabels, usePlotly = globals$useP
 
 ## Per Sequence GC Content
 
-```{r plotGCHeat, fig.cap = "GC Content Heatmap"}
+```{r plotGCHeat, fig.cap = paste("GC Content Heatmap normalised to theoretical GC content in the", globals$species, globals$theoreticalType)}
 plotGcContent(rawFastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, theoreticalType = globals$theoreticalType, species = globals$species, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 
-```{r plotGCLine, fig.cap = "GC Content Distributions for all reads"}
+```{r plotGCLine, fig.cap = paste("GC Content Distributions for all reads showing theoretical GC content from the", globals$species, globals$theoreticalType)}
 plotGcContent(rawFastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, theoreticalType = globals$theoreticalType, species = globals$species, plotType = "line", usePlotly = globals$usePlotly)
 ```
 

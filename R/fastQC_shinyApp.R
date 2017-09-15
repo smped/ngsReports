@@ -241,7 +241,8 @@ fastqcShiny <- function(fastqcInput = NULL){
             fixedPanel(
               sidebarPanel(
                 selectInput("ACtype", "Choose Adapter Type",
-                            choices = c("Illumina Universal",
+                            choices = c("Total",
+                                        "Illumina Universal",
                                         "Illumina Small RNA",
                                         "Nextera Transposase")),
               # checkboxInput("ACcluster", "Cluster Filenames", value = FALSE),
@@ -571,6 +572,8 @@ fastqcShiny <- function(fastqcInput = NULL){
                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
       })
 
+    # By default, this method will now plot the sum of all adapter types
+    # Do we need to change the drop-down menu to accept the option "all"?
     output$ACheatmap <- renderPlotly({
       ACplot <- plotAdapterContent(data(),
                          adapterType = input$ACtype,
@@ -586,11 +589,8 @@ fastqcShiny <- function(fastqcInput = NULL){
         click <- event_data("plotly_click")
         num <- which(fileName(data()) == click$key[[1]])
       }
-      sub_fdl <- data()[num]
-      ACsing <- plotAdapterContent(sub_fdl,
-                                   adapterType = input$ACtype,
-                                   plotType = "line",
-                                   usePlotly = TRUE)
+      sub_fdl <- data()[[num]]
+      ACsing <- plotAdapterContent(sub_fdl, usePlotly = TRUE)
 
       if(!is.null(ACsing)) ACsing %>%
         layout(margin = list(r = 200, l = 100),
