@@ -33,7 +33,6 @@ Imports:
   tibble,
   viridis,
   viridisLite,
-  webshot,
   zoo
 LazyData: true
 RoxygenNote: 6.0.1
@@ -73,6 +72,7 @@ Collate:
     'importHisat2Logs.R'
     'importStarLogs.R'
     'isCompressed.R'
+    'makeSidebar.R'
     'maxAdapterContent.R'
     'methods-FastqcData.R'
     'path.R'

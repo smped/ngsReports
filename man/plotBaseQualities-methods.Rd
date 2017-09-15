@@ -49,7 +49,7 @@ values in plot}
 \item{plotValue}{\code{character} Type of quality data to be presented "Mean" or "Median"}
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
-fastqc data will be clustered using heirachial clustering}
+fastqc data will be clustered using hierarchical clustering}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.

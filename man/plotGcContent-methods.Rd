@@ -75,7 +75,7 @@ If \code{counts = FALSE} the frequencies will be plotted}
 values in plot}
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
-fastqc data will be clustered using heirachial clustering}
+fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
 if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram

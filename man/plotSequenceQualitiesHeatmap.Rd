@@ -32,7 +32,7 @@ if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} t
 will be displayed.}
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
-fastqc data will be clustered using heirachial clustering}
+fastqc data will be clustered using hierarchical clustering}
 
 \item{lineWidth, lineCol}{Passed to geom_hline and geom_vline to determine
 width and colour of gridlines}

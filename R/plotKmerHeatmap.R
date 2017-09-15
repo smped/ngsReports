@@ -22,9 +22,9 @@
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param naCol colour used for missing values
 #' #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
-#' fastqc data will be clustered using heirachial clustering
+#' fastqc data will be clustered using hierarchical clustering
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
-#' fastqc data will be clustered using heirachial clustering
+#' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
 #' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
