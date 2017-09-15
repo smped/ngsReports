@@ -22,17 +22,19 @@ Imports:
   plotly,
   readr,
   reshape2,
+  rmarkdown,
   Rsamtools,
   scales,
   shiny,
+  shinyFiles,
   ShortRead,
   stats,
   stringr,
   tibble,
   viridis,
   viridisLite,
-  zoo,
-  shinyFiles
+  webshot,
+  zoo
 LazyData: true
 RoxygenNote: 6.0.1
 Collate: 
@@ -95,4 +97,5 @@ Collate:
     'readTotals.R'
     'runFastQC.R'
     'scale_fill_pwf.R'
+    'writeHtmlReport.R'
 Suggests: testthat
