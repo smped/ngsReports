@@ -9,6 +9,7 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
+#' @param plotType \code{character}. Type of plot to generate. Must be "line" or "heatmap"
 #'
 #' @return A ggplot2 object
 #'
@@ -42,9 +43,9 @@
 #'
 #' @export
 
-plotSequenceContent <- function(x, usePlotly = FALSE, labels){
+plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatmap"){
 
-
+  stopifnot(plotType %in% c("heatmap", "line"))
   # Get the SequenceContent
   df <- tryCatch(Per_base_sequence_content(x))
   df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
@@ -58,6 +59,8 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels){
     if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
   }
   if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+  if(plotType == "heatmap"){
 
   maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
   df$colour <- with(df, rgb(floor(`T`) / maxBase, floor(A) / maxBase, floor(C) / maxBase, 1 - floor(G) / maxBase))
@@ -95,6 +98,32 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels){
   }
   else{
     sequenceContentHeatmap
+  }}
+  else{
+    df$Filename <- labels[df$Filename]
+    df2 <- df[!colnames(df) == "Base"]
+    df2 <- melt(df2, id.vars = c("Filename", "Start"))
+    colnames(df2) <- c("Filename", "Start", "Base", "Percent")
+    df2$Base <- factor(df2$Base, levels = unique(df2$Base))
+
+    #set colours
+    baseCols <- factor(c(`T`="red", G = "black", A = "green", C = "blue"))
+
+    sequenceContentHeatmap <- ggplot(df2, aes_string(x = "Start", y = "Percent", colour = "Base")) +
+      geom_line() +
+      facet_wrap(~Filename) +
+      scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+      scale_x_continuous(expand = c(0, 0)) +
+      guides(fill = FALSE) +
+      labs(x = "Position in read (bp)",
+           y = "Percent (%)") +
+      theme_bw() +
+      scale_colour_manual(values = baseCols)
+    if(usePlotly){
+      ggplotly(sequenceContentHeatmap)
+    }else{
+      sequenceContentHeatmap
+    }
   }
 }
 
