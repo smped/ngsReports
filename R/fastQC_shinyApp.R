@@ -26,6 +26,7 @@
 #' @importFrom shiny absolutePanel
 #' @importFrom shiny h1
 #' @importFrom shiny h5
+#' @importFrom shiny observe
 #' @importFrom shiny sidebarPanel
 #' @importFrom shiny radioButtons
 #' @importFrom shiny checkboxInput
@@ -39,9 +40,13 @@
 #' @importFrom shiny textOutput
 #' @importFrom shiny renderText
 #' @importFrom shiny reactive
+#' @importFrom shiny withProgress
 #' @importFrom shinyFiles shinyFilesButton
 #' @importFrom shinyFiles shinyFileChoose
+#' @importFrom shinyFiles shinyDirChoose
+#' @importFrom shinyFiles shinyDirButton
 #' @importFrom shinyFiles parseFilePaths
+#' @importFrom shinyFiles parseDirPath
 #' @importFrom shinyFiles getVolumes
 #'
 #' @export
@@ -68,6 +73,10 @@ fastqcShiny <- function(fastqcInput = NULL){
                 shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = ""),
                 h5(""),
                 textOutput("report"),
+                h5("Output report for files"),
+                shinyDirButton(id = "dirs", label = "Choose directory", title = ""),
+                textOutput("report2"),
+                h5(""),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -294,6 +303,28 @@ fastqcShiny <- function(fastqcInput = NULL){
       }
       selectedData
     })
+
+    dir <- reactive({
+      volumes <- shinyFiles::getVolumes()
+    shinyFiles::shinyDirChoose(input, "dirs", roots = volumes, session = session)
+    dirSelected <- shinyFiles::parseDirPath(volumes, input$dirs)
+    as.character(dirSelected)
+    })
+
+    observe({
+      dir()
+      if(length(dir())){
+        withProgress(min = 0, max = 1, value = 0.8, message = "Writing report", {
+          writeHtmlReport(dir())
+        })
+        output$report2 <- renderText("Done!")
+      }
+    })
+
+
+
+
+
 
 # Summary heatmap in first tab
     output$SummaryFlags <- renderPlotly({
