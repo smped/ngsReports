@@ -122,6 +122,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("if each base is equally represented then should be dark grey-black"),
               h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("SCHeatmap"),
+              plotlyOutput("SCsingle"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Per Base Sequence Quality",
@@ -336,9 +337,9 @@ fastqcShiny <- function(fastqcInput = NULL){
         Dupdendro <- input$SLdendro
       }
       plotDuplicationLevels(data(),
-                                     clusterNames = input$Dupcluster,
-                                     dendrogram = Dupdendro,
-                                     usePlotly = TRUE) %>%
+                            clusterNames = input$Dupcluster,
+                            dendrogram = Dupdendro,
+                            usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 0))
     })
 
@@ -348,6 +349,20 @@ fastqcShiny <- function(fastqcInput = NULL){
                             usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 0))
     })
+
+
+    output$SCsingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotSequenceContent(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
 
     # start rendering the input buttons for
     output$theoreticalGC <- renderUI({
