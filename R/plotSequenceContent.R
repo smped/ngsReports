@@ -10,6 +10,8 @@
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
 #' @param plotType \code{character}. Type of plot to generate. Must be "line" or "heatmap"
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+#' values in plot
 #'
 #' @return A ggplot2 object
 #'
@@ -43,9 +45,11 @@
 #'
 #' @export
 
-plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatmap"){
+plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatmap", pwfCols){
 
   stopifnot(plotType %in% c("heatmap", "line"))
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+
   # Get the SequenceContent
   df <- tryCatch(Per_base_sequence_content(x))
   df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
@@ -78,6 +82,9 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatma
     }) %>%
     dplyr::bind_rows()
   df$Start <- as.integer(df$Start)
+  key <- unique(df$Filename)
+  df$Filename <- labels[df$Filename]
+  df$Filename <- factor(df$Filename, levels = unique(df$Filename))
   tileCols <- unique(df$colour)
   names(tileCols) <- unique(df$colour)
 
@@ -87,29 +94,44 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatma
     geom_tile() +
     scale_fill_manual(values = tileCols) +
     scale_x_continuous(expand = c(0, 0)) +
-    scale_y_discrete(expand = c(0, 0), labels = labels) +
+    scale_y_discrete(expand = c(0, 0)) +
     theme(legend.position = "none",
           panel.grid.minor = element_blank(),
           panel.grid.major = element_blank(),
-          panel.background = element_rect(fill = "black"))
+          panel.background = element_rect(fill = "black")) +
+    labs(x = "Position in read (bp)",
+         y = "Filename")
 
   if (usePlotly){
-    suppressMessages(plotly::ggplotly(sequenceContentHeatmap, tooltip = c("A", "C", "G", "T", "Start", "Filename")))
-  }
+    sequenceContentHeatmap <- sequenceContentHeatmap +
+      theme(axis.ticks.y = element_blank(),
+            axis.text.y = element_blank())
+
+
+    t <- getSummary(x)
+    t <- t[t$Category == "Sequence Length Distribution",]
+    t$Filename <- labels[t$Filename]
+    t$Filename <- factor(t$Filename, levels = levels(df$Filename))
+    sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+
+    subplot(sideBar, sequenceContentHeatmap, widths = c(0.1,0.9), margin = 0.01) %>%
+      layout(xaxis2 = list(title = "Position in read (bp)"))
+
+      }
   else{
     sequenceContentHeatmap
   }}
   else{
     df$Filename <- labels[df$Filename]
-    df2 <- df[!colnames(df) == "Base"]
-    df2 <- melt(df2, id.vars = c("Filename", "Start"))
-    colnames(df2) <- c("Filename", "Start", "Base", "Percent")
-    df2$Base <- factor(df2$Base, levels = unique(df2$Base))
+    df <- df[!colnames(df) == "Base"]
+    df <- melt(df, id.vars = c("Filename", "Start"))
+    colnames(df) <- c("Filename", "Start", "Base", "Percent")
+    df$Base <- factor(df$Base, levels = unique(df$Base))
 
     #set colours
     baseCols <- factor(c(`T`="red", G = "black", A = "green", C = "blue"))
 
-    sequenceContentHeatmap <- ggplot(df2, aes_string(x = "Start", y = "Percent", colour = "Base")) +
+    sequenceContentHeatmap <- ggplot(df, aes_string(x = "Start", y = "Percent", colour = "Base")) +
       geom_line() +
       facet_wrap(~Filename) +
       scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +

@@ -4,7 +4,8 @@
 \alias{plotSequenceContent}
 \title{Plot the per base content as a heatmap}
 \usage{
-plotSequenceContent(x, usePlotly = FALSE, labels, plotType = "heatmap")
+plotSequenceContent(x, usePlotly = FALSE, labels, plotType = "heatmap",
+  pwfCols)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -17,6 +18,9 @@ All filenames must be present in the names.
 File extensions are dropped by default.}
 
 \item{plotType}{\code{character}. Type of plot to generate. Must be "line" or "heatmap"}
+
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+values in plot}
 }
 \value{
 A ggplot2 object
