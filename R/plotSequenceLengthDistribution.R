@@ -185,6 +185,11 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
         theme(legend.position = "none")
       lenPlot <- ggplotly(lenPlot, tooltip = c("x", "y", "colour"))
     }else{
+
+      lenPlot <- lenPlot  +
+        theme(axis.ticks.y = element_blank(),
+              axis.text.y = element_blank())
+
       pwfCols <- ngsReports::pwf
 
       nx <- length(x)
@@ -221,15 +226,15 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
         dendro <- ggdend(dx$segments) +
           coord_flip() +
           scale_y_reverse(expand = c(0, 1)) +
-          scale_x_continuous(expand = c(0,2))
+          scale_x_continuous(expand = c(0,1))
       }
       else{
         dendro <- plotly::plotly_empty()
       }
 
       lenPlot <- suppressMessages(
-        plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.1, 0.8), margin = 0, shareY = TRUE) %>%
-          plotly::layout(xaxis3 = list(title = "Sequence Length (bp)"))
+        plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.1, 0.8),
+                        margin = 0, shareY = TRUE, titleX = TRUE)
       )
     }
 
