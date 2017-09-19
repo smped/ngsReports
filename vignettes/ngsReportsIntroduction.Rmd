@@ -9,9 +9,7 @@ author:
 package: ngsReports
 output:
   BiocStyle::html_document2
-abstract: >
-  This is a guide to the basic data structures and usage methods for the package ngsReports
-vignette: |
+vignette: >
   %\VignetteIndexEntry{An Introduction To ngsReports}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
