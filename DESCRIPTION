@@ -98,4 +98,5 @@ Collate:
     'runFastQC.R'
     'scale_fill_pwf.R'
     'writeHtmlReport.R'
-Suggests: testthat
+VignetteBuilder: knitr
+Suggests: BiocStyle, knitr, testthat
