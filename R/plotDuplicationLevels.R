@@ -242,6 +242,10 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
 
             if (usePlotly){
 
+            dupPlot <- dupPlot +
+              theme(axis.text.y = element_blank(),
+                    axis.ticks.y = element_blank())
+
               t <- getSummary(x)
               t <- t[t$Category == "Sequence Duplication Levels",]
               t$Filename <- factor(labels[t$Filename], levels = levels(df$Filename))
