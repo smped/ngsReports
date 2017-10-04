@@ -130,7 +130,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               barCols <- c(rgb(0.9, 0.2, 0.2), rgb(0.2, 0.2, 0.8))
             }
             else{
-              stopifnot(length(barCols) > 2)
+              stopifnot(length(barCols) == (duplicated + 1))
             }
 
 
