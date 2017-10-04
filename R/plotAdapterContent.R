@@ -196,7 +196,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
 setMethod("plotAdapterContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, plotType = "heatmap", labels, adapterType = "Total",
                    pwfCols, warn = 5, fail = 10,
-                   clusterNames = TRUE,
+                   clusterNames = FALSE,
                    ...){
 
             df <- Adapter_Content(x)
@@ -272,31 +272,33 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 }) %>%
                 dplyr::bind_rows()
 
-
               # talk to steve about this
-              # if(clusterNames){
-              #   df <- reshape2::dcast(df, Filename ~ Start, value.var = "Percent")
-              #   df[is.na(df)] <- 0
-              #   xx <- dplyr::select(df, -Filename)
-              #   clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
-              #   row.ord <- order.dendrogram(clus)
-              #   df <- df[row.ord,]
-              #   df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percent")
-              # }
+              if(clusterNames){
+                dfClus <- df[colnames(df) %in% c("Filename", "Start", "Percent", "Type")]
+                dfClus <- reshape2::dcast(dfClus, Filename ~ Start, value.var = "Percent")
+                xx <- dfClus[!colnames(dfClus) == "Filename"]
+                xx[is.na(xx)] <- 0
+                clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+                row.ord <- order.dendrogram(clus)
+                dfClus <- dfClus[row.ord,]
+                dfClus <- reshape2::melt(dfClus, id.vars = "Filename", variable.name = "Start", value.name = "Percent")
+                df <- cbind(dfClus, Type = df$Type)
+              }
+
 
               key <- rev(unique(df$Filename))
               df$Filename <- labels[df$Filename]
               # Reverse the factor levels for a better looking default plot
               df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
-              df$Start <- as.integer(df$Start)
               df$Percent <- as.numeric(df$Percent)
+              df$Start <- as.integer(as.character(df$Start))
 
               # Make the heatmap
               acPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
-                scale_y_discrete(labels = labels, expand = c(0, 0)) +
+                scale_y_discrete(expand = c(0, 0)) +
                 geom_tile() +
                 scale_x_continuous(expand = c(0, 0)) +
-                ggplot2::ggtitle(unique(df$Type)) +
+                ggplot2::ggtitle(as.character(unique(df$Type))) +
                 scale_fill_pwf(df$Percent, pwf, breaks = breaks) +
                 theme(plot.title = element_text(hjust = 0.5))
 
@@ -321,7 +323,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
                 # Return the plot
                 acPlot <- suppressMessages(
-                  plotly::subplot(sideBar, acPlot, widths = c(0.1,0.9), margin = 0, shareY = TRUE)
+                  plotly::subplot(sideBar, acPlot, widths = c(0.1,0.9), margin = 0.01, shareY = TRUE)
                 )
               }
             }
