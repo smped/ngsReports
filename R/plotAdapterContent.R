@@ -271,24 +271,25 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                     zoo::na.locf()
                 }) %>%
                 dplyr::bind_rows()
-              df$Start <- as.integer(df$Start)
-              df$Percent <- as.numeric(df$Percent)
+
 
               # talk to steve about this
               # if(clusterNames){
-              #   df <- reshape2::dcast(df, Filename ~ Start)
+              #   df <- reshape2::dcast(df, Filename ~ Start, value.var = "Percent")
               #   df[is.na(df)] <- 0
               #   xx <- dplyr::select(df, -Filename)
               #   clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
               #   row.ord <- order.dendrogram(clus)
               #   df <- df[row.ord,]
-              #   df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Position", value.name = "Percent")
+              #   df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percent")
               # }
 
               key <- rev(unique(df$Filename))
               df$Filename <- labels[df$Filename]
               # Reverse the factor levels for a better looking default plot
               df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+              df$Start <- as.integer(df$Start)
+              df$Percent <- as.numeric(df$Percent)
 
               # Make the heatmap
               acPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
