@@ -9,8 +9,8 @@ To install required packages
 
 ```
 source("https://bioconductor.org/biocLite.R")
-biocLite(c("BiocGenerics", "checkmate", "devtools", "dplyr", "ggdendro", "ggplot2", "lubridate", "magrittr", "methods", "plotly", "readr", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "stats", "stringr", "tibble",  "viridis", "viridisLite", "zoo", "shinyFiles"))
-devtools::install_github('UofABioinformaticsHub/ngsReports')
+biocLite(c("BiocGenerics", "BiocStyle", "checkmate", "devtools", "dplyr", "ggdendro", "ggplot2", "lubridate", "magrittr", "methods", "plotly", "readr", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "stats", "stringr", "tibble",  "viridis", "viridisLite", "zoo", "shinyFiles"))
+devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = TRUE)
 library(ngsReports)
 ```
 
