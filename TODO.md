@@ -6,9 +6,7 @@
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot/status
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
-- Write Vignette
 - Build tests for classes and methods
 - Remove `subset` from all plots. This can be done before passing a `FastqcDataList` to the function.
 - Adapter Content
-    - add clustering
-
+    - add dendrogram
