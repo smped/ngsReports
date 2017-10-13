@@ -580,7 +580,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       }else{
         SQdendro <- input$SQdendro
       }
-      plotSequenceQualitiesHeatmap(data(),
+      plotSequenceQuality(data(),
                                    clusterNames = input$SQcluster,
                                    type = SQtype,
                                    dendrogram = SQdendro,
@@ -595,7 +595,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         num <- which(fileName(data()) == click$key[[1]])
       }
       sub_fdl <- data()[num]
-      qualPlot <- plotSequenceQualities(sub_fdl, usePlotly = TRUE) %>%
+      qualPlot <- plotSequenceQuality(sub_fdl, usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100),
                legend = list(orientation = 'h', title = ""))
     })
