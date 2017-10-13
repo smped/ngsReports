@@ -595,7 +595,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         num <- which(fileName(data()) == click$key[[1]])
       }
       sub_fdl <- data()[num]
-      qualPlot <- plotSequenceQuality(sub_fdl, usePlotly = TRUE) %>%
+      qualPlot <- plotSequenceQuality(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
         layout(margin = list(r = 200, l = 100),
                legend = list(orientation = 'h', title = ""))
     })
