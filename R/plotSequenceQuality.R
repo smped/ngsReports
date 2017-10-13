@@ -276,7 +276,7 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
                         axis.ticks.y = element_blank())
 
                 t <- getSummary(x)
-                t <- t[colnames(t) == "Per sequence quality score"]
+                t <- t[t$Category == "Per sequence quality scores",]
                 t$Filename <- labels[t$Filename]
                 t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
                 t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
