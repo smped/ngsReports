@@ -60,5 +60,4 @@ plotSummary(fdl, labels = altNames)
 # Interactive plot
 plotSummary(fdl, usePlotly = TRUE)
 
-
 }

@@ -44,7 +44,9 @@
 #' # Interactive plot
 #' plotSummary(fdl, usePlotly = TRUE)
 #'
-#'
+#' @importFrom dplyr bind_cols
+#' @importFrom magrittr %>%
+#' @importFrom magrittr set_names
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 geom_tile
@@ -75,7 +77,7 @@ plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
   fillCol <- getColours(pwfCols)
 
   df$Category <- factor(df$Category, levels = rev(unique(df$Category)))
-  df$Status <- factor(df$Status, levels = c("PASS", "WARN", "FAIL"))
+  df$Status <- factor(df$Status, levels = rev(c("PASS", "WARN", "FAIL")))
   # df$StatusNum <- as.integer(df$Status)
 
   # Drop the suffix, or check the alternate labels
@@ -105,9 +107,9 @@ plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
       geom_tile(colour = lineCol) +
       geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
       geom_hline(yintercept = seq(1.5, ny), colour = lineCol, size = lineWidth) +
-      scale_fill_gradientn(colours = c(fillCol["PASS"],
+      scale_fill_gradientn(colours = c(fillCol["FAIL"],
                                        fillCol["WARN"],
-                                       fillCol["FAIL"]),
+                                       fillCol["PASS"]),
                            values = c(0,1)) +
       # scale_fill_manual(values=fillCol) +
       scale_x_discrete(expand=c(0,0)) +
@@ -119,10 +121,29 @@ plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
             axis.title.y = element_blank(),
             plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
             legend.position = "none")
+
+    rank <- split(df, df$Filename) %>%
+      lapply(function(x){
+        sum(x$StatusNum/36)
+      }) %>% bind_cols(., y = "Overall Score") %>% melt() %>% set_names(c("Category", "Filename", "Score"))
+
+    rankPlot <- ggplot(rank, aes_string(y = "Category", x = "Filename", fill = "Score")) +
+      geom_tile() +
+      geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
+      scale_fill_gradientn(colours = c(fillCol["FAIL"],
+                                       fillCol["WARN"],
+                                       fillCol["PASS"]), limits = c(0,1),
+                           breaks = c(0,0.5,1))  +
+      theme(axis.text.x = element_blank(),
+            axis.ticks.x = element_blank(),
+            axis.title.y = element_blank(),
+            plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
+            legend.position = "none")
+
+
     # Add any parameters from dotArgs
     if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-    suppressMessages(plotly::ggplotly(sumPlot, tooltip = c("Filename", "Category", "Status")))
-
+    subplot(rankPlot, sumPlot, nrows = 2, heights = c(0.13, 0.87), shareX = TRUE)
   }
   else{
     sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status")) +
