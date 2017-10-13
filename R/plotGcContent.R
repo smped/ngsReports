@@ -421,8 +421,8 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                   dx <- ggdendro::dendro_data(clus)
                   dendro <- ggdend(dx$segments) +
                     coord_flip() +
-                    scale_y_reverse(expand = c(0, 1)) +
-                    scale_x_continuous(expand = c(0,2))
+                    scale_y_reverse(expand = c(0, 0)) +
+                    scale_x_continuous(expand = c(0,0.5))
 
                 }
                 else{
