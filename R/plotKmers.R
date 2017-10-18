@@ -1,28 +1,42 @@
-#' @title Plot Overrepresented Kmers
+#' @title Plot Overrepresented Kmers As a Heatmap
 #'
 #' @description Plot Overrepresented Kmers across an entire library
 #'
-#' @details This plots the top overrepresented Kmers for one or more FASTQC reports.
-#' Sequences are coloured in order of first appearance from left to right for easy
-#' identification of larger sequences.
+#' @details Plots the over-represented Kmers as a heatmap.
+#' Colours will correspond to the p-values.
+#' In the presence of only zero-valued p-values the heatmap will be filled in a single colour,
+#' with missing values defined simply as p < 0.
 #'
-#' Returned plots can be easily modified using the standard ggplot2 methods
+#' If non-zero p-values are present, colours will denote -log10 transformed values.
+#' In this case zero values will be transformed using -log10(q) + 1,
+#' where q is the minimum of the non-zero p-values.
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
 #' @param subset \code{logical}. Return the values for a subset of files.
 #' May be useful to only return totals from R1 files, or any other subset
-#' @param nc \code{numeric}. The number of columns to create in the plot layout
 #' @param nKmers \code{numeric}. The number of Kmers to show.
 #' @param method Can only take the values \code{"overall"} or \code{"individual"}.
 #' Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
 #' or whether the top nKmers are selected from each individual file.
-#' @param trimNames \code{logical}. Capture the text specified in \code{pattern} from fileName
-#' @param pattern \code{character}.
-#' Contains a regular expression which will be captured from fileName.
-#' The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param naCol colour used for missing values
+#' #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using hierarchical clustering
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using hierarchical clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
+#' @param plotType \code{character} Takes values "line" or "heatmap"
+#' @param labels An optional named vector of labels for the file names.
+#' All filenames must be present in the names.
+#' File extensions are dropped by default.
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
+#' @param nc \code{integer} number of columns in in line plots.
+#' @param ... Used to pass various potting parameters to theme.
+#' Can also be used to set size and colour for box outlines.
 #'
 #' @return A standard ggplot2 object
 #'
@@ -40,139 +54,294 @@
 #' # Not a great example
 #' plotKmers(fdl)
 #'
-#' # Try digging a bit deeper
+#' # Find the R1 files with CC barcodes & just plot these
 #' ccR1 <- grepl("CC.+R1", fileName(fdl))
-#' plotKmers(fdl, subset = ccR1, nc = 1, method = "individual", nKmers = 4)
+#' plotKmers(fdl, subset = ccR1, method = "individual", nKmers = 3)
 #'
 #'
-#' @importFrom stringr str_detect
-#' @importFrom dplyr mutate
-#' @importFrom dplyr filter
-#' @importFrom dplyr group_by
-#' @importFrom dplyr summarise
-#' @importFrom dplyr slice
-#' @importFrom dplyr data_frame
-#' @importFrom dplyr left_join
-#' @importFrom dplyr select
-#' @importFrom dplyr arrange
-#' @importFrom dplyr rename
-#' @importFrom plotly ggplotly
-#'
-#'
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 geom_tile
+#' @importFrom ggplot2 scale_fill_gradient2
+#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 scale_y_discrete
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 element_blank
+#' @importFrom ggplot2 coord_flip
+#' @importFrom plotly subplot
+#' @importFrom plotly layout
 #'
 #' @export
-plotKmers <- function(x, subset, nc = 2, nKmers = 6, method = "overall",
-                      trimNames = TRUE, pattern = "(.+)\\.(fastq|fq).*",
-                      usePlotly = FALSE){
+plotKmers <- function(x, subset, nKmers = 12, method = "overall",
+                            pwfCols, labels, naCol = "grey80",
+                            usePlotly = FALSE, clusterNames = FALSE,
+                            dendrogram = FALSE, plotType = "heatmap", nc = 2, ...){
 
   # A basic cautionary check
   stopifnot(grepl("(Fastqc|character)", class(x)))
-
-  if (missing(subset)){
-    subset <- rep(TRUE, length(x))
-  }
-  stopifnot(is.logical(subset))
-  stopifnot(length(subset) == length(x))
-  stopifnot(is.logical(trimNames))
-  stopifnot(is.numeric(nc))
   stopifnot(is.numeric(nKmers))
   stopifnot(method %in% c("overall", "individual"))
 
-  x <- x[subset]
+  # Sort out the colours
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+  stopifnot(isValidPwf(pwfCols))
+  col <- getColours(pwfCols)
+
+
   df <- tryCatch(Kmer_Content(x))
 
-  # Check the pattern contains a capture
-  if (trimNames && stringr::str_detect(pattern, "\\(.+\\)")) {
-    df$Filename <- gsub(pattern[1], "\\1", df$Filename)
-    # These need to be checked to ensure non-duplicated names
-    if (length(unique(df$Filename)) != length(x)) stop("The supplied pattern will result in duplicated filenames, which will not display correctly.")
+  # Drop the suffix, or check the alternate labels
+  if (missing(labels)){
+    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                        names = fileName(x))
   }
+  else{
+    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+  }
+  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
-  # Get the top kMers from each file, or from the overall list
+  # Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  if ("size" %in% names(dotArgs)){
+    lineWidth <- dotArgs$size
+  }
+  else{
+    lineWidth <- 0.2
+  }
+  if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
+    i <- which(names(dotArgs) %in% c("colour", "color"))
+    lineCol <- dotArgs[[i]]
+  }
+  else{
+    lineCol <- "grey20"
+  }
+  allowed <- names(formals(ggplot2::theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+
+  # Get the top kMers
   nKmers <- as.integer(nKmers)
   if (method == "individual"){
-    topKmers <- df %>%
-      split(f = .$Filename) %>%
-      lapply(dplyr::arrange, desc(`Obs/Exp_Max`)) %>%
+    topKmers <- split(df, f = df$Filename)
+    topKmers <- lapply(topKmers, function(x){
+      x <- dplyr::arrange(x, desc(x$`Obs/Exp_Max`))}) %>%
       lapply(dplyr::slice, 1:nKmers) %>%
       dplyr::bind_rows() %>%
       magrittr::extract2("Sequence") %>%
       unique()
   }
   if (method == "overall"){
-    topKmers <- df %>%
-      dplyr::arrange(desc(`Obs/Exp_Max`)) %>%
+    topKmers <- dplyr::arrange(df, desc(df$`Obs/Exp_Max`)) %>%
       dplyr::distinct(Sequence) %>%
       dplyr::slice(1:nKmers) %>%
       magrittr::extract2("Sequence")
   }
 
-  df <- dplyr::filter(df, Sequence %in% topKmers) %>%
-    dplyr::rename(Base = `Max_Obs/Exp_Position`) %>%
-    dplyr::mutate(Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
-                  Start = as.integer(Start)) %>%
-    dplyr::select(Filename, Sequence, `Obs/Exp_Max`, Start)   # The PValue and Count columns are ignored for this plot
+  df <- df[df$Sequence %in% topKmers,]
 
-  # Set the x-axis for plotting
-  # As there will be significant gaps in this data,
-  # the bins used need to be obtained from another slot.
-  # The most complete will be Per_base_sequence_quality
-  # These values can then be incorporated in the final df for accurate plotting & labelling
-  refForX <- unique(Per_base_sequence_quality(x)$Base)
-  refForX <- dplyr::data_frame(Base = as.character(refForX),
-                               Start = gsub("([0-9]*)-[0-9]*", "\\1", Base))
-  refForX$Start <- as.integer(refForX$Start)
-
-  # In order to get a line plot, zero values need to be added to the missing positions
-  # The above reference scale for X will be used to label the missing values
-  # Include all files to ensure all appear in the final plot
-  if (trimNames) allNames <- gsub(pattern[1], "\\1", fileName(x))
-  zeros <- with(df,
-                expand.grid(list(Filename = allNames,
-                                 Sequence = unique(Sequence),
-                                 `Obs/Exp_Max` = 0,
-                                 Start = seq(0, max(Start) + 0.5, by = 0.5)),
-                            stringsAsFactors = FALSE))
-
-  # After the bind_rows, duplicate values will exist at some positions
-  # Spuriously introduced zeros need to be removed
-  df <- dplyr::bind_rows(df, zeros) %>%
-    dplyr::arrange(Filename, Sequence, Start, desc(`Obs/Exp_Max`)) %>%
-    dplyr::distinct(Filename, Sequence, Start, .keep_all = TRUE)
+  if(plotType == "heatmap"){
 
   # Set the Sequence as a factor based on the first position it appears
   # This way the colours will appear in order in the guide as well as the plot
-  kMerLevels <- df %>%
-    dplyr::filter(`Obs/Exp_Max` != 0) %>%
-    dplyr::arrange(Start) %>%
+  kMerLevels <- dplyr::arrange(df, df$`Max_Obs/Exp_Position`) %>%
     dplyr::distinct(Sequence) %>%
     magrittr::extract2("Sequence")
   df$Sequence <- factor(df$Sequence, levels = kMerLevels)
 
-  # Now draw the basic plots
-  kMerPlot <- ggplot(df,
-                              aes(x = Start, y = `Obs/Exp_Max`, colour = Sequence)) +
-    geom_line() +
-    facet_wrap(~Filename, ncol = nc) +
-    scale_x_continuous(breaks = refForX$Start,
-                                labels = refForX$Base) +
-    theme_bw() +
-    ylab(expression(paste(log[2], " Obs/Exp"))) +
-    xlab("Position in read (bp)")
-
-  # Check for binned x-axis values to decied whether to rotate x-axis labels
-  # This should be clear if there are more than 2 characters in the plotted labels
-  binned <- max(nchar(dplyr::filter(refForX, Start %in% df$Start)$Base)) > 2
-  if (binned) {
-    kMerPlot <- kMerPlot +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+  if (length(kMerLevels) < nKmers) {
+    message(paste("There is only data in the FASTQC reports for the top",
+                  length(kMerLevels),"Kmers."))
+    nKmers <- length(kMerLevels)
   }
+
+  # Set the p-values to the -log10 scale
+  df$PValue <- -log10(df$PValue)
+  allInf <- all(is.infinite(df$PValue))
+  if (allInf) {
+    message(paste("All PValues for the top", nKmers, "Kmers are zero.\n",
+                  "This plot will be relatively uninformative."))
+    #if(usePlotly) stop(All kmer P-values equal zero)
+    df$PValue <- 0
+  }
+  else{
+    # If there are some finite -log10 transformed p-values,
+    # just add 1 to the the infinite ones
+    df$PValue[is.infinite(df$PValue)] <- max(df$PValue[is.finite(df$PValue)]) + 1
+  }
+
+
+  df <- reshape2::dcast(df, Filename~Sequence, value.var = "PValue")
+
+  if(clusterNames){
+    xx <- dplyr::select(df, -Filename)
+    xx[is.na(xx)] <- 0
+    clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+    row.ord <- order.dendrogram(clus)
+    df <- df[row.ord,]
+  }
+  key <- df$Filename
+  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Sequence", value.name = "PValue")
+  df$Filename <- labels[df$Filename]
+  df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+
+
+   # The inclusion of files without values needs to be worked on
+  # Maybe columns should be added during a dcast somewhere
+  if (allInf) {
+    # First change the missing values to ">0" as this is all the information we have
+    # This is done by gaining explicit NA values, then transforming
+
+    df <- dplyr::mutate(df, PValue = dplyr::if_else(is.na(PValue), ">0", "=0"))
+
+    kMerPlot <-  ggplot(df, aes_string(x = "Sequence", y = "Filename", fill = "PValue")) +
+      geom_tile(colour = "grey30", alpha = 0.9) +
+      scale_fill_manual(values = c(`=0` = getColours(pwfCols)["WARN"][[1]], `>0` = naCol)) +
+      labs(fill = "PValue")
+  }
+  else{
+    # First get explicit NA values
+
+    kMerPlot <- ggplot(df, aes_string(x = "Sequence", y = "Filename", fill = "PValue")) +
+      geom_tile(colour = "grey30", alpha = 0.9) +
+      scale_fill_gradient2(low = getColours(pwfCols)["PASS"],
+                           mid = getColours(pwfCols)["WARN"],
+                           high = getColours(pwfCols)["FAIL"],
+                           na.value = naCol,
+                           midpoint = max(df$PValue, na.rm = TRUE)/2) +
+      labs(fill = expression(paste(-log[10], "P")))
+  }
+
+  kMerPlot <- kMerPlot +
+    scale_x_discrete(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0)) +
+    theme(panel.grid = element_blank(),
+          panel.background = element_blank())
+
 
   if(usePlotly){
-    kMerPlot <- ggplotly(kMerPlot)
+    nx <- length(unique(df$Filename))
+    kMerPlot <- kMerPlot +
+      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
+      theme(axis.text = element_blank(), axis.ticks = element_blank(),
+            axis.title.y = element_blank()) +
+      labs(fill = "-log(10) P")
+
+    t <- getSummary(x)
+    t <- t[t$Category == "Kmer Content",]
+    t$Filename <- labels[t$Filename]
+    t$Filename <- factor(t$Filename, levels = unique(df$Filename))
+    t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+
+
+    sideBar <- makeSidebar(t, pwfCols = pwfCols, key = key)
+
+
+    #plot dendrogram
+    if(dendrogram && clusterNames){
+
+      dx <- ggdendro::dendro_data(clus)
+      dendro <- ggdend(dx$segments) +
+        coord_flip() +
+        scale_y_reverse(expand = c(0, 0)) +
+        scale_x_continuous(expand = c(0,0.5))
+
+      kMerPlot <- plotly::subplot(dendro, sideBar, kMerPlot,
+                                  widths = c(0.1,0.1,0.8), margin = 0,
+                                  shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Kmer Sequence",
+                                     plot_bgcolor = "white"))
+    }else{
+
+      kMerPlot <- plotly::subplot(plotly::plotly_empty(),
+                                  sideBar,
+                                  kMerPlot,
+                                  widths = c(0.1,0.1,0.8),
+                                  margin = 0,
+                                  shareY = TRUE) %>%
+        plotly::layout(xaxis3 = list(title = "Kmer Sequence"),
+                       annotations = list(text = "Filename", showarrow = FALSE,
+                                          textangle = -90))
   }
 
-  # Draw the plot
-  kMerPlot
+  }else{
+    kMerPlot <- kMerPlot +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
+  }}
+  if(plotType == "line"){
+
+    df <- df %>%
+      dplyr::rename(Base = `Max_Obs/Exp_Position`) %>%
+      dplyr::mutate(Start = gsub("([0-9]*)-[0-9]*", "\\1", Base),
+                    Start = as.integer(Start)) %>%
+      dplyr::select(Filename, Sequence, `Obs/Exp_Max`, Start)   # The PValue and Count columns are ignored for this plot
+
+    # Set the x-axis for plotting
+    # As there will be significant gaps in this data,
+    # the bins used need to be obtained from another slot.
+    # The most complete will be Per_base_sequence_quality
+    # These values can then be incorporated in the final df for accurate plotting & labelling
+    refForX <- unique(Per_base_sequence_quality(x)$Base)
+    refForX <- dplyr::data_frame(Base = as.character(refForX),
+                                 Start = gsub("([0-9]*)-[0-9]*", "\\1", Base))
+    refForX$Start <- as.integer(refForX$Start)
+
+
+    # In order to get a line plot, zero values need to be added to the missing positions
+    # The above reference scale for X will be used to label the missing values
+    # Include all files to ensure all appear in the final plot
+    zeros <- with(df,
+                  expand.grid(list(Filename = Filename,
+                                   Sequence = unique(Sequence),
+                                   `Obs/Exp_Max` = 0,
+                                   Start = seq(0, max(Start) + 0.5, by = 0.5)),
+                              stringsAsFactors = FALSE))
+
+    # After the bind_rows, duplicate values will exist at some positions
+    # Spuriously introduced zeros need to be removed
+    df <- dplyr::bind_rows(df, zeros) %>%
+      dplyr::arrange(Filename, Sequence, Start, desc(`Obs/Exp_Max`)) %>%
+      dplyr::distinct(Filename, Sequence, Start, .keep_all = TRUE)
+
+    # Set the Sequence as a factor based on the first position it appears
+    # This way the colours will appear in order in the guide as well as the plot
+    kMerLevels <- df %>%
+      dplyr::filter(`Obs/Exp_Max` != 0) %>%
+      dplyr::arrange(Start) %>%
+      dplyr::distinct(Sequence) %>%
+      magrittr::extract2("Sequence")
+    df$Sequence <- factor(df$Sequence, levels = kMerLevels)
+
+    # Now draw the basic plots
+    kMerPlot <- ggplot(df,
+                       aes_string(x =" Start", y = "`Obs/Exp_Max`", colour = "Sequence")) +
+      geom_line() +
+      facet_wrap(~Filename, ncol = nc) +
+      scale_x_continuous(breaks = refForX$Start,
+                         labels = refForX$Base) +
+      theme_bw() +
+      ylab(expression(paste(log[2], " Obs/Exp"))) +
+      xlab("Position in read (bp)")
+
+    # Check for binned x-axis values to decied whether to rotate x-axis labels
+    # This should be clear if there are more than 2 characters in the plotted labels
+    binned <- max(nchar(dplyr::filter(refForX, Start %in% df$Start)$Base)) > 2
+    if (binned) {
+      kMerPlot <- kMerPlot +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+    }
+
+    if(usePlotly){
+      kMerPlot <- ggplotly(kMerPlot)
+    }
+  }
+  kMerPlot
 }
+

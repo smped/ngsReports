@@ -645,7 +645,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     })
 
     output$Kheatmap <- renderPlotly({
-      Kplot <- plotKmerHeatmap(data(),
+      Kplot <- plotKmers(data(),
                                    usePlotly = TRUE)
       if(!is.null(Kplot)) Kplot %>% layout(margin = list(r = 200))
       else stop(paste("Samples have no Kmer content"))

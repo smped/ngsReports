@@ -80,7 +80,6 @@ Collate:
     'plotBaseQualities.R'
     'plotDuplicationLevels.R'
     'plotGcContent.R'
-    'plotKmerHeatmap.R'
     'plotKmers.R'
     'plotNContent.R'
     'plotNContentPlotly.R'
