@@ -213,18 +213,13 @@ setMethod("plotGcContent", signature = "FastqcData",
             if(usePlotly){
               value <- c("Freq", "Count")[counts + 1]
               gcPlot <- gcPlot +
-                theme(legend.position = "none",
-                      axis.text.y = element_blank(),
-                      axis.ticks.y = element_blank()) +
                 ggtitle(label = labels, subtitle = c())
               gcPlot <- suppressWarnings(
                 suppressMessages(
                   # Try using subplot with plotly_empty to align with the heatmap in the app
-                  plotly::subplot(plotly::plotly_empty(),
-                                  plotly::ggplotly(gcPlot, tooltip = c("GC_Content", value, "Type")),
-                                  widths = c(0.2, 0.8), margin = 0)
+                plotly::ggplotly(gcPlot, tooltip = c("GC_Content", value, "Type"))) %>%
+                    layout(legend = list(x = 0.622, y = 1))
                 )
-              )
             }
 
             # Draw the plot
@@ -422,7 +417,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                   dendro <- ggdend(dx$segments) +
                     coord_flip() +
                     scale_y_reverse(expand = c(0, 0)) +
-                    scale_x_continuous(expand = c(0,0.5))
+                    scale_x_continuous(expand = c(0, 0.5))
 
                 }
                 else{

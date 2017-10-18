@@ -91,6 +91,8 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
   df <- dplyr::bind_rows(
     lapply(split(df, f = df$Filename),
            function(x){
+             # Fix global environment error
+             Lower <- NULL
              dplyr::bind_rows(x,
                               dplyr::data_frame(Filename = x$Filename[1],
                                                 Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),

@@ -127,27 +127,25 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
   # Get the top kMers
   nKmers <- as.integer(nKmers)
   if (method == "individual"){
-    topKmers <- df %>%
-      split(f = .$Filename) %>%
-      lapply(dplyr::arrange, desc(`Obs/Exp_Max`)) %>%
+    topKmers <- split(df, f = df$Filename)
+    topKmers <- lapply(topKmers, function(x){
+      x <- dplyr::arrange(x, desc(x$`Obs/Exp_Max`))}) %>%
       lapply(dplyr::slice, 1:nKmers) %>%
       dplyr::bind_rows() %>%
       magrittr::extract2("Sequence") %>%
       unique()
   }
   if (method == "overall"){
-    topKmers <- df %>%
-      dplyr::arrange(desc(`Obs/Exp_Max`)) %>%
+    topKmers <- dplyr::arrange(df, desc(df$`Obs/Exp_Max`)) %>%
       dplyr::distinct(Sequence) %>%
       dplyr::slice(1:nKmers) %>%
       magrittr::extract2("Sequence")
   }
-  df <- dplyr::filter(df, Sequence %in% topKmers)
+  df <- df[df$Sequence %in% topKmers,]
 
   # Set the Sequence as a factor based on the first position it appears
   # This way the colours will appear in order in the guide as well as the plot
-  kMerLevels <- df %>%
-    dplyr::arrange(`Max_Obs/Exp_Position`) %>%
+  kMerLevels <- dplyr::arrange(df, df$`Max_Obs/Exp_Position`) %>%
     dplyr::distinct(Sequence) %>%
     magrittr::extract2("Sequence")
   df$Sequence <- factor(df$Sequence, levels = kMerLevels)
@@ -197,7 +195,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
 
     df <- dplyr::mutate(df, PValue = dplyr::if_else(is.na(PValue), ">0", "=0"))
 
-    heatPlot <-  ggplot(df, aes(x = Sequence, y = Filename, fill = PValue)) +
+    heatPlot <-  ggplot(df, aes_string(x = "Sequence", y = "Filename", fill = "PValue")) +
       geom_tile(colour = "grey30", alpha = 0.9) +
       scale_fill_manual(values = c(`=0` = getColours(pwfCols)["WARN"][[1]], `>0` = naCol)) +
       labs(fill = "PValue")
@@ -205,7 +203,7 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
   else{
     # First get explicit NA values
 
-    heatPlot <- ggplot(df, aes(x = Sequence, y = Filename, fill = PValue)) +
+    heatPlot <- ggplot(df, aes_string(x = "Sequence", y = "Filename", fill = "PValue")) +
       geom_tile(colour = "grey30", alpha = 0.9) +
       scale_fill_gradient2(low = getColours(pwfCols)["PASS"],
                            mid = getColours(pwfCols)["WARN"],
@@ -230,24 +228,15 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
             axis.title.y = element_blank()) +
       labs(fill = "-log(10) P")
 
-    t <- dplyr::filter(getSummary(x), Category == "Kmer Content")
+    t <- getSummary(x)
+    t <- t[t$Category == "Kmer Content",]
     t$Filename <- labels[t$Filename]
-    t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
+    t$Filename <- factor(t$Filename, levels = unique(df$Filename))
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
 
-    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key, fill = Status)) +
-      geom_tile() +
-      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
-      scale_fill_manual(values = col) +
-      theme(panel.grid.minor = element_blank(),
-            panel.background = element_blank(),
-            legend.position="none",
-            axis.title=element_blank(),
-            axis.text=element_blank(),
-            axis.ticks=element_blank())
+    sideBar <- makeSidebar(t, pwfCols = pwfCols, key = key)
 
-    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
 
     #plot dendrogram
     if(dendrogram && clusterNames){
@@ -255,8 +244,8 @@ plotKmerHeatmap <- function(x, subset, nKmers = 12, method = "overall",
       dx <- ggdendro::dendro_data(clus)
       dendro <- ggdend(dx$segments) +
         coord_flip() +
-        scale_y_reverse(expand = c(0, 1)) +
-        scale_x_continuous(expand = c(0,1))
+        scale_y_reverse(expand = c(0, 0)) +
+        scale_x_continuous(expand = c(0,0.5))
 
       heatPlot <- plotly::subplot(dendro, sideBar, heatPlot,
                                   widths = c(0.1,0.1,0.8), margin = 0,
