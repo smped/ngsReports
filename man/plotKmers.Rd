@@ -2,10 +2,11 @@
 % Please edit documentation in R/plotKmers.R
 \name{plotKmers}
 \alias{plotKmers}
-\title{Plot Overrepresented Kmers}
+\title{Plot Overrepresented Kmers As a Heatmap}
 \usage{
-plotKmers(x, subset, nc = 2, nKmers = 6, method = "overall",
-  trimNames = TRUE, pattern = "(.+)\\\\.(fastq|fq).*", usePlotly = FALSE)
+plotKmers(x, subset, nKmers = 12, method = "overall", pwfCols, labels,
+  naCol = "grey80", usePlotly = FALSE, clusterNames = FALSE,
+  dendrogram = FALSE, plotType = "heatmap", nc = 2, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -14,22 +15,38 @@ plotKmers(x, subset, nc = 2, nKmers = 6, method = "overall",
 \item{subset}{\code{logical}. Return the values for a subset of files.
 May be useful to only return totals from R1 files, or any other subset}
 
-\item{nc}{\code{numeric}. The number of columns to create in the plot layout}
-
 \item{nKmers}{\code{numeric}. The number of Kmers to show.}
 
 \item{method}{Can only take the values \code{"overall"} or \code{"individual"}.
 Determines whether the top nKmers are selected by the overall ranking (based on Obs/Exp_Max),
 or whether the top nKmers are selected from each individual file.}
 
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
+
+\item{naCol}{colour used for missing values
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using hierarchical clustering}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using hierarchical clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
+
+\item{plotType}{\code{character} Takes values "line" or "heatmap"}
+
+\item{nc}{\code{integer} number of columns in in line plots.}
+
+\item{...}{Used to pass various potting parameters to theme.
+Can also be used to set size and colour for box outlines.}
 }
 \value{
 A standard ggplot2 object
@@ -38,11 +55,14 @@ A standard ggplot2 object
 Plot Overrepresented Kmers across an entire library
 }
 \details{
-This plots the top overrepresented Kmers for one or more FASTQC reports.
-Sequences are coloured in order of first appearance from left to right for easy
-identification of larger sequences.
+Plots the over-represented Kmers as a heatmap.
+Colours will correspond to the p-values.
+In the presence of only zero-valued p-values the heatmap will be filled in a single colour,
+with missing values defined simply as p < 0.
 
-Returned plots can be easily modified using the standard ggplot2 methods
+If non-zero p-values are present, colours will denote -log10 transformed values.
+In this case zero values will be transformed using -log10(q) + 1,
+where q is the minimum of the non-zero p-values.
 }
 \examples{
 
@@ -58,9 +78,9 @@ fdl <- getFastqcData(fileList)
 # Not a great example
 plotKmers(fdl)
 
-# Try digging a bit deeper
+# Find the R1 files with CC barcodes & just plot these
 ccR1 <- grepl("CC.+R1", fileName(fdl))
-plotKmers(fdl, subset = ccR1, nc = 1, method = "individual", nKmers = 4)
+plotKmers(fdl, subset = ccR1, method = "individual", nKmers = 3)
 
 
 }

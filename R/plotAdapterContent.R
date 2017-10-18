@@ -76,6 +76,7 @@
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
 #' @importFrom dplyr vars
+#' @importFrom dplyr data_frame
 #' @importFrom dplyr funs
 #' @importFrom magrittr %>%
 #'
