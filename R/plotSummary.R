@@ -125,7 +125,7 @@ plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
     rank <- split(df, df$Filename) %>%
       lapply(function(x){
         sum(x$StatusNum/36)
-      }) %>% bind_cols(., y = "Overall Score") %>% melt() %>% set_names(c("Category", "Filename", "Score"))
+      }) %>% bind_cols(y = "Overall Score") %>% melt() %>% set_names(c("Category", "Filename", "Score"))
 
     rankPlot <- ggplot(rank, aes_string(y = "Category", x = "Filename", fill = "Score")) +
       geom_tile() +

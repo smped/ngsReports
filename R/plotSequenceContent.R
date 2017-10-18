@@ -112,10 +112,14 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatma
     t <- t[t$Category == "Sequence Length Distribution",]
     t$Filename <- labels[t$Filename]
     t$Filename <- factor(t$Filename, levels = levels(df$Filename))
+
+
     sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
     subplot(sideBar, sequenceContentHeatmap, widths = c(0.1,0.9), margin = 0.01) %>%
       layout(xaxis2 = list(title = "Position in read (bp)"))
+
+
 
       }
   else{
@@ -142,7 +146,7 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatma
       theme_bw() +
       scale_colour_manual(values = baseCols)
     if(usePlotly){
-      ggplotly(sequenceContentHeatmap)
+      ggplotly(sequenceContentHeatmap) %>% layout(legend = list(x = 0.85, y = 1))
     }else{
       sequenceContentHeatmap
     }

@@ -129,7 +129,6 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
               h5("1 - G = opacity, T = Green, A = Blue, C = Red"),
               h5("if each base is equally represented then should be dark grey-black"),
-              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("SCHeatmap"),
               plotlyOutput("SCsingle"),
               width = "70%", left = "30%", right = "0%"))),
@@ -151,7 +150,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("baseQualHeatmap"),
               plotlyOutput("BaseQualitiesSingle"),
-              width = "70%", left = "30%", right = "0%"))),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Per Sequence Quality Scores",
           splitLayout(
@@ -391,7 +390,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       }
       sub_fdl <- data()[[num]]
       plotSequenceContent(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
-        layout(margin = list(r = 200, l = 100))
+        layout(margin = list(r = 200, l = 0))
     })
 
 
