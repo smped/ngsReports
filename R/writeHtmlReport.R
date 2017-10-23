@@ -4,6 +4,8 @@
 #'
 #' @param fastqcDir A directory containing zipped, or extracted FastQC reports
 #' @param template The template file which will be copied into \code{fastqcDir}
+#' @param species Species/closely related species of sequenced samples
+#' @param dataType Is the data "Transcriptomic" or "Genomic" in nature?
 #' @param targetsDF A data.frame with at least two columns named \code{Filename} and \code{Label}.
 #' The filenames should match the original fastq files, and the labels should be simply alternative
 #' labels for these files for convenience.
@@ -16,7 +18,8 @@
 #'
 #'
 #' @export
-writeHtmlReport <- function(fastqcDir, template, targetsDF, overwrite = FALSE, quiet = TRUE){
+writeHtmlReport <- function(fastqcDir, template, species = "Hsapiens", dataType = "Transcriptome",
+                            targetsDF, overwrite = FALSE, quiet = TRUE){
 
   # Include checks for the package webshot & PhantomJS
   # Install looks like webshot::install_phantomjs() should work

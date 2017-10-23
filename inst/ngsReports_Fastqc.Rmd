@@ -174,8 +174,8 @@ plotAdapterContent(rawFastqcData, labels = plotLabels, adapterType = "Universal"
 
 ## Kmer Content
 
-```{r plotKmerHeatmap}
-plotKmerHeatmap(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram)
+```{r plotKmers}
+plotKmers(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram)
 ```
 
 ```{r Kmer_Content}

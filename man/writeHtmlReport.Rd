@@ -4,13 +4,17 @@
 \alias{writeHtmlReport}
 \title{Write an HTML Summary Report}
 \usage{
-writeHtmlReport(fastqcDir, template, targetsDF, overwrite = FALSE,
-  quiet = TRUE)
+writeHtmlReport(fastqcDir, template, species = "Hsapiens",
+  dataType = "Transcriptome", targetsDF, overwrite = FALSE, quiet = TRUE)
 }
 \arguments{
 \item{fastqcDir}{A directory containing zipped, or extracted FastQC reports}
 
 \item{template}{The template file which will be copied into \code{fastqcDir}}
+
+\item{species}{Species/closely related species of sequenced samples}
+
+\item{dataType}{Is the data "Transcriptomic" or "Genomic" in nature?}
 
 \item{targetsDF}{A data.frame with at least two columns named \code{Filename} and \code{Label}.
 The filenames should match the original fastq files, and the labels should be simply alternative
