@@ -109,7 +109,7 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatma
 
 
     t <- getSummary(x)
-    t <- t[t$Category == "Sequence Length Distribution",]
+    t <- t[t$Category == "Per base sequence content",]
     t$Filename <- labels[t$Filename]
     t$Filename <- factor(t$Filename, levels = levels(df$Filename))
 

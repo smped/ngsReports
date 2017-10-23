@@ -73,9 +73,6 @@ fastqcShiny <- function(fastqcInput = NULL){
                 shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = ""),
                 h5(""),
                 textOutput("report"),
-                h5("Output report for files"),
-                shinyDirButton(id = "dirs", label = "Choose directory", title = ""),
-                textOutput("report2"),
                 h5(""),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
@@ -254,7 +251,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                                         "Illumina Universal",
                                         "Illumina Small RNA",
                                         "Nextera Transposase")),
-              # checkboxInput("ACcluster", "Cluster Filenames", value = FALSE),
+              checkboxInput("ACcluster", "Cluster Filenames", value = FALSE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -270,7 +267,6 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                # checkboxInput("ACcluster", "Cluster Filenames", value = FALSE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -280,10 +276,30 @@ fastqcShiny <- function(fastqcInput = NULL){
               plotlyOutput("Ksingle"),
               width = "70%", left = "30%", right = "0%")
           )
-        )
+        ),
+        tabPanel(
+          "Output HTML Report",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                radioButtons(inputId="omicsType", label="What type of -omic?",
+                             choices=c("Genome","Transcriptome"), selected = "Genome"),
+                htmlOutput("sequencedSpecies"),
+                h5("Output report for files"),
+                shinyDirButton(id = "dirs", label = "Choose directory", title = ""),
+                textOutput("report2"),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Output HTML Report Using the Default Template "),
+              h5("Select the type of data used in your study (-omic) and a closely related organism"),
+              h5("from the dropdown list. Upon selecting the applicable omic and species, select the directory"),
+              h5("containing the FASTQC files you wish to make the log for. Currently even if files have been loaded"),
+              h5("into the Shiny app the folder containing the data must still be selected."),
+              width = "70%", left = "30%", right = "0%")
       )
     )
-  )
+      )))
 
   server <- function(input, output, session){
 
@@ -303,6 +319,21 @@ fastqcShiny <- function(fastqcInput = NULL){
       selectedData
     })
 
+
+    output$sequencedSpecies <- renderUI({
+
+      if(input$omicsType == "Genome"){
+        selectInput("omicSpecies", "Select species",
+                    choices = genomes(gcTheoretical)$Name,
+                    selected = "Hsapiens")
+      }else{
+        selectInput("omicSpecies", "Select species",
+                    choices = transcriptomes(gcTheoretical)$Name,
+                    selected = "Hsapiens")
+      }
+    })
+
+
     dir <- reactive({
       volumes <- shinyFiles::getVolumes()
     shinyFiles::shinyDirChoose(input, "dirs", roots = volumes, session = session)
@@ -314,12 +345,11 @@ fastqcShiny <- function(fastqcInput = NULL){
       dir()
       if(length(dir())){
         withProgress(min = 0, max = 1, value = 0.8, message = "Writing report", {
-          writeHtmlReport(dir())
+          writeHtmlReport(dir(), species = input$omicSpecies, dataType = input$omicsType)
         })
         output$report2 <- renderText("Done!")
       }
     })
-
 
 
 
@@ -622,7 +652,8 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$ACheatmap <- renderPlotly({
       ACplot <- plotAdapterContent(data(),
                          adapterType = input$ACtype,
-                         usePlotly = TRUE)
+                         usePlotly = TRUE,
+                         clusterNames = input$ACcluster)
       if(!is.null(ACplot)) ACplot %>% layout(margin = list(r = 200))
       else stop(paste("Sequences did not contain any", input$ACtype, "content, please select another."))
     })
