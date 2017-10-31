@@ -7,6 +7,49 @@
 - Add Fastq Illumina Filter plot/status
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Build tests for classes and methods
-- Remove `subset` from all plots. This can be done before passing a `FastqcDataList` to the function.
-- Adapter Content
-    - add dendrogram
+- Finish Vignette
+
+## Shiny App
+
+- Set clustering & dendrogram as TRUE by default in the shiny app
+   - Can we actually just set the dendrogram as ON by default for all plots where `clusterNames == TRUE` & remove this from the app? We can still set the parameter manually in the functions, but it'll simplfy the app I reckon
+- Remove Counts as an option for the Shiny app in `Sequence Length Distribution`, `GC Content` Content`,`Sequence Quality`
+- Once the S4 methods are up (see below), add the individual `plotKmer` plots
+
+## Individual Functions
+
+- **Adapter Content**
+    - add dendrogram when `usePlotly == TRUE`
+- **plotKmers**
+    - Fix plotly `NA` vals
+    - Migrate to S4
+- **plotNContent**
+    - Migrate to S4
+    - Remove `subset` argument
+    - Merge `plotNContentPlotly()` with main function
+    - Check plot for completely missing N content
+- **plotOverrepresentedHeatmap**
+    - Migrate to S4
+    - Remove `subset` argument
+    - Merge `plotOverrepresentedHeatmapPlotly()` with main function
+    - Check plot for no overrepresented sequences
+- **plotOverrepresentedSummary**
+    - Migrate to S4
+    - Remove `subset` argument
+    - Merge `plotOverrepresentedHeatmapPlotly()` with main function
+    - Check plot for no overrepresented sequences    
+    - Include in default report & shiny app
+- **plotSequenceContent**
+    - Hide `devtools::install_github('hadley/ggplot2')` message when `usePlotly == TRUE`
+    - Migrate to S4
+    - Add clustering & dendrograms to plot AND shiny app
+- **plotSequenceLengthDistribution**
+    - Migrate to S4
+- **plotSequenceQuality**
+    - Hide `devtools::install_github('hadley/ggplot2')` message when `usePlotly == TRUE`
+- **plotSummary**
+    - Migrate to S4
+    - Hide `devtools::install_github('hadley/ggplot2')` message when `usePlotly == TRUE`
+    - Rotate 90^o and add clustering/dendrogram
+- **plotDuplicationLevels**
+    - Dendrogram doesn't work in the shiny app
