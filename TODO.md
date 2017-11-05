@@ -11,18 +11,17 @@
 
 ## Shiny App
 
-- Set clustering & dendrogram as TRUE by default in the shiny app
-   - Can we actually just set the dendrogram as ON by default for all plots where `clusterNames == TRUE` & remove this from the app? We can still set the parameter manually in the functions, but it'll simplfy the app I reckon
 - Make the PASS/WARN/FAIL colourbar skinnier. Probably about half the width it is.   
-- Remove Counts as an option for the Shiny app in `Sequence Length Distribution`, `GC Content`,`Sequence Quality`
 - Once the S4 methods are up (see below), add the individual `plotKmer` plots
-- Remove `Overall Score` bar from `plotSummary()` page.
 - Add individual plots for `Sequence Duplication Levels`
 - Fix `Error: attempt to select less than one element in get1index` in `Per Base Sequence Content` on first click on the page
     - Change base colours to be consistent between individual plots & the heatmap
 - Fix `Per Sequence Quality Scores`: **Error**: Column `Filename` is unknown on first click   
 
 ## Individual Functions
+
+-  **ALL**
+   - use makeSidebar to make sidebar
 
 - **Adapter Content**
     - add dendrogram when `usePlotly == TRUE`
@@ -57,5 +56,3 @@
     - Migrate to S4
     - Hide `devtools::install_github('hadley/ggplot2')` message when `usePlotly == TRUE`
     - Rotate 90^o and add clustering/dendrogram
-- **plotDuplicationLevels**
-    - Dendrogram doesn't work in the shiny app
