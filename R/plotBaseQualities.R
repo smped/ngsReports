@@ -343,12 +343,11 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               df[[plotValue]] <- as.numeric(df$Data)
               df$Start <- as.integer(df$Start)
               df$Filename <- factor(df$Filename, levels = unique(df$Filename))
-              maxVal <- ceiling(max(df[[plotValue]]) + 1)
 
               # Start the heatmap
               qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = plotValue)) +
                 geom_tile() +
-                scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, maxVal), FALSE ) +
+                scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, 41), FALSE ) +
                 theme(panel.grid.minor = element_blank(),
                       panel.background = element_blank())
 
