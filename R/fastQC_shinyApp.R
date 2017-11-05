@@ -80,7 +80,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("Summary of fastQC Flags"),
               h5("Heatmap of fastQC flags (pass, warning or fail) for each fastQC report"),
               plotlyOutput("SummaryFlags"),
-              width = "70%", left = "30%", right = "0%")
+              width = "70%", left = "30%", right = "0%", height = "1100px")
           )
         ),
         tabPanel(
@@ -97,21 +97,19 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("Total number of unique and duplicated reads in each sample"),
               plotlyOutput("ReadTotals"),
               # plotlyOutput("RDSingle"),
-              width = "70%", left = "30%", right = "0%"))),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Duplicated sequences",
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("Dupcluster", "Cluster Filenames", value = FALSE),
-                htmlOutput("Dupdendro"),
+                checkboxInput("Dupcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("Sequence Duplication levels"),
               h5("Sequence duplication in each sample"),
               h5("Click sidebar on heatmap to change line plots"),
-              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("DupHeatmap"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
@@ -125,10 +123,10 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("Per Base Sequence Content"),
               h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
               h5("1 - G = opacity, T = Green, A = Blue, C = Red"),
-              h5("if each base is equally represented then should be dark grey-black"),
+              h5("if each base is equally represented then should be light grey"),
               plotlyOutput("SCHeatmap"),
               plotlyOutput("SCsingle"),
-              width = "70%", left = "30%", right = "0%"))),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Per Base Sequence Quality",
           splitLayout(
@@ -136,15 +134,13 @@ fastqcShiny <- function(fastqcInput = NULL){
               sidebarPanel(
                 radioButtons(inputId="BQplotValue", label="Base Quality",
                              choices=c("Mean","Median"), selected = "Mean"),
-                checkboxInput("BQcluster", "Cluster Filenames", value = FALSE),
-                htmlOutput("BQdendro"),
+                checkboxInput("BQcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("Base Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               h5("Click sidebar on heatmap to change line plots"),
-              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("baseQualHeatmap"),
               plotlyOutput("BaseQualitiesSingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
@@ -155,18 +151,16 @@ fastqcShiny <- function(fastqcInput = NULL){
               sidebarPanel(
                 radioButtons(inputId="SQType", label="Sequence Quality",
                              choices=c("Frequency","Counts"), selected = "Frequency"),
-                checkboxInput("SQcluster", "Cluster Filenames", value = FALSE),
-                htmlOutput("SQdendro"),
+                checkboxInput("SQcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("Sequence Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               h5("Click sidebar on heatmap to change line plots"),
-              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("seqQualHeatmap"),
               plotlyOutput("SeqQualitiesSingle"),
-              width = "70%", left = "30%", right = "0%"))),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "% GC Content",
           splitLayout(
@@ -176,8 +170,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                              choices=c("Genome","Transcriptome"), selected = "Genome"),
                 radioButtons(inputId="GCheatType", label="Value to plot",
                              choices=c("Frequency","Count"), selected = "Frequency"),
-                checkboxInput("GCcluster", "Cluster Filenames", value = FALSE),
-                htmlOutput("GCdendro"),
+                checkboxInput("GCcluster", "Cluster Filenames", value = TRUE),
                 htmlOutput("theoreticalGC"),
                 htmlOutput("GCspecies"),
                 width = "20%", left = "0%", right = "80%"
@@ -186,10 +179,9 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("GC content in reads"),
               h5("GC content (%) in sample, can either view total count or frequency"),
               h5("Click sidebar on heatmap to change line plots"),
-              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("GCheatmap"),
               plotlyOutput("GCSingle"),
-              width = "70%", left = "30%", right = "0%"))),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Sequence Length Distribution",
           splitLayout(
@@ -197,18 +189,16 @@ fastqcShiny <- function(fastqcInput = NULL){
               sidebarPanel(
                 radioButtons(inputId="SLType", label="Value to plot",
                              choices=c("Frequency","Counts"), selected = "Frequency"),
-                checkboxInput("SLcluster", "Cluster Filenames", value = FALSE),
-                htmlOutput("SLdendro"),
+                checkboxInput("SLcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("Sequence Length Distribution for all reads"),
               h5("Sequence length distribution in each sample, can either view total count or frequency"),
               h5("Click sidebar on heatmap to change line plots"),
-              h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("SLHeatmap"),
               plotlyOutput("SLSingle"),
-              width = "70%", left = "30%", right = "0%"))),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Overrepresented Sequences",
           splitLayout(
@@ -216,7 +206,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               sidebarPanel(
                 radioButtons(inputId="ORType", label="Individual or Overall",
                              choices=c("Individual","Overall"), selected = "Overall"),
-                checkboxInput("ORcluster", "Cluster Filenames", value = FALSE),
+                checkboxInput("ORcluster", "Cluster Filenames", value = TRUE),
                 sliderInput("ORslide", "Number of seq", min = 1, max = 20, value = 10),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
@@ -224,13 +214,13 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("Overrepresented Sequences"),
               h5("Overrepresented sequences in each sample, can either view sequence on an individual or overall basis"),
               plotlyOutput("overRepHeatmap"),
-              width = "70%", left = "30%", right = "0%"))),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "% N-Content",
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("Ncluster", "Cluster Filenames", value = FALSE),
+                checkboxInput("Ncluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -238,7 +228,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("N content (%) in sample"),
               h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("NCheatmap"),
-              width = "70%", left = "30%", right = "0%")
+              width = "70%", left = "30%", right = "0%", height = "1100px")
           )
         ),
         tabPanel(
@@ -251,7 +241,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                                         "Illumina Universal",
                                         "Illumina Small RNA",
                                         "Nextera Transposase")),
-              checkboxInput("ACcluster", "Cluster Filenames", value = FALSE),
+              checkboxInput("ACcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -259,7 +249,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("Adapter content (%) across all reads"),
               plotlyOutput("ACheatmap"),
               plotlyOutput("ACsingle"),
-              width = "70%", left = "30%", right = "0%")
+              width = "70%", left = "30%", right = "0%", height = "1100px")
           )
         ),
         tabPanel(
@@ -274,7 +264,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("-log(10) P-value for Kmers"),
               plotlyOutput("Kheatmap"),
               plotlyOutput("Ksingle"),
-              width = "70%", left = "30%", right = "0%")
+              width = "70%", left = "30%", right = "0%", height = "1100px")
           )
         ),
         tabPanel(
@@ -381,24 +371,11 @@ fastqcShiny <- function(fastqcInput = NULL){
         layout(margin = list(r = 200))
     })
 
-
-
-
-    output$Dupdendro <- renderUI({
-      if(input$Dupcluster) {
-        checkboxInput("SLdendro", "Plot Dendrogram?", value = FALSE)
-      }
-    })
-
     output$DupHeatmap <- renderPlotly({
-      if(is.null(input$Dupdendro)){
-        Dupdendro <- FALSE
-      }else{
-        Dupdendro <- input$SLdendro
-      }
+
       plotDuplicationLevels(data(),
                             clusterNames = input$Dupcluster,
-                            dendrogram = Dupdendro,
+                            dendrogram = TRUE,
                             usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 0))
     })
@@ -449,14 +426,6 @@ fastqcShiny <- function(fastqcInput = NULL){
 
 
 
-    output$GCdendro <- renderUI({
-      if(input$GCcluster) {
-        checkboxInput("GCdendro", "Plot Dendrogram?", value = FALSE)
-      }
-    })
-
-
-
     output$GCheatmap <- renderPlotly({
       if(is.null(input$GCspecies)){
         GCspecies <- FALSE
@@ -464,18 +433,12 @@ fastqcShiny <- function(fastqcInput = NULL){
 
       GCtype <- input$GCheatType == "Count"
 
-      if(is.null(input$GCdendro)){
-        GCdendro <- FALSE
-      }else{
-        GCdendro <- input$GCdendro
-      }
-
       if(is.null(input$theoreticalGC)){
         plotGcContent(data(),
                       clusterNames = input$GCcluster,
                       plotType = "heatmap",
                       theoreticalType = input$theoreticalType,
-                      dendrogram = GCdendro,
+                      dendrogram = TRUE,
                       usePlotly = TRUE) %>%
           layout(margin = list(r = 200))
       }else{
@@ -484,7 +447,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                       plotType = "heatmap",
                       theoreticalType = input$theoreticalType,
                       theoreticalGC = input$theoreticalGC,
-                      dendrogram = GCdendro,
+                      dendrogram = TRUE,
                       species = GCspecies,
                       usePlotly = TRUE) %>%
           layout(margin = list(r = 200))
@@ -504,14 +467,13 @@ fastqcShiny <- function(fastqcInput = NULL){
         #I've broken this sorry. Not sure how to fix this
         num <- which(fileName(data()) == click$key[[1]])
       }
-      GCtype <- input$GCheatType == "Count"
       sub_fdl <- data()[[num]]
       if(is.null(input$theoreticalGC)){
         GCSingle <- plotGcContent(sub_fdl, usePlotly = TRUE,
-                                  counts = GCtype)
+                                  counts = FALSE)
       }else{
         GCSingle <- plotGcContent(sub_fdl, usePlotly = TRUE,
-                                  counts = GCtype, theoreticalGC = input$theoreticalGC,
+                                  counts = FALSE, theoreticalGC = input$theoreticalGC,
                                   theoreticalType = input$theoreticalType,
                                   species = GCspecies)
       }
@@ -521,23 +483,11 @@ fastqcShiny <- function(fastqcInput = NULL){
     })
 
 
-    output$SLdendro <- renderUI({
-      if(input$SLcluster) {
-        checkboxInput("SLdendro", "Plot Dendrogram?", value = FALSE)
-      }
-    })
-
     output$SLHeatmap <- renderPlotly({
-      if(is.null(input$SLdendro)){
-        SLdendro <- FALSE
-      }else{
-        SLdendro <- input$SLdendro
-      }
-      SLtype <- input$SLType == "Counts"
       plotSequenceLengthDistribution(data(),
                                      clusterNames = input$SLcluster,
-                                     dendrogram = SLdendro,
-                                     counts= SLtype,
+                                     dendrogram = TRUE,
+                                     counts= FALSE,
                                      usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 0))
     })
@@ -563,24 +513,15 @@ fastqcShiny <- function(fastqcInput = NULL){
         layout(margin = list(r = 200))
     })
 
-    output$BQdendro <- renderUI({
-      if(input$BQcluster) {
-        checkboxInput("BQdendro", "Plot Dendrogram?", value = FALSE)
-      }
-    })
+
 
     output$baseQualHeatmap <- renderPlotly({
-      if(is.null(input$BQdendro)){
-        BQdendro <- FALSE
-      }else{
-        BQdendro <- input$BQdendro
-      }
       plotBaseQualities(data(),
                         usePlotly = TRUE,
                         plotType = "heatmap",
                         plotValue = input$BQplotValue,
                         clusterNames = input$BQcluster,
-                        dendrogram = BQdendro) %>%
+                        dendrogram = TRUE) %>%
         layout(margin = list(r = 200))
     })
 
@@ -596,23 +537,12 @@ fastqcShiny <- function(fastqcInput = NULL){
         layout(margin = list(r = 200, l = 100))
     })
 
-    output$SQdendro <- renderUI({
-      if(input$SQcluster) {
-        checkboxInput("SQdendro", "Plot Dendrogram?", value = FALSE)
-      }
-    })
 
     output$seqQualHeatmap <- renderPlotly({
-      SQtype <- input$SQType == "Counts"
-      if(is.null(input$SQdendro)){
-        SQdendro <- FALSE
-      }else{
-        SQdendro <- input$SQdendro
-      }
       plotSequenceQuality(data(),
                                    clusterNames = input$SQcluster,
-                                   type = SQtype,
-                                   dendrogram = SQdendro,
+                                   counts = FALSE,
+                                   dendrogram = TRUE,
                                    usePlotly = TRUE) %>% layout(margin = list(r = 200))
     })
 
@@ -629,21 +559,11 @@ fastqcShiny <- function(fastqcInput = NULL){
                legend = list(orientation = 'h', title = ""))
     })
 
-    output$NCdendro <- renderUI({
-      if(input$Ncluster) {
-        checkboxInput("NCdendro", "Plot Dendrogram?", value = FALSE)
-      }
-    })
-
     output$NCheatmap <- renderPlotly({
-      if(is.null(input$NCdendro)){
-        NCdendro <- FALSE
-      }else{
-        NCdendro <- input$NCdendro
-      }
+
         plotNContentPlotly(data(),
                            clusterNames = input$Ncluster,
-                           dendrogram = NCdendro,
+                           dendrogram = TRUE,
                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
       })
 

@@ -324,7 +324,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
                 # Return the plot
                 acPlot <- suppressMessages(
-                  plotly::subplot(sideBar, acPlot, widths = c(0.1,0.9), margin = 0.01, shareY = TRUE)
+                  plotly::subplot(sideBar, acPlot, widths = c(0.08,0.92), margin = 0.001, shareY = TRUE)
                 )
               }
             }
