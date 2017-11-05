@@ -59,5 +59,3 @@
     - Rotate 90^o and add clustering/dendrogram
 - **plotDuplicationLevels**
     - Dendrogram doesn't work in the shiny app
-- **plotBaseQualities**
-    - Heatmap `pwf` colour scheme is not following the breakpoints correctly
