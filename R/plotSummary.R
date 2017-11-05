@@ -122,28 +122,11 @@ plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
             plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
             legend.position = "none")
 
-    rank <- split(df, df$Filename) %>%
-      lapply(function(x){
-        sum(x$StatusNum/36)
-      }) %>% bind_cols(y = "Overall Score") %>% melt() %>% set_names(c("Category", "Filename", "Score"))
-
-    rankPlot <- ggplot(rank, aes_string(y = "Category", x = "Filename", fill = "Score")) +
-      geom_tile() +
-      geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
-      scale_fill_gradientn(colours = c(fillCol["FAIL"],
-                                       fillCol["WARN"],
-                                       fillCol["PASS"]), limits = c(0,1),
-                           breaks = c(0,0.5,1))  +
-      theme(axis.text.x = element_blank(),
-            axis.ticks.x = element_blank(),
-            axis.title.y = element_blank(),
-            plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
-            legend.position = "none")
 
 
     # Add any parameters from dotArgs
     if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-    subplot(rankPlot, sumPlot, nrows = 2, heights = c(0.13, 0.87), shareX = TRUE)
+    ggplotly(sumPlot)
   }
   else{
     sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status")) +
