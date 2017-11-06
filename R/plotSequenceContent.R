@@ -116,7 +116,7 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatma
 
     sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
-    subplot(sideBar, sequenceContentHeatmap, widths = c(0.1,0.9), margin = 0.01) %>%
+    subplot(sideBar, sequenceContentHeatmap, widths = c(0.08,0.92), margin = 0.001) %>%
       layout(xaxis2 = list(title = "Position in read (bp)"))
 
 
@@ -133,7 +133,7 @@ plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatma
     df$Base <- factor(df$Base, levels = unique(df$Base))
 
     #set colours
-    baseCols <- factor(c(`T`="red", G = "black", A = "green", C = "blue"))
+    baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
 
     sequenceContentHeatmap <- ggplot(df, aes_string(x = "Start", y = "Percent", colour = "Base")) +
       geom_line() +

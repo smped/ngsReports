@@ -226,9 +226,7 @@ plotKmers <- function(x, subset, nKmers = 12, method = "overall",
 
 
   if(usePlotly){
-    nx <- length(unique(df$Filename))
     kMerPlot <- kMerPlot +
-      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
       theme(axis.text = element_blank(), axis.ticks = element_blank(),
             axis.title.y = element_blank()) +
       labs(fill = "-log(10) P")
@@ -253,7 +251,7 @@ plotKmers <- function(x, subset, nKmers = 12, method = "overall",
         scale_x_continuous(expand = c(0,0.5))
 
       kMerPlot <- plotly::subplot(dendro, sideBar, kMerPlot,
-                                  widths = c(0.1,0.1,0.8), margin = 0,
+                                  widths = c(0.1,0.08,0.82), margin = 0.001,
                                   shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Kmer Sequence",
                                      plot_bgcolor = "white"))
@@ -262,8 +260,8 @@ plotKmers <- function(x, subset, nKmers = 12, method = "overall",
       kMerPlot <- plotly::subplot(plotly::plotly_empty(),
                                   sideBar,
                                   kMerPlot,
-                                  widths = c(0.1,0.1,0.8),
-                                  margin = 0,
+                                  widths = c(0.1,0.08,0.82),
+                                  margin = 0.001,
                                   shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Kmer Sequence"),
                        annotations = list(text = "Filename", showarrow = FALSE,

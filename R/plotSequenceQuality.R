@@ -266,9 +266,7 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
 
               if(usePlotly){
                 # Add lines and remove axis data
-                nx <- length(x)
                 qualPlot <- qualPlot +
-                  geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
                   theme(axis.title.y = element_blank(),
                         axis.text.y = element_blank(),
                         axis.ticks.y = element_blank())
@@ -293,7 +291,7 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
 
                   qualPlot <- suppressMessages(
                     plotly::subplot(dendro, sideBar, qualPlot,
-                                    widths = c(0.1,0.1,0.8), margin = 0,
+                                    widths = c(0.1,0.08,0.82), margin = 0.001,
                                     shareY = TRUE)
                   )
                   qualPlot <- suppressMessages(
@@ -308,8 +306,8 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
                     plotly::subplot(plotly::plotly_empty(),
                                     sideBar,
                                     qualPlot,
-                                    widths = c(0.1,0.1,0.8),
-                                    margin = 0,
+                                    widths = c(0.1,0.08,0.82),
+                                    margin = 0.01,
                                     shareY = TRUE)
                   )
                   qualPlot <- suppressMessages(

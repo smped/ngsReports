@@ -162,9 +162,7 @@ plotNContentPlotly <- function(x,
 
     if(all(df$Percentage == 0))stop("N-content is Zero for all samples and therefore cannot be plot")
 
-    nx <- length(x)
     Nheatmap <- Nheatmap +
-      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
       theme(axis.text.y = element_blank(),
             axis.ticks.y = element_blank())
 
@@ -175,17 +173,8 @@ plotNContentPlotly <- function(x,
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
 
-    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
-      geom_tile(aes(fill = Status)) +
-      geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
-      scale_fill_manual(values = col) +
-      theme(panel.grid.minor = element_blank(),
-            panel.background = element_blank(),
-            legend.position = "none",
-            axis.title = element_blank(),
-            axis.text = element_blank(),
-            axis.ticks = element_blank())
-    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+    sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+
 
     #plot dendrogram
     if(dendrogram){
@@ -193,18 +182,18 @@ plotNContentPlotly <- function(x,
       dx <- ggdendro::dendro_data(clus)
       dendro <- ggdend(dx$segments) +
         coord_flip() +
-        scale_y_reverse(expand = c(0, 1)) +
-        scale_x_continuous(expand = c(0,1))
+        scale_y_reverse(expand = c(0, 0)) +
+        scale_x_continuous(expand = c(0,0.5))
 
       Nheatmap <- plotly::subplot(dendro, sideBar, Nheatmap,
-                                  widths = c(0.1, 0.1,0.8), margin = 0,
+                                  widths = c(0.1, 0.08,0.82), margin = 0.001,
                                   shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
     }
     else{
 
       Nheatmap <- plotly::subplot(plotly::plotly_empty(), sideBar, Nheatmap,
-                                  widths = c(0.1,0.1,0.8), margin = 0,
+                                  widths = c(0.1,0.08,0.82), margin = 0.001,
                                   shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Sequencing Cycle"),
                        annotations = list(text = "Filename", showarrow = FALSE,

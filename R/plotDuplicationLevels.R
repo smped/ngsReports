@@ -135,6 +135,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
             stopifnot(isValidPwf(pwfCols))
             pwfCols <- setAlpha(pwfCols, 0.2)
+
             rects <- dplyr::data_frame(xmin = min(df$x) - 1,
                                        xmax = max(df$x) + 1,
                                        ymin = c(0, 100 - fail, 100 - warn),
@@ -253,16 +254,8 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
 
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
 
-              sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
-                geom_tile(aes_string(fill = "Status")) +
-                scale_fill_manual(values = getColours(pwfCols)) +
-                theme(panel.grid.minor = element_blank(),
-                      panel.background = element_blank(),
-                      legend.position="none",
-                      axis.title=element_blank(),
-                      axis.text=element_blank(),
-                      axis.ticks=element_blank())
-              sideBar <- suppressMessages(plotly::ggplotly(sideBar, tooltip = c("Status", "Filename")))
+
+            sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
               #plot dendrogram
               if(dendrogram && clusterNames){
@@ -270,13 +263,13 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                 dx <- ggdendro::dendro_data(clus)
                 dendro <- ggdend(dx$segments) +
                   coord_flip() +
-                  scale_y_reverse(expand = c(0, 1)) +
-                  scale_x_continuous(expand = c(0,1))
+                  scale_y_reverse(expand = c(0, 0)) +
+                  scale_x_continuous(expand = c(0, 0.5))
 
                 dupPlot <- suppressWarnings(
                   suppressMessages(
-                    plotly::subplot(dendro, sideBar, dupPlot, widths = c(0.1,0.1,0.8),
-                                    margin = 0, shareY = TRUE) %>%
+                    plotly::subplot(dendro, sideBar, dupPlot, widths = c(0.1,0.08,0.82),
+                                    margin = 0.001, shareY = TRUE) %>%
                       plotly::layout(xaxis3 = list(title = "Sequence Duplication Levels"))
                   ))
               }
@@ -284,7 +277,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                 dupPlot <- suppressWarnings(
                   suppressMessages(
                     plotly::subplot(plotly::plotly_empty(), sideBar, dupPlot,
-                                    widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
+                                    widths = c(0.1,0.08,0.82), margin = 0.001, shareY = TRUE) %>%
                       plotly::layout(xaxis3 = list(title = "Sequence Duplication Levels"),
                                      annotations = list(text = "Filename", showarrow = FALSE,
                                                         textangle = -90))

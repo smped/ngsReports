@@ -397,18 +397,8 @@ setMethod("plotGcContent", signature = "FastqcDataList",
 
                 if (missing(pwfCols)) pwfCols <- ngsReports::pwf
 
-                sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
-                  geom_tile(aes_string(fill = "Status")) +
-                  scale_fill_manual(values = getColours(pwfCols)) +
-                  theme(panel.grid.minor = element_blank(),
-                        panel.background = element_blank(),
-                        legend.position="none",
-                        axis.title=element_blank(),
-                        axis.text=element_blank(),
-                        axis.ticks=element_blank())
-                sideBar <- suppressMessages(
-                  plotly::ggplotly(sideBar, tooltip = c("Filename", "Status"))
-                )
+                sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+
 
                 #plot dendrogram
                 if(dendrogram && clusterNames){
@@ -425,7 +415,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                 }
 
                 gcPlot <- suppressMessages(
-                  plotly::subplot(dendro, sideBar, gcPlot, widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
+                  plotly::subplot(dendro, sideBar, gcPlot, widths = c(0.1,0.08,0.82), margin = 0.001, shareY = TRUE) %>%
                     plotly::layout(xaxis3 = list(title = "GC Content (%)"))
                 )
 
