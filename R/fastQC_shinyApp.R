@@ -324,7 +324,12 @@ fastqcShiny <- function(fastqcInput = NULL){
     })
 
 
+    species <- reactive({
+      input$omicSpecies
+    })
+
     dir <- reactive({
+      input$dirs
       volumes <- shinyFiles::getVolumes()
     shinyFiles::shinyDirChoose(input, "dirs", roots = volumes, session = session)
     dirSelected <- shinyFiles::parseDirPath(volumes, input$dirs)
@@ -335,7 +340,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       dir()
       if(length(dir())){
         withProgress(min = 0, max = 1, value = 0.8, message = "Writing report", {
-          writeHtmlReport(dir(), species = input$omicSpecies, dataType = input$omicsType)
+          writeHtmlReport(dir(), species = species(), dataType = input$omicsType)
         })
         output$report2 <- renderText("Done!")
       }
