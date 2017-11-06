@@ -74,7 +74,6 @@
 #' @importFrom ggplot2 element_blank
 #' @importFrom dplyr vars
 #' @importFrom dplyr funs
-#' @importFrom magrittr %>%
 #'
 #' @name plotSequenceQuality
 #' @rdname plotSequenceQuality-methods
@@ -142,7 +141,8 @@ setMethod("plotSequenceQuality", signature = "FastqcData",
             if (!counts){
               Count <- NULL # To avoid NOTE messages in R CMD check
               # Summarise to frequencies & initialise the plot
-              df <- dplyr::group_by(df, Filename) %>% dplyr::mutate(Frequency = Count / sum(Count))
+              df <- dplyr::group_by(df, Filename)
+              df <- dplyr::mutate(df, Frequency = Count / sum(Count))
               df <- dplyr::ungroup(df)
               rects$ymax <- max(df$Frequency)
 
@@ -201,10 +201,11 @@ setMethod("plotSequenceQuality", signature = "FastqcData",
 #' @rdname plotSequenceQuality-methods
 #' @export
 setMethod("plotSequenceQuality", signature = "FastqcDataList",
-          name <- function(x, usePlotly = FALSE, counts = FALSE, pwfCols,
+          function(x, usePlotly = FALSE, counts = FALSE, pwfCols,
                    labels, plotType = "heatmap", dendrogram = FALSE,
                    clusterNames = FALSE, lineCol = "grey20",
                    lineWidth = 0.2, alpha = 0.1, warn = 30, fail = 20, ...){
+
             # Read in data
             df <- tryCatch(Per_sequence_quality_scores(x))
 
@@ -227,9 +228,8 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
             userTheme <- c()
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-
             if(plotType == "heatmap"){
-              df <- reshape2::dcast(df, Filename ~ Quality)
+              df <- reshape2::dcast(df, Filename ~ Quality, value.var = "Count")
               df[is.na(df)] <- 0
 
               if(clusterNames){
@@ -247,16 +247,14 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
               if (!counts){
                 Count <- NULL # To avoid NOTE messages in R CMD check
                 # Summarise to frequencies & initialise the plot
-                df <- dplyr::group_by(df, Filename) %>% dplyr::mutate(Frequency = Count / sum(Count))
+                df <- dplyr::group_by(df, Filename)
+                df <- dplyr::mutate(df, Frequency = Count / sum(Count))
                 df <- dplyr::ungroup(df)
                 qualPlot <- ggplot(df, aes_string(x = "Quality", y = "Filename", fill = "Frequency"))
-
-              }else{
-                quaPlot <- ggplot(df, aes_string(x = "Quality", y = "Filename", fill = "Count"))
-            }
-
-
-
+              }
+              else{
+                qualPlot <- ggplot(df, aes_string(x = "Quality", y = "Filename", fill = "Count"))
+              }
 
               qualPlot <- qualPlot +
                 geom_tile(colour = lineCol, size = lineWidth) +
@@ -284,7 +282,6 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
                 # Make sidebar
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
-
                 #plot dendrogram
                 if(dendrogram && clusterNames){
 
@@ -294,22 +291,33 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
                     scale_y_reverse(expand = c(0, 0)) +
                     scale_x_continuous(expand = c(0,0.5))
 
-                  qualPlot <- plotly::subplot(dendro, sideBar, qualPlot,
-                                              widths = c(0.1,0.1,0.8), margin = 0,
-                                              shareY = TRUE) %>%
-                    plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)",
+                  qualPlot <- suppressMessages(
+                    plotly::subplot(dendro, sideBar, qualPlot,
+                                    widths = c(0.1,0.1,0.8), margin = 0,
+                                    shareY = TRUE)
+                  )
+                  qualPlot <- suppressMessages(
+                    plotly::layout(qualPlot,
+                                   xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)",
                                                  plot_bgcolor = "white"))
-                }else{
+                  )
+                }
+                else{
 
-                  qualPlot <- plotly::subplot(plotly::plotly_empty(),
-                                              sideBar,
-                                              qualPlot,
-                                              widths = c(0.1,0.1,0.8),
-                                              margin = 0,
-                                              shareY = TRUE) %>%
-                    plotly::layout(xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)"),
+                  qualPlot <- suppressMessages(
+                    plotly::subplot(plotly::plotly_empty(),
+                                    sideBar,
+                                    qualPlot,
+                                    widths = c(0.1,0.1,0.8),
+                                    margin = 0,
+                                    shareY = TRUE)
+                  )
+                  qualPlot <- suppressMessages(
+                    plotly::layout(qualPlot,
+                                   xaxis3 = list(title = "Mean Sequence Quality Per Read (Phred Score)"),
                                    annotations = list(text = "Filename", showarrow = FALSE,
-                                                      textangle = -90))
+                                         textangle = -90))
+                  )
                 }
               }
               qualPlot
@@ -327,7 +335,8 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
               if (!counts){
                 Count <- NULL # To avoid NOTE messages in R CMD check
                 # Summarise to frequencies & initialise the plot
-                df <- dplyr::group_by(df, Filename) %>% dplyr::mutate(Frequency = Count / sum(Count))
+                df <- dplyr::group_by(df, Filename)
+                df <- dplyr::mutate(df, Frequency = Count / sum(Count))
                 df <- dplyr::ungroup(df)
                 rects$ymax <- max(df$Frequency)
                 qualPlot <- ggplot(df) +
@@ -355,8 +364,6 @@ setMethod("plotSequenceQuality", signature = "FastqcDataList",
                 labs(x = "Mean Sequence Quality Per Read (Phred Score)") +
                 guides(fill = FALSE) +
                 theme_bw()
-
-
 
               if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
 
