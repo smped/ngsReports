@@ -8,6 +8,9 @@ output:
     fig_height: 6
     fig_width: 10
     toc: yes
+params:
+    dataType: "Transcriptome"
+    species: "Hsapians"
 ---
 
 ```{r setup, include=FALSE}
@@ -37,8 +40,8 @@ globals <- list(usePlotly = TRUE,
 								clusterNames = TRUE,
 								dendrogram = TRUE,
 								theoreticalGC = TRUE,
-								theoreticalType = "Transcriptome",
-								species = "Hsapiens")
+								theoreticalType = params$dataType,
+								species = params$species)
 ```
 
 

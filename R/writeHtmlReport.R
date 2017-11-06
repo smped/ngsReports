@@ -57,7 +57,8 @@ writeHtmlReport <- function(fastqcDir, template, species = "Hsapiens", dataType 
   message(paste("Generating", htmlOut, "from template..."))
   rmarkdown::render(file2Knit, output_format = "html_document",
                     output_file = htmlOut, output_dir = dirname(file2Knit),
-                    knit_root_dir = dirname(file2Knit), envir = new.env(), quiet = quiet)
+                    knit_root_dir = dirname(file2Knit), envir = new.env(), quiet = quiet,
+                    params = list(dataType = dataType, species = species))
   message("done")
 
   # Return the message, along with invisible(TRUE/FALSE)
