@@ -52,8 +52,6 @@
     - Add clustering & dendrograms to plot AND shiny app
 - **plotSequenceLengthDistribution**
     - Migrate to S4
-- **plotSequenceQuality**
-    - Hide `devtools::install_github('hadley/ggplot2')` message when `usePlotly == TRUE`
 - **plotSummary**
     - Migrate to S4
     - Rotate 90^o and add clustering/dendrogram
