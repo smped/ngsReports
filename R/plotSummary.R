@@ -126,7 +126,7 @@ plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
 
     # Add any parameters from dotArgs
     if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-    ggplotly(sumPlot)
+    suppressMessages(ggplotly(sumPlot))
   }
   else{
     sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status")) +
