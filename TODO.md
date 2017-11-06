@@ -17,6 +17,7 @@
 - Fix `Error: attempt to select less than one element in get1index` in `Per Base Sequence Content` on first click on the page
     - Change base colours to be consistent between individual plots & the heatmap
 - Fix `Per Sequence Quality Scores`: **Error**: Column `Filename` is unknown on first click   
+- Change slider label to 'Max Sequences' for `Overrepresented Sequences`
 
 ## Individual Functions
 
@@ -28,6 +29,7 @@
 - **plotKmers**
     - Fix plotly `NA` vals
     - Migrate to S4
+    - Fix legend
 - **plotNContent**
     - Migrate to S4
     - Remove `subset` argument
