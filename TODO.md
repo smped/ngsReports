@@ -56,5 +56,4 @@
     - Hide `devtools::install_github('hadley/ggplot2')` message when `usePlotly == TRUE`
 - **plotSummary**
     - Migrate to S4
-    - Hide `devtools::install_github('hadley/ggplot2')` message when `usePlotly == TRUE`
     - Rotate 90^o and add clustering/dendrogram
