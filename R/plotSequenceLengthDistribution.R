@@ -194,9 +194,7 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
 
       pwfCols <- ngsReports::pwf
 
-      nx <- length(x)
       lenPlot <- lenPlot +
-        geom_hline(yintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
         theme(panel.background = element_blank())
 
       t <- getSummary(x)
@@ -208,18 +206,8 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
       # Set the key for extracting individual files on click
       key <- names(labels[match(levels(df$Filename), labels)])
 
-      sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
-        geom_tile(aes_string(fill = "Status")) +
-        scale_fill_manual(values = getColours(pwfCols)) +
-        theme(panel.grid.minor = element_blank(),
-              panel.background = element_blank(),
-              legend.position="none",
-              axis.title=element_blank(),
-              axis.text=element_blank(),
-              axis.ticks=element_blank())
-      sideBar <- suppressMessages(
-        plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
-      )
+     sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+
 
       #plot dendrogram
       if(dendrogram && clusterNames){
@@ -227,16 +215,16 @@ plotSequenceLengthDistribution <- function(x, usePlotly = FALSE, labels, counts 
         dx <- ggdendro::dendro_data(clus)
         dendro <- ggdend(dx$segments) +
           coord_flip() +
-          scale_y_reverse(expand = c(0, 1)) +
-          scale_x_continuous(expand = c(0,1))
+          scale_y_reverse(expand = c(0, 0)) +
+          scale_x_continuous(expand = c(0,0.5))
       }
       else{
         dendro <- plotly::plotly_empty()
       }
 
       lenPlot <- suppressMessages(
-        plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.1, 0.8),
-                        margin = 0, shareY = TRUE, titleX = TRUE)
+        plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.08, 0.82),
+                        margin = 0.001, shareY = TRUE)
       )
     }
 

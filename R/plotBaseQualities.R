@@ -349,7 +349,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 geom_tile() +
                 scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, 41), FALSE ) +
                 theme(panel.grid.minor = element_blank(),
-                      panel.background = element_blank())
+                      panel.background = element_blank()) +
+                scale_x_discrete(expand = c(0, 0)) +
+                scale_y_discrete(expand = c(0, 0))
 
               if (usePlotly){
 
@@ -363,18 +365,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 t$Filename <- factor(t$Filename, levels = unique(df$Filename))
                 t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
-                sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
-                  geom_tile(aes_string(fill = "Status")) +
-                  scale_fill_manual(values = getColours(pwfCols)) +
-                  theme(panel.grid.minor = element_blank(),
-                        panel.background = element_blank(),
-                        legend.position="none",
-                        axis.title=element_blank(),
-                        axis.text=element_blank(),
-                        axis.ticks=element_blank())
-                sideBar <- suppressMessages(
-                  plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
-                  )
+                sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+
 
                 #plot dendrogram
                 if(dendrogram && clusterNames){
@@ -382,16 +374,15 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   dx <- ggdendro::dendro_data(clus)
                   dendro <- ggdend(dx$segments) +
                     coord_flip() +
-                    scale_y_reverse(expand = c(0, 1)) +
-                    scale_x_continuous(expand = c(0,1))
+                    scale_y_reverse(expand = c(0, 0)) +
+                    scale_x_continuous(expand = c(0,0.5))
 
                   dendro <- suppressMessages(
-                    plotly::ggplotly(dendro) %>%
-                      plotly::layout(margin = list(b = 0, t = 0))
+                    plotly::ggplotly(dendro)
                   )
 
                   qualPlot <- suppressMessages(
-                    plotly::subplot(dendro, sideBar, qualPlot, widths = c(0.1, 0.1, 0.8), margin = 0, shareY = TRUE) %>%
+                    plotly::subplot(dendro, sideBar, qualPlot, widths = c(0.1, 0.08, 0.82), margin = 0.001, shareY = TRUE) %>%
                       plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
                   )
                 }
@@ -399,7 +390,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   qualPlot <- suppressMessages(
                     plotly::subplot(plotly::plotly_empty(),
                                     sideBar, qualPlot,
-                                    widths = c(0.1,0.1,0.8), margin = 0, shareY = TRUE) %>%
+                                    widths = c(0.1,0.08,0.82), margin = 0.001, shareY = TRUE) %>%
                       plotly::layout(xaxis3 = list(title = "Sequencing Cycle"),
                                      annotations = list(text = "Filename", showarrow = FALSE,
                                                         textangle = -90))

@@ -177,16 +177,7 @@ plotOverrepresentedHeatmapPlotly <- function(x,
     t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
     key <- t$FilenameFull
 
-    sideBar <- ggplot(t, aes(x = 1, y = Filename, key = key)) +
-      geom_tile(aes(fill = Status)) +
-      scale_fill_manual(values = col) +
-      theme(panel.grid.minor = element_blank(),
-            panel.background = element_blank(),
-            legend.position="none",
-            axis.title = element_blank(),
-            axis.text = element_blank(),
-            axis.ticks = element_blank())
-    sideBar <- plotly::ggplotly(sideBar, tooltip = c("Status", "Filename"))
+    sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
     ORheatmap <- ORheatmap +
       theme(axis.text = element_blank(), axis.ticks = element_blank())
@@ -197,20 +188,19 @@ plotOverrepresentedHeatmapPlotly <- function(x,
       dx <- ggdendro::dendro_data(clus)
       dendro <- ggdend(dx$segments) +
         coord_flip() +
-        scale_y_reverse(expand = c(0, 1)) +
-        scale_x_continuous(expand = c(0,1))
+        scale_y_reverse(expand = c(0, 0)) +
+        scale_x_continuous(expand = c(0,0.5))
 
-      dendro <- plotly::ggplotly(dendro) %>%
-        plotly::layout(margin = list(b = 0, t = 0))
+      dendro <- plotly::ggplotly(dendro)
 
       ORheatmap <- plotly::subplot(dendro, sideBar, ORheatmap,
-                                   widths = c(0.2, 0.1,0.7), margin = 0,
+                                   widths = c(0.1, 0.08,0.82), margin = 0.001,
                                    shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Overrepresented Sequence",
                                      plot_bgcolor = "white"))
     }else{
-      ORheatmap <- plotly::subplot(plotly::plotly_empty(), sideBar, ORheatmap, widths = c(0.1,0.1,0.8),
-                                   margin = 0, shareY = TRUE) %>%
+      ORheatmap <- plotly::subplot(plotly::plotly_empty(), sideBar, ORheatmap, widths = c(0.1,0.08,0.82),
+                                   margin = 0.001, shareY = TRUE) %>%
         plotly::layout(xaxis3 = list(title = "Overrepresented Sequence",
                                      plot_bgcolor = "white"),
                        annotations = list(text = "Filename", showarrow = FALSE,
