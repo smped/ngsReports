@@ -10,8 +10,7 @@
 - Finish Vignette
 
 ## Shiny App
-
-- Make the PASS/WARN/FAIL colourbar skinnier. Probably about half the width it is.   
+ 
 - Once the S4 methods are up (see below), add the individual `plotKmer` plots
 - Add individual plots for `Sequence Duplication Levels`
 - Fix `Error: attempt to select less than one element in get1index` in `Per Base Sequence Content` on first click on the page
@@ -20,9 +19,6 @@
 - Change slider label to 'Max Sequences' for `Overrepresented Sequences`
 
 ## Individual Functions
-
--  **ALL**
-   - use makeSidebar to make sidebar
 
 - **Adapter Content**
     - add dendrogram when `usePlotly == TRUE`
