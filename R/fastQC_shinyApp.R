@@ -122,7 +122,7 @@ fastqcShiny <- function(fastqcInput = NULL){
             absolutePanel(
               h1("Per Base Sequence Content"),
               h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
-              h5("1 - G = opacity, T = Green, A = Blue, C = Red"),
+              h5("1 - G = opacity, A = Green, T = Red, C = Blue"),
               h5("if each base is equally represented then should be light grey"),
               plotlyOutput("SCHeatmap"),
               plotlyOutput("SCsingle"),
