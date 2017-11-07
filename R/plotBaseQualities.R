@@ -349,9 +349,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 geom_tile() +
                 scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, 41), FALSE ) +
                 theme(panel.grid.minor = element_blank(),
-                      panel.background = element_blank()) +
-                scale_x_discrete(expand = c(0, 0)) +
-                scale_y_discrete(expand = c(0, 0))
+                      panel.background = element_blank())
 
               if (usePlotly){
 
@@ -398,6 +396,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 }
               }
               else{
+                qualPlot <- qualPlot +
+                  scale_x_discrete(expand = c(0, 0)) +
+                  scale_y_discrete(expand = c(0, 0))
                 # Add the custom themes
                 if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
               }
