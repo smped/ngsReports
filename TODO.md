@@ -51,3 +51,6 @@
 - **plotSummary**
     - Migrate to S4
     - Rotate 90^o and add clustering/dendrogram
+- **plotBaseQualities**
+    - No longer works when `usePlotly = TRUE`. Message is ```Error in with(gglayout$xaxis, if (identical(tickmode, "auto")) ticktext else tickvals)[[1]] : 
+  subscript out of bounds ```
