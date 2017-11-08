@@ -207,7 +207,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                 radioButtons(inputId="ORType", label="Individual or Overall",
                              choices=c("Individual","Overall"), selected = "Overall"),
                 checkboxInput("ORcluster", "Cluster Filenames", value = TRUE),
-                sliderInput("ORslide", "Number of seq", min = 1, max = 20, value = 10),
+                sliderInput("ORslide", "Max Sequences", min = 1, max = 20, value = 10),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
