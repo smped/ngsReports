@@ -321,7 +321,6 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                     zoo::na.locf()
                 }) %>%
                 dplyr::bind_rows()
-              df$Start <- as.integer(df$Start)
               df <- df[!colnames(df) == "Longest_sequence"]
               df <- reshape2::dcast(df, Filename ~ Start, value.var = plotValue)
 
@@ -341,15 +340,16 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
 
               # Reorganise the data frame
               df[[plotValue]] <- as.numeric(df$Data)
-              df$Start <- as.integer(df$Start)
+              df$Start <- as.integer(as.character(df$Start))
               df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 
               # Start the heatmap
               qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = plotValue)) +
                 geom_tile() +
-                scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, 41), FALSE ) +
+                ngsReports:::scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, 41), FALSE ) +
                 theme(panel.grid.minor = element_blank(),
-                      panel.background = element_blank())
+                      panel.background = element_blank()) +
+                scale_x_continuous(expand = c(0,0))
 
               if (usePlotly){
 
@@ -396,9 +396,6 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 }
               }
               else{
-                qualPlot <- qualPlot +
-                  scale_x_discrete(expand = c(0, 0)) +
-                  scale_y_discrete(expand = c(0, 0))
                 # Add the custom themes
                 if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
               }
