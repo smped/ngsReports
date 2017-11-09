@@ -48,5 +48,4 @@
 - **plotSequenceLengthDistribution**
     - Migrate to S4
 - **plotSummary**
-    - Migrate to S4
-    - Rotate 90^o and add clustering/dendrogram
+    - Add clustering/dendrogram & tidy up for the app

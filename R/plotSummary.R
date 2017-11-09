@@ -13,7 +13,7 @@
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
 #' @param ... Used to pass various potting parameters to theme.
-#' @param lineWidth,lineCol Passed to geom_hline and geom_vline to determine
+#' @param gridlineWidth,gridlineCol Passed to geom_hline and geom_vline to determine
 #' width and colour of gridlines
 #'
 #' @return A ggplot2 object (\code{usePlotly = FALSE})
@@ -32,14 +32,6 @@
 #'
 #' # Check the overall PASS/WARN/FAIL status
 #' plotSummary(fdl)
-#'
-#' # Change theme parameters using the ellipsis
-#' library(ggplot2)
-#' plotSummary(fdl, axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
-#'
-#' # Add a vector of alternative names
-#' altNames <- structure(gsub(".fastq", "", fileName(fdl)), names = fileName(fdl))
-#' plotSummary(fdl, labels = altNames)
 #'
 #' # Interactive plot
 #' plotSummary(fdl, usePlotly = TRUE)
@@ -63,83 +55,108 @@
 #' @importFrom ggplot2 element_text
 #' @importFrom grid unit
 #'
+#' @name plotSummary
+#' @rdname plotSummary-methods
 #' @export
-plotSummary <- function(x, usePlotly = FALSE, labels, pwfCols, ...,
-                        lineWidth = 0.2, lineCol = "grey20"){
+setGeneric("plotSummary",function(x, usePlotly = FALSE, ...){standardGeneric("plotSummary")})
+#' @aliases plotSummary,character
+#' @rdname plotSummary-methods
+#' @export
+setMethod("plotSummary", signature = "character",
+          function(x, usePlotly = FALSE, ...){
+            if (length(x) == 1) stop("plotSummary() can only be called on two or more files.")
+            x <- getFastqcData(x)
+            plotSummary(x, usePlotly,...)
+          }
+)
+#' @aliases plotSummary,FastqcFileList
+#' @rdname plotSummary-methods
+#' @export
+setMethod("plotSummary", signature = "FastqcFileList",
+          function(x, usePlotly = FALSE, ...){
+            x <- getFastqcData(x)
+            plotSummary(x, usePlotly,...)
+          }
+)
+#' @aliases plotSummary,FastqcDataList
+#' @rdname plotSummary-methods
+#' @export
+setMethod("plotSummary", signature = "FastqcDataList",
+          function(x, usePlotly = FALSE, labels, pwfCols, ..., gridlineWidth = 0.2, gridlineCol = "grey20"){
+
+            df <- getSummary(x)
+
+            if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+            stopifnot(isValidPwf(pwfCols))
+            fillCol <- getColours(pwfCols)
+
+            df$Category <- factor(df$Category, levels = unique(df$Category))
+            df$Status <- factor(df$Status, levels = rev(c("PASS", "WARN", "FAIL")))
+
+            # Drop the suffix, or check the alternate labels
+            if (missing(labels)){
+              labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
+            }
+            else{
+              if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+            }
+            if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+            # Get any arguments for dotArgs that have been set manually
+            dotArgs <- list(...)
+            allowed <- names(formals(ggplot2::theme))
+            keepArgs <- which(names(dotArgs) %in% allowed)
+            userTheme <- c()
+            if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+            # Add any new labels
+            df$Filename <- labels[df$Filename]
+            df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+
+            if(usePlotly){
+              nx <- length(x)
+              ny <- length(unique(df$Category))
+
+              df$StatusNum <- as.integer(df$Status)
+              sumPlot <- ggplot(df, aes_string(x = "Category", y = "Filename", fill = "StatusNum", key = "Status")) +
+                geom_tile(colour = gridlineCol) +
+                geom_vline(xintercept = seq(1.5, nx), colour = gridlineCol, size = gridlineWidth) +
+                geom_hline(yintercept = seq(1.5, ny), colour = gridlineCol, size = gridlineWidth) +
+                scale_fill_gradientn(colours = c(fillCol["FAIL"],
+                                                 fillCol["WARN"],
+                                                 fillCol["PASS"]),
+                                     values = c(0,1)) +
+                scale_x_discrete(expand=c(0,0)) +
+                scale_y_discrete(expand=c(0,0)) +
+                # labs(x="QC Category", y="Filename") +
+                theme_bw() +
+                theme(axis.text = element_blank(),
+                      axis.ticks = element_blank(),
+                      axis.title = element_blank(),
+                      plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
+                      legend.position = "none")
 
 
-  if (typeof(x) == "character") x <- getFastqcData(x)
 
-  df <- tryCatch(getSummary(x))
+              # Add any parameters from dotArgs
+              if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
+              suppressMessages(ggplotly(sumPlot))
+            }
+            else{
 
-  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-  stopifnot(isValidPwf(pwfCols))
-  fillCol <- getColours(pwfCols)
+              sumPlot <- ggplot(df, aes_string(x = "Category", y = "Filename", fill = "Status")) +
+                geom_tile(colour = gridlineCol, size = gridlineWidth) +
+                scale_fill_manual(values = fillCol) +
+                labs(x="QC Category", y="Filename") +
+                scale_x_discrete(expand=c(0,0)) +
+                scale_y_discrete(expand=c(0,0)) +
+                theme_bw() +
+                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 
-  df$Category <- factor(df$Category, levels = rev(unique(df$Category)))
-  df$Status <- factor(df$Status, levels = rev(c("PASS", "WARN", "FAIL")))
-  # df$StatusNum <- as.integer(df$Status)
+              # Add any parameters from dotArgs
+              if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
+              sumPlot
+            }
 
-  # Drop the suffix, or check the alternate labels
-  if (missing(labels)){
-    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
-                        names = fileName(x))
-  }
-  else{
-    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-  }
-  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
-
-  # Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(ggplot2::theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
-  if(usePlotly){
-    nx <- length(x)
-    ny <- length(unique(df$Category))
-    df$Filename <- labels[df$Filename] # Add the new labels
-    df$StatusNum <- as.integer(df$Status)
-    sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "StatusNum", key = "Status")) +
-    #sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status", key = "Status")) +
-      geom_tile(colour = lineCol) +
-      geom_vline(xintercept = seq(1.5, nx), colour = lineCol, size = lineWidth) +
-      geom_hline(yintercept = seq(1.5, ny), colour = lineCol, size = lineWidth) +
-      scale_fill_gradientn(colours = c(fillCol["FAIL"],
-                                       fillCol["WARN"],
-                                       fillCol["PASS"]),
-                           values = c(0,1)) +
-      # scale_fill_manual(values=fillCol) +
-      scale_x_discrete(expand=c(0,0)) +
-      scale_y_discrete(expand=c(0,0)) +
-      labs(x="Filename", y="QC Category") +
-      theme_bw() +
-      theme(axis.text.x = element_blank(),
-            axis.ticks.x = element_blank(),
-            axis.title.y = element_blank(),
-            plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
-            legend.position = "none")
-
-
-
-    # Add any parameters from dotArgs
-    if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-    suppressMessages(ggplotly(sumPlot))
-  }
-  else{
-    sumPlot <- ggplot(df, aes_string(x = "Filename", y = "Category", fill = "Status")) +
-      geom_tile(colour = lineCol, size = lineWidth) +
-      scale_fill_manual(values = fillCol) +
-      labs(x="Filename", y="QC Category") +
-      scale_x_discrete(expand=c(0,0), labels = labels) +
-      scale_y_discrete(expand=c(0,0)) +
-      theme_bw() +
-      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-    # Add any parameters from dotArgs
-    if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-    sumPlot
-  }
-
-}
+          }
+)
