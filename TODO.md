@@ -38,8 +38,6 @@
     - Check plot for no overrepresented sequences
 - **plotOverrepresentedSummary**
     - Migrate to S4
-    - Remove `subset` argument
-    - Merge `plotOverrepresentedHeatmapPlotly()` with main function
     - Check plot for no overrepresented sequences    
     - Include in default report & shiny app
 - **plotSequenceContent**
