@@ -34,6 +34,8 @@ plotSequenceContent(x, usePlotly = FALSE, ...)
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
+\item{...}{Used to pass additional attributes to theme() and between methods}
+
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
