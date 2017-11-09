@@ -43,7 +43,6 @@
     - Check plot for no overrepresented sequences    
     - Include in default report & shiny app
 - **plotSequenceContent**
-    - Migrate to S4
     - Add clustering & dendrograms to plot AND shiny app
 - **plotSummary**
     - Add clustering/dendrogram & tidy up for the app
