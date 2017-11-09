@@ -12,6 +12,7 @@
 #' @param plotType \code{character}. Type of plot to generate. Must be "line" or "heatmap"
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
+#' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A ggplot2 object
 #'
