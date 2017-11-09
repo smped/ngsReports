@@ -4,37 +4,39 @@
 \alias{plotOverrepresentedSummary}
 \title{Plot a summary of OVer-represented Sequences}
 \usage{
-plotOverrepresentedSummary(x, subset, source = "(Primer|Adapter)",
-  col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2), trimNames = TRUE,
-  pattern = "(.+)\\\\.(fastq|fq).*")
+plotOverrepresentedSummary(x, usePlotly = FALSE, labels,
+  sequenceSource = "(Primer|Adapter)", col1 = rgb(0.2, 0.2, 0.8),
+  col2 = rgb(0.9, 0.2, 0.2))
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 \code{FastqcDataList} or path}
 
-\item{subset}{\code{logical}. Return the values for a subset of files.
-May be useful to only return totals from R1 files, or any other subset}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
+If \code{TRUE} plot will be rendered with plotly}
 
-\item{source}{A regular expression used to group the possible source into those
+\item{labels}{An optional named factor of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
+
+\item{sequenceSource}{A regular expression used to group the possible overrepresented sequence source into those
 matching the pattern, and "Other".
 Those matching will be classified using the pattern itself, without any supplied braces.
-Defaults to \code{source = "(Primer|Adapter)"}}
+Defaults to \code{sequenceSource = "(Primer|Adapter)"}}
 
-\item{col1}{The colour to use for the Total values}
+\item{col1}{The colour to use for the 'Other' percentage}
 
-\item{col2}{The colour to use for the Deduplicated values}
-
-\item{trimNames}{\code{logical}. Capture the text specified in \code{pattern} from fileName}
-
-\item{pattern}{\code{character}.
-Contains a regular expression which will be captured from fileName.
-The default will capture all text preceding .fastq/fastq.gz/fq/fq.gz}
+\item{col2}{The colour to use for the percentage matching \code{sequenceSource}}
 }
 \value{
 A standard ggplot2 object
 }
 \description{
-Plot a summary of OVer-represented Sequences for a set of FASTQC reports
+Plot a summary of Over-represented Sequences for a set of FASTQC reports
+}
+\details{
+Percentages are obtained by simply summing those within a report.
+Any possible double counting by FastQC is ignored for the purposes of a simple approximation.
 }
 \examples{
 
@@ -49,6 +51,5 @@ fdl <- getFastqcData(fileList)
 
 # Another example which isn't ideal
 plotOverrepresentedSummary(fdl)
-
 
 }
