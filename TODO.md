@@ -43,7 +43,6 @@
     - Check plot for no overrepresented sequences    
     - Include in default report & shiny app
 - **plotSequenceContent**
-    - Hide `devtools::install_github('hadley/ggplot2')` message when `usePlotly == TRUE`
     - Migrate to S4
     - Add clustering & dendrograms to plot AND shiny app
 - **plotSequenceLengthDistribution**
@@ -51,6 +50,3 @@
 - **plotSummary**
     - Migrate to S4
     - Rotate 90^o and add clustering/dendrogram
-- **plotBaseQualities**
-    - No longer works when `usePlotly = TRUE`. Message is ```Error in with(gglayout$xaxis, if (identical(tickmode, "auto")) ticktext else tickvals)[[1]] : 
-  subscript out of bounds ```
