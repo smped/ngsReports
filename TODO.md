@@ -45,7 +45,5 @@
 - **plotSequenceContent**
     - Migrate to S4
     - Add clustering & dendrograms to plot AND shiny app
-- **plotSequenceLengthDistribution**
-    - Migrate to S4
 - **plotSummary**
     - Add clustering/dendrogram & tidy up for the app
