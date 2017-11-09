@@ -43,117 +43,202 @@
 #' @importFrom grDevices rgb
 #' @importFrom magrittr %>%
 #'
+#' @name plotSequenceContent
+#' @rdname plotSequenceContent-methods
 #' @export
+setGeneric("plotSequenceContent",function(x, usePlotly = FALSE, ...){standardGeneric("plotSequenceContent")})
+#' @aliases plotSequenceContent,character
+#' @rdname plotSequenceContent-methods
+#' @export
+setMethod("plotSequenceContent", signature = "character",
+          function(x, usePlotly = FALSE, ...){
+            x <- getFastqcData(x)
+            plotSequenceContent(x, usePlotly,...)
+          }
+)
+#' @aliases plotSequenceContent,FastqcFile
+#' @rdname plotSequenceContent-methods
+#' @export
+setMethod("plotSequenceContent", signature = "FastqcFile",
+          function(x, usePlotly = FALSE, ...){
+            x <- getFastqcData(x)
+            plotSequenceContent(x, usePlotly,...)
+          }
+)
+#' @aliases plotSequenceContent,FastqcFileList
+#' @rdname plotSequenceContent-methods
+#' @export
+setMethod("plotSequenceContent", signature = "FastqcFileList",
+          function(x, usePlotly = FALSE, ...){
+            x <- getFastqcData(x)
+            plotSequenceContent(x, usePlotly,...)
+          }
+)
+#' @aliases plotSequenceContent,FastqcData
+#' @rdname plotSequenceContent-methods
+#' @export
+setMethod("plotSequenceContent", signature = "FastqcData",
+          function(x, usePlotly = FALSE, labels){
 
-plotSequenceContent <- function(x, usePlotly = FALSE, labels, plotType = "heatmap", pwfCols){
+            # Get the SequenceContent
+            df <- Per_base_sequence_content(x)
+            df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
 
-  stopifnot(plotType %in% c("heatmap", "line"))
-  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+            # Drop the suffix, or check the alternate labels
+            if (missing(labels)){
+              labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
+            }
+            else{
+              if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+            }
+            if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
-  # Get the SequenceContent
-  df <- tryCatch(Per_base_sequence_content(x))
-  df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
+            df$Filename <- labels[df$Filename]
+            df <- df[!colnames(df) == "Base"]
+            df <- melt(df, id.vars = c("Filename", "Start"))
+            colnames(df) <- c("Filename", "Position", "Base", "Percent")
+            df$Base <- factor(df$Base, levels = c("T", "C", "A", "G"))
 
-  # Drop the suffix, or check the alternate labels
-  if (missing(labels)){
-    labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
-                        names = fileName(x))
-  }
-  else{
-    if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-  }
-  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+            #set colours
+            baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
 
-  if(plotType == "heatmap"){
+            sequenceContentHeatmap <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
+              geom_line() +
+              facet_wrap(~Filename) +
+              scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+              scale_x_continuous(expand = c(0, 0)) +
+              guides(fill = FALSE) +
+              labs(x = "Position in read (bp)",
+                   y = "Percent (%)") +
+              theme_bw() +
+              scale_colour_manual(values = baseCols)
+            if(usePlotly){
+              sequenceContentHeatmap <- suppressMessages(
+                ggplotly(sequenceContentHeatmap) %>% layout(legend = list(x = 0.85, y = 1))
+              )
+            }
 
-    maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
-    df$colour <- with(df, rgb(floor(`T`) / maxBase, floor(A) / maxBase, floor(C) / maxBase, 1 - floor(G) / maxBase))
+            sequenceContentHeatmap
 
-    basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
+          }
+)
+#' @aliases plotSequenceContent,FastqcDataList
+#' @rdname plotSequenceContent-methods
+#' @export
+setMethod("plotSequenceContent", signature = "FastqcDataList",
+          function(x, usePlotly = FALSE, labels, plotType = "heatmap", pwfCols){
 
-    df <- dplyr::right_join(df, basicStat, by = "Filename")
-    df <- df[c("Filename", "Start", "colour", "Longest_sequence", "A", "C", "G", "T")]
+            stopifnot(plotType %in% c("heatmap", "line"))
+            if (missing(pwfCols)) pwfCols <- ngsReports::pwf
 
-    df <- split(df, f = df$Filename) %>%
-      lapply(function(x){
-        dfFill <- data.frame(Start = 1:x[["Longest_sequence"]][1])
-        x <- dplyr::right_join(x, dfFill, by = "Start") %>%
-          zoo::na.locf()
-      }) %>%
-      dplyr::bind_rows()
-    df$Start <- as.integer(df$Start)
-    key <- unique(df$Filename)
-    df$Filename <- labels[df$Filename]
-    df$Filename <- factor(df$Filename, levels = unique(df$Filename))
-    tileCols <- unique(df$colour)
-    names(tileCols) <- unique(df$colour)
+            # Get the SequenceContent
+            df <- Per_base_sequence_content(x)
+            df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
 
-    sequenceContentHeatmap <- ggplot(df,
-                                     aes_string(x = "Start", y = "Filename",
-                                                fill = "colour", A = "A", C = "C", G = "G", T = "T")) +
-      geom_tile() +
-      scale_fill_manual(values = tileCols) +
-      scale_x_continuous(expand = c(0, 0)) +
-      scale_y_discrete(expand = c(0, 0)) +
-      theme(legend.position = "none",
-            panel.grid.minor = element_blank(),
-            panel.grid.major = element_blank(),
-            panel.background = element_rect(fill = "black")) +
-      labs(x = "Position in read (bp)",
-           y = "Filename")
+            # Drop the suffix, or check the alternate labels
+            if (missing(labels)){
+              labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
+                                  names = fileName(x))
+            }
+            else{
+              if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+            }
+            if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
-    if (usePlotly){
-      sequenceContentHeatmap <- sequenceContentHeatmap +
-        theme(axis.ticks.y = element_blank(),
-              axis.text.y = element_blank())
+            if(plotType == "heatmap"){
+
+              maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
+              df$colour <- with(df, rgb(floor(`T`) / maxBase, floor(A) / maxBase, floor(C) / maxBase, 1 - floor(G) / maxBase))
+
+              basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
+
+              df <- dplyr::right_join(df, basicStat, by = "Filename")
+              df <- df[c("Filename", "Start", "colour", "Longest_sequence", "A", "C", "G", "T")]
+
+              df <- split(df, f = df$Filename) %>%
+                lapply(function(x){
+                  dfFill <- data.frame(Start = 1:x[["Longest_sequence"]][1])
+                  x <- dplyr::right_join(x, dfFill, by = "Start") %>%
+                    zoo::na.locf()
+                }) %>%
+                dplyr::bind_rows()
+              df$Position <- as.integer(df$Start)
+              key <- unique(df$Filename)
+              df$Filename <- labels[df$Filename]
+              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+              tileCols <- unique(df$colour)
+              names(tileCols) <- unique(df$colour)
+
+              sequenceContentHeatmap <- ggplot(df,
+                                               aes_string(x = "Position", y = "Filename",
+                                                          fill = "colour", A = "A", C = "C", G = "G", T = "T")) +
+                geom_tile() +
+                scale_fill_manual(values = tileCols) +
+                scale_x_continuous(expand = c(0, 0)) +
+                scale_y_discrete(expand = c(0, 0)) +
+                theme(legend.position = "none",
+                      panel.grid.minor = element_blank(),
+                      panel.grid.major = element_blank(),
+                      panel.background = element_rect(fill = "black")) +
+                labs(x = "Position in read (bp)",
+                     y = "Filename")
+
+              if (usePlotly){
+                sequenceContentHeatmap <- sequenceContentHeatmap +
+                  theme(axis.ticks.y = element_blank(),
+                        axis.text.y = element_blank())
 
 
-      t <- getSummary(x)
-      t <- t[t$Category == "Per base sequence content",]
-      t$Filename <- labels[t$Filename]
-      t$Filename <- factor(t$Filename, levels = levels(df$Filename))
+                t <- getSummary(x)
+                t <- t[t$Category == "Per base sequence content",]
+                t$Filename <- labels[t$Filename]
+                t$Filename <- factor(t$Filename, levels = levels(df$Filename))
 
-      sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+                sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
-      suppressMessages( # Hides the recommendation to install from github...
-        subplot(sideBar, sequenceContentHeatmap, widths = c(0.08,0.92), margin = 0.001) %>%
-        layout(xaxis2 = list(title = "Position in read (bp)"))
-      )
+                sequenceContentHeatmap <- suppressMessages(# Hides the recommendation to install from github...
+                  plotly::ggplotly(sequenceContentHeatmap, tooltip = c("x", "y", "A", "C", "G", "T"))
+                )
+
+                suppressMessages(
+                  subplot(sideBar, sequenceContentHeatmap, widths = c(0.08,0.92), margin = 0.001) %>%
+                    layout(xaxis2 = list(title = "Position in read (bp)"))
+                )
 
 
-    }
-    else{
-      sequenceContentHeatmap
-    }
-  }
-  else{
-    df$Filename <- labels[df$Filename]
-    df <- df[!colnames(df) == "Base"]
-    df <- melt(df, id.vars = c("Filename", "Start"))
-    colnames(df) <- c("Filename", "Start", "Base", "Percent")
-    df$Base <- factor(df$Base, levels = unique(df$Base))
+              }
+              else{
+                sequenceContentHeatmap
+              }
+            }
+            else{
+              df$Filename <- labels[df$Filename]
+              df <- df[!colnames(df) == "Base"]
+              df <- melt(df, id.vars = c("Filename", "Start"))
+              colnames(df) <- c("Filename", "Position", "Base", "Percent")
+              df$Base <- factor(df$Base, levels = c("T", "C", "A", "G"))
 
-    #set colours
-    baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
+              #set colours
+              baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
 
-    sequenceContentHeatmap <- ggplot(df, aes_string(x = "Start", y = "Percent", colour = "Base")) +
-      geom_line() +
-      facet_wrap(~Filename) +
-      scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
-      scale_x_continuous(expand = c(0, 0)) +
-      guides(fill = FALSE) +
-      labs(x = "Position in read (bp)",
-           y = "Percent (%)") +
-      theme_bw() +
-      scale_colour_manual(values = baseCols)
-    if(usePlotly){
-      suppressMessages(
-        ggplotly(sequenceContentHeatmap) %>% layout(legend = list(x = 0.85, y = 1))
-      )
-    }
-    else{
-      sequenceContentHeatmap
-    }
-  }
-}
-
+              sequenceContentHeatmap <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
+                geom_line() +
+                facet_wrap(~Filename) +
+                scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+                scale_x_continuous(expand = c(0, 0)) +
+                guides(fill = FALSE) +
+                labs(x = "Position in read (bp)",
+                     y = "Percent (%)") +
+                theme_bw() +
+                scale_colour_manual(values = baseCols)
+              if(usePlotly){
+                suppressMessages(
+                  ggplotly(sequenceContentHeatmap) %>% layout(legend = list(x = 0.85, y = 1))
+                )
+              }
+              else{
+                sequenceContentHeatmap
+              }
+            }
+          }
+)
