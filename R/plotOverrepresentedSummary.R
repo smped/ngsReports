@@ -206,38 +206,28 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             # Define the palette
             stopifnot(paletteName %in% rownames(RColorBrewer::brewer.pal.info))
             nSource <- length(unique(df$Possible_Source))
-            pal <- RColorBrewer::brewer.pal(nSource, paletteName)
+            pal <- RColorBrewer::brewer.pal(nSource, paletteName) %>% set_names(unique(df$Possible_Source))
 
             if (usePlotly){
 
-              return("Sorry...")
+              #set left margin
+              if(maxChar < 10) l <- 80
+              if(maxChar >= 10 & maxChar < 15) l <- 110
+              if(maxChar >= 15 & maxChar < 20) l <- 130
+              if(maxChar >= 20)  l <- 150
 
-              # df <- tidyr::spread(df, Percentage)
-              # df[is.na(df)] <- 0
-              #
-              # #set left margin
-              # if(maxChar < 10) l <- 80
-              # if(maxChar >= 10 & maxChar < 15) l <- 110
-              # if(maxChar >= 15 & maxChar < 20) l <- 130
-              # if(maxChar >= 20)  l <- 150
 
-              # I get why we need to do it this way, but we can't add themes if we use plot_ly
-              # I've also totally broken this by changing the Possible_Source method
-              #
-              # overPlot <- plot_ly(df, x = ~df[[sequenceSource]], y = ~Filename, type = "bar",
-              #                     name = sequenceSource, color = I(col2), hoverinfo = "text",
-              #                     text = ~paste("Filename: ",
-              #                                   Filename,
-              #                                   "<br> Percentage: ",
-              #                                   df[[sequenceSource]])) %>%
-              #   add_trace(x = ~Other, name = "Other", marker = list(color = col1),
-              #             hoverinfo = "text",
-              #             text = ~paste("Filename: ",
-              #                           Filename,
-              #                           "<br> Percentage: ",
-              #                           Other)) %>%
-              #   layout(xaxis = list(title = "Percent of Total Reads"),
-              #          margin=list(l=l), barmode = "stack")
+              overPlot <- plot_ly(df, x = ~Percentage, y = ~Filename, type = "bar", color = ~Possible_Source,
+                      colors = pal, hoverinfo = "text",
+                      text = ~paste("Filename: ",
+                                    Filename,
+                                    "<br> Percentage: ",
+                                    Percentage,
+                                    "<br> Possible Source: ",
+                                    Possible_Source)) %>%
+                layout(xaxis = list(title = "Percent of Total Reads"),
+                       margin=list(l=l), barmode = "stack", showlegend = FALSE)
+
             }
             else{
               overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Possible_Source")) +
