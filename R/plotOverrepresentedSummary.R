@@ -1,4 +1,4 @@
-#' @title Plot a summary of OVer-represented Sequences
+#' @title Plot a summary of Over-represented Sequences
 #'
 #' @description Plot a summary of Over-represented Sequences for a set of FASTQC reports
 #'
@@ -16,8 +16,10 @@
 #' matching the pattern, and "Other".
 #' Those matching will be classified using the pattern itself, without any supplied braces.
 #' Defaults to \code{sequenceSource = "(Primer|Adapter)"}
+#' @param col The colour to use for the fastqcData version of the plot.
 #' @param col1 The colour to use for the 'Other' percentage
 #' @param col2 The colour to use for the percentage matching \code{sequenceSource}
+#' @param ... other args
 #'
 #' @return A standard ggplot2 object
 #'
@@ -36,6 +38,7 @@
 #' plotOverrepresentedSummary(fdl)
 #'
 #' @importFrom tidyr spread
+#' @importFrom dplyr top_n
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 geom_bar
@@ -49,77 +52,168 @@
 #' @importFrom grDevices rgb
 #'
 #'
+#' @name plotOverrepresentedSummary
+#' @rdname plotOverrepresentedSummary-methods
 #' @export
-plotOverrepresentedSummary <- function(x, usePlotly = FALSE, labels, sequenceSource = "(Primer|Adapter)",
-                                       col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2)){
+setGeneric("plotOverrepresentedSummary",function(x, usePlotly = FALSE, ...){standardGeneric("plotOverrepresentedSummary")})
+#' @aliases plotOverrepresentedSummary,character
+#' @rdname plotOverrepresentedSummary-methods
+#' @export
+setMethod("plotOverrepresentedSummary", signature = "character",
+          function(x, usePlotly = FALSE, ...){
+            x <- getFastqcData(x)
+            plotOverrepresentedSummary(x, usePlotly,...)
+          }
+)
+#' @aliases plotOverrepresentedSummary,FastqcFile
+#' @rdname plotOverrepresentedSummary-methods
+#' @export
+setMethod("plotOverrepresentedSummary", signature = "FastqcFile",
+          function(x, usePlotly = FALSE, ...){
+            x <- getFastqcData(x)
+            plotOverrepresentedSummary(x, usePlotly,...)
+          }
+)
+#' @aliases plotOverrepresentedSummary,FastqcFileList
+#' @rdname plotOverrepresentedSummary-methods
+#' @export
+setMethod("plotOverrepresentedSummary", signature = "FastqcFileList",
+          function(x, usePlotly = FALSE, ...){
+            x <- getFastqcData(x)
+            plotOverrepresentedSummary(x, usePlotly,...)
+          }
+)
+#' @aliases plotOverrepresentedSummary,FastqcData
+#' @rdname plotOverrepresentedSummary-methods
+#' @export
+setMethod("plotOverrepresentedSummary", signature = "FastqcData",
+          function(x, usePlotly = FALSE, labels,
+                   col = rgb(0.4, 0.4, 0.4, 0.4), ...){
 
-  df <- tryCatch(Overrepresented_sequences(x))
+            df <- tryCatch(Overrepresented_sequences(x))
 
-  if (nrow(df) == 0) stop("No overrepresented sequences were detected by FastQC")
+            if (nrow(df) == 0) stop("No overrepresented sequences were detected by FastQC")
 
-  # Drop the suffix, or check the alternate labels
-  if(base::missing(labels)){
-    labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
-  }
-  else{
-    if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-  }
-  if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+            # Drop the suffix, or check the alternate labels
+            if(base::missing(labels)){
+              labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
+            }
+            else{
+              if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+            }
+            if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+            df <- top_n(df, 10, Percentage)
+            ymax <- 1.05*max(df$Percentage)
+
+            if (usePlotly){
+              overPlot <- plot_ly(df, x = ~Percentage, y = ~Sequence, type = "bar",
+                                  name = sequenceSource, color = I(col), hoverinfo = "text",
+                                  text = ~paste("Filename: ",
+                                                Filename,
+                                                "<br> Percentage: ",
+                                                Percentage,
+                                                "<br> Sequence: ",
+                                                Sequence,
+                                                "<br> Possible Source: ",
+                                                Possible_Source)) %>%
+                layout(xaxis = list(title = "Percent of Total Reads"),
+                       yaxis = list(title = "Overrepresented Sequence",
+                                    showticklabels = FALSE), title = df$Filename[1])
+            }
+            else{
+              overPlot <- ggplot(df, aes_string(x = "Sequence", y = "Percentage")) +
+                geom_bar(stat = "identity", fill = "grey80") +
+                ylab("Overrepresented Sequences (% of Total)") +
+                scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
+                theme_bw() +
+                coord_flip()
+            }
+
+            overPlot
+
+            # When moving to S4, maybe add the top 5-10 for a single file?
+            # Add functionality to export a FASTA file of the sequences to the shiny app?
+            # This will obviously work best under plotly as the names will be silly otherwise
 
 
-  Percentage <- c() # Here to avoid a NOTE in R CMD Check
-  df$Type <- c("Other", sequenceSource)[grepl(sequenceSource, df$Possible_Source) + 1]
-  df$Type <- gsub("(\\(|\\))", "", df$Type) # Remove brackets
-  df <- dplyr::group_by(df, Filename, Type)
-  df <- dplyr::summarise(df, Percentage = sum(Percentage))
-  maxChar <- max(nchar(df$Filename))
-  df$Filename <- labels[df$Filename]
-  df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+          }
+)
+#' @aliases plotOverrepresentedSummary,FastqcDataList
+#' @rdname plotOverrepresentedSummary-methods
+#' @export
+setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
+          function(x, usePlotly = FALSE, labels, sequenceSource = "(Primer|Adapter)",
+                   col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2), ...){
 
-  # Set the axis limits. Just scale the upper limit by 1.05
-  ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename), Total = sum(Percentage))$Total)*1.05
+            df <- tryCatch(Overrepresented_sequences(x))
 
-  if (usePlotly){
-    df <- tidyr::spread(df, Type, Percentage)
-    df[is.na(df)] <- 0
-    sequenceSource <- gsub("(\\(|\\))", "", sequenceSource)
+            if (nrow(df) == 0) stop("No overrepresented sequences were detected by FastQC")
 
-    #set left margin
-    if(maxChar < 10) l <- 80
-    if(maxChar >= 10 & maxChar < 15) l <- 110
-    if(maxChar >= 15 & maxChar < 20) l <- 130
-    if(maxChar >= 20)  l<- 150
+            # Drop the suffix, or check the alternate labels
+            if(base::missing(labels)){
+              labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
+            }
+            else{
+              if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+            }
+            if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
 
-    overPlot <- plot_ly(df, x = ~df[[sequenceSource]], y = ~Filename, type = "bar",
-                        name = sequenceSource, color = I("red"), hoverinfo = "text",
-                        text = ~paste("Filename: ",
-                                      Filename,
-                                      "<br> Percentage: ",
-                                      df[[sequenceSource]])) %>%
-      add_trace(x = ~Other, name = "Other", marker = list(color = "blue"),
-                hoverinfo = "text",
-                text = ~paste("Filename: ",
-                              Filename,
-                              "<br> Percentage: ",
-                              Other)) %>%
-      layout(xaxis = list(title = "Percent of Total Reads"),
-             margin=list(l=l), barmode = "stack")
-  }
-  else{
-    overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Type")) +
-      geom_bar(stat = "identity") +
-      ylab("Overrepresented Sequences (% of Total)") +
-      scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
-      scale_fill_manual(values = c(col1, col2)) +
-      theme_bw() +
-      coord_flip()
-  }
+            Percentage <- c() # Here to avoid a NOTE in R CMD Check
+            df$Type <- c("Other", sequenceSource)[grepl(sequenceSource, df$Possible_Source) + 1]
+            df$Type <- gsub("(\\(|\\))", "", df$Type) # Remove brackets
+            df <- dplyr::group_by(df, Filename, Type)
+            df <- dplyr::summarise(df, Percentage = sum(Percentage))
+            maxChar <- max(nchar(df$Filename))
+            df$Filename <- labels[df$Filename]
+            df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
-  overPlot
+            # Set the axis limits. Just scale the upper limit by 1.05
+            ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename), Total = sum(Percentage))$Total)*1.05
 
-  # When moving to S4, maybe add the top 5-10 for a single file?
-  # Add functionality to export a FASTA file of the sequences to the shiny app?
-  # This will obviously work best under plotly as the names will be silly otherwise
+            if (usePlotly){
+              df <- tidyr::spread(df, Type, Percentage)
+              df[is.na(df)] <- 0
+              sequenceSource <- gsub("(\\(|\\))", "", sequenceSource)
 
-}
+              #set left margin
+              if(maxChar < 10) l <- 80
+              if(maxChar >= 10 & maxChar < 15) l <- 110
+              if(maxChar >= 15 & maxChar < 20) l <- 130
+              if(maxChar >= 20)  l<- 150
+
+
+              overPlot <- plot_ly(df, x = ~df[[sequenceSource]], y = ~Filename, type = "bar",
+                                  name = sequenceSource, color = I("red"), hoverinfo = "text",
+                                  text = ~paste("Filename: ",
+                                                Filename,
+                                                "<br> Percentage: ",
+                                                df[[sequenceSource]])) %>%
+                add_trace(x = ~Other, name = "Other", marker = list(color = "blue"),
+                          hoverinfo = "text",
+                          text = ~paste("Filename: ",
+                                        Filename,
+                                        "<br> Percentage: ",
+                                        Other)) %>%
+                layout(xaxis = list(title = "Percent of Total Reads"),
+                       margin=list(l=l), barmode = "stack")
+            }
+            else{
+              overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Type")) +
+                geom_bar(stat = "identity") +
+                ylab("Overrepresented Sequences (% of Total)") +
+                scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
+                scale_fill_manual(values = c(col1, col2)) +
+                theme_bw() +
+                coord_flip()
+            }
+
+            overPlot
+
+            # When moving to S4, maybe add the top 5-10 for a single file?
+            # Add functionality to export a FASTA file of the sequences to the shiny app?
+            # This will obviously work best under plotly as the names will be silly otherwise
+
+          }
+)
