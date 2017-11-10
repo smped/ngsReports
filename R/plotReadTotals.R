@@ -22,8 +22,6 @@
 #' Unless specified, will be set as TRUE automatically if the highest total is > 2e06.
 #' @param duplicated \code{logical}. Include deduplicated read total estimates to plot charts
 #' @param bars If \code{duplicated = TRUE}, show unique and deduplicated reads as "stacked" or "adjacent".
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
-#' values in plot
 #' @param barCols Colours for duplicated and unique reads.
 #' @param ... Used to pass additional attributes to theme()
 #'
@@ -90,9 +88,9 @@ setMethod("plotReadTotals", signature = "FastqcFileList",
 #' @export
 setMethod("plotReadTotals", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, duplicated = TRUE, bars = "stacked",
-                   labels, millions, pwfCols, barCols, ...){
+                   labels, millions, barCols, ...){
 
-            df <- tryCatch(readTotals(x))
+            df <- readTotals(x)
 
             stopifnot(is.logical(duplicated))
 
@@ -163,6 +161,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               deDup$Filename <- labels[deDup$Filename]
               colnames(deDup)[which(colnames(deDup) == "Total")] <- "Percentage"
               joinedDf <- dplyr::left_join(deDup, df, by = "Filename")
+              joinedDf$Filename <- factor(joinedDf$Filename, levels = rev(unique(joinedDf$Filename)))
 
               if (bars == "adjacent"){
 
@@ -206,7 +205,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
 
                 joinedDf <- tidyr::spread(joinedDf, Type, Total)
                 joinedDf[is.na(joinedDf)] <- 0
-                maxChar <- max(nchar(joinedDf$Filename))
+                maxChar <- max(nchar(levels(joinedDf$Filename)))
 
                 joinedDf["Total"] <- joinedDf$Duplicated + joinedDf$Unique
                 joinedDf["DuplicatedP"] <- joinedDf$Duplicated/joinedDf$Total

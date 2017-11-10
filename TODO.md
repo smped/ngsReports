@@ -16,7 +16,7 @@
 - Fix `Error: attempt to select less than one element in get1index` in `Per Base Sequence Content` on first click on the page
     - Change base colours to be consistent between individual plots & the heatmap
 - Fix `Per Sequence Quality Scores`: **Error**: Column `Filename` is unknown on first click   
-- Change slider label to 'Max Sequences' for `Overrepresented Sequences`
+- Set Overrepresented Summary to produce a table on click
 
 ## Individual Functions
 
@@ -31,16 +31,14 @@
     - Remove `subset` argument
     - Merge `plotNContentPlotly()` with main function
     - Check plot for completely missing N content
-- **plotOverrepresentedHeatmap**
-    - Migrate to S4
-    - Remove `subset` argument
-    - Merge `plotOverrepresentedHeatmapPlotly()` with main function
-    - Check plot for no overrepresented sequences
+- **plotOverrepresentedHeatmap - DELETED!!!**
 - **plotOverrepresentedSummary**
-    - Migrate to S4
-    - Check plot for no overrepresented sequences    
+    - Check plot for no overrepresented sequences: *Temporary version added...*    
     - Include in default report & shiny app
+    - Add clustering & sideBar
 - **plotSequenceContent**
     - Add clustering & dendrograms to plot AND shiny app
 - **plotSummary**
     - Add clustering/dendrogram & tidy up for the app
+- **exportOverrepresentedFASTA**
+    - Write...

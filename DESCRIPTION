@@ -84,8 +84,6 @@ Collate:
     'plotKmers.R'
     'plotNContent.R'
     'plotNContentPlotly.R'
-    'plotOverrepresentedHeatmap.R'
-    'plotOverrepresentedHeatmapPlotly.R'
     'plotOverrepresentedSummary.R'
     'plotReadTotals.R'
     'plotSequenceContent.R'

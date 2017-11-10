@@ -21,8 +21,7 @@ plotReadTotals(x, usePlotly = FALSE, duplicated = TRUE, bars = "stacked",
   duplicated = TRUE, bars = "stacked", ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(x, usePlotly = FALSE,
-  duplicated = TRUE, bars = "stacked", labels, millions, pwfCols, barCols,
-  ...)
+  duplicated = TRUE, bars = "stacked", labels, millions, barCols, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -43,9 +42,6 @@ File extensions are dropped by default.}
 
 \item{millions}{\code{logical}. Use Millions of reads as the scale for the y-axis.
 Unless specified, will be set as TRUE automatically if the highest total is > 2e06.}
-
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
-values in plot}
 
 \item{barCols}{Colours for duplicated and unique reads.}
 }

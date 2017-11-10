@@ -25,11 +25,10 @@ plotOverrepresentedSummary(x, usePlotly = FALSE, ...)
   ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcData}(x, usePlotly = FALSE,
-  labels, col = rgb(0.4, 0.4, 0.4, 0.4), ...)
+  labels, n = 10, pwfCols, ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcDataList}(x, usePlotly = FALSE,
-  labels, sequenceSource = "(Primer|Adapter)", col1 = rgb(0.2, 0.2, 0.8),
-  col2 = rgb(0.9, 0.2, 0.2), ...)
+  labels, ..., paletteName = "Set1")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -38,22 +37,18 @@ plotOverrepresentedSummary(x, usePlotly = FALSE, ...)
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
-\item{...}{other args}
+\item{...}{Used to pass additional attributes to theme() and between methods}
 
 \item{labels}{An optional named factor of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{col}{The colour to use for the fastqcData version of the plot.}
+\item{n}{The number of sequences to plot from an individual file}
 
-\item{sequenceSource}{A regular expression used to group the possible overrepresented sequence source into those
-matching the pattern, and "Other".
-Those matching will be classified using the pattern itself, without any supplied braces.
-Defaults to \code{sequenceSource = "(Primer|Adapter)"}}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{col1}{The colour to use for the 'Other' percentage}
-
-\item{col2}{The colour to use for the percentage matching \code{sequenceSource}}
+\item{paletteName}{Name of the palette for colouring the possible sources of the overrepresented sequences.
+Must be a palette name from \code{RColorBrewer}.}
 }
 \value{
 A standard ggplot2 object

@@ -192,7 +192,7 @@ Kmer_Content(rawFastqcData) %>%
 				 style = "rmarkdown",
 				 justify = "llrrrr",
 				 big.mark = ",",
-				 caption = paste("Summary of Overrepresented Sequences in all files.",
+				 caption = paste("Summary of Overrepresented Kmers in all files.",
 				 								"A maximum of", nK, "Kmers are shown."))
 ```
 

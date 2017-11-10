@@ -12,14 +12,11 @@
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param sequenceSource A regular expression used to group the possible overrepresented sequence source into those
-#' matching the pattern, and "Other".
-#' Those matching will be classified using the pattern itself, without any supplied braces.
-#' Defaults to \code{sequenceSource = "(Primer|Adapter)"}
-#' @param col The colour to use for the fastqcData version of the plot.
-#' @param col1 The colour to use for the 'Other' percentage
-#' @param col2 The colour to use for the percentage matching \code{sequenceSource}
-#' @param ... other args
+#' @param n The number of sequences to plot from an individual file
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
+#' Must be a palette name from \code{RColorBrewer}.
+#' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object
 #'
@@ -38,14 +35,15 @@
 #' plotOverrepresentedSummary(fdl)
 #'
 #' @importFrom tidyr spread
-#' @importFrom dplyr top_n
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 geom_bar geom_text
 #' @importFrom ggplot2 ylab
+#' @importFrom ggplot2 xlim ylim
 #' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 theme_bw
+#' @importFrom ggplot2 theme_bw theme_void
 #' @importFrom ggplot2 coord_flip
+#' @importFrom ggplot2 facet_grid
 #' @importFrom plotly plot_ly
 #' @importFrom plotly add_trace
 #' @importFrom plotly layout
@@ -87,12 +85,19 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcFileList",
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels,
-                   col = rgb(0.4, 0.4, 0.4, 0.4), ...){
+          function(x, usePlotly = FALSE, labels, n = 10, pwfCols, ...){
 
-            df <- tryCatch(Overrepresented_sequences(x))
+            df <- Overrepresented_sequences(x)
 
-            if (nrow(df) == 0) stop("No overrepresented sequences were detected by FastQC")
+            if (nrow(df) == 0) {
+              #stop("No overrepresented sequences were detected by FastQC")
+              overPlot <- ggplot() +
+                geom_text(aes(x = 0.5, y = 0.8, label = "No overrepresented sequences")) +
+                theme_void() +
+                xlim(c(0, 1)) +
+                ylim(c(0, 1))
+              return(overPlot)
+            }
 
             # Drop the suffix, or check the alternate labels
             if(base::missing(labels)){
@@ -102,13 +107,30 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
               if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
             }
             if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+            df$Filename <- labels[df$Filename]
 
-            df <- top_n(df, 10, Percentage)
+            # Get any arguments for dotArgs that have been set manually
+            dotArgs <- list(...)
+            allowed <- names(formals(ggplot2::theme))
+            keepArgs <- which(names(dotArgs) %in% allowed)
+            userTheme <- c()
+            if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+            df <- dplyr::top_n(df, n, Percentage)
+            df$Status <- cut(df$Percentage, breaks = c(0, 0.1, 1, 100), labels = c("PASS", "WARN", "FAIL"))
+            df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", df$Possible_Source)
+            df$Sequence <- factor(df$Sequence, levels = rev(df$Sequence))
+            df <- droplevels(df)
             ymax <- 1.05*max(df$Percentage)
+
+            # Sort out the colours & pass/warn/fail breaks
+            if (missing(pwfCols)) pwfCols <- getColours(ngsReports::pwf)
+            pwfCols <- pwfCols[names(pwfCols) %in% levels(df$Status)]
 
             if (usePlotly){
               overPlot <- plot_ly(df, x = ~Percentage, y = ~Sequence, type = "bar",
-                                  name = sequenceSource, color = I(col), hoverinfo = "text",
+                                  name = ~Possible_Source, color = I(pwfCols[as.character(df$Status)]),
+                                  hoverinfo = "text",
                                   text = ~paste("Filename: ",
                                                 Filename,
                                                 "<br> Percentage: ",
@@ -122,20 +144,24 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
                                     showticklabels = FALSE), title = df$Filename[1])
             }
             else{
-              overPlot <- ggplot(df, aes_string(x = "Sequence", y = "Percentage")) +
-                geom_bar(stat = "identity", fill = "grey80") +
+              overPlot <- ggplot(df, aes_string(x = "Sequence", y = "Percentage", fill = "Status")) +
+                geom_bar(stat = "identity") +
                 ylab("Overrepresented Sequences (% of Total)") +
                 scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
                 theme_bw() +
-                coord_flip()
+                coord_flip() +
+                facet_grid(Possible_Source~., scales = "free_y", space = "free") +
+                scale_fill_manual(values = pwfCols)
+
+              # Add the basic customisations
+              if (!is.null(userTheme)) overPlot <- overPlot + userTheme
+
             }
 
             overPlot
 
-            # When moving to S4, maybe add the top 5-10 for a single file?
             # Add functionality to export a FASTA file of the sequences to the shiny app?
             # This will obviously work best under plotly as the names will be silly otherwise
-
 
           }
 )
@@ -143,10 +169,9 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, sequenceSource = "(Primer|Adapter)",
-                   col1 = rgb(0.2, 0.2, 0.8), col2 = rgb(0.9, 0.2, 0.2), ...){
+          function(x, usePlotly = FALSE, labels, ..., paletteName = "Set1"){
 
-            df <- tryCatch(Overrepresented_sequences(x))
+            df <- Overrepresented_sequences(x)
 
             if (nrow(df) == 0) stop("No overrepresented sequences were detected by FastQC")
 
@@ -159,61 +184,76 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             }
             if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
 
+            # Get any arguments for dotArgs that have been set manually
+            dotArgs <- list(...)
+            allowed <- names(formals(ggplot2::theme))
+            keepArgs <- which(names(dotArgs) %in% allowed)
+            userTheme <- c()
+            if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-            Percentage <- c() # Here to avoid a NOTE in R CMD Check
-            df$Type <- c("Other", sequenceSource)[grepl(sequenceSource, df$Possible_Source) + 1]
-            df$Type <- gsub("(\\(|\\))", "", df$Type) # Remove brackets
-            df <- dplyr::group_by(df, Filename, Type)
+            Possible_Source <- c() # Here to avoid a NOTE in R CMD check...
+            df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", df$Possible_Source)
+            df <- dplyr::group_by(df, Filename, Possible_Source)
             df <- dplyr::summarise(df, Percentage = sum(Percentage))
             maxChar <- max(nchar(df$Filename))
             df$Filename <- labels[df$Filename]
             df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
             # Set the axis limits. Just scale the upper limit by 1.05
-            ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename), Total = sum(Percentage))$Total)*1.05
+            ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename),
+                                         Total = sum(Percentage))$Total)*1.05
+
+            # Define the palette
+            stopifnot(paletteName %in% rownames(RColorBrewer::brewer.pal.info))
+            nSource <- length(unique(df$Possible_Source))
+            pal <- RColorBrewer::brewer.pal(nSource, paletteName)
 
             if (usePlotly){
-              df <- tidyr::spread(df, Type, Percentage)
-              df[is.na(df)] <- 0
-              sequenceSource <- gsub("(\\(|\\))", "", sequenceSource)
 
-              #set left margin
-              if(maxChar < 10) l <- 80
-              if(maxChar >= 10 & maxChar < 15) l <- 110
-              if(maxChar >= 15 & maxChar < 20) l <- 130
-              if(maxChar >= 20)  l<- 150
+              return("Sorry...")
 
+              # df <- tidyr::spread(df, Percentage)
+              # df[is.na(df)] <- 0
+              #
+              # #set left margin
+              # if(maxChar < 10) l <- 80
+              # if(maxChar >= 10 & maxChar < 15) l <- 110
+              # if(maxChar >= 15 & maxChar < 20) l <- 130
+              # if(maxChar >= 20)  l <- 150
 
-              overPlot <- plot_ly(df, x = ~df[[sequenceSource]], y = ~Filename, type = "bar",
-                                  name = sequenceSource, color = I("red"), hoverinfo = "text",
-                                  text = ~paste("Filename: ",
-                                                Filename,
-                                                "<br> Percentage: ",
-                                                df[[sequenceSource]])) %>%
-                add_trace(x = ~Other, name = "Other", marker = list(color = "blue"),
-                          hoverinfo = "text",
-                          text = ~paste("Filename: ",
-                                        Filename,
-                                        "<br> Percentage: ",
-                                        Other)) %>%
-                layout(xaxis = list(title = "Percent of Total Reads"),
-                       margin=list(l=l), barmode = "stack")
+              # I get why we need to do it this way, but we can't add themes if we use plot_ly
+              # I've also totally broken this by changing the Possible_Source method
+              #
+              # overPlot <- plot_ly(df, x = ~df[[sequenceSource]], y = ~Filename, type = "bar",
+              #                     name = sequenceSource, color = I(col2), hoverinfo = "text",
+              #                     text = ~paste("Filename: ",
+              #                                   Filename,
+              #                                   "<br> Percentage: ",
+              #                                   df[[sequenceSource]])) %>%
+              #   add_trace(x = ~Other, name = "Other", marker = list(color = col1),
+              #             hoverinfo = "text",
+              #             text = ~paste("Filename: ",
+              #                           Filename,
+              #                           "<br> Percentage: ",
+              #                           Other)) %>%
+              #   layout(xaxis = list(title = "Percent of Total Reads"),
+              #          margin=list(l=l), barmode = "stack")
             }
             else{
-              overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Type")) +
+              overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Possible_Source")) +
                 geom_bar(stat = "identity") +
-                ylab("Overrepresented Sequences (% of Total)") +
+                labs(y = "Overrepresented Sequences (% of Total)",
+                     fill = "Possible Source") +
                 scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
-                scale_fill_manual(values = c(col1, col2)) +
+                scale_fill_manual(values = pal) +
                 theme_bw() +
                 coord_flip()
+
+              # Add the basic customisations
+              if (!is.null(userTheme)) overPlot <- overPlot + userTheme
             }
 
             overPlot
-
-            # When moving to S4, maybe add the top 5-10 for a single file?
-            # Add functionality to export a FASTA file of the sequences to the shiny app?
-            # This will obviously work best under plotly as the names will be silly otherwise
 
           }
 )

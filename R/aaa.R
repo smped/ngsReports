@@ -4,6 +4,10 @@ globalVariables(
   c(
     "Filename",
     "Type",
-    "gcTheoretical"
+    "gcTheoretical",
+    "Total",
+    "Percentage",
+    "Base",
+    "Start"
   )
 )
