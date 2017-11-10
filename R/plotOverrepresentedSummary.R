@@ -35,6 +35,7 @@
 #' # Another example which isn't ideal
 #' plotOverrepresentedSummary(fdl)
 #'
+#' @importFrom tidyr spread
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes_string
 #' @importFrom ggplot2 geom_bar
@@ -71,6 +72,7 @@ plotOverrepresentedSummary <- function(x, usePlotly = FALSE, labels, sequenceSou
   df$Type <- gsub("(\\(|\\))", "", df$Type) # Remove brackets
   df <- dplyr::group_by(df, Filename, Type)
   df <- dplyr::summarise(df, Percentage = sum(Percentage))
+  maxChar <- max(nchar(df$Filename))
   df$Filename <- labels[df$Filename]
   df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
@@ -78,8 +80,17 @@ plotOverrepresentedSummary <- function(x, usePlotly = FALSE, labels, sequenceSou
   ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename), Total = sum(Percentage))$Total)*1.05
 
   if (usePlotly){
-    df <- spread(df, Type, Percentage)
+    df <- tidyr::spread(df, Type, Percentage)
     df[is.na(df)] <- 0
+    sequenceSource <- gsub("(\\(|\\))", "", sequenceSource)
+
+    #set left margin
+    if(maxChar < 10) l <- 80
+    if(maxChar >= 10 & maxChar < 15) l <- 110
+    if(maxChar >= 15 & maxChar < 20) l <- 130
+    if(maxChar >= 20)  l<- 150
+
+
     overPlot <- plot_ly(df, x = ~df[[sequenceSource]], y = ~Filename, type = "bar",
                         name = sequenceSource, color = I("red"), hoverinfo = "text",
                         text = ~paste("Filename: ",
@@ -93,7 +104,7 @@ plotOverrepresentedSummary <- function(x, usePlotly = FALSE, labels, sequenceSou
                               "<br> Percentage: ",
                               Other)) %>%
       layout(xaxis = list(title = "Percent of Total Reads"),
-             margin=list(l=80), barmode = "stack")
+             margin=list(l=l), barmode = "stack")
   }
   else{
     overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Type")) +
