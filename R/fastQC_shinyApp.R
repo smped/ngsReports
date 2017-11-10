@@ -84,7 +84,7 @@ fastqcShiny <- function(fastqcInput = NULL){
           )
         ),
         tabPanel(
-          "Total and Pervent Overrepresented Sequences",
+          "Total Sequences",
           splitLayout(
             fixedPanel(
               sidebarPanel(
@@ -94,10 +94,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("Read Totals"),
               h5("Total number of unique and duplicated reads in each sample"),
               plotlyOutput("ReadTotals"),
-              h1("Percent Overrepresented Sequences"),
-              h5("Origin of Overrepresented sequeces within each sample"),
-              plotlyOutput("OSummary"),
-              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+              width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Duplicated sequences",
           splitLayout(
@@ -204,16 +201,13 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                radioButtons(inputId="ORType", label="Individual or Overall",
-                             choices=c("Individual","Overall"), selected = "Overall"),
                 checkboxInput("ORcluster", "Cluster Filenames", value = TRUE),
-                sliderInput("ORslide", "Max Sequences", min = 1, max = 20, value = 10),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("Overrepresented Sequences"),
-              h5("Overrepresented sequences in each sample, can either view sequence on an individual or overall basis"),
-              plotlyOutput("overRepHeatmap"),
+              h5("Origin of Overrepresented sequences within each sample"),
+              plotlyOutput("OSummary"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "% N-Content",
@@ -516,14 +510,14 @@ fastqcShiny <- function(fastqcInput = NULL){
         layout(margin = list(r = 200, l = 100))
     })
 
-    output$overRepHeatmap <- renderPlotly({
-      plotOverrepresentedHeatmapPlotly(data(),
-                                       clusterNames = input$ORcluster,
-                                       method = input$ORType,
-                                       nSeq = input$ORslide,
-                                       usePlotly = TRUE) %>%
-        layout(margin = list(r = 200))
-    })
+    # output$overRepHeatmap <- renderPlotly({
+    #   plotOverrepresentedHeatmapPlotly(data(),
+    #                                    clusterNames = input$ORcluster,
+    #                                    method = input$ORType,
+    #                                    nSeq = input$ORslide,
+    #                                    usePlotly = TRUE) %>%
+    #     layout(margin = list(r = 200))
+    # })
 
 
 
