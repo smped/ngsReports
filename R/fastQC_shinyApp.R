@@ -84,19 +84,19 @@ fastqcShiny <- function(fastqcInput = NULL){
           )
         ),
         tabPanel(
-          "Total Reads",
+          "Total and Pervent Overrepresented Sequences",
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                radioButtons(inputId="RDLbar", label="Bar presentation",
-                             choices=c("stacked","adjacent"), selected = "stacked"),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("Read Totals"),
               h5("Total number of unique and duplicated reads in each sample"),
               plotlyOutput("ReadTotals"),
-              # plotlyOutput("RDSingle"),
+              h1("Percent Overrepresented Sequences"),
+              h5("Origin of Overrepresented sequeces within each sample"),
+              plotlyOutput("OSummary"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Duplicated sequences",
@@ -372,8 +372,15 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$ReadTotals <- renderPlotly({
       # plotDeduplicatedTotalsPlotly(data(), bars = input$RDLbar) %>%
       #   layout(margin = list(r = 200))
-      plotReadTotals(data(), usePlotly = TRUE, duplicated = TRUE, bars = input$RDLbar) %>%
+      plotReadTotals(data(), usePlotly = TRUE, duplicated = TRUE) %>%
         layout(margin = list(r = 200))
+    })
+
+    output$OSummary <- renderPlotly({
+      plotOverrepresentedSummary(data(),
+                                 usePlotly = TRUE) %>%
+        layout(margin = list(r = 200))
+
     })
 
     output$DupHeatmap <- renderPlotly({

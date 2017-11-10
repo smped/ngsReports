@@ -204,17 +204,39 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
 
               if (usePlotly){
 
-                nc <- max(nchar(labels))
-                # Add the basic layout
-                rtPlot <- rtPlot +
-                  theme(axis.title.x = element_blank(),
-                        # axis.title.y = element_text(vjust = 1),
-                        axis.text.x =element_blank(),
-                        axis.ticks.x=element_blank(),
-                        legend.position = "none")
-                rtPlot <- suppressMessages(
-                  plotly::ggplotly(rtPlot)
-                )
+                joinedDf <- tidyr::spread(joinedDf, Type, Total)
+                joinedDf[is.na(joinedDf)] <- 0
+                maxChar <- max(nchar(joinedDf$Filename))
+
+                joinedDf["Total"] <- joinedDf$Duplicated + joinedDf$Unique
+                joinedDf$Duplicated <- joinedDf$Duplicated/joinedDf$Total
+                joinedDf$Unique <- joinedDf$Unique/joinedDf$Total
+
+                #set left margin
+                if(maxChar < 10) l <- 80
+                if(maxChar >= 10 & maxChar < 15) l <- 110
+                if(maxChar >= 15 & maxChar < 20) l <- 130
+                if(maxChar >= 20)  l<- 150
+
+
+                rtPlot <- plot_ly(joinedDf, x = ~Unique, y = ~Filename, type = "bar",
+                                    name = "Unique", color = I("red"), hoverinfo = "text",
+                                    text = ~paste("Filename: ",
+                                                  Filename,
+                                                  "<br> % Unique: ",
+                                                  Unique,
+                                                  "<br> Total Reads",
+                                                  Total)) %>%
+                  add_trace(x = ~Duplicated, name = "Duplicated", marker = list(color = "blue"),
+                            hoverinfo = "text",
+                            text = ~paste("Filename: ",
+                                          Filename,
+                                          "<br> % Duplicated: ",
+                                          Duplicated,
+                                          "<br> Total Reads",
+                                          Total)) %>%
+                  layout(xaxis = list(title = "Percent of Total Reads"),
+                         margin=list(l=l), barmode = "stack")
 
               }
 
