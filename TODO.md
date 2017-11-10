@@ -36,6 +36,7 @@
     - Check plot for no overrepresented sequences: *Temporary version added...*    
     - Include in default report & shiny app
     - Add clustering & sideBar
+    - Fix plotly plot that I broke
 - **plotSequenceContent**
     - Add clustering & dendrograms to plot AND shiny app
 - **plotSummary**
