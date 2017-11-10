@@ -209,8 +209,8 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                 maxChar <- max(nchar(joinedDf$Filename))
 
                 joinedDf["Total"] <- joinedDf$Duplicated + joinedDf$Unique
-                joinedDf$Duplicated <- joinedDf$Duplicated/joinedDf$Total
-                joinedDf$Unique <- joinedDf$Unique/joinedDf$Total
+                joinedDf["DuplicatedP"] <- joinedDf$Duplicated/joinedDf$Total
+                joinedDf["UniqueP"]<- joinedDf$Unique/joinedDf$Total
 
                 #set left margin
                 if(maxChar < 10) l <- 80
@@ -224,7 +224,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                                     text = ~paste("Filename: ",
                                                   Filename,
                                                   "<br> % Unique: ",
-                                                  Unique,
+                                                  UniqueP,
                                                   "<br> Total Reads",
                                                   Total)) %>%
                   add_trace(x = ~Duplicated, name = "Duplicated", marker = list(color = "blue"),
@@ -232,10 +232,10 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                             text = ~paste("Filename: ",
                                           Filename,
                                           "<br> % Duplicated: ",
-                                          Duplicated,
+                                          DuplicatedP,
                                           "<br> Total Reads",
                                           Total)) %>%
-                  layout(xaxis = list(title = "Percent of Total Reads"),
+                  layout(xaxis = list(title = "Total Reads"),
                          margin=list(l=l), barmode = "stack")
 
               }
