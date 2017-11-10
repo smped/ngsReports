@@ -76,6 +76,7 @@ Collate:
     'makeSidebar.R'
     'maxAdapterContent.R'
     'methods-FastqcData.R'
+    'overrepresentedFasta.R'
     'path.R'
     'plotAdapterContent.R'
     'plotBaseQualities.R'
