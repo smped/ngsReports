@@ -42,7 +42,11 @@
 #' @importFrom ggplot2 scale_fill_manual
 #' @importFrom ggplot2 theme_bw
 #' @importFrom ggplot2 coord_flip
+#' @importFrom plotly plot_ly
+#' @importFrom plotly add_trace
+#' @importFrom plotly layout
 #' @importFrom grDevices rgb
+#'
 #'
 #' @export
 plotOverrepresentedSummary <- function(x, usePlotly = FALSE, labels, sequenceSource = "(Primer|Adapter)",
@@ -73,28 +77,32 @@ plotOverrepresentedSummary <- function(x, usePlotly = FALSE, labels, sequenceSou
   # Set the axis limits. Just scale the upper limit by 1.05
   ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename), Total = sum(Percentage))$Total)*1.05
 
-  overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Type")) +
-    geom_bar(stat = "identity") +
-    ylab("Overrepresented Sequences (% of Total)") +
-    scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
-    scale_fill_manual(values = c(col1, col2)) +
-    theme_bw() +
-    coord_flip()
-
   if (usePlotly){
-    message("usePlotly is not yet implemented")
-
-    ###################################################################################
-    # This looks terrible. I don't think it can handle the coord flip or stacked bars #
-    ###################################################################################
-
-    # overPlot <- overPlot +
-    #   theme(axis.title.x = element_blank(),
-    #         axis.text.x = element_blank(),
-    #         axis.ticks.x = element_blank())
-    # overPlot <- suppressMessages(
-    #   plotly::ggplotly(overPlot)
-    # )
+    df <- spread(df, Type, Percentage)
+    df[is.na(df)] <- 0
+    overPlot <- plot_ly(df, x = ~df[[sequenceSource]], y = ~Filename, type = "bar",
+                        name = sequenceSource, color = I("red"), hoverinfo = "text",
+                        text = ~paste("Filename: ",
+                                      Filename,
+                                      "<br> Percentage: ",
+                                      df[[sequenceSource]])) %>%
+      add_trace(x = ~Other, name = "Other", marker = list(color = "blue"),
+                hoverinfo = "text",
+                text = ~paste("Filename: ",
+                              Filename,
+                              "<br> Percentage: ",
+                              Other)) %>%
+      layout(xaxis = list(title = "Percent of Total Reads"),
+             margin=list(l=80), barmode = "stack")
+  }
+  else{
+    overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Type")) +
+      geom_bar(stat = "identity") +
+      ylab("Overrepresented Sequences (% of Total)") +
+      scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
+      scale_fill_manual(values = c(col1, col2)) +
+      theme_bw() +
+      coord_flip()
   }
 
   overPlot
