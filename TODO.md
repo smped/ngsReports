@@ -17,6 +17,7 @@
     - Change base colours to be consistent between individual plots & the heatmap
 - Fix `Per Sequence Quality Scores`: **Error**: Column `Filename` is unknown on first click   
 - Set Overrepresented Summary to produce a table on click
+- Add `exportOverrepresented()`
 
 ## Individual Functions
 
@@ -40,5 +41,3 @@
     - Add clustering & dendrograms to plot AND shiny app
 - **plotSummary**
     - Add clustering/dendrogram & tidy up for the app
-- **exportOverrepresentedFASTA**
-    - add to shiny app
