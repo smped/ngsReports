@@ -8,6 +8,8 @@ globalVariables(
     "Total",
     "Percentage",
     "Base",
-    "Start"
+    "Start",
+    "Sequence",
+    "Value"
   )
 )

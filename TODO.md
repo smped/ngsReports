@@ -25,7 +25,7 @@
     - add dendrogram when `usePlotly == TRUE`
 - **plotKmers**
     - Fix plotly `NA` vals
-    - Migrate to S4
+    - Migrate to S4 **Done for FastqcData**
     - Fix legend
 - **plotNContent**
     - Migrate to S4
