@@ -26,10 +26,8 @@
 - **plotKmers**
     - Add correct response for `clusterNames = TRUE`
 - **plotNContent**
-    - Migrate to S4
-    - Remove `subset` argument
-    - Merge `plotNContentPlotly()` with main function
-    - Check plot for completely missing N content
+    - Add clustering & dendrograms to plot AND shiny app
+    - Add single click
 - **plotOverrepresentedSummary**
     - Check plot for no overrepresented sequences: *Temporary version added...*    
     - Include in default report & shiny app
@@ -38,3 +36,5 @@
     - Add clustering & dendrograms to plot AND shiny app
 - **plotSummary**
     - Add clustering/dendrogram & tidy up for the app
+    
+**Add methods for zero results for all plots, based on plotNContent()**

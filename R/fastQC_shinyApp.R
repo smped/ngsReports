@@ -555,9 +555,9 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     output$NCheatmap <- renderPlotly({
 
-        plotNContentPlotly(data(),
-                           clusterNames = input$Ncluster,
-                           dendrogram = TRUE,
+        plotNContent(data(),
+                           # clusterNames = input$Ncluster,
+                           # dendrogram = TRUE,
                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
       })
 

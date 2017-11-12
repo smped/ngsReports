@@ -41,16 +41,19 @@
 #'
 #'
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string aes
-#' @importFrom ggplot2 geom_line geom_rect
+#' @importFrom ggplot2 aes_string
+#' @importFrom ggplot2 geom_line geom_rect geom_tile
+#' @importFrom ggplot2 geom_text geom_blank
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 scale_x_continuous scale_y_continuous
+#' @importFrom ggplot2 scale_x_discrete scale_y_discrete
 #' @importFrom ggplot2 scale_fill_manual
 #' @importFrom ggplot2 guides
 #' @importFrom ggplot2 annotate
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 theme_bw theme
-#' @importFrom ggplot2 element_text element_blank
+#' @importFrom ggplot2 element_text element_blank element_rect
+#' @importFrom dplyr vars funs
 #'
 #' @name plotNContent
 #' @rdname plotNContent-methods
@@ -159,6 +162,108 @@ setMethod("plotNContent", signature = "FastqcData",
               nPlot$x$data[[1]]$hoveron <- "points"
               nPlot$x$data[[2]]$hoveron <- "points"
               nPlot$x$data[[3]]$hoveron <- "points"
+            }
+
+            nPlot
+
+          }
+)
+#' @aliases plotNContent,FastqcDataList
+#' @rdname plotNContent-methods
+#' @export
+setMethod("plotNContent", signature = "FastqcDataList",
+          function(x, usePlotly = FALSE, labels, warn = 5, fail = 20, pwfCols, ...){
+
+            # Get the NContent
+            df <- Per_base_N_content(x)
+            colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
+
+            # Sort out the colours
+            if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+            stopifnot(isValidPwf(pwfCols))
+
+            # Drop the suffix, or check the alternate labels
+            if (missing(labels)){
+              labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
+            }
+            else{
+              if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
+            }
+            if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated Totals")
+
+            df$Filename <- labels[df$Filename]
+            df$Base <- factor(df$Base, levels = unique(df$Base))
+
+            # Get any arguments for dotArgs that have been set manually
+            dotArgs <- list(...)
+            allowed <- names(formals(ggplot2::theme))
+            keepArgs <- which(names(dotArgs) %in% allowed)
+            userTheme <- c()
+            if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+            # Reverse the filename levels for an alphabetic plot
+            df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+
+            # Return an empty plot if required
+            allZero <- ifelse(sum(df$Percentage) == 0, TRUE, FALSE)
+
+            if (allZero){
+              label_df <- dplyr::data_frame(
+                Filename = levels(df$Filename)[floor(mean(as.integer(df$Filename)))],
+                Base = levels(df$Base)[floor(mean(as.integer(df$Base)))],
+                text = "No N Content Detected")
+              nPlot <- ggplot(df, aes_string("Base", "Filename")) +
+                geom_blank() +
+                geom_text(data = label_df, aes_string(label = "text")) +
+                scale_x_discrete(expand = c(0,0)) +
+                scale_y_discrete(expand = c(0, 0)) +
+                labs(x = "Position in Read",
+                     y = "Filename",
+                     fill = "%N") +
+                theme_bw() +
+                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                      panel.background = element_rect(fill = "white"),
+                      panel.grid = element_blank())
+            }
+            else{
+              nPlot <- ggplot(df, aes_string("Base", "Filename", fill = "Percentage")) +
+                geom_tile() +
+                scale_fill_pwf(df$Percentage, pwfCols, breaks = c(0, warn, fail, 101), passLow = TRUE) +
+                scale_x_discrete(expand = c(0,0)) +
+                scale_y_discrete(expand = c(0, 0)) +
+                labs(x = "Position in Read",
+                     y = "Filename",
+                     fill = "%N") +
+                theme_bw() +
+                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                      panel.background = element_blank())
+            }
+
+            # Add the basic customisations
+            if (!is.null(userTheme)) nPlot <- nPlot + userTheme
+
+            if (usePlotly){
+
+              key <- levels(df$Filename)
+              # Reset the status using current values
+              status <- dplyr::summarise_at(dplyr::group_by(df, Filename),
+                                            vars("Percentage"), funs(Percentage = max))
+              status$Status <- cut(status$Percentage, breaks = c(0, warn, fail, 101), include.lowest = TRUE,
+                                   labels = c("PASS", "WARN", "FAIL"))
+
+              # Form the sideBar for each adapter
+              sideBar <- makeSidebar(status, key, pwfCols = pwfCols)
+
+              # Customise for plotly
+              nPlot <- nPlot +
+                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                      axis.text.y = element_blank(),
+                      axis.ticks.y = element_blank())
+              if (!is.null(userTheme)) nPlot <- nPlot + userTheme
+
+              nPlot <- suppressMessages(
+                plotly::subplot(sideBar, nPlot, widths = c(0.08,0.92), margin = 0.001, shareY = TRUE)
+              )
             }
 
             nPlot
