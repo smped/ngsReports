@@ -6,6 +6,7 @@ globalVariables(
     "Type",
     "gcTheoretical",
     "Total",
+    "Count",
     "Percentage",
     "Base",
     "Start",

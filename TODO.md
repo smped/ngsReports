@@ -24,9 +24,7 @@
 - **Adapter Content**
     - add dendrogram when `usePlotly == TRUE`
 - **plotKmers**
-    - Fix plotly `NA` vals
-    - Migrate to S4 **Done for FastqcData**
-    - Fix legend
+    - Add correct response for `clusterNames = TRUE`
 - **plotNContent**
     - Migrate to S4
     - Remove `subset` argument

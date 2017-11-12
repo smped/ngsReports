@@ -11,6 +11,8 @@
 \alias{plotKmers,FastqcFileList}
 \alias{plotKmers,FastqcData-method}
 \alias{plotKmers,FastqcData}
+\alias{plotKmers,FastqcDataList-method}
+\alias{plotKmers,FastqcDataList}
 \title{Plot Overrepresented Kmers}
 \usage{
 plotKmers(x, usePlotly = FALSE, ...)
@@ -24,6 +26,9 @@ plotKmers(x, usePlotly = FALSE, ...)
 \S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, n = 6, labels, ...,
   lineWidth = 0.5, pal = c("red", "blue", "green", "black", "magenta",
   "yellow"))
+
+\S4method{plotKmers}{FastqcDataList}(x, usePlotly = FALSE, labels,
+  clusterNames = FALSE, pwfCols, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -45,9 +50,15 @@ File extensions are dropped by default.}
 
 \item{pal}{The colour palette.
 If the vector supplied is less than n, \code{grDevices::colorRampPalette()} will be used}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using hierarchical clustering}
+
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+values in plot}
 }
 \value{
-A standard ggplot2 object
+A standard ggplot2 object or an interactive plotly object
 }
 \description{
 Plot Overrepresented Kmers
@@ -62,8 +73,6 @@ fileList <- system.file("extdata", fileList, package = "ngsReports")
 
 # Load the FASTQC data as a FastqcDataList
 fdl <- getFastqcData(fileList)
-
-# Not a great example
 plotKmers(fdl[[1]])
 
 }

@@ -255,7 +255,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               ), width = "20%"),
             absolutePanel(
               h1("Kmer Content"),
-              h5("-log(10) P-value for Kmers"),
+              h5("Total Identified Kmer Count by Position.\nPlease select a file to see the top 6 Kmers."),
               plotlyOutput("Kheatmap"),
               plotlyOutput("Ksingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px")
@@ -470,7 +470,6 @@ fastqcShiny <- function(fastqcInput = NULL){
         num <- 1
       }else {
         click <- event_data("plotly_click")
-        #I've broken this sorry. Not sure how to fix this
         num <- which(fileName(data()) == click$key[[1]])
       }
       sub_fdl <- data()[[num]]
@@ -509,17 +508,6 @@ fastqcShiny <- function(fastqcInput = NULL){
       plotSequenceLengthDistribution(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
         layout(margin = list(r = 200, l = 100))
     })
-
-    # output$overRepHeatmap <- renderPlotly({
-    #   plotOverrepresentedHeatmapPlotly(data(),
-    #                                    clusterNames = input$ORcluster,
-    #                                    method = input$ORType,
-    #                                    nSeq = input$ORslide,
-    #                                    usePlotly = TRUE) %>%
-    #     layout(margin = list(r = 200))
-    # })
-
-
 
     output$baseQualHeatmap <- renderPlotly({
       plotBaseQualities(data(),
@@ -606,6 +594,22 @@ fastqcShiny <- function(fastqcInput = NULL){
                                    usePlotly = TRUE)
       if(!is.null(Kplot)) Kplot %>% layout(margin = list(r = 200))
       else stop(paste("Samples have no Kmer content"))
+    })
+
+    output$Ksingle<- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      Ksing <- plotKmers(sub_fdl, usePlotly = TRUE)
+
+      if(!is.null(Ksing)) Ksing %>%
+        layout(margin = list(r = 200, l = 100),
+               legend = list(orientation = 'h', title = ""))
+      else stop(paste("Library did not contain any identified Kmers please select another."))
     })
 
 
