@@ -64,7 +64,6 @@
 #' @importFrom plotly layout
 #' @importFrom plotly subplot
 #' @importFrom viridisLite inferno
-#' @importFrom stats hclust dist
 #'
 #' @name plotSequenceLengthDistribution
 #' @rdname plotSequenceLengthDistribution-methods

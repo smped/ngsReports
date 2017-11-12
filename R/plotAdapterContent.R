@@ -78,6 +78,7 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
+#' @importFrom plotly plotly_empty
 #' @importFrom dplyr vars
 #' @importFrom dplyr data_frame
 #' @importFrom dplyr funs
@@ -129,7 +130,6 @@ setMethod("plotAdapterContent", signature = "FastqcData",
             stopifnot(isValidPwf(pwfCols))
             stopifnot(is.numeric(c(warn, fail)))
             stopifnot(all(fail < 100, warn < fail,  warn > 0))
-
             # Get any arguments for dotArgs that have been set manually
             dotArgs <- list(...)
             allowed <- names(formals(ggplot2::theme))
@@ -156,6 +156,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                                        ymin = c(0, warn, fail),
                                        ymax = c(warn, fail, 100),
                                        Status = c("PASS", "WARN", "FAIL"))
+
 
             # Create the basic plot
             acPlot <- ggplot(df) +

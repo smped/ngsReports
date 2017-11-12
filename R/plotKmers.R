@@ -20,6 +20,9 @@
 #' values in plot
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #'
 #' @return A standard ggplot2 object or an interactive plotly object
 #'
@@ -187,9 +190,12 @@ setMethod("plotKmers", signature = "FastqcData",
             if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
 
             if(usePlotly){
-              kMerPlot <- kMerPlot + ylab("Log2 Obs/Exp")
+              kMerPlot <- kMerPlot + ylab("Log2 Obs/Exp") +
+                xlab("")
               kMerPlot <- suppressMessages(
-                plotly::ggplotly(kMerPlot)
+                plotly::ggplotly(kMerPlot) %>%
+                  plotly::layout(xaxis = list(title = "Position in Read (bp)", tickangle = 45), margin = list(b = 70),
+                                 legend = list(orientation = "v", x = 1, y = 1))
               )
             }
             kMerPlot
@@ -199,7 +205,7 @@ setMethod("plotKmers", signature = "FastqcData",
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, clusterNames = FALSE, pwfCols, ...){
+          function(x, usePlotly = FALSE, labels, clusterNames = FALSE, dendrogram = FALSE, pwfCols, ...){
 
             df <- Kmer_Content(x)
 
@@ -222,11 +228,12 @@ setMethod("plotKmers", signature = "FastqcDataList",
             }
             if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated Totals")
 
-            df$Filename <- labels[df$Filename]
+
             colnames(df) <- gsub("Max_Obs/Exp_Position", "Base", colnames(df))
             colnames(df) <- gsub("Obs/Exp_Max", "Total", colnames(df))
             df$Position <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
             df$Position <- as.integer(df$Position)
+
 
             # Now simply add the kmers at each position. Not superinformative...
             df <- dplyr::group_by(df, Filename, Position)
@@ -248,8 +255,31 @@ setMethod("plotKmers", signature = "FastqcDataList",
             df <- dplyr::bind_rows(df, nas)
             df <- dplyr::arrange(df, Filename, Position, desc(Total))
             df <- dplyr::distinct(df, Filename, Position, .keep_all = TRUE)
+
+
+            #cluster names
+            if(clusterNames){
+              dfClus <- reshape2::dcast(df, Filename ~ Position, value.var = "Total")
+              xx <- dfClus[!colnames(dfClus) == "Filename"]
+              xx[is.na(xx)] <- 0
+              clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+              row.ord <- order.dendrogram(clus)
+              dfClus <- dfClus[row.ord,]
+              df <- reshape2::melt(dfClus, id.vars = "Filename", variable.name = "Position",
+                                   value.name = "Total")
+              # I dont like this
+              df$Position <- as.integer(as.character(df$Position))
+
+            }
+
+            # Set Filenames as factor, make key for sidebar and change Filenames to match provided/
+            # default labels
+            df$Filename <- labels[df$Filename]
+            df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+            key <- levels(df$Filename)
+
+            # join x axis ticks and df
             df <- dplyr::left_join(df, refForX, by = "Position")
-            df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
             # Get any arguments for dotArgs that have been set manually
             dotArgs <- list(...)
@@ -273,20 +303,44 @@ setMethod("plotKmers", signature = "FastqcDataList",
             if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
 
             if (usePlotly){
-
-              key <- levels(df$Filename)
               t <- getSummary(x)
               t <- t[t$Category == "Kmer Content",]
               t$Filename <- labels[t$Filename]
               t$Filename <- factor(t$Filename, levels = levels(df$Filename))
+
+              # Key was not in same order as t
+              t <- t[order(t$Filename, levels(t$Filename)),]
+
+
               sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
+              if (clusterNames && dendrogram){
+                dx <- ggdendro::dendro_data(clus)
+                dendro <- ggdend(dx$segments) +
+                  coord_flip() +
+                  scale_y_reverse(expand = c(0, 0)) +
+                  scale_x_continuous(expand = c(0, 0.5))
 
-              kMerPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(),
-                                sideBar, kMerPlot, widths = c(0.1, 0.08, 0.82), margin = 0.001, shareY = TRUE) %>%
-                  plotly::layout(xaxis3 = list(title = "Position in Read"))
-              )
+                kMerPlot <- suppressWarnings(
+                  suppressMessages(
+                    plotly::subplot(dendro, sideBar, kMerPlot, widths = c(0.1,0.08,0.82),
+                                    margin = 0.001, shareY = TRUE)
+                  ))
+              }
+              else{
+                # Return the plot
+                kMerPlot <- suppressWarnings(
+                  suppressMessages(
+                    plotly::subplot(plotly::plotly_empty(),
+                                    sideBar, kMerPlot, widths = c(0.05, 0.08, 0.87), margin = 0.001, shareY = TRUE) %>%
+                      plotly::layout(annotations = list(text = "Filename", showarrow = FALSE,
+                                                        textangle = -90))
+                  ))
+              }
+
+              kMerPlot <- kMerPlot %>%
+                plotly::layout(xaxis3 = list(title = "<br> Position in Read (bp)", tickangle = 45),
+                               margin = list(b = 70))
             }
 
             kMerPlot

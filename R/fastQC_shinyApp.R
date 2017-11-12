@@ -251,6 +251,7 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
+                checkboxInput("KMcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -567,6 +568,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       ACplot <- plotAdapterContent(data(),
                          adapterType = input$ACtype,
                          usePlotly = TRUE,
+                         dendrogram = TRUE,
                          clusterNames = input$ACcluster)
       if(!is.null(ACplot)) ACplot %>% layout(margin = list(r = 200))
       else stop(paste("Sequences did not contain any", input$ACtype, "content, please select another."))
@@ -591,7 +593,9 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     output$Kheatmap <- renderPlotly({
       Kplot <- plotKmers(data(),
-                                   usePlotly = TRUE)
+                         usePlotly = TRUE,
+                         clusterNames = input$KMcluster,
+                         dendrogram = TRUE)
       if(!is.null(Kplot)) Kplot %>% layout(margin = list(r = 200))
       else stop(paste("Samples have no Kmer content"))
     })
@@ -601,19 +605,16 @@ fastqcShiny <- function(fastqcInput = NULL){
         num <- 1
       }else {
         click <- event_data("plotly_click")
-        num <- which(fileName(data()) == click$key[[1]])
+        num <- which(grepl(click$key[[1]], fileName(data())))
       }
       sub_fdl <- data()[[num]]
       Ksing <- plotKmers(sub_fdl, usePlotly = TRUE)
 
       if(!is.null(Ksing)) Ksing %>%
-        layout(margin = list(r = 200, l = 100),
-               legend = list(orientation = 'h', title = ""))
+        layout(margin = list(r = 200, l = 100))
       else stop(paste("Library did not contain any identified Kmers please select another."))
     })
-
-
-  }
+}
 
   shinyApp(ui = ui, server = server)
 

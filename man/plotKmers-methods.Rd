@@ -28,7 +28,7 @@ plotKmers(x, usePlotly = FALSE, ...)
   "yellow"))
 
 \S4method{plotKmers}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  clusterNames = FALSE, pwfCols, ...)
+  clusterNames = FALSE, dendrogram = FALSE, pwfCols, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -53,6 +53,10 @@ If the vector supplied is less than n, \code{grDevices::colorRampPalette()} will
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}

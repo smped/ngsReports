@@ -24,5 +24,7 @@ makeSidebar <- function(status, key, pwfCols){
           axis.text=element_blank(),
           axis.ticks=element_blank())
   # Convert to plotly
-  suppressMessages(ggplotly(sideBar, tooltip = c("Status", "Filename")))
+  suppressWarnings(
+    suppressMessages(ggplotly(sideBar, tooltip = c("Status", "Filename")))
+    )
 }
