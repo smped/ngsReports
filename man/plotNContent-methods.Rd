@@ -69,16 +69,7 @@ fileList <- system.file("extdata", fileList, package = "ngsReports")
 fdl <- getFastqcData(fileList)
 
 # The default plot
-plotNContent(fdl)
+plotNContent(fdl[[1]])
 
-# Also subset the reads to just the R1 files
-r1 <- grepl("R1", fileName(fdl))
-plotNContent(fdl[r1])
-
-# Plot just the Universal N
-# and change the y-axis using ggplot2::scale_y_continuous
-library(ggplot2)
-plotNContent(fdl, NType ="Universal", plotType = "line") +
-scale_y_continuous()
 
 }

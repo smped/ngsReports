@@ -37,41 +37,20 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot
-#' plotNContent(fdl)
+#' plotNContent(fdl[[1]])
 #'
-#' # Also subset the reads to just the R1 files
-#' r1 <- grepl("R1", fileName(fdl))
-#' plotNContent(fdl[r1])
-#'
-#' # Plot just the Universal N
-#' # and change the y-axis using ggplot2::scale_y_continuous
-#' library(ggplot2)
-#' plotNContent(fdl, NType ="Universal", plotType = "line") +
-#' scale_y_continuous()
 #'
 #' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 geom_rect
+#' @importFrom ggplot2 aes_string aes
+#' @importFrom ggplot2 geom_line geom_rect
 #' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 scale_x_continuous
-#' @importFrom ggplot2 scale_colour_discrete
-#' @importFrom ggplot2 scale_fill_gradientn
+#' @importFrom ggplot2 scale_x_continuous scale_y_continuous
 #' @importFrom ggplot2 scale_fill_manual
 #' @importFrom ggplot2 guides
 #' @importFrom ggplot2 annotate
 #' @importFrom ggplot2 labs
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_text
-#' @importFrom ggplot2 element_blank
-#' @importFrom dplyr vars
-#' @importFrom dplyr data_frame
-#' @importFrom dplyr funs
-#' @importFrom magrittr %>%
+#' @importFrom ggplot2 theme_bw theme
+#' @importFrom ggplot2 element_text element_blank
 #'
 #' @name plotNContent
 #' @rdname plotNContent-methods
