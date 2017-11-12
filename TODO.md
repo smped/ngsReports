@@ -21,10 +21,6 @@
 
 ## Individual Functions
 
-- **Adapter Content**
-    - add dendrogram when `usePlotly == TRUE`
-- **plotKmers**
-    - Add correct response for `clusterNames = TRUE`
 - **plotNContent**
     - Add clustering & dendrograms to plot AND shiny app
     - Add single click to Shiny App
