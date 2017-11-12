@@ -28,6 +28,9 @@
 #' File extensions are dropped by default.
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -198,7 +201,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
 setMethod("plotAdapterContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, plotType = "heatmap", labels, adapterType = "Total",
                    pwfCols, warn = 5, fail = 10,
-                   clusterNames = FALSE,
+                   clusterNames = FALSE, dendrogram = FALSE,
                    ...){
 
             df <- Adapter_Content(x)
@@ -274,7 +277,6 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 }) %>%
                 dplyr::bind_rows()
 
-              # talk to steve about this
               if(clusterNames){
                 dfClus <- df[colnames(df) %in% c("Filename", "Start", "Percent", "Type")]
                 dfClus <- reshape2::dcast(dfClus, Filename ~ Start, value.var = "Percent")
@@ -323,10 +325,33 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                         axis.ticks.y = element_blank())
                 if (!is.null(userTheme)) acPlot <- acPlot + userTheme
 
-                # Return the plot
-                acPlot <- suppressMessages(
-                  plotly::subplot(sideBar, acPlot, widths = c(0.08,0.92), margin = 0.001, shareY = TRUE)
-                )
+                #plot dendro
+                if (clusterNames && dendrogram){
+                  dx <- ggdendro::dendro_data(clus)
+                  dendro <- ggdend(dx$segments) +
+                    coord_flip() +
+                    scale_y_reverse(expand = c(0, 0)) +
+                    scale_x_continuous(expand = c(0, 0.5))
+
+                  acPlot <- suppressWarnings(
+                    suppressMessages(
+                      plotly::subplot(dendro, sideBar, acPlot, widths = c(0.1,0.08,0.82),
+                                      margin = 0.001, shareY = TRUE)
+                    ))
+                }
+                else{
+                  # Return the plot
+                  acPlot <- suppressWarnings(suppressMessages(
+                    plotly::subplot(plotly_empty(), sideBar, acPlot, widths = c(0.1,0.08,0.82), margin = 0.001, shareY = TRUE) %>%
+                      plotly::layout(annotations = list(text = "Filename", showarrow = FALSE,
+                                                        textangle = -90))
+                  ))
+                }
+
+                # Add axis labels and scale plot
+                acPlot <- acPlot %>%
+                  plotly::layout(xaxis3 = list(title = "Position in Read (bp)"), margin = list(b = 52))
+
               }
             }
 

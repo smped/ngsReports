@@ -28,7 +28,7 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
 
 \S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = "heatmap", labels, adapterType = "Total", pwfCols, warn = 5,
-  fail = 10, clusterNames = FALSE, ...)
+  fail = 10, clusterNames = FALSE, dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -55,6 +55,10 @@ This is the default behaviour.}
 
 \item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
