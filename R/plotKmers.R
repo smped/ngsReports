@@ -37,11 +37,12 @@
 #'
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 geom_line geom_text geom_tile
 #' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 scale_x_continuous scale_y_continuous scale_fill_gradient
-#' @importFrom ggplot2 theme_bw theme
+#' @importFrom ggplot2 theme_bw theme theme_void
 #' @importFrom ggplot2 xlab ylab labs
+#' @importFrom ggplot2 xlim ylim
 #' @importFrom magrittr %>%
 #' @importFrom dplyr desc
 #'
@@ -85,6 +86,16 @@ setMethod("plotKmers", signature = "FastqcData",
 
             # Get the basic data frame
             df <- Kmer_Content(x)
+
+            if (nrow(df) == 0) {
+              #stop("No overrepresented kmers were detected by FastQC")
+              kmerPlot <- ggplot() +
+                geom_text(aes(x = 0.5, y = 0.8, label = "No overrepresented kmers")) +
+                theme_void() +
+                xlim(c(0, 1)) +
+                ylim(c(0, 1))
+              return(kmerPlot)
+            }
 
             # Drop the suffix, or check the alternate labels
             if (missing(labels)){
@@ -195,6 +206,16 @@ setMethod("plotKmers", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, clusterNames = FALSE, pwfCols, ...){
 
             df <- Kmer_Content(x)
+
+            if (nrow(df) == 0) {
+              #stop("No overrepresented kmers were detected by FastQC")
+              kmerPlot <- ggplot() +
+                geom_text(aes(x = 0.5, y = 0.8, label = "No overrepresented kmers")) +
+                theme_void() +
+                xlim(c(0, 1)) +
+                ylim(c(0, 1))
+              return(kmerPlot)
+            }
 
             # Sort out the colours
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
