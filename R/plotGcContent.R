@@ -77,6 +77,7 @@
 #' @importFrom ggplot2 element_blank
 #' @importFrom viridisLite inferno
 #' @importFrom grDevices colorRampPalette
+#' @importFrom stats hclust dist
 #'
 #' @name plotGcContent
 #' @rdname plotGcContent-methods

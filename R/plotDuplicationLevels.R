@@ -65,6 +65,7 @@
 #' @importFrom ggplot2 coord_flip
 #' @importFrom ggplot2 guides
 #' @importFrom ggplot2 ggtitle
+#' @importFrom stats hclust dist
 #'
 #'
 #' @name plotDuplicationLevels

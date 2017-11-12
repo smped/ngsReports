@@ -70,6 +70,7 @@
 #' @importFrom stats as.dendrogram
 #' @importFrom stats order.dendrogram
 #' @importFrom stats na.omit
+#' @importFrom stats hclust dist
 #'
 #' @name plotBaseQualities
 #' @rdname plotBaseQualities-methods

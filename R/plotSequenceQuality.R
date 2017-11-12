@@ -72,8 +72,8 @@
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 element_blank
-#' @importFrom dplyr vars
-#' @importFrom dplyr funs
+#' @importFrom dplyr vars funs
+#' @importFrom stats hclust dist
 #'
 #' @name plotSequenceQuality
 #' @rdname plotSequenceQuality-methods

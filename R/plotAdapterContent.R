@@ -79,6 +79,7 @@
 #' @importFrom dplyr data_frame
 #' @importFrom dplyr funs
 #' @importFrom magrittr %>%
+#' @importFrom stats hclust dist
 #'
 #' @name plotAdapterContent
 #' @rdname plotAdapterContent-methods
