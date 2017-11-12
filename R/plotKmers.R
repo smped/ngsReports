@@ -89,12 +89,8 @@ setMethod("plotKmers", signature = "FastqcData",
 
             if (nrow(df) == 0) {
               #stop("No overrepresented kmers were detected by FastQC")
-              kmerPlot <- ggplot() +
-                geom_text(aes(x = 0.5, y = 0.8, label = "No overrepresented kmers")) +
-                theme_void() +
-                xlim(c(0, 1)) +
-                ylim(c(0, 1))
-              return(kmerPlot)
+              label <- paste0(fileName(x), ": No overrepresented kmers")
+              return(emptyPlot(label))
             }
 
             # Drop the suffix, or check the alternate labels
@@ -209,12 +205,8 @@ setMethod("plotKmers", signature = "FastqcDataList",
 
             if (nrow(df) == 0) {
               #stop("No overrepresented kmers were detected by FastQC")
-              kmerPlot <- ggplot() +
-                geom_text(aes(x = 0.5, y = 0.8, label = "No overrepresented kmers")) +
-                theme_void() +
-                xlim(c(0, 1)) +
-                ylim(c(0, 1))
-              return(kmerPlot)
+              label <- paste0("No overrepresented kmers in any library")
+              return(emptyPlot(label))
             }
 
             # Sort out the colours

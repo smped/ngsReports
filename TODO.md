@@ -30,7 +30,6 @@
     - Remove `subset` argument
     - Merge `plotNContentPlotly()` with main function
     - Check plot for completely missing N content
-- **plotOverrepresentedHeatmap - DELETED!!!**
 - **plotOverrepresentedSummary**
     - Check plot for no overrepresented sequences: *Temporary version added...*    
     - Include in default report & shiny app
