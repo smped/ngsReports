@@ -1,4 +1,4 @@
-#' @title Plot Overrepresented Kmers
+  #' @title Plot Overrepresented Kmers
 #'
 #' @description Plot Overrepresented Kmers
 #'
@@ -205,7 +205,8 @@ setMethod("plotKmers", signature = "FastqcData",
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, clusterNames = FALSE, dendrogram = FALSE, pwfCols, ...){
+          function(x, usePlotly = FALSE, labels, clusterNames = FALSE,
+                   dendrogram = FALSE, pwfCols, heatCol = inferno(50), ...){
 
             df <- Kmer_Content(x)
 
@@ -281,6 +282,13 @@ setMethod("plotKmers", signature = "FastqcDataList",
             # join x axis ticks and df
             df <- dplyr::left_join(df, refForX, by = "Position")
 
+            # Set up for geom_tile
+            df$End <- gsub("[0-9]*-([0-9]*)", "\\1", df$Base)
+            df$End <- as.integer(df$End)
+            df$Mid <- (df$Position + df$End) / 2
+            df$Width <- df$End - df$Position
+            df$Width[df$Width == 0] <- 1
+
             # Get any arguments for dotArgs that have been set manually
             dotArgs <- list(...)
             allowed <- names(formals(ggplot2::theme))
@@ -288,13 +296,12 @@ setMethod("plotKmers", signature = "FastqcDataList",
             userTheme <- c()
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-            kMerPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "Total")) +
+            kMerPlot <- ggplot(df, aes_string(x = "Mid", y = "Filename", fill = "Total", width = "Width")) +
               geom_tile() +
-              scale_x_continuous(breaks = refForX$Position,
-                                 labels = refForX$Base,
-                                 expand = c(0.02, 0)) +
-              scale_fill_gradient(na.value = "white") +
+              scale_x_continuous(expand = c(0.02, 0)) +
+              scale_fill_gradientn(colors = heatCol, na.value = "white") +
               theme_bw()
+
 
             # Check for binned x-axis values to decied whether to rotate x-axis labels
             # This should be clear if there are more than 2 characters in the plotted labels
@@ -303,6 +310,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
             if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
 
             if (usePlotly){
+              kMerPlot <- kMerPlot + theme(axis.text.y = element_blank())
               t <- getSummary(x)
               t <- t[t$Category == "Kmer Content",]
               t$Filename <- labels[t$Filename]
@@ -324,7 +332,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
                 kMerPlot <- suppressWarnings(
                   suppressMessages(
                     plotly::subplot(dendro, sideBar, kMerPlot, widths = c(0.1,0.08,0.82),
-                                    margin = 0.001, shareY = TRUE)
+                                    margin = 0.001, shareY = TRUE, shareX = TRUE)
                   ))
               }
               else{
@@ -339,8 +347,8 @@ setMethod("plotKmers", signature = "FastqcDataList",
               }
 
               kMerPlot <- kMerPlot %>%
-                plotly::layout(xaxis3 = list(title = "<br> Position in Read (bp)", tickangle = 45),
-                               margin = list(b = 70))
+                plotly::layout(xaxis3 = list(title = "Position in Read (bp)", tickangle = 45),
+                               margin = list(b = 50))
             }
 
             kMerPlot

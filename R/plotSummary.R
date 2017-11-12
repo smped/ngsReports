@@ -140,7 +140,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
 
               # Add any parameters from dotArgs
               if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-              suppressMessages(ggplotly(sumPlot))
+              suppressMessages(ggplotly(sumPlot, tooltip = c("Categoy", "Filename", "Status")))
             }
             else{
 
