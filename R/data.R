@@ -10,4 +10,6 @@
 #'
 #' Metadata is accessible using \code{mData(gcTheoretical)}.
 #'
+#' All GC content was calculated using code modified from https://github.com/mikelove/fastqcTheoreticalGC
+#'
 "gcTheoretical"
