@@ -237,7 +237,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
             if (adapterType[1] == "Total") {
               # Sum the adapters by filename& position
               df <- dplyr::group_by(df, Filename, Position)
-              df <- dplyr::summarise_at(df, vars("Percent"), funs(Percent = sum))
+              df <- dplyr::summarise_at(df, vars("Percent"), funs(Percent = sum), na.rm = TRUE)
               df <- dplyr::ungroup(df)
               df$Type <- "Total Adapter Content"
             }
@@ -278,20 +278,22 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 }) %>%
                 dplyr::bind_rows()
 
+              df$Start <- as.integer(df$Start)
+              key <- rev(unique(df$Filename))
+
               if(clusterNames){
-                dfClus <- df[colnames(df) %in% c("Filename", "Start", "Percent", "Type")]
+                dfClus <- df[colnames(df) %in% c("Filename", "Start", "Percent")]
                 dfClus <- reshape2::dcast(dfClus, Filename ~ Start, value.var = "Percent")
                 xx <- dfClus[!colnames(dfClus) == "Filename"]
                 xx[is.na(xx)] <- 0
                 clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
                 row.ord <- order.dendrogram(clus)
                 dfClus <- dfClus[row.ord,]
-                dfClus <- reshape2::melt(dfClus, id.vars = "Filename", variable.name = "Start", value.name = "Percent")
-                df <- cbind(dfClus, Type = df$Type)
+                fileOrd <- dfClus$Filename
+                df$Filename <- factor(df$Filename, levels = rev(fileOrd))
+                key <- levels(df$Filename)
               }
 
-
-              key <- rev(unique(df$Filename))
               df$Filename <- labels[df$Filename]
               # Reverse the factor levels for a better looking default plot
               df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))

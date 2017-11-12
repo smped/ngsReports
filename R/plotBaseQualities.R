@@ -322,7 +322,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                     zoo::na.locf()
                 }) %>%
                 dplyr::bind_rows()
-              df <- df[!colnames(df) == "Longest_sequence"]
+              df$Start <- as.integer(df$Start)
+              df <- df[!colnames(df) == c("Longest_sequence", "Base")]
+
               df <- reshape2::dcast(df, Filename ~ Start, value.var = plotValue)
 
               #cluster names true hclust names
