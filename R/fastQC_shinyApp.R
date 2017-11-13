@@ -178,6 +178,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("N content (%) in sample"),
               h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("NCheatmap"),
+              plotlyOutput("NCsingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Sequence Length Distribution",
@@ -570,6 +571,21 @@ fastqcShiny <- function(fastqcInput = NULL){
                            dendrogram = TRUE,
                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
       })
+
+
+    # N Content single plot
+
+    output$NCsingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotNContent(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
 
     # By default, this method will now plot the sum of all adapter types
     # Do we need to change the drop-down menu to accept the option "all"?

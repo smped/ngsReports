@@ -158,9 +158,11 @@ setMethod("plotNContent", signature = "FastqcData",
             if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
             if (usePlotly){
+              nPlot <- nPlot + xlab("")
               nPlot <- suppressMessages(
                 plotly::ggplotly(nPlot + theme(legend.position = "none"),
-                                 hoverinfo = c("x", "y", "colour"))
+                                 hoverinfo = c("x", "y", "colour")) %>%
+                  plotly::layout(xaxis = list(title = "Position in Read (bp)"), margin = list(b = 70))
               )
               # Set the hoverinfo for bg rectangles to the vertices only,
               # This will effectively hide them
@@ -241,7 +243,7 @@ setMethod("plotNContent", signature = "FastqcDataList",
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
             # Reverse the filename levels for an alphabetic plot
-            df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+            df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 
             # Return an empty plot if required
             allZero <- ifelse(sum(df$Percentage, na.rm = TRUE) == 0, TRUE, FALSE)
