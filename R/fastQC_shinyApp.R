@@ -17,6 +17,7 @@
 #' @importFrom plotly plotlyOutput
 #' @importFrom plotly renderPlotly
 #' @importFrom plotly event_data
+#' @importFrom plotly br
 #' @importFrom shiny shinyUI
 #' @importFrom shiny fluidPage
 #' @importFrom shiny navbarPage
@@ -110,6 +111,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("baseQualHeatmap"),
+              br(),
               plotlyOutput("BaseQualitiesSingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
@@ -127,6 +129,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("seqQualHeatmap"),
+              br(),
               plotlyOutput("SeqQualitiesSingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
@@ -142,6 +145,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("1 - G = opacity, A = Green, T = Red, C = Blue"),
               h5("if each base is equally represented then should be light grey"),
               plotlyOutput("SCHeatmap"),
+              br(),
               plotlyOutput("SCsingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
@@ -163,6 +167,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("GC content (%) in sample, can either view total count or frequency"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("GCheatmap"),
+              br(),
               plotlyOutput("GCSingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
@@ -178,6 +183,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("N content (%) in sample"),
               h5("If dendrogram is truncated double click on dendrogram to resize"),
               plotlyOutput("NCheatmap"),
+              br(),
               plotlyOutput("NCsingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
@@ -195,6 +201,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("Sequence length distribution in each sample, can either view total count or frequency"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("SLHeatmap"),
+              br(),
               plotlyOutput("SLSingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
@@ -210,6 +217,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("Sequence duplication in each sample"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("DupHeatmap"),
+              br(),
               plotlyOutput("DupSingle"),
               width = "70%", left = "30%", right = "0%"))),
         tabPanel(
@@ -224,6 +232,8 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("Overrepresented Sequences"),
               h5("Origin of Overrepresented sequences within each sample"),
               plotlyOutput("OSummary"),
+              br(),
+              plotlyOutput("OSsingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Adapter Content",
@@ -242,6 +252,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("Adapter content"),
               h5("Adapter content (%) across all reads"),
               plotlyOutput("ACheatmap"),
+              br(),
               plotlyOutput("ACsingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px")
           )
@@ -258,6 +269,7 @@ fastqcShiny <- function(fastqcInput = NULL){
               h1("Kmer Content"),
               h5("Total Identified Kmer Count by Position.\nPlease select a file to see the top 6 Kmers."),
               plotlyOutput("Kheatmap"),
+              br(),
               plotlyOutput("Ksingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px")
           )
@@ -376,13 +388,27 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     })
 
+
+    output$OSsingle <- output$DupSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotOverrepresentedSummary(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+
     output$DupHeatmap <- renderPlotly({
 
       plotDuplicationLevels(data(),
                             clusterNames = input$Dupcluster,
                             dendrogram = TRUE,
                             usePlotly = TRUE) %>%
-        layout(margin = list(r = 200, l = 0))
+        layout(margin = list(r = 200, l = 100))
     })
 
     output$DupSingle <- renderPlotly({
@@ -394,14 +420,14 @@ fastqcShiny <- function(fastqcInput = NULL){
       }
       sub_fdl <- data()[[num]]
       plotDuplicationLevels(sub_fdl, usePlotly = TRUE) %>%
-        layout(margin = list(r = 200, l = 0))
+        layout(margin = list(r = 200, l = 100))
     })
 
     output$SCHeatmap <- renderPlotly({
 
       plotSequenceContent(data(),
                             usePlotly = TRUE) %>%
-        layout(margin = list(r = 200, l = 0))
+        layout(margin = list(r = 200, l = 100))
     })
 
 
@@ -414,7 +440,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       }
       sub_fdl <- data()[[num]]
       plotSequenceContent(sub_fdl, usePlotly = TRUE) %>%
-        layout(margin = list(r = 200, l = 0))
+        layout(margin = list(r = 200, l = 100))
     })
 
 
@@ -505,7 +531,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                                      dendrogram = TRUE,
                                      counts= FALSE,
                                      usePlotly = TRUE) %>%
-        layout(margin = list(r = 200, l = 0))
+        layout(margin = list(r = 200, l = 100))
     })
 
     output$SLSingle <- renderPlotly({
