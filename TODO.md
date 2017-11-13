@@ -21,8 +21,6 @@
 
 ## Individual Functions
 
-- **plotNContent**
-    - Add single click to Shiny App
 - **plotOverrepresentedSummary**
     - Check plot for no overrepresented sequences: *Temporary version added...*    
     - Include in default report & shiny app
