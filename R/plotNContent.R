@@ -21,6 +21,11 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default
 #' @param lineCol Defaults to red
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using hierarchical clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -172,7 +177,8 @@ setMethod("plotNContent", signature = "FastqcData",
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, warn = 5, fail = 20, pwfCols, ...){
+          function(x, usePlotly = FALSE, labels, warn = 5, fail = 20, pwfCols,
+                   clusterNames = FALSE, dendrogram = FALSE, ...){
 
             # Get the NContent
             df <- Per_base_N_content(x)
@@ -191,8 +197,40 @@ setMethod("plotNContent", signature = "FastqcDataList",
             }
             if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated Totals")
 
+            ## fill bins up to the max sequence length
+            df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
+            df <- split(df, f = df$Filename) %>%
+              lapply(function(x){
+                Longest_sequence <- max(x$Start)
+                dfFill <- data.frame(Start = 1:Longest_sequence)
+                x <- dplyr::right_join(x, dfFill, by = "Start") %>%
+                  zoo::na.locf()
+              }) %>%
+              dplyr::bind_rows()
+
+            # get ready for clustering and making the key
+            df$Start <- as.integer(df$Start)
+            df <- df[colnames(df) %in% c("Filename", "Start", "Percentage")]
+            df <- reshape2::dcast(df, Filename ~ Start, value.var = "Percentage")
+
+            #cluster
+            if(clusterNames){
+              xx <- df[!colnames(df) == "Filename"]
+              xx[is.na(xx)] <- 0
+              clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+              row.ord <- order.dendrogram(clus)
+              df <- df[row.ord,]
+            }
+
+            key <- df$Filename
+            df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percentage")
             df$Filename <- labels[df$Filename]
-            df$Base <- factor(df$Base, levels = unique(df$Base))
+
+            # Reverse the factor levels for a better looking default plot
+            df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+            df$Percentage <- as.numeric(df$Percentage)
+            df$Start <- as.integer(as.character(df$Start))
+
 
             # Get any arguments for dotArgs that have been set manually
             dotArgs <- list(...)
@@ -226,28 +264,25 @@ setMethod("plotNContent", signature = "FastqcDataList",
                       panel.grid = element_blank())
             }
             else{
-              nPlot <- ggplot(df, aes_string("Base", "Filename", fill = "Percentage")) +
+              nPlot <- ggplot(df, aes_string("Start", "Filename", fill = "Percentage")) +
                 geom_tile() +
-                scale_fill_pwf(df$Percentage, pwfCols, breaks = c(0, warn, fail, 101), passLow = TRUE) +
-                scale_x_discrete(expand = c(0,0)) +
+                scale_fill_pwf(df$Percentage, pwfCols, breaks = c(0, warn, fail, 101), passLow = TRUE, na.value = "white") +
+                scale_x_continuous(expand = c(0,0)) +
                 scale_y_discrete(expand = c(0, 0)) +
                 labs(x = "Position in Read",
                      y = "Filename",
                      fill = "%N") +
                 theme_bw() +
-                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-                      panel.background = element_blank())
+                theme(panel.background = element_blank())
             }
 
             # Add the basic customisations
             if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
             if (usePlotly){
-
-              key <- levels(df$Filename)
               # Reset the status using current values
               status <- dplyr::summarise_at(dplyr::group_by(df, Filename),
-                                            vars("Percentage"), funs(Percentage = max))
+                                            vars("Percentage"), funs(Percentage = max), na.rm = TRUE)
               status$Status <- cut(status$Percentage, breaks = c(0, warn, fail, 101), include.lowest = TRUE,
                                    labels = c("PASS", "WARN", "FAIL"))
 
@@ -256,14 +291,34 @@ setMethod("plotNContent", signature = "FastqcDataList",
 
               # Customise for plotly
               nPlot <- nPlot +
-                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-                      axis.text.y = element_blank(),
+                theme(axis.text.y = element_blank(),
                       axis.ticks.y = element_blank())
               if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
-              nPlot <- suppressMessages(
-                plotly::subplot(sideBar, nPlot, widths = c(0.08,0.92), margin = 0.001, shareY = TRUE)
-              )
+              if (clusterNames && dendrogram){
+                dx <- ggdendro::dendro_data(clus)
+                dendro <- ggdend(dx$segments) +
+                  coord_flip() +
+                  scale_y_reverse(expand = c(0, 0)) +
+                  scale_x_continuous(expand = c(0, 0.5))
+
+                nPlot <- suppressWarnings(
+                  suppressMessages(
+                    plotly::subplot(dendro, sideBar, nPlot, widths = c(0.1,0.08,0.82),
+                                    margin = 0.001, shareY = TRUE)
+                  ))
+              }
+              else{
+
+                nPlot <- suppressWarnings(suppressMessages(
+                  plotly::subplot(plotly::plotly_empty(), sideBar, nPlot, widths = c(0.1,0.08,0.82), margin = 0.001, shareY = TRUE) %>%
+                    plotly::layout(annotations = list(text = "Filename", showarrow = FALSE,
+                                                      textangle = -90))
+                ))
+              }
+              nPlot <- nPlot %>%
+                plotly::layout(xaxis3 = list(title = "Position in Read (bp)"), margin = list(b = 45))
+
             }
 
             nPlot
