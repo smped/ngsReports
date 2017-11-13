@@ -279,46 +279,47 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 dplyr::bind_rows()
 
               df$Start <- as.integer(df$Start)
-              key <- rev(unique(df$Filename))
+              type <- df$Type
+              df <- df[colnames(df) %in% c("Filename", "Start", "Percent")]
+              df <- reshape2::dcast(df, Filename ~ Start, value.var = "Percent")
+
 
               if(clusterNames){
-                dfClus <- df[colnames(df) %in% c("Filename", "Start", "Percent")]
-                dfClus <- reshape2::dcast(dfClus, Filename ~ Start, value.var = "Percent")
-                xx <- dfClus[!colnames(dfClus) == "Filename"]
+                xx <- df[!colnames(df) == "Filename"]
                 xx[is.na(xx)] <- 0
                 clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
                 row.ord <- order.dendrogram(clus)
-                dfClus <- dfClus[row.ord,]
-                fileOrd <- dfClus$Filename
-                df$Filename <- factor(df$Filename, levels = rev(fileOrd))
-                key <- levels(df$Filename)
+                df <- df[row.ord,]
               }
 
+              key <- df$Filename
+              df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percent")
               df$Filename <- labels[df$Filename]
+
               # Reverse the factor levels for a better looking default plot
-              df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
               df$Percent <- as.numeric(df$Percent)
               df$Start <- as.integer(as.character(df$Start))
 
               # Make the heatmap
-              acPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
+               acPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
                 scale_y_discrete(expand = c(0, 0)) +
                 geom_tile() +
                 scale_x_continuous(expand = c(0, 0)) +
-                ggplot2::ggtitle(as.character(unique(df$Type))) +
-                scale_fill_pwf(df$Percent, pwf, breaks = breaks) +
+                ggplot2::ggtitle(as.character(unique(type))) +
+                ngsReports:::scale_fill_pwf(df$Percent, pwf, breaks = breaks, na.value = "white") +
                 theme(plot.title = element_text(hjust = 0.5))
 
               if (usePlotly){
 
                 # Reset the status using current values
                 status <- dplyr::summarise_at(dplyr::group_by(df, Filename),
-                                              vars("Percent"), funs(Percent = max))
+                                              vars("Percent"), funs(Percent = max), na.rm = TRUE)
                 status$Status <- cut(status$Percent, breaks = breaks, include.lowest = TRUE,
                                      labels = c("PASS", "WARN", "FAIL"))
 
                 # Form the sideBar for each adapter
-                sideBar <- makeSidebar(status, key, pwfCols = pwfCols)
+                sideBar <- ngsReports:::makeSidebar(status, key, pwfCols = pwfCols)
 
                 # Customise for plotly
                 acPlot <- acPlot +
@@ -331,7 +332,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 #plot dendro
                 if (clusterNames && dendrogram){
                   dx <- ggdendro::dendro_data(clus)
-                  dendro <- ggdend(dx$segments) +
+                  dendro <- ngsReports:::ggdend(dx$segments) +
                     coord_flip() +
                     scale_y_reverse(expand = c(0, 0)) +
                     scale_x_continuous(expand = c(0, 0.5))

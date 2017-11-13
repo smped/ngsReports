@@ -62,7 +62,10 @@ will be displayed.}
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
 
-\item{heatCol}{Colour palette used for the heatmap}
+\item{heatCol}{Colour pallette to use for the heatmap colour. default is \code{inferno} from the package
+\code{viridris}}
+
+\item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno} from the package \code{viridris}}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

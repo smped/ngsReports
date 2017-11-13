@@ -12,7 +12,7 @@
 #'
 #' @keywords internal
 #'
-scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = TRUE){
+scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = TRUE, na.value){
 
   # passLow defines whether pass is the low score or the high score
   # organise the colours based on this
@@ -32,8 +32,9 @@ scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = T
     indexVec <- seq(breaks[minCat], breaks[minCat + 1])
     minCol <- fullGradient[findInterval(rng[1], indexVec)]
     maxCol <- fullGradient[findInterval(rng[2], indexVec)]
+    if(missing(na.value)) na.value <- gradCols[["MAX"]]
     return(
-      ggplot2::scale_fill_gradient(low = minCol, high = maxCol, na.value = gradCols[["MAX"]])
+      ggplot2::scale_fill_gradient(low = minCol, high = maxCol, na.value = na.value)
     )
   }
 
@@ -55,8 +56,9 @@ scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = T
   gradCols <- gradCols[seq(minCat, maxCat + 1)]
   breaks <- breaks[seq(minCat, maxCat + 1)]
 
+  if(missing(na.value)) na.value <- gradCols[1]
   ggplot2::scale_fill_gradientn(colours = gradCols, values = scales::rescale(breaks),
-                                limits = rng, na.value = gradCols[1])
+                                limits = rng, na.value = na.value)
 
   # # We need to set the upper gradient & the lower gradient
   #

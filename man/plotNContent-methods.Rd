@@ -27,7 +27,8 @@ plotNContent(x, usePlotly = FALSE, ...)
   fail = 20, pwfCols, ..., lineCol = "red")
 
 \S4method{plotNContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  warn = 5, fail = 20, pwfCols, ...)
+  warn = 5, fail = 20, pwfCols, clusterNames = FALSE,
+  dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -46,6 +47,13 @@ File extensions are dropped by default}
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{lineCol}{Defaults to red}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using hierarchical clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
