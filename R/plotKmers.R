@@ -23,6 +23,7 @@
 #' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
 #' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
+#' @param heatCol Colour palette used for the heatmap
 #'
 #' @return A standard ggplot2 object or an interactive plotly object
 #'

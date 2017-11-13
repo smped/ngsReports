@@ -79,7 +79,7 @@ setMethod("plotSequenceContent", signature = "FastqcFileList",
 #' @rdname plotSequenceContent-methods
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels){
+          function(x, usePlotly = FALSE, labels, ...){
 
             # Get the SequenceContent
             df <- Per_base_sequence_content(x)
@@ -103,7 +103,14 @@ setMethod("plotSequenceContent", signature = "FastqcData",
             #set colours
             baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
 
-            sequenceContentHeatmap <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
+            # Get any arguments for dotArgs that have been set manually
+            dotArgs <- list(...)
+            allowed <- names(formals(ggplot2::theme))
+            keepArgs <- which(names(dotArgs) %in% allowed)
+            userTheme <- c()
+            if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+            scPlot <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
               geom_line() +
               facet_wrap(~Filename) +
               scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
@@ -114,12 +121,17 @@ setMethod("plotSequenceContent", signature = "FastqcData",
               theme_bw() +
               scale_colour_manual(values = baseCols)
             if(usePlotly){
-              sequenceContentHeatmap <- suppressMessages(
-                ggplotly(sequenceContentHeatmap) %>% layout(legend = list(x = 0.85, y = 1))
+
+              scPlot <- suppressMessages(
+                subplot(plotly::plotly_empty(), scPlot, widths = c(0.08,0.92), margin = 0.001) %>%
+                  layout(xaxis2 = list(title = "Position in read (bp)"))
               )
+              # scPlot <- suppressMessages(
+              #   ggplotly(scPlot) %>% layout(legend = list(x = 0.85, y = 1))
+              # )
             }
 
-            sequenceContentHeatmap
+            scPlot
 
           }
 )
@@ -127,7 +139,7 @@ setMethod("plotSequenceContent", signature = "FastqcData",
 #' @rdname plotSequenceContent-methods
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, plotType = "heatmap", pwfCols){
+          function(x, usePlotly = FALSE, labels, plotType = "heatmap", pwfCols, ...){
 
             stopifnot(plotType %in% c("heatmap", "line"))
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -145,6 +157,13 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
             }
             if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+
+            # Get any arguments for dotArgs that have been set manually
+            dotArgs <- list(...)
+            allowed <- names(formals(ggplot2::theme))
+            keepArgs <- which(names(dotArgs) %in% allowed)
+            userTheme <- c()
+            if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
             if(plotType == "heatmap"){
 
@@ -170,7 +189,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               tileCols <- unique(df$colour)
               names(tileCols) <- unique(df$colour)
 
-              sequenceContentHeatmap <- ggplot(df,
+              scPlot <- ggplot(df,
                                                aes_string(x = "Position", y = "Filename",
                                                           fill = "colour", A = "A", C = "C", G = "G", T = "T")) +
                 geom_tile() +
@@ -184,8 +203,10 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 labs(x = "Position in read (bp)",
                      y = "Filename")
 
+              if (!is.null(userTheme)) scPlot <- scPlot + userTheme
+
               if (usePlotly){
-                sequenceContentHeatmap <- sequenceContentHeatmap +
+                scPlot <- scPlot +
                   theme(axis.ticks.y = element_blank(),
                         axis.text.y = element_blank())
 
@@ -197,19 +218,19 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
 
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
-                sequenceContentHeatmap <- suppressMessages(# Hides the recommendation to install from github...
-                  plotly::ggplotly(sequenceContentHeatmap, tooltip = c("x", "y", "A", "C", "G", "T"))
+                scPlot <- suppressMessages(# Hides the recommendation to install from github...
+                  plotly::ggplotly(scPlot, tooltip = c("x", "y", "A", "C", "G", "T"))
                 )
 
                 suppressMessages(
-                  subplot(sideBar, sequenceContentHeatmap, widths = c(0.08,0.92), margin = 0.001) %>%
+                  subplot(sideBar, scPlot, widths = c(0.08,0.92), margin = 0.001) %>%
                     layout(xaxis2 = list(title = "Position in read (bp)"))
                 )
 
 
               }
               else{
-                sequenceContentHeatmap
+                scPlot
               }
             }
             else{
@@ -222,7 +243,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               #set colours
               baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
 
-              sequenceContentHeatmap <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
+              scPlot <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
                 geom_line() +
                 facet_wrap(~Filename) +
                 scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
@@ -232,13 +253,16 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                      y = "Percent (%)") +
                 theme_bw() +
                 scale_colour_manual(values = baseCols)
+
+              if (!is.null(userTheme)) scPlot <- scPlot + userTheme
+
               if(usePlotly){
                 suppressMessages(
-                  ggplotly(sequenceContentHeatmap) %>% layout(legend = list(x = 0.85, y = 1))
+                  ggplotly(scPlot) %>% layout(legend = list(x = 0.85, y = 1))
                 )
               }
               else{
-                sequenceContentHeatmap
+                scPlot
               }
             }
           }

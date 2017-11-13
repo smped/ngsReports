@@ -28,7 +28,8 @@ plotKmers(x, usePlotly = FALSE, ...)
   "yellow"))
 
 \S4method{plotKmers}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  clusterNames = FALSE, dendrogram = FALSE, pwfCols, ...)
+  clusterNames = FALSE, dendrogram = FALSE, pwfCols,
+  heatCol = inferno(50), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -60,6 +61,8 @@ will be displayed.}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
+
+\item{heatCol}{Colour palette used for the heatmap}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

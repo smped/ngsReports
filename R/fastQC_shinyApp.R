@@ -65,11 +65,11 @@ fastqcShiny <- function(fastqcInput = NULL){
         "ngsReports::FASTQC",
         #first panel is summary
         tabPanel(
-          "fastQC Flags Summary",
+          "FastQC Summary",
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                h5("Choose Fastqc Report:"),
+                h5("Choose FastQC Report:"),
                 shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = ""),
                 h5(""),
                 textOutput("report"),
@@ -91,39 +91,10 @@ fastqcShiny <- function(fastqcInput = NULL){
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
-              h1("Read Totals"),
+              h1("Total Sequences"),
               h5("Total number of unique and duplicated reads in each sample"),
               plotlyOutput("ReadTotals"),
               width = "70%", left = "30%", right = "0%"))),
-        tabPanel(
-          "Duplicated sequences",
-          splitLayout(
-            fixedPanel(
-              sidebarPanel(
-                checkboxInput("Dupcluster", "Cluster Filenames", value = TRUE),
-                width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
-            absolutePanel(
-              h1("Sequence Duplication levels"),
-              h5("Sequence duplication in each sample"),
-              h5("Click sidebar on heatmap to change line plots"),
-              plotlyOutput("DupHeatmap"),
-              width = "70%", left = "30%", right = "0%"))),
-        tabPanel(
-          "Per Base Sequence Content",
-          splitLayout(
-            fixedPanel(
-              sidebarPanel(
-                width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
-            absolutePanel(
-              h1("Per Base Sequence Content"),
-              h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
-              h5("1 - G = opacity, A = Green, T = Red, C = Blue"),
-              h5("if each base is equally represented then should be light grey"),
-              plotlyOutput("SCHeatmap"),
-              plotlyOutput("SCsingle"),
-              width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Per Base Sequence Quality",
           splitLayout(
@@ -135,7 +106,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
-              h1("Base Quality"),
+              h1("Per Base Sequence Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("baseQualHeatmap"),
@@ -152,14 +123,29 @@ fastqcShiny <- function(fastqcInput = NULL){
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
-              h1("Sequence Quality"),
+              h1("Per Sequence Quality Scores"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("seqQualHeatmap"),
               plotlyOutput("SeqQualitiesSingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
-          "% GC Content",
+          "Per Base Sequence Content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Per Base Sequence Content"),
+              h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
+              h5("1 - G = opacity, A = Green, T = Red, C = Blue"),
+              h5("if each base is equally represented then should be light grey"),
+              plotlyOutput("SCHeatmap"),
+              plotlyOutput("SCsingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Per Sequence GC Content",
           splitLayout(
             fixedPanel(
               sidebarPanel(
@@ -173,11 +159,25 @@ fastqcShiny <- function(fastqcInput = NULL){
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
-              h1("GC content in reads"),
+              h1("Per Sequence GC Content"),
               h5("GC content (%) in sample, can either view total count or frequency"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("GCheatmap"),
               plotlyOutput("GCSingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Per base N content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("Ncluster", "Cluster Filenames", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Per base N content"),
+              h5("N content (%) in sample"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
+              plotlyOutput("NCheatmap"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
         tabPanel(
           "Sequence Length Distribution",
@@ -190,12 +190,27 @@ fastqcShiny <- function(fastqcInput = NULL){
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
-              h1("Sequence Length Distribution for all reads"),
+              h1("Sequence Length Distribution"),
               h5("Sequence length distribution in each sample, can either view total count or frequency"),
               h5("Click sidebar on heatmap to change line plots"),
               plotlyOutput("SLHeatmap"),
               plotlyOutput("SLSingle"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Sequence Duplication Levels",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("Dupcluster", "Cluster Filenames", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "20%"),
+            absolutePanel(
+              h1("Sequence Duplication Levels"),
+              h5("Sequence duplication in each sample"),
+              h5("Click sidebar on heatmap to change line plots"),
+              plotlyOutput("DupHeatmap"),
+              plotlyOutput("DupSingle"),
+              width = "70%", left = "30%", right = "0%"))),
         tabPanel(
           "Overrepresented Sequences",
           splitLayout(
@@ -209,22 +224,6 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("Origin of Overrepresented sequences within each sample"),
               plotlyOutput("OSummary"),
               width = "70%", left = "30%", right = "0%", height = "1100px"))),
-        tabPanel(
-          "% N-Content",
-          splitLayout(
-            fixedPanel(
-              sidebarPanel(
-                checkboxInput("Ncluster", "Cluster Filenames", value = TRUE),
-                width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
-            absolutePanel(
-              h1("N content in reads"),
-              h5("N content (%) in sample"),
-              h5("If dendrogram is truncated double click on dendrogram to resize"),
-              plotlyOutput("NCheatmap"),
-              width = "70%", left = "30%", right = "0%", height = "1100px")
-          )
-        ),
         tabPanel(
           "Adapter Content",
           splitLayout(
@@ -365,8 +364,6 @@ fastqcShiny <- function(fastqcInput = NULL){
     # plot read totals
 
     output$ReadTotals <- renderPlotly({
-      # plotDeduplicatedTotalsPlotly(data(), bars = input$RDLbar) %>%
-      #   layout(margin = list(r = 200))
       plotReadTotals(data(), usePlotly = TRUE, duplicated = TRUE) %>%
         layout(margin = list(r = 200))
     })
@@ -387,6 +384,18 @@ fastqcShiny <- function(fastqcInput = NULL){
         layout(margin = list(r = 200, l = 0))
     })
 
+    output$DupSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotDuplicationLevels(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 0))
+    })
+
     output$SCHeatmap <- renderPlotly({
 
       plotSequenceContent(data(),
@@ -403,7 +412,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         num <- which(fileName(data()) == click$key[[1]])
       }
       sub_fdl <- data()[[num]]
-      plotSequenceContent(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
+      plotSequenceContent(sub_fdl, usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 0))
     })
 

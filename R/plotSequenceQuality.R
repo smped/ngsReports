@@ -168,7 +168,8 @@ setMethod("plotSequenceQuality", signature = "FastqcData",
               scale_fill_manual(values = getColours(pwfCols))  +
               scale_y_continuous(limits = c(0, rects$ymax[1]), expand =c(0, 0)) +
               scale_x_continuous(expand = c(0, 0)) +
-              scale_colour_discrete() +
+              scale_colour_discrete()  +
+              facet_wrap(~Filename) +
               labs(x = "Mean Sequence Quality Per Read (Phred Score)") +
               guides(fill = FALSE) +
               theme_bw()

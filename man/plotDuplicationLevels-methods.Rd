@@ -28,7 +28,7 @@ plotDuplicationLevels(x, usePlotly = FALSE, ...)
 
 \S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE,
   deduplication = "pre", clusterNames = FALSE, dendrogram = FALSE, labels,
-  pwfCols, ...)
+  pwfCols, heatCol = inferno(50), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -58,6 +58,8 @@ fastqc data will be clustered using hierarchical clustering}
 \item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
 if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
+
+\item{heatCol}{Colour palette used for the heatmap}
 }
 \value{
 A standard ggplot2 or plotly object

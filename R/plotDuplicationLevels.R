@@ -25,6 +25,7 @@
 #' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
 #' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
+#' @param heatCol Colour palette used for the heatmap
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #'
@@ -186,7 +187,8 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
 #' @rdname plotDuplicationLevels-methods
 #' @export
 setMethod("plotDuplicationLevels", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, deduplication = "pre", clusterNames = FALSE, dendrogram = FALSE, labels, pwfCols, ...){
+          function(x, usePlotly = FALSE, deduplication = "pre",
+                   clusterNames = FALSE, dendrogram = FALSE, labels, pwfCols, heatCol = inferno(50), ...){
 
             df <- tryCatch(Sequence_Duplication_Levels(x))
             stopifnot(deduplication %in% c("pre", "post"))
@@ -236,7 +238,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               geom_tile(aes_string(fill = type)) +
               scale_x_continuous(breaks = unique(df$x), labels = levels(df$Duplication_Level), expand = c(0, 0)) +
               scale_y_discrete(expand = c(0, 0)) +
-              scale_fill_gradientn(colours = inferno(50)) +
+              scale_fill_gradientn(colours = heatCol) +
               labs(x = "Sequence Duplication Level",
                    fill = fillLabel) +
               theme(panel.grid = element_blank(),

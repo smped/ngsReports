@@ -23,10 +23,10 @@ plotSequenceContent(x, usePlotly = FALSE, ...)
 
 \S4method{plotSequenceContent}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotSequenceContent}{FastqcData}(x, usePlotly = FALSE, labels)
+\S4method{plotSequenceContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSequenceContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  plotType = "heatmap", pwfCols)
+  plotType = "heatmap", pwfCols, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

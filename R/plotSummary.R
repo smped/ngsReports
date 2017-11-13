@@ -136,11 +136,9 @@ setMethod("plotSummary", signature = "FastqcDataList",
                       plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
                       legend.position = "none")
 
-
-
               # Add any parameters from dotArgs
               if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-              suppressMessages(ggplotly(sumPlot, tooltip = c("Categoy", "Filename", "Status")))
+              suppressMessages(ggplotly(sumPlot, tooltip = c("Category", "Filename", "Status")))
             }
             else{
 
