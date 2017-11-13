@@ -18,6 +18,8 @@
 #' If the vector supplied is less than n, \code{grDevices::colorRampPalette()} will be used
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
+#' @param heatCol Colour pallette to use for the heatmap colour. default is \code{inferno} from the package
+#' \code{viridris}
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
