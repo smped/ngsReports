@@ -11,12 +11,11 @@
 
 ## Shiny App
  
-- Once the S4 methods are up (see below), add the individual `plotKmer` plots
-- Add individual plots for `Sequence Duplication Levels`
+- Once the S4 methods are up (see below), add the individual `plotKmer` plots`
 - Fix `Error: attempt to select less than one element in get1index` in `Per Base Sequence Content` on first click on the page
     - Change base colours to be consistent between individual plots & the heatmap
 - Fix `Per Sequence Quality Scores`: **Error**: Column `Filename` is unknown on first click   
-- Set Overrepresented Summary to produce a table on click
+- Set Overrepresented Summary to produce a table on click *added plot for now*
 - Add `exportOverrepresented()`
 
 ## Individual Functions
