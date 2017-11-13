@@ -204,7 +204,6 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
             }
             if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
-            df$Filename <- labels[df$Filename]
 
             # Get any theme arguments for dotArgs that have been set manually
             dotArgs <- list(...)
@@ -213,22 +212,23 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
             userTheme <- c()
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
+            df <- reshape2::dcast(df, Filename ~ Duplication_Level, value.var = "Percentage_of_total")
+
+            #cluster
             if(clusterNames){
-              # Grab the main columns & cast from long to wide
-              mat <- reshape2::acast(df[c("Filename", "Duplication_Level", type)], Filename ~ Duplication_Level, value.var = type)
-              mat[is.na(mat)] <- 0
-              clus <- as.dendrogram(hclust(dist(mat), method = "ward.D2"))
+              xx <- df[!colnames(df) == "Filename"]
+              xx[is.na(xx)] <- 0
+              clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
               row.ord <- order.dendrogram(clus)
-              mat <- mat[row.ord,]
-              o <- rownames(mat)
+              df <- df[row.ord,]
             }
-            else{
-              o <- unique(df$Filename)
-            }
-            df$Filename <- factor(df$Filename, levels = o)
+
+            key <- df$Filename
+            df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Duplication_Level", value.name = "Percentage_of_total")
+            df$Filename <- labels[df$Filename]
+            df$Filename <- factor(df$Filename, levels = unique(df$Filename))
             df$Duplication_Level <- factor(df$Duplication_Level, levels = unique(df$Duplication_Level))
             df$x <- as.integer(df$Duplication_Level)
-            key <- unique(df$Filename)
 
             fillLabel <- gsub("Percentage_of_", "% ", type)
             fillLabel <- paste(fillLabel, "\nSequences")

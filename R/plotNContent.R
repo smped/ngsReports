@@ -209,6 +209,7 @@ setMethod("plotNContent", signature = "FastqcDataList",
               dplyr::bind_rows()
 
             # get ready for clustering and making the key
+            # this is the simplest way, in my mind, to do the key
             df$Start <- as.integer(df$Start)
             df <- df[colnames(df) %in% c("Filename", "Start", "Percentage")]
             df <- reshape2::dcast(df, Filename ~ Start, value.var = "Percentage")
@@ -243,24 +244,24 @@ setMethod("plotNContent", signature = "FastqcDataList",
             df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
             # Return an empty plot if required
-            allZero <- ifelse(sum(df$Percentage) == 0, TRUE, FALSE)
+            allZero <- ifelse(sum(df$Percentage, na.rm = TRUE) == 0, TRUE, FALSE)
 
             if (allZero){
+              # will put the message only in the center of the plot
               label_df <- dplyr::data_frame(
                 Filename = levels(df$Filename)[floor(mean(as.integer(df$Filename)))],
-                Base = levels(df$Base)[floor(mean(as.integer(df$Base)))],
+                Start = df$Start,
                 text = "No N Content Detected")
-              nPlot <- ggplot(df, aes_string("Base", "Filename")) +
-                geom_blank() +
-                geom_text(data = label_df, aes_string(label = "text")) +
-                scale_x_discrete(expand = c(0,0)) +
+              nPlot <- ggplot(df) +
+                geom_blank(aes_string("Start", "Filename")) +
+                geom_text(data = label_df, aes_string(label = "text"), x = max(df$Start)/2, y = length(x)/2) +
+                scale_x_continuous(expand = c(0,0)) +
                 scale_y_discrete(expand = c(0, 0)) +
                 labs(x = "Position in Read",
                      y = "Filename",
                      fill = "%N") +
                 theme_bw() +
-                theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-                      panel.background = element_rect(fill = "white"),
+                theme(panel.background = element_rect(fill = "white"),
                       panel.grid = element_blank())
             }
             else{

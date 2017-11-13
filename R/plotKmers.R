@@ -18,8 +18,6 @@
 #' If the vector supplied is less than n, \code{grDevices::colorRampPalette()} will be used
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param heatCol Colour pallette to use for the heatmap colour. default is \code{inferno} from the package
-#' \code{viridris}
 #' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
@@ -261,26 +259,26 @@ setMethod("plotKmers", signature = "FastqcDataList",
             df <- dplyr::distinct(df, Filename, Position, .keep_all = TRUE)
 
 
-            #cluster names
+            # casting before going into the loop makes getting th file names in order much easier
+            df <- reshape2::dcast(df, Filename ~ Position, value.var = "Total")
+
+            #cluster
             if(clusterNames){
-              dfClus <- reshape2::dcast(df, Filename ~ Position, value.var = "Total")
-              xx <- dfClus[!colnames(dfClus) == "Filename"]
+              xx <- df[!colnames(df) == "Filename"]
               xx[is.na(xx)] <- 0
               clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
               row.ord <- order.dendrogram(clus)
-              dfClus <- dfClus[row.ord,]
-              df <- reshape2::melt(dfClus, id.vars = "Filename", variable.name = "Position",
-                                   value.name = "Total")
-              # I dont like this
-              df$Position <- as.integer(as.character(df$Position))
-
+              df <- df[row.ord,]
             }
 
+            key <- df$Filename
+            df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Position", value.name = "Total")
+            # I dont like this
+            df$Position <- as.integer(as.character(df$Position))
             # Set Filenames as factor, make key for sidebar and change Filenames to match provided/
             # default labels
             df$Filename <- labels[df$Filename]
             df$Filename <- factor(df$Filename, levels = unique(df$Filename))
-            key <- levels(df$Filename)
 
             # join x axis ticks and df
             df <- dplyr::left_join(df, refForX, by = "Position")
@@ -288,7 +286,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
             # Set up for geom_tile
             df$End <- gsub("[0-9]*-([0-9]*)", "\\1", df$Base)
             df$End <- as.integer(df$End)
-            df$Mid <- (df$Position + df$End) / 2
+            df$`Middle of Bin` <- (df$Position + df$End) / 2
             df$Width <- df$End - df$Position
             df$Width[df$Width == 0] <- 1
 
@@ -299,7 +297,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
             userTheme <- c()
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-            kMerPlot <- ggplot(df, aes_string(x = "Mid", y = "Filename", fill = "Total", width = "Width")) +
+            kMerPlot <- ggplot(df, aes_string(x = "`Middle of Bin`", y = "Filename", fill = "Total", width = "Width")) +
               geom_tile() +
               scale_x_continuous(expand = c(0.02, 0)) +
               scale_fill_gradientn(colors = heatCol, na.value = "white") +
