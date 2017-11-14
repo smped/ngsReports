@@ -154,11 +154,10 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                radioButtons(inputId="theoreticalType", label="What type of data?",
-                             choices=c("Genome","Transcriptome"), selected = "Genome"),
-                radioButtons(inputId="GCheatType", label="Value to plot",
-                             choices=c("Frequency","Count"), selected = "Frequency"),
+                # radioButtons(inputId="GCheatType", label="Value to plot",
+                #              choices=c("Frequency","Count"), selected = "Frequency"),
                 checkboxInput("GCcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("theoreticalGC", "Normalize Using Theoretical GC", value = FALSE),
                 htmlOutput("theoreticalGC"),
                 htmlOutput("GCspecies"),
                 width = "20%", left = "0%", right = "80%"
@@ -354,10 +353,6 @@ fastqcShiny <- function(fastqcInput = NULL){
       }
     })
 
-
-
-
-
 # Summary heatmap in first tab
     output$SummaryFlags <- renderPlotly({
       plotSummary(data(), usePlotly = TRUE,
@@ -449,12 +444,17 @@ fastqcShiny <- function(fastqcInput = NULL){
 
 
     # start rendering the input buttons for
+    # output$theoreticalGC <- renderUI({
+    #   if(input$GCheatType == "Frequency"){
+    #     checkboxInput("theoreticalGC", "Normalize Using Theoretical GC", value = FALSE)
+    #   }
+    # })
     output$theoreticalGC <- renderUI({
-      if(input$GCheatType == "Frequency"){
-        checkboxInput("theoreticalGC", "Normalize Using Theoretical GC", value = FALSE)
+      if(input$theoreticalGC){
+        radioButtons(inputId="theoreticalType", label="What type of data?",
+                     choices=c("Genome","Transcriptome"), selected = "Genome")
       }
     })
-
 
     output$GCspecies <- renderUI({
       if(!is.null(input$theoreticalGC)){

@@ -24,11 +24,11 @@ plotBaseQualities(x, usePlotly = FALSE, ...)
 \S4method{plotBaseQualities}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
 \S4method{plotBaseQualities}{FastqcData}(x, usePlotly = FALSE, pwfCols,
-  warn = 30, fail = 20, ...)
+  warn = 25, fail = 20, ...)
 
 \S4method{plotBaseQualities}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = "heatmap", plotValue = "Mean", clusterNames = FALSE, labels,
-  dendrogram = FALSE, nc = 2, pwfCols, warn = 30, fail = 20, ...)
+  dendrogram = FALSE, nc = 2, pwfCols, warn = 25, fail = 20, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

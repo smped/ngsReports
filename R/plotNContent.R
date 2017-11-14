@@ -101,12 +101,6 @@ setMethod("plotNContent", signature = "FastqcData",
             df <- Per_base_N_content(x)
             colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
-            # Return an empty plot if required
-            # if (sum(df$Percentage) == 0){
-            #   label <- paste0(fileName(x), ": No N content detected")
-            #   return(emptyPlot(label))
-            # }
-
             # Sort out the colours
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
             stopifnot(isValidPwf(pwfCols))

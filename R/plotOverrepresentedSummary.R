@@ -125,6 +125,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
             df$Status <- cut(df$Percentage, breaks = c(0, 0.1, 1, 100), labels = c("PASS", "WARN", "FAIL"))
             df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", df$Possible_Source)
             df$Sequence <- factor(df$Sequence, levels = rev(df$Sequence))
+            df$Percentage <- round(df$Percentage, 2)
             df <- droplevels(df)
             ymax <- 1.05*max(df$Percentage)
 
@@ -143,10 +144,14 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
                                                 "<br> Sequence: ",
                                                 Sequence,
                                                 "<br> Possible Source: ",
-                                                Possible_Source)) %>%
+                                                Possible_Source,
+                                                "<br> Status: ",
+                                                Status)) %>%
                 layout(xaxis = list(title = "Percent of Total Reads"),
                        yaxis = list(title = "Overrepresented Sequence",
-                                    showticklabels = FALSE), title = df$Filename[1])
+                                    showticklabels = FALSE),
+                       title = df$Filename[1],
+                       bargap = 0.05)
             }
             else{
               overPlot <- ggplot(df, aes_string(x = "Sequence", y = "Percentage", fill = "Status")) +
@@ -203,6 +208,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", df$Possible_Source)
             df <- dplyr::group_by(df, Filename, Possible_Source)
             df <- dplyr::summarise(df, Percentage = sum(Percentage))
+            df$Percentage <- round(df$Percentage, 2)
 
             df <- reshape2::dcast(df, Filename ~ Possible_Source, value.var = "Percentage")
 
@@ -233,13 +239,6 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
 
             if (usePlotly){
 
-              #set left margin
-              # if(maxChar < 10) l <- 80
-              # if(maxChar >= 10 & maxChar < 15) l <- 110
-              # if(maxChar >= 15 & maxChar < 20) l <- 130
-              # if(maxChar >= 20)  l <- 150
-
-
               overPlot <- plot_ly(df, x = ~Percentage, y = ~Filename, type = "bar", color = ~Possible_Source,
                       colors = pal, hoverinfo = "text",
                       text = ~paste("Filename: ",
@@ -250,7 +249,9 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                                     Possible_Source)) %>%
                 layout(xaxis = list(title = "Percent of Total Reads"),
                        yaxis = list(showticklabels = FALSE),
-                       barmode = "stack", showlegend = FALSE)
+                       barmode = "stack",
+                       bargap = 0.05,
+                       showlegend = FALSE)
 
               t <- getSummary(x)
               t <- t[t$Category == "Overrepresented sequences",]
@@ -269,7 +270,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
 
                 overPlot <- suppressWarnings(
                   suppressMessages(
-                    plotly::subplot(dendro, sideBar, overPlot, widths = c(0.1,0.08,0.82),
+                    plotly::subplot(dendro, sideBar, overPlot, widths = c(0.08,0.08,0.84),
                                     margin = 0.001)
                   ))
               }
@@ -277,7 +278,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
 
                 overPlot <- suppressWarnings(
                   suppressMessages(subplot(plotly::plotly_empty(), sideBar, overPlot, margin = 0.001,
-                                    widths = c(0.1,0.08,0.82)) %>%
+                                    widths = c(0.08,0.08,0.84)) %>%
                   plotly::layout(annotations = list(text = "Filename", showarrow = FALSE,
                                                     textangle = -90))
                   ))

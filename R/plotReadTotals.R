@@ -236,7 +236,9 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                                           "<br> Total Reads",
                                           Total)) %>%
                   layout(xaxis = list(title = "Total Reads"),
-                         margin=list(l=l), barmode = "stack")
+                         margin=list(l=l),
+                         barmode = "stack",
+                         bargap = 0.05)
 
               }
 

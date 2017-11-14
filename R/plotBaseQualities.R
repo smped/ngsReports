@@ -107,7 +107,7 @@ setMethod("plotBaseQualities", signature = "FastqcFileList",
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcData",
-          function(x, usePlotly = FALSE, pwfCols, warn = 30, fail = 20, ...){
+          function(x, usePlotly = FALSE, pwfCols, warn = 25, fail = 20, ...){
 
             # Get the data
             df <- tryCatch(Per_base_sequence_quality(x))
@@ -186,7 +186,7 @@ setMethod("plotBaseQualities", signature = "FastqcData",
 setMethod("plotBaseQualities", signature = "FastqcDataList",
           function(x,  usePlotly = FALSE,  plotType = "heatmap", plotValue = "Mean",
                    clusterNames = FALSE, labels, dendrogram = FALSE,
-                   nc = 2, pwfCols, warn = 30, fail = 20, ...){
+                   nc = 2, pwfCols, warn = 25, fail = 20, ...){
 
             # Get the data
             df <- tryCatch(Per_base_sequence_quality(x))
@@ -345,11 +345,13 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               df[[plotValue]] <- as.numeric(df$Data)
               df$Start <- as.integer(as.character(df$Start))
               df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+              maxVal <- max(df[[plotValue]])
+              phredMax <- ifelse(maxVal <= warn, 41, ceiling(maxVal + 1))
 
               # Start the heatmap
               qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = plotValue)) +
                 geom_tile() +
-                ngsReports:::scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, 41), FALSE ) +
+                scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, phredMax), FALSE ) +
                 theme(panel.grid.minor = element_blank(),
                       panel.background = element_blank()) +
                 scale_x_continuous(expand = c(0,0))
@@ -367,7 +369,6 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
-
 
                 #plot dendrogram
                 if(dendrogram && clusterNames){

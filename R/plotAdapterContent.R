@@ -301,14 +301,40 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               df$Percent <- as.numeric(df$Percent)
               df$Start <- as.integer(as.character(df$Start))
 
-              # Make the heatmap
-               acPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
-                scale_y_discrete(expand = c(0, 0)) +
-                geom_tile() +
-                scale_x_continuous(expand = c(0, 0)) +
-                ggplot2::ggtitle(as.character(unique(type))) +
-                ngsReports:::scale_fill_pwf(df$Percent, pwf, breaks = breaks, na.value = "white") +
-                theme(plot.title = element_text(hjust = 0.5))
+              # Return an empty plot if required
+              allZero <- ifelse(sum(df$Percent, na.rm = TRUE) == 0, TRUE, FALSE)
+
+              if (allZero){
+                # will put the message only in the center of the plot
+                label_df <- dplyr::data_frame(
+                  Filename = levels(df$Filename)[floor(mean(as.integer(df$Filename)))],
+                  Start = df$Start,
+                  text = "No Adapter Content Detected")
+
+                acPlot <- ggplot(df) +
+                  geom_blank(aes_string("Start", "Filename")) +
+                  geom_text(data = label_df, aes_string(label = "text"), x = max(df$Start)/2, y = length(x)/2) +
+                  labs(x = "Position in Read (bp)",
+                       y = "Filename") +
+                  theme_bw() +
+                  theme(panel.background = element_rect(fill = "white"),
+                        panel.grid = element_blank())
+              }
+              else{
+
+                # Make the heatmap
+                acPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
+                  geom_tile() +
+                  ggplot2::ggtitle(as.character(unique(type))) +
+                  scale_fill_pwf(df$Percent, pwf, breaks = breaks, na.value = "white") +
+                  theme_bw() +
+                  theme(plot.title = element_text(hjust = 0.5))
+
+              }
+
+              acPlot <- acPlot +
+                scale_x_continuous(expand = c(0,0)) +
+                scale_y_discrete(expand = c(0, 0))
 
               if (usePlotly){
 
@@ -319,7 +345,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                                      labels = c("PASS", "WARN", "FAIL"))
 
                 # Form the sideBar for each adapter
-                sideBar <- ngsReports:::makeSidebar(status, key, pwfCols = pwfCols)
+                sideBar <- makeSidebar(status, key, pwfCols = pwfCols)
 
                 # Customise for plotly
                 acPlot <- acPlot +
@@ -332,7 +358,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 #plot dendro
                 if (clusterNames && dendrogram){
                   dx <- ggdendro::dendro_data(clus)
-                  dendro <- ngsReports:::ggdend(dx$segments) +
+                  dendro <- ggdend(dx$segments) +
                     coord_flip() +
                     scale_y_reverse(expand = c(0, 0)) +
                     scale_x_continuous(expand = c(0, 0.5))
