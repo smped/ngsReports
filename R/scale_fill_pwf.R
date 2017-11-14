@@ -41,10 +41,10 @@ scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = T
   # If there is more than one category:
   # The upper and lower gradients need to be set separately to find the appropriate extrema
   lowerGradient <- grDevices::colorRampPalette(c(gradCols[minCat], gradCols[minCat + 1]))(100)
-  indexVec <- seq(breaks[minCat], breaks[minCat + 1])
+  indexVec <- seq(breaks[minCat], breaks[minCat + 1], length.out = 100)
   minCol <- lowerGradient[findInterval(rng[1], indexVec)]
   upperGradient <- grDevices::colorRampPalette(c(gradCols[maxCat], gradCols[maxCat + 1]))(100)
-  indexVec <- seq(breaks[maxCat], breaks[maxCat + 1])
+  indexVec <- seq(breaks[maxCat], breaks[maxCat + 1], length.out = 100)
   maxCol <- upperGradient[findInterval(rng[2], indexVec)]
   # Now reset the colours to reflect the new extrema
   gradCols[minCat] <- minCol
