@@ -26,7 +26,5 @@
     - Add clustering & sideBar
 - **plotSequenceContent**
     - Add clustering & dendrograms to plot AND shiny app
-- **plotSummary**
-    - Add clustering/dendrogram & tidy up for the app
     
 **Add methods for zero results for all plots, based on plotNContent()**
