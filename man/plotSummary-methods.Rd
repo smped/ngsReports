@@ -18,7 +18,8 @@ plotSummary(x, usePlotly = FALSE, ...)
 \S4method{plotSummary}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
 \S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels, pwfCols,
-  ..., gridlineWidth = 0.2, gridlineCol = "grey20")
+  clusterNames = FALSE, dendrogram = TRUE, ..., gridlineWidth = 0.2,
+  gridlineCol = "grey20")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -33,6 +34,13 @@ All filenames must be present in the names.
 File extensions are dropped by default.}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using hierarchical clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
 
 \item{gridlineWidth, gridlineCol}{Passed to geom_hline and geom_vline to determine
 width and colour of gridlines}

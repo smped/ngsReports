@@ -12,6 +12,11 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using hierarchical clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param ... Used to pass various potting parameters to theme.
 #' @param gridlineWidth,gridlineCol Passed to geom_hline and geom_vline to determine
 #' width and colour of gridlines
@@ -82,7 +87,8 @@ setMethod("plotSummary", signature = "FastqcFileList",
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, pwfCols, ..., gridlineWidth = 0.2, gridlineCol = "grey20"){
+          function(x, usePlotly = FALSE, labels, pwfCols, clusterNames = FALSE, dendrogram = TRUE,
+                   ..., gridlineWidth = 0.2, gridlineCol = "grey20"){
 
             df <- getSummary(x)
 
@@ -111,13 +117,28 @@ setMethod("plotSummary", signature = "FastqcDataList",
 
             # Add any new labels
             df$Filename <- labels[df$Filename]
-            df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+            df$StatusNum <- as.integer(df$Status)
+
+            if(clusterNames){
+              dfClus <- df[colnames(df) != "Status"]
+              dfClus <- reshape2::dcast(dfClus, Filename ~ Category, value.var = "StatusNum")
+              xx <- dfClus[!colnames(dfClus) == "Filename"]
+              xx[is.na(xx)] <- 0
+              clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+              row.ord <- order.dendrogram(clus)
+              dfClus <- dfClus[row.ord,]
+              order <- dfClus$Filename
+            }
+            else{
+              order <- unique(df$Filename)
+            }
+
+            df$Filename <- factor(df$Filename, levels = order)
 
             if(usePlotly){
-              nx <- length(x)
-              ny <- length(unique(df$Category))
+              ny <- length(x)
+              nx <- length(unique(df$Category))
 
-              df$StatusNum <- as.integer(df$Status)
               sumPlot <- ggplot(df, aes_string(x = "Category", y = "Filename", fill = "StatusNum", key = "Status")) +
                 geom_tile(colour = gridlineCol) +
                 geom_vline(xintercept = seq(1.5, nx), colour = gridlineCol, size = gridlineWidth) +
@@ -132,13 +153,37 @@ setMethod("plotSummary", signature = "FastqcDataList",
                 theme_bw() +
                 theme(axis.text = element_blank(),
                       axis.ticks = element_blank(),
-                      axis.title = element_blank(),
                       plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
                       legend.position = "none")
 
               # Add any parameters from dotArgs
               if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-              suppressMessages(ggplotly(sumPlot, tooltip = c("Category", "Filename", "Status")))
+
+              if (clusterNames && dendrogram){
+                dx <- ggdendro::dendro_data(clus)
+                dendro <- ngsReports:::ggdend(dx$segments) +
+                  coord_flip() +
+                  scale_y_reverse(expand = c(0, 0)) +
+                  scale_x_continuous(expand = c(0, 0.5))
+
+               sumPlot <- suppressWarnings(
+                  suppressMessages(ggplotly(sumPlot, tooltip = c("Category", "Filename", "Status")))
+                )
+
+                suppressWarnings(
+                  suppressMessages(
+                    plotly::subplot(plotly::plotly_empty(), dendro, sumPlot, widths = c(0.04,0.08,0.88),
+                                    margin = 0.001, shareY = TRUE) %>%
+                      plotly::layout(annotations = list(text = "Filename", showarrow = FALSE, textangle = -90),
+                                     xaxis3 = list(title = "Category"))
+                  ))
+              }
+
+              else{
+                suppressWarnings(
+                  suppressMessages(ggplotly(sumPlot, tooltip = c("Category", "Filename", "Status")))
+                )
+              }
             }
             else{
 

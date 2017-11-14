@@ -72,9 +72,10 @@ fastqcShiny <- function(fastqcInput = NULL){
               sidebarPanel(
                 h5("Choose FastQC Report:"),
                 shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = ""),
-                h5(""),
+                br(),
                 textOutput("report"),
-                h5(""),
+                br(),
+                checkboxInput("Sumcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -359,7 +360,8 @@ fastqcShiny <- function(fastqcInput = NULL){
 
 # Summary heatmap in first tab
     output$SummaryFlags <- renderPlotly({
-      plotSummary(data(), usePlotly = TRUE) %>%
+      plotSummary(data(), usePlotly = TRUE,
+                  clusterNames = input$Sumcluster, dendrogram = TRUE) %>%
         layout(margin = list(r = 200))
     })
 
