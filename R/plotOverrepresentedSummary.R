@@ -179,8 +179,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
 
             df <- Overrepresented_sequences(x)
 
-            if (missing(pwfCols)) pwfCols <- getColours(ngsReports::pwf)
-
+            if (missing(pwfCols)) pwfCols <- ngsReports::pwf
 
             if (nrow(df) == 0) stop("No overrepresented sequences were detected by FastQC")
 
@@ -259,12 +258,11 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               t$Filename <- factor(t$Filename, levels = unique(df$Filename))
               t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
-              sideBar <- ngsReports:::makeSidebar(status = t, key = key, pwfCols = pwfCols)
-
+              sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
               if (clusterNames && dendrogram){
                 dx <- ggdendro::dendro_data(clus)
-                dendro <- ngsReports:::ggdend(dx$segments) +
+                dendro <- ggdend(dx$segments) +
                   coord_flip() +
                   scale_y_reverse(expand = c(0, 0)) +
                   scale_x_continuous(expand = c(0, 0.5))

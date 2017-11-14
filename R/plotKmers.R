@@ -1,4 +1,4 @@
-  #' @title Plot Overrepresented Kmers
+#' @title Plot Overrepresented Kmers
 #'
 #' @description Plot Overrepresented Kmers
 #'
@@ -187,11 +187,12 @@ setMethod("plotKmers", signature = "FastqcData",
             # Check for binned x-axis values to decied whether to rotate x-axis labels
             # This should be clear if there are more than 2 characters in the plotted labels
             binned <- any(grepl("-", df$Base))
-            if (binned) kMerPlot <- kMerPlot + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+            if (binned) kMerPlot <- kMerPlot + theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 0.5))
             if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
 
             if(usePlotly){
-              kMerPlot <- kMerPlot + ylab("Log2 Obs/Exp") +
+              kMerPlot <- kMerPlot +
+                ylab("Log2 Obs/Exp") +
                 xlab("")
               kMerPlot <- suppressMessages(
                 plotly::ggplotly(kMerPlot) %>%
@@ -303,11 +304,6 @@ setMethod("plotKmers", signature = "FastqcDataList",
               scale_fill_gradientn(colors = heatCol, na.value = "white") +
               theme_bw()
 
-
-            # Check for binned x-axis values to decied whether to rotate x-axis labels
-            # This should be clear if there are more than 2 characters in the plotted labels
-            binned <- any(grepl("-", df$Base))
-            if (binned) kMerPlot <- kMerPlot + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
             if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
 
             if (usePlotly){
@@ -332,7 +328,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
 
                 kMerPlot <- suppressWarnings(
                   suppressMessages(
-                    plotly::subplot(dendro, sideBar, kMerPlot, widths = c(0.1,0.08,0.82),
+                    plotly::subplot(dendro, sideBar, kMerPlot, widths = c(0.08, 0.09,0.83),
                                     margin = 0.001, shareY = TRUE, shareX = TRUE)
                   ))
               }
@@ -341,14 +337,14 @@ setMethod("plotKmers", signature = "FastqcDataList",
                 kMerPlot <- suppressWarnings(
                   suppressMessages(
                     plotly::subplot(plotly::plotly_empty(),
-                                    sideBar, kMerPlot, widths = c(0.05, 0.08, 0.87), margin = 0.001, shareY = TRUE) %>%
+                                    sideBar, kMerPlot, widths = c(0.08, 0.09, 0.83), margin = 0.001, shareY = TRUE) %>%
                       plotly::layout(annotations = list(text = "Filename", showarrow = FALSE,
                                                         textangle = -90))
                   ))
               }
 
               kMerPlot <- kMerPlot %>%
-                plotly::layout(xaxis3 = list(title = "Position in Read (bp)", tickangle = 45),
+                plotly::layout(xaxis3 = list(title = "Position in Read (bp)"),
                                margin = list(b = 50))
             }
 

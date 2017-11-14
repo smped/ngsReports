@@ -1,3 +1,11 @@
+#' @title Shortcut for making the status sidebar
+#'
+#' @description Shortcut for making the status sidebar
+#'
+#' @param status A data.frame with columns 'Filename' & 'Status'
+#' @param key A vector of values corresponding to the Filename column
+#' @param pwfCols An object of class PwfCols
+#'
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_tile
@@ -8,7 +16,10 @@
 #' @importFrom ggplot2 element_blank
 #' @importFrom plotly ggplotly
 #'
+#' @keywords internal
+#'
 makeSidebar <- function(status, key, pwfCols){
+  stopifnot(isValidPwf(pwfCols))
   nx <- length(status$Filename)
   # Make the basic plot
   sideBar <- ggplot(status, aes(x = 1, y = Filename, key = key)) +

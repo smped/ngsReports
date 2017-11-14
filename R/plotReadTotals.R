@@ -157,7 +157,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               stopifnot(bars %in% c("stacked", "adjacent"))
 
               # Add the information to a joined data.frame
-              deDup <- tryCatch(Total_Deduplicated_Percentage(x))
+              deDup <- Total_Deduplicated_Percentage(x)
               deDup$Filename <- labels[deDup$Filename]
               colnames(deDup)[which(colnames(deDup) == "Total")] <- "Percentage"
               joinedDf <- dplyr::left_join(deDup, df, by = "Filename")
@@ -166,7 +166,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               if (bars == "adjacent"){
 
                 #Setup the df for plotting
-                joinedDf$Deduplicated <- joinedDf$Percentage*joinedDf$Total_Sequences/100
+                joinedDf$Deduplicated <- round(joinedDf$Percentage*joinedDf$Total_Sequences/100, 0)
                 if (!millions) joinedDf$Deduplicated <- as.integer(round(joinedDf$Deduplicated, 0))
                 colnames(joinedDf)[which(colnames(joinedDf) == "Total_Sequences")] <- "Total"
                 joinedDf <- joinedDf[c("Filename", "Total", "Deduplicated")]
@@ -181,7 +181,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               if (bars == "stacked"){
 
                 #Setup the df for plotting
-                joinedDf$Unique <- joinedDf$Percentage*joinedDf$Total_Sequences/100
+                joinedDf$Unique <- round(joinedDf$Percentage*joinedDf$Total_Sequences/100, 0)
                 if (!millions) joinedDf$Unique <- as.integer(round(joinedDf$Unique, 0))
                 joinedDf$Duplicated <- joinedDf$Total_Sequences - joinedDf$Unique
                 joinedDf <- joinedDf[c("Filename", "Unique", "Duplicated")]
@@ -208,8 +208,8 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                 maxChar <- max(nchar(levels(joinedDf$Filename)))
 
                 joinedDf["Total"] <- joinedDf$Duplicated + joinedDf$Unique
-                joinedDf["DuplicatedP"] <- joinedDf$Duplicated/joinedDf$Total
-                joinedDf["UniqueP"]<- joinedDf$Unique/joinedDf$Total
+                joinedDf["DuplicatedP"] <- round(100*joinedDf$Duplicated/joinedDf$Total, 2)
+                joinedDf["UniqueP"]<- round(100*joinedDf$Unique/joinedDf$Total, 2)
 
                 #set left margin
                 if(maxChar < 10) l <- 80
@@ -217,6 +217,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                 if(maxChar >= 15 & maxChar < 20) l <- 130
                 if(maxChar >= 20)  l<- 150
 
+                # Convert the Duplicated & Unique to percentages
 
                 rtPlot <- plot_ly(joinedDf, x = ~Unique, y = ~Filename, type = "bar",
                                     name = "Unique", color = I("red"), hoverinfo = "text",
