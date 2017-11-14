@@ -16,6 +16,11 @@
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
 #' Must be a palette name from \code{RColorBrewer}.
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using hierarchical clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object
@@ -169,9 +174,13 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, ..., paletteName = "Set1"){
+          function(x, usePlotly = FALSE, labels, clusterNames = TRUE,
+                   dendrogram = TRUE, pwfCols, ..., paletteName = "Set1"){
 
             df <- Overrepresented_sequences(x)
+
+            if (missing(pwfCols)) pwfCols <- getColours(ngsReports::pwf)
+
 
             if (nrow(df) == 0) stop("No overrepresented sequences were detected by FastQC")
 
@@ -195,9 +204,24 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", df$Possible_Source)
             df <- dplyr::group_by(df, Filename, Possible_Source)
             df <- dplyr::summarise(df, Percentage = sum(Percentage))
-            maxChar <- max(nchar(df$Filename))
+
+            df <- reshape2::dcast(df, Filename ~ Possible_Source, value.var = "Percentage")
+
+            #cluster
+            if(clusterNames){
+              xx <- df[!colnames(df) == "Filename"]
+              xx[is.na(xx)] <- 0
+              clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
+              row.ord <- order.dendrogram(clus)
+              df <- df[row.ord,]
+            }
+
+            key <- df$Filename
+            df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Possible_Source", value.name = "Percentage")
             df$Filename <- labels[df$Filename]
-            df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+
+            maxChar <- max(nchar(df$Filename))
+            df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 
             # Set the axis limits. Just scale the upper limit by 1.05
             ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename),
@@ -211,10 +235,10 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             if (usePlotly){
 
               #set left margin
-              if(maxChar < 10) l <- 80
-              if(maxChar >= 10 & maxChar < 15) l <- 110
-              if(maxChar >= 15 & maxChar < 20) l <- 130
-              if(maxChar >= 20)  l <- 150
+              # if(maxChar < 10) l <- 80
+              # if(maxChar >= 10 & maxChar < 15) l <- 110
+              # if(maxChar >= 15 & maxChar < 20) l <- 130
+              # if(maxChar >= 20)  l <- 150
 
 
               overPlot <- plot_ly(df, x = ~Percentage, y = ~Filename, type = "bar", color = ~Possible_Source,
@@ -226,8 +250,40 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                                     "<br> Possible Source: ",
                                     Possible_Source)) %>%
                 layout(xaxis = list(title = "Percent of Total Reads"),
-                       margin=list(l=l), barmode = "stack", showlegend = FALSE)
+                       yaxis = list(showticklabels = FALSE),
+                       barmode = "stack", showlegend = FALSE)
 
+              t <- getSummary(x)
+              t <- t[t$Category == "Overrepresented sequences",]
+              t$Filename <- labels[t$Filename]
+              t$Filename <- factor(t$Filename, levels = unique(df$Filename))
+              t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+
+              sideBar <- ngsReports:::makeSidebar(status = t, key = key, pwfCols = pwfCols)
+
+
+              if (clusterNames && dendrogram){
+                dx <- ggdendro::dendro_data(clus)
+                dendro <- ngsReports:::ggdend(dx$segments) +
+                  coord_flip() +
+                  scale_y_reverse(expand = c(0, 0)) +
+                  scale_x_continuous(expand = c(0, 0.5))
+
+                overPlot <- suppressWarnings(
+                  suppressMessages(
+                    plotly::subplot(dendro, sideBar, overPlot, widths = c(0.1,0.08,0.82),
+                                    margin = 0.001)
+                  ))
+              }
+              else{
+
+                overPlot <- suppressWarnings(
+                  suppressMessages(subplot(plotly::plotly_empty(), sideBar, overPlot, margin = 0.001,
+                                    widths = c(0.1,0.08,0.82)) %>%
+                  plotly::layout(annotations = list(text = "Filename", showarrow = FALSE,
+                                                    textangle = -90))
+                  ))
+              }
             }
             else{
               overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Possible_Source")) +

@@ -226,7 +226,7 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("ORcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("OScluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -385,7 +385,9 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     output$OSummary <- renderPlotly({
       plotOverrepresentedSummary(data(),
-                                 usePlotly = TRUE) %>%
+                                 usePlotly = TRUE,
+                                 clusterNames = input$OScluster,
+                                 dendrogram = TRUE) %>%
         layout(margin = list(r = 200))
 
     })
