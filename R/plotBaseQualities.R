@@ -345,13 +345,13 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               df[[plotValue]] <- as.numeric(df$Data)
               df$Start <- as.integer(as.character(df$Start))
               df$Filename <- factor(df$Filename, levels = unique(df$Filename))
-              maxVal <- max(df[[plotValue]])
+              maxVal <- max(df[[plotValue]], na.rm = TRUE)
               phredMax <- ifelse(maxVal <= warn, 41, ceiling(maxVal + 1))
 
               # Start the heatmap
               qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = plotValue)) +
                 geom_tile() +
-                scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, phredMax), FALSE ) +
+                ngsReports:::scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, phredMax), FALSE, na.value = "white") +
                 theme(panel.grid.minor = element_blank(),
                       panel.background = element_blank()) +
                 scale_x_continuous(expand = c(0,0))
