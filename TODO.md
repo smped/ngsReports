@@ -11,7 +11,6 @@
 
 ## Shiny App
  
-- Once the S4 methods are up (see below), add the individual `plotKmer` plots`
 - Fix `Error: attempt to select less than one element in get1index` in `Per Base Sequence Content` on first click on the page
     - Change base colours to be consistent between individual plots & the heatmap
 - Fix `Per Sequence Quality Scores`: **Error**: Column `Filename` is unknown on first click   
@@ -22,8 +21,7 @@
 
 - **plotOverrepresentedSummary**
     - Check plot for no overrepresented sequences: *Temporary version added...*    
-    - Include in default report & shiny app
-    - Add clustering & sideBar
+    - Include in default report
 - **plotSequenceContent**
     - Add clustering & dendrograms to plot AND shiny app
     
