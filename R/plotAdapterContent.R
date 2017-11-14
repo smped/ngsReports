@@ -365,7 +365,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
                   acPlot <- suppressWarnings(
                     suppressMessages(
-                      plotly::subplot(dendro, sideBar, acPlot, widths = c(0.1,0.08,0.82),
+                      plotly::subplot(dendro, sideBar, acPlot, widths = c(0.08,0.08,0.82),
                                       margin = 0.001, shareY = TRUE)
                     ))
                 }
@@ -420,8 +420,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               if (usePlotly){
                 acPlot <- acPlot + theme(legend.position = "none")
                 acPlot <- suppressMessages(
-                  plotly::ggplotly(acPlot,
-                                   hoverinfo = c("x", "y", "colour"))
+                  plotly::ggplotly(acPlot, hoverinfo = c("x", "y", "colour"))
                 )
                 # Set the hoverinfo for bg rectangles to the vertices only,
                 # This will effectively hide them

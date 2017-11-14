@@ -12,6 +12,11 @@
 #' @param plotType \code{character}. Type of plot to generate. Must be "line" or "heatmap"
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
+#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' fastqc data will be clustered using hierarchical clustering
+#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
+#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A ggplot2 object
@@ -126,9 +131,6 @@ setMethod("plotSequenceContent", signature = "FastqcData",
                 subplot(plotly::plotly_empty(), scPlot, widths = c(0.08,0.92), margin = 0.001) %>%
                   layout(xaxis2 = list(title = "Position in read (bp)"))
               )
-              # scPlot <- suppressMessages(
-              #   ggplotly(scPlot) %>% layout(legend = list(x = 0.85, y = 1))
-              # )
             }
 
             scPlot
@@ -139,7 +141,8 @@ setMethod("plotSequenceContent", signature = "FastqcData",
 #' @rdname plotSequenceContent-methods
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, plotType = "heatmap", pwfCols, ...){
+          function(x, usePlotly = FALSE, labels, plotType = "heatmap", pwfCols,
+                   clusterNames = FALSE, dendrogram = TRUE, ...){
 
             stopifnot(plotType %in% c("heatmap", "line"))
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -150,8 +153,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
 
             # Drop the suffix, or check the alternate labels
             if (missing(labels)){
-              labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
-                                  names = fileName(x))
+              labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
             }
             else{
               if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
@@ -164,6 +166,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
             keepArgs <- which(names(dotArgs) %in% allowed)
             userTheme <- c()
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
 
             if(plotType == "heatmap"){
 
@@ -183,15 +186,25 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 }) %>%
                 dplyr::bind_rows()
               df$Position <- as.integer(df$Start)
-              key <- unique(df$Filename)
               df$Filename <- labels[df$Filename]
-              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+
+              if(clusterNames){
+                mat <- reshape2::melt(df, id.vars = c("Filename", "Start"), measure.vars = c("A", "C", "G", "T"), variable.name = "Base", value.name = "Percent")
+                mat <- reshape2::acast(mat, Filename ~ Start + Base, value.var = "Percent")
+                clus <- as.dendrogram(hclust(dist(mat), method = "ward.D2"))
+                row.ord <- order.dendrogram(clus)
+                df$Filename <- factor(df$Filename, levels = unique(df$Filename)[row.ord])
+              }
+              else{
+                df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+              }
+
+              key <- levels(df$Filename)
               tileCols <- unique(df$colour)
               names(tileCols) <- unique(df$colour)
 
-              scPlot <- ggplot(df,
-                                               aes_string(x = "Position", y = "Filename",
-                                                          fill = "colour", A = "A", C = "C", G = "G", T = "T")) +
+              scPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "colour",
+                                              A = "A", C = "C", G = "G", T = "T")) +
                 geom_tile() +
                 scale_fill_manual(values = tileCols) +
                 scale_x_continuous(expand = c(0, 0)) +
@@ -210,28 +223,44 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   theme(axis.ticks.y = element_blank(),
                         axis.text.y = element_blank())
 
-
                 t <- getSummary(x)
                 t <- t[t$Category == "Per base sequence content",]
                 t$Filename <- labels[t$Filename]
                 t$Filename <- factor(t$Filename, levels = levels(df$Filename))
-
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
-                scPlot <- suppressMessages(# Hides the recommendation to install from github...
-                  plotly::ggplotly(scPlot, tooltip = c("x", "y", "A", "C", "G", "T"))
-                )
+                #plot dendro
+                if (clusterNames && dendrogram){
+                  dx <- ggdendro::dendro_data(clus)
+                  dendro <- ggdend(dx$segments) +
+                    coord_flip() +
+                    scale_y_reverse(expand = c(0, 0)) +
+                    scale_x_continuous(expand = c(0, 0.5)) +
+                    theme(panel.background = element_rect(fill = "white"))
 
-                suppressMessages(
-                  subplot(sideBar, scPlot, widths = c(0.08,0.92), margin = 0.001) %>%
-                    layout(xaxis2 = list(title = "Position in read (bp)"))
-                )
-
+                  scPlot <- suppressWarnings(
+                    suppressMessages(
+                      plotly::subplot(dendro, sideBar, scPlot, widths = c(0.1,0.08,0.82),
+                                      margin = 0.001, shareY = TRUE)
+                    ))
+                }
+                else{
+                  # Return the plot
+                  # scPlot <- suppressMessages(# Hides the recommendation to install from github...
+                  #   plotly::ggplotly(scPlot, tooltip = c("x", "y", "A", "C", "G", "T"))
+                  scPlot <- suppressWarnings(
+                    suppressMessages(
+                      plotly::subplot(plotly::plotly_empty(), sideBar, scPlot, widths = c(0.1,0.08,0.82),
+                                      margin = 0.001, shareY = TRUE)
+                    )
+                  )
+                }
 
               }
               else{
                 scPlot
               }
+              scPlot
             }
             else{
               df$Filename <- labels[df$Filename]
@@ -257,13 +286,14 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               if (!is.null(userTheme)) scPlot <- scPlot + userTheme
 
               if(usePlotly){
-                suppressMessages(
+                scPlot <- suppressMessages(
                   ggplotly(scPlot) %>% layout(legend = list(x = 0.85, y = 1))
                 )
               }
               else{
                 scPlot
               }
+              scPlot
             }
           }
 )

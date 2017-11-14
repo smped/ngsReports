@@ -26,7 +26,8 @@ plotSequenceContent(x, usePlotly = FALSE, ...)
 \S4method{plotSequenceContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSequenceContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  plotType = "heatmap", pwfCols, ...)
+  plotType = "heatmap", pwfCols, clusterNames = FALSE, dendrogram = TRUE,
+  ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -44,6 +45,13 @@ File extensions are dropped by default.}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
+
+\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+fastqc data will be clustered using hierarchical clustering}
+
+\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
+if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+will be displayed.}
 }
 \value{
 A ggplot2 object
