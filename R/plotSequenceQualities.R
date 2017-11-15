@@ -243,7 +243,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
               key <- df$Filename
               df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Quality", value.name = "Count")
               df$Filename <- labels[df$Filename]
-              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+              df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
               if (!counts){
                 Count <- NULL # To avoid NOTE messages in R CMD check
@@ -275,7 +275,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                 t <- getSummary(x)
                 t <- t[t$Category == "Per sequence quality scores",]
                 t$Filename <- labels[t$Filename]
-                t <- dplyr::mutate(t, Filename = factor(Filename, levels = unique(df$Filename)))
+                t <- dplyr::mutate(t, Filename = factor(Filename, levels = levels(df$Filename)))
                 t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
                 # Make sidebar
