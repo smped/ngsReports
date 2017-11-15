@@ -167,11 +167,13 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
             userTheme <- c()
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-
             if(plotType == "heatmap"){
 
               maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
-              df$colour <- with(df, rgb(floor(`T`) / maxBase, floor(A) / maxBase, floor(C) / maxBase, 1 - floor(G) / maxBase))
+              df$opacity <- 1 - df$G / maxBase
+              df$colour <- with(df, rgb(red = round(`T` * opacity / maxBase, 2),
+                                        green = round(A * opacity / maxBase, 2),
+                                        blue = round(C * opacity / maxBase, 2)))
 
               basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
 
@@ -211,8 +213,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 scale_y_discrete(expand = c(0, 0)) +
                 theme(legend.position = "none",
                       panel.grid.minor = element_blank(),
-                      panel.grid.major = element_blank(),
-                      panel.background = element_rect(fill = "black")) +
+                      panel.grid.major = element_blank()) +
                 labs(x = "Position in read (bp)",
                      y = "Filename")
 
@@ -246,8 +247,6 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 }
                 else{
                   # Return the plot
-                  # scPlot <- suppressMessages(# Hides the recommendation to install from github...
-                  #   plotly::ggplotly(scPlot, tooltip = c("x", "y", "A", "C", "G", "T"))
                   scPlot <- suppressWarnings(
                     suppressMessages(
                       plotly::subplot(plotly::plotly_empty(), sideBar, scPlot, widths = c(0.1,0.08,0.82),

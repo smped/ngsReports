@@ -7,6 +7,7 @@
 - Add Fastq Illumina Filter plot/status
 - Have a better look at http://multiqc.info/examples/rna-seq/multiqc_report.html#
 - Build tests for classes and methods
+- Test on outlier FastQC reports (1 sequence etc)
 - Finish Vignette
 
 ## Shiny App
@@ -23,6 +24,6 @@
     - Check plot for no overrepresented sequences: *Temporary version added...*    
     - Include in default report
 - **plotSequenceContent**
-    - Add clustering & dendrograms to plot AND shiny app
+    - Add clustering & dendrograms to shiny app
     
 **Add methods for zero results for all plots, based on plotNContent()**
