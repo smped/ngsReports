@@ -3,7 +3,6 @@
 language: r
 r: bioc-release
 sudo: false
-cache: packages
 notifications:
   recipients:
     - bioinf_hub@adelaide.edu.au
