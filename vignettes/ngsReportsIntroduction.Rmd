@@ -1,10 +1,12 @@
 ---
 title: "An Introduction To ngsReports"
 author:
-- name: Steve Pederson
-  affiliation: Bioinformatics Hub, University of Adelaide
 - name: Chris Ward
   affiliation: School of Biological Sciences, University of Adelaide
+- name: Hien To
+  affiliation: Bioinformatics Hub, University of Adelaide
+- name: Steve Pederson
+  affiliation: Bioinformatics Hub, University of Adelaide
   email: stephen.pederson@adelaide.edu.au
 package: ngsReports
 output:
