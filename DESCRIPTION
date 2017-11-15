@@ -89,7 +89,7 @@ Collate:
     'plotReadTotals.R'
     'plotSequenceContent.R'
     'plotSequenceLengthDistribution.R'
-    'plotSequenceQuality.R'
+    'plotSequenceQualities.R'
     'plotSummary.R'
     'pwf.R'
     'readTotals.R'

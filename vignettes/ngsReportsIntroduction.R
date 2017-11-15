@@ -33,6 +33,22 @@ plotReadTotals(fdl, duplicated = FALSE, barCol = "grey50") +
   geom_hline(yintercept = 25000, linetype = 2) +
   coord_flip() 
 
+## --------------------------------------------------------------------------
+plotBaseQualities(fdl)
+
+## --------------------------------------------------------------------------
+plotBaseQualities(fdl[[1]])
+
+## --------------------------------------------------------------------------
+plotBaseQualities(fdl[1:4], plotType = "boxplot")
+
+## --------------------------------------------------------------------------
+plotSequenceQualities(fdl)
+
+## ---- eval = FALSE---------------------------------------------------------
+#  r2 <- grepl("R2", fileName(fdl))
+#  plotSequenceQualities(fdl[r2], plotType = "line")
+
 ## ----sessionInfo, echo=FALSE-----------------------------------------------
 sessionInfo()
 

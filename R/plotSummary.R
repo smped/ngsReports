@@ -130,7 +130,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
               order <- dfClus$Filename
             }
             else{
-              order <- unique(df$Filename)
+              order <- rev(unique(df$Filename))
             }
 
             df$Filename <- factor(df$Filename, levels = order)
