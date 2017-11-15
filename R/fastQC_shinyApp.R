@@ -77,12 +77,14 @@ fastqcShiny <- function(fastqcInput = NULL){
                 br(),
                 checkboxInput("Sumcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              # ), width = "20%"),
+              ), width = "200px"),
             absolutePanel(
               h1("Summary of fastQC Flags"),
               h5("Heatmap of fastQC flags (pass, warning or fail) for each fastQC report"),
               plotlyOutput("SummaryFlags"),
-              width = "70%", left = "30%", right = "0%", height = "1100px")
+              # width = "80%", left = "20%", right = "5%", height = "1100px")
+              top = "200px", left = "250px", right = "20px", height = 0)
           )
         ),
         tabPanel(
@@ -138,13 +140,13 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
+                checkboxInput("SCcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
               h1("Per Base Sequence Content"),
               h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
               h5("G = Black, A = Green, T = Red, C = Blue"),
-              h5("if each base is equally represented then should be light grey"),
               plotlyOutput("SCHeatmap"),
               br(),
               plotlyOutput("SCsingle"),
@@ -154,8 +156,6 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                # radioButtons(inputId="GCheatType", label="Value to plot",
-                #              choices=c("Frequency","Count"), selected = "Frequency"),
                 checkboxInput("GCcluster", "Cluster Filenames", value = TRUE),
                 checkboxInput("theoreticalGC", "Normalize Using Theoretical GC", value = FALSE),
                 htmlOutput("theoreticalGC"),
@@ -425,7 +425,9 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$SCHeatmap <- renderPlotly({
 
       plotSequenceContent(data(),
-                            usePlotly = TRUE) %>%
+                          clusterNames = input$SCcluster,
+                          dendrogram = TRUE,
+                          usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100))
     })
 
@@ -574,7 +576,7 @@ fastqcShiny <- function(fastqcInput = NULL){
 
 
     output$seqQualHeatmap <- renderPlotly({
-      plotSequenceQuality(data(),
+      plotSequenceQualities(data(),
                                    clusterNames = input$SQcluster,
                                    counts = FALSE,
                                    dendrogram = TRUE,
@@ -589,7 +591,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         num <- which(fileName(data()) == click$key[[1]])
       }
       sub_fdl <- data()[num]
-      qualPlot <- plotSequenceQuality(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
+      qualPlot <- plotSequenceQualities(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
         layout(margin = list(r = 200, l = 100),
                legend = list(orientation = 'h', title = ""))
     })

@@ -221,7 +221,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
             }
             df$Filename <- labels[df$Filename]
             df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Lower", value.name = "Count")
-            df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+            df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
 
             df$Count <- as.numeric(df$Count)
             # Convert the counts to frequencies

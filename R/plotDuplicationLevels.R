@@ -190,11 +190,12 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, deduplication = "pre",
                    clusterNames = FALSE, dendrogram = FALSE, labels, pwfCols, heatCol = inferno(50), ...){
 
-            df <- tryCatch(Sequence_Duplication_Levels(x))
+            df <- Sequence_Duplication_Levels(x)
             stopifnot(deduplication %in% c("pre", "post"))
             type <- c(pre = "Percentage_of_total", post = "Percentage_of_deduplicated")[deduplication]
             df <- df[c("Filename", "Duplication_Level",type)]
             df[[type]] <- round(df[[type]], 2)
+            dupLevels <- unique(df$Duplication_Level)
 
             # Drop the suffix, or check the alternate labels
             if (missing(labels)){
@@ -227,16 +228,16 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
             df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Duplication_Level", value.name = "Percentage_of_total")
             df$Filename <- labels[df$Filename]
             df$Filename <- factor(df$Filename, levels = unique(df$Filename))
-            df$Duplication_Level <- factor(df$Duplication_Level, levels = unique(df$Duplication_Level))
-            df$x <- as.integer(df$Duplication_Level)
+            df$Duplication_Level <- factor(df$Duplication_Level, levels = dupLevels)
+            # df$x <- as.integer(df$Duplication_Level)
 
             fillLabel <- gsub("Percentage_of_", "% ", type)
             fillLabel <- paste(fillLabel, "\nSequences")
             fillLabel <- stringr::str_to_title(fillLabel)
 
-            dupPlot <- ggplot(df, aes_string("x", "Filename")) +
+            dupPlot <- ggplot(df, aes_string("Duplication_Level", "Filename")) +
               geom_tile(aes_string(fill = type)) +
-              scale_x_continuous(breaks = unique(df$x), labels = levels(df$Duplication_Level), expand = c(0, 0)) +
+              # scale_x_continuous(breaks = unique(df$x), labels = levels(df$Duplication_Level), expand = c(0, 0)) +
               scale_y_discrete(expand = c(0, 0)) +
               scale_fill_gradientn(colours = heatCol) +
               labs(x = "Sequence Duplication Level",

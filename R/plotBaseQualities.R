@@ -344,7 +344,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               # Reorganise the data frame
               df[[plotValue]] <- as.numeric(df$Data)
               df$Start <- as.integer(as.character(df$Start))
-              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+              df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
               maxVal <- max(df[[plotValue]], na.rm = TRUE)
               phredMax <- ifelse(maxVal <= warn, 41, ceiling(maxVal + 1))
 
@@ -365,7 +365,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 t <- getSummary(x)
                 t <- t[t$Category == "Per base sequence quality",]
                 t$Filename <- labels[t$Filename]
-                t$Filename <- factor(t$Filename, levels = unique(df$Filename))
+                t$Filename <- factor(t$Filename, levels = levels(df$Filename))
                 t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)

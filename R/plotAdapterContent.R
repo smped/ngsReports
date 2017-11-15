@@ -297,7 +297,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               df$Filename <- labels[df$Filename]
 
               # Reverse the factor levels for a better looking default plot
-              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+              df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
               df$Percent <- as.numeric(df$Percent)
               df$Start <- as.integer(as.character(df$Start))
 
