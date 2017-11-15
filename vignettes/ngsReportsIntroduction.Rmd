@@ -10,7 +10,7 @@ author:
   email: stephen.pederson@adelaide.edu.au
 package: ngsReports
 output:
-  BiocStyle::html_document2
+  BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{An Introduction To ngsReports}
   %\VignetteEngine{knitr::rmarkdown}
