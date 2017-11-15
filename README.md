@@ -16,7 +16,7 @@ library(ngsReports)
 
 # Vignette
 
-The vignette for usage is at https://uofabioinformaticshub.github.io/ngsReports/ngsReportsIntroduction
+The vignette for usage is at https://uofabioinformaticshub.github.io/ngsReports/vignettes/ngsReportsIntroduction
 
 # ShinyApp Usage 
 For a analysis of multiple fastqc reports use the shinyApp by running:
