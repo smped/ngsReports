@@ -14,6 +14,10 @@ devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = T
 library(ngsReports)
 ```
 
+# Vignette
+
+The vignette for usage is at https://uofabioinformaticshub.github.io/ngsReports/ngsReportsIntroduction
+
 # ShinyApp Usage 
 For a analysis of multiple fastqc reports use the shinyApp by running:
 `fastqcShiny()`
