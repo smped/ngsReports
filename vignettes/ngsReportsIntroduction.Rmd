@@ -176,7 +176,7 @@ plotSequenceQualities(fdl)
 ```
 
 ```{r}
-r2 <- grepl("R2", fileName(fdl))
+r2 <- seq(2, 12, by = 2)
 plotSequenceQualities(fdl[r2], plotType = "line")
 ```
 
