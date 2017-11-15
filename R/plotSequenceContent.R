@@ -193,6 +193,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               if(clusterNames){
                 mat <- reshape2::melt(df, id.vars = c("Filename", "Start"), measure.vars = c("A", "C", "G", "T"), variable.name = "Base", value.name = "Percent")
                 mat <- reshape2::acast(mat, Filename ~ Start + Base, value.var = "Percent")
+                mat[is.na(mat)] <- 0
                 clus <- as.dendrogram(hclust(dist(mat), method = "ward.D2"))
                 row.ord <- order.dendrogram(clus)
                 df$Filename <- factor(df$Filename, levels = unique(df$Filename)[row.ord])
@@ -259,7 +260,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               else{
                 scPlot
               }
-              scPlot
+              scPlot %>%
+                plotly::layout(xaxis3 = list(title = "Position Along Read (bp)"), plot_bgcolor = "white")
             }
             else{
               df$Filename <- labels[df$Filename]
