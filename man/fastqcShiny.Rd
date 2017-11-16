@@ -20,3 +20,19 @@ Returns a shiny app interface to parse many fastQC objects
 Currently some plots can take a while to render if the \code{FastqcDataList} passed to
 \code{fastqcInput} has many elements
 }
+\examples{
+\dontrun{
+#' # Get the files included with the package
+barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
+suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+fileList <- system.file("extdata", fileList, package = "ngsReports")
+
+# Load the FASTQC data as a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Run the Shiny app
+fastqcShiny(fdl)
+}
+
+}

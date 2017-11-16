@@ -14,5 +14,5 @@ setValidity("FastqcDataList", isValidFastqcDataList) # Not written or defined ye
 setMethod("show", "FastqcDataList",
           function(object){
             l <- length(object)
-            cat("FastqcDataList for", l, "file(s).\n")
+            cat("FastqcDataList for", l, "files.\n")
           })
