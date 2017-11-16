@@ -52,32 +52,32 @@
 #' @name plotSequenceContent
 #' @rdname plotSequenceContent-methods
 #' @export
-setGeneric("plotSequenceContent",function(x, usePlotly = FALSE, ...){standardGeneric("plotSequenceContent")})
+setGeneric("plotSequenceContent",function(x, usePlotly = FALSE, labels, ...){standardGeneric("plotSequenceContent")})
 #' @aliases plotSequenceContent,character
 #' @rdname plotSequenceContent-methods
 #' @export
 setMethod("plotSequenceContent", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, ...){
             x <- getFastqcData(x)
-            plotSequenceContent(x, usePlotly,...)
+            plotSequenceContent(x, usePlotly, labels, ...)
           }
 )
 #' @aliases plotSequenceContent,FastqcFile
 #' @rdname plotSequenceContent-methods
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, ...){
             x <- getFastqcData(x)
-            plotSequenceContent(x, usePlotly,...)
+            plotSequenceContent(x, usePlotly, labels, ...)
           }
 )
 #' @aliases plotSequenceContent,FastqcFileList
 #' @rdname plotSequenceContent-methods
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, ...){
             x <- getFastqcData(x)
-            plotSequenceContent(x, usePlotly,...)
+            plotSequenceContent(x, usePlotly, labels, ...)
           }
 )
 #' @aliases plotSequenceContent,FastqcData
@@ -141,7 +141,7 @@ setMethod("plotSequenceContent", signature = "FastqcData",
 #' @rdname plotSequenceContent-methods
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, plotType = "heatmap", pwfCols,
+          function(x, usePlotly = FALSE, labels, plotType = c("heatmap", "line"), pwfCols,
                    clusterNames = FALSE, dendrogram = TRUE, ...){
 
             stopifnot(plotType %in% c("heatmap", "line"))
@@ -167,7 +167,9 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
             userTheme <- c()
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-            if(plotType == "heatmap"){
+            plotType <- match.arg(plotType)
+
+            if (plotType == "heatmap"){
 
               maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
               df$opacity <- 1 - df$G / maxBase
@@ -262,7 +264,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               # scPlot %>%
               #   plotly::layout(xaxis3 = list(title = "Position Along Read (bp)"), plot_bgcolor = "white")
             }
-            else{
+            if (plotType == "line"){
               df$Filename <- labels[df$Filename]
               df <- df[!colnames(df) == "Base"]
               df <- melt(df, id.vars = c("Filename", "Start"))

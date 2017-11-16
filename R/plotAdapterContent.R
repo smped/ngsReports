@@ -120,8 +120,7 @@ setMethod("plotAdapterContent", signature = "FastqcFileList",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcData",
-          function(x, usePlotly = FALSE, pwfCols, warn = 5, fail = 10,
-                   ...){
+          function(x, usePlotly = FALSE, pwfCols, warn = 5, fail = 10, ...){
 
             df <- Adapter_Content(x)
 
@@ -200,7 +199,8 @@ setMethod("plotAdapterContent", signature = "FastqcData",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, plotType = "heatmap", labels, adapterType = "Total",
+          function(x, usePlotly = FALSE, plotType = c("heatmap", "line"), labels,
+                   adapterType = "Total",
                    pwfCols, warn = 5, fail = 10,
                    clusterNames = FALSE, dendrogram = FALSE,
                    ...){
@@ -262,6 +262,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
             breaks <- c(0, warn, fail, 100)
+            plotType <- match.arg(plotType)
 
             if (plotType == "heatmap"){
 

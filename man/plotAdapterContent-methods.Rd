@@ -27,8 +27,8 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
   warn = 5, fail = 10, ...)
 
 \S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
-  plotType = "heatmap", labels, adapterType = "Total", pwfCols, warn = 5,
-  fail = 10, clusterNames = FALSE, dendrogram = FALSE, ...)
+  plotType = c("heatmap", "line"), labels, adapterType = "Total", pwfCols,
+  warn = 5, fail = 10, clusterNames = FALSE, dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

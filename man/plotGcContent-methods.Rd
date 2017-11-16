@@ -36,7 +36,7 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
 
 \S4method{plotGcContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, plotType = "heatmap", pwfCols, clusterNames = FALSE,
+  GCobject, plotType = c("heatmap", "line"), pwfCols, clusterNames = FALSE,
   dendrogram = TRUE, ...)
 }
 \arguments{

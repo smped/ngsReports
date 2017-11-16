@@ -15,19 +15,20 @@
 \alias{plotSequenceContent,FastqcDataList}
 \title{Plot the per base content as a heatmap}
 \usage{
-plotSequenceContent(x, usePlotly = FALSE, ...)
+plotSequenceContent(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSequenceContent}{character}(x, usePlotly = FALSE, ...)
+\S4method{plotSequenceContent}{character}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSequenceContent}{FastqcFile}(x, usePlotly = FALSE, ...)
+\S4method{plotSequenceContent}{FastqcFile}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSequenceContent}{FastqcFileList}(x, usePlotly = FALSE, ...)
+\S4method{plotSequenceContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
+  ...)
 
 \S4method{plotSequenceContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSequenceContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  plotType = "heatmap", pwfCols, clusterNames = FALSE, dendrogram = TRUE,
-  ...)
+  plotType = c("heatmap", "line"), pwfCols, clusterNames = FALSE,
+  dendrogram = TRUE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -35,11 +36,11 @@ plotSequenceContent(x, usePlotly = FALSE, ...)
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
-
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
+
+\item{...}{Used to pass additional attributes to theme() and between methods}
 
 \item{plotType}{\code{character}. Type of plot to generate. Must be "line" or "heatmap"}
 

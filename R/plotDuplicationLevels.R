@@ -187,11 +187,12 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
 #' @rdname plotDuplicationLevels-methods
 #' @export
 setMethod("plotDuplicationLevels", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, deduplication = "pre",
-                   clusterNames = FALSE, dendrogram = FALSE, labels, pwfCols, heatCol = inferno(50), ...){
+          function(x, usePlotly = FALSE, labels, pwfCols,
+                   deduplication = c("pre", "post"),
+                   clusterNames = FALSE, dendrogram = FALSE,  heatCol = inferno(50), ...){
 
             df <- Sequence_Duplication_Levels(x)
-            stopifnot(deduplication %in% c("pre", "post"))
+            deduplication <- match.arg(deduplication)
             type <- c(pre = "Percentage_of_total", post = "Percentage_of_deduplicated")[deduplication]
             df <- df[c("Filename", "Duplication_Level",type)]
             df[[type]] <- round(df[[type]], 2)

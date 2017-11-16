@@ -184,15 +184,12 @@ setMethod("plotBaseQualities", signature = "FastqcData",
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcDataList",
-          function(x,  usePlotly = FALSE,  plotType = "heatmap", plotValue = "Mean",
+          function(x,  usePlotly = FALSE,  plotType = c("heatmap", "boxplot"), plotValue = "Mean",
                    clusterNames = FALSE, labels, dendrogram = FALSE,
                    nc = 2, pwfCols, warn = 25, fail = 20, ...){
 
             # Get the data
-            df <- tryCatch(Per_base_sequence_quality(x))
-
-            # Check the plotType
-            stopifnot(plotType %in% c("boxplot", "heatmap"))
+            df <- Per_base_sequence_quality(x)
 
             # Sort out the colours
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -210,6 +207,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
             # Get the Illumina encoding
             enc <- Basic_Statistics(x)$Encoding[1]
             enc <- gsub(".*(Illumina [0-9\\.]*)", "\\1", enc)
+
+            plotType <- match.arg(plotType)
 
             if (plotType == "boxplot"){
 

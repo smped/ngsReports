@@ -26,9 +26,9 @@ plotDuplicationLevels(x, usePlotly = FALSE, ...)
 \S4method{plotDuplicationLevels}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)
 
-\S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE,
-  deduplication = "pre", clusterNames = FALSE, dendrogram = FALSE, labels,
-  pwfCols, heatCol = inferno(50), ...)
+\S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE, labels,
+  pwfCols, deduplication = c("pre", "post"), clusterNames = FALSE,
+  dendrogram = FALSE, heatCol = inferno(50), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

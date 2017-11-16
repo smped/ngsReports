@@ -4,18 +4,20 @@ Date: 2017/09/20
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Steve", "Pederson", , "stephen.pederson@adelaide.edu.au", c("aut", "cre")),
-    person("Christopher", "Ward", , "christopher.ward@adelaide.edu.au", c("aut"))
+    person("Christopher", "Ward", , "christopher.ward@adelaide.edu.au", c("aut")),
+    person("Hien", "To", , "hien.to@adelaide.edu.au", c("aut"))
     )
 Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
 Description: Load FastQC reports and other NGS output summaries into R.
 License: LGPL (>= 2)
 Encoding: UTF-8
+Depends:
+  ggplot2
 Imports:
   BiocGenerics,
   checkmate,
   dplyr,
   ggdendro,
-  ggplot2,
   lubridate,
   magrittr,
   methods,

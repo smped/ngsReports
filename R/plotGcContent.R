@@ -82,13 +82,16 @@
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
 #' @export
-setGeneric("plotGcContent",function(x, usePlotly = FALSE, labels, theoreticalGC = TRUE, theoreticalType = "Genome",
-                                    species = "Hsapiens", GCobject, ...){standardGeneric("plotGcContent")})
+setGeneric("plotGcContent",
+           function(x, usePlotly = FALSE, labels,
+                    theoreticalGC = TRUE, theoreticalType = "Genome",
+                    species = "Hsapiens", GCobject, ...){standardGeneric("plotGcContent")})
 #' @aliases plotGcContent,character
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "character",
-          function(x, usePlotly = FALSE, labels, theoreticalGC = TRUE, theoreticalType = "Genome",
+          function(x, usePlotly = FALSE, labels,
+                   theoreticalGC = TRUE, theoreticalType = "Genome",
                    species = "Hsapiens", GCobject, ...){
             x <- getFastqcData(x)
             plotGcContent(x, usePlotly, labels = labels, theoreticalGC = theoreticalGC,
@@ -99,7 +102,8 @@ setMethod("plotGcContent", signature = "character",
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, labels, theoreticalGC = TRUE, theoreticalType = "Genome",
+          function(x, usePlotly = FALSE, labels,
+                   theoreticalGC = TRUE, theoreticalType = "Genome",
                    species = "Hsapiens", GCobject, ...){
             x <- getFastqcData(x)
             plotGcContent(x, usePlotly, labels = labels, theoreticalGC = theoreticalGC,
@@ -110,7 +114,8 @@ setMethod("plotGcContent", signature = "FastqcFile",
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, labels, theoreticalGC = TRUE, theoreticalType = "Genome",
+          function(x, usePlotly = FALSE, labels,
+                   theoreticalGC = TRUE, theoreticalType = "Genome",
                    species = "Hsapiens", GCobject, ...){
             x <- getFastqcData(x)
             plotGcContent(x, usePlotly, labels = labels, theoreticalGC = theoreticalGC,
@@ -122,7 +127,8 @@ setMethod("plotGcContent", signature = "FastqcFileList",
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels, theoreticalGC = TRUE, theoreticalType = "Genome",
+          function(x, usePlotly = FALSE, labels,
+                   theoreticalGC = TRUE, theoreticalType = "Genome",
                    species = "Hsapiens", GCobject, counts = FALSE, lineCols = c("red", "blue"),
                    ...){
 
@@ -231,8 +237,9 @@ setMethod("plotGcContent", signature = "FastqcData",
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject,  plotType = "heatmap", pwfCols,
+          function(x, usePlotly = FALSE, labels,
+                   theoreticalGC = TRUE, theoreticalType = "Genome",
+                   species = "Hsapiens", GCobject,  plotType = c("heatmap", "line"), pwfCols,
                    clusterNames = FALSE, dendrogram = TRUE, ...){
 
             df <- tryCatch(Per_sequence_GC_content(x))
@@ -299,7 +306,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
             }
 
             # Check for valid plotType arguments
-            plotType <- match.arg(plotType, c("line", "heatmap"))
+            plotType <- match.arg(plotType)
 
             if (plotType == "line"){
               df$Filename <- labels[df$Filename]
