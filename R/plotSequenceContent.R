@@ -255,13 +255,12 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                     )
                   )
                 }
-
               }
-              else{
-                scPlot
-              }
-              scPlot %>%
-                plotly::layout(xaxis3 = list(title = "Position Along Read (bp)"), plot_bgcolor = "white")
+              # else{
+              #   scPlot
+              # }
+              # scPlot %>%
+              #   plotly::layout(xaxis3 = list(title = "Position Along Read (bp)"), plot_bgcolor = "white")
             }
             else{
               df$Filename <- labels[df$Filename]
@@ -291,10 +290,11 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   ggplotly(scPlot) %>% layout(legend = list(x = 0.85, y = 1))
                 )
               }
-              else{
-                scPlot
-              }
-              scPlot
+              # else{
+              #   scPlot
+              # }
+              # scPlot
             }
+            scPlot
           }
 )
