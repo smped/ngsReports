@@ -121,13 +121,13 @@ plotBaseQualities(rawFastqcData, labels = plotLabels, clusterNames = globals$clu
 ## Per Sequence Quality Scores
 
 ```{r plotSequenceQualitiesHeatmap, fig.cap = "Heatmap showing mean sequence qualities for each library"}
-plotSequenceQuality(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotSequenceQualities(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Per Base Sequence Content
 
 ```{r plotSequenceContent, fig.cap = "Heatmap of summed base distributions along each read"}
-plotSequenceContent(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
+plotSequenceContent(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Per Sequence GC Content
@@ -172,7 +172,7 @@ Overrepresented_sequences(rawFastqcData) %>%
 ## Adapter Content
 
 ```{r plotAdapterContent, fig.cap="Universal Adapter Content"}
-plotAdapterContent(rawFastqcData, labels = plotLabels, adapterType = "Universal", plotType = "line", usePlotly = globals$usePlotly) 
+plotAdapterContent(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly) 
 ```
 
 ## Kmer Content
