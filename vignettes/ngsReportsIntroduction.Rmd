@@ -1,7 +1,7 @@
 ---
 title: "An Introduction To ngsReports"
 author:
-- name: Chris Ward
+- name: Christopher Ward
   affiliation: School of Biological Sciences, University of Adelaide
 - name: Hien To
   affiliation: Bioinformatics Hub, University of Adelaide
