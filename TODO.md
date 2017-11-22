@@ -14,9 +14,9 @@
  
 - Fix `Error: attempt to select less than one element in get1index` in `Per Base Sequence Content` on first click on the page
     - Change base colours to be consistent between individual plots & the heatmap
-- Fix `Per Sequence Quality Scores`: **Error**: Column `Filename` is unknown on first click   
 - Set Overrepresented Summary to produce a table on click *added plot for now*
 - Add `exportOverrepresented()`
+- Add options for "Show Duplicated" in `Total Sequences`
 
 ## Individual Functions
 
@@ -25,5 +25,7 @@
     - Include in default report
 - **plotSequenceContent**
     - Add clustering & dendrograms to shiny app
+    - Hide colour information from `hoverinfo`
+    - Move legend to inside plot panel for `FastqcData` line plots
     
 **Add methods for zero results for all plots, based on plotNContent()**

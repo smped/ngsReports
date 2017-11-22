@@ -40,19 +40,11 @@
 #' plotOverrepresentedSummary(fdl)
 #'
 #' @importFrom tidyr spread
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_bar geom_text
-#' @importFrom ggplot2 ylab
-#' @importFrom ggplot2 xlim ylim
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 theme_bw theme_void
-#' @importFrom ggplot2 coord_flip
-#' @importFrom ggplot2 facet_grid
 #' @importFrom plotly plot_ly
 #' @importFrom plotly add_trace
 #' @importFrom plotly layout
 #' @importFrom grDevices rgb
+#' @import ggplot2
 #'
 #'
 #' @name plotOverrepresentedSummary

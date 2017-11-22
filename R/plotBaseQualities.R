@@ -46,25 +46,7 @@
 #' # The default plot for a single library is the standard boxplot
 #' plotBaseQualities(fdl[[1]])
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_rect
-#' @importFrom ggplot2 geom_segment
-#' @importFrom ggplot2 geom_linerange
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 scale_x_continuous
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 scale_y_reverse
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 xlab
-#' @importFrom ggplot2 ylab
-#' @importFrom ggplot2 guides
-#' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_blank
-#' @importFrom ggplot2 element_text
-#' @importFrom ggplot2 coord_flip
+#' @import ggplot2
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #' @importFrom stats as.dendrogram

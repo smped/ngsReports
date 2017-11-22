@@ -48,22 +48,11 @@
 #' plotSequenceLengthDistribution(fdl)
 #'
 #' @importFrom dplyr vars
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 scale_x_discrete
-#' @importFrom ggplot2 scale_y_discrete
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 scale_fill_gradientn
-#' @importFrom ggplot2 element_text
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 theme_bw
 #' @importFrom plotly ggplotly
 #' @importFrom plotly layout
 #' @importFrom plotly subplot
 #' @importFrom viridisLite inferno
+#' @import ggplot2
 #'
 #' @name plotSequenceLengthDistribution
 #' @rdname plotSequenceLengthDistribution-methods

@@ -39,16 +39,9 @@
 #' fdl <- getFastqcData(fileList)
 #' plotKmers(fdl[[1]])
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_line geom_text geom_tile
-#' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 scale_x_continuous scale_y_continuous scale_fill_gradient
-#' @importFrom ggplot2 theme_bw theme theme_void
-#' @importFrom ggplot2 xlab ylab labs
-#' @importFrom ggplot2 xlim ylim
 #' @importFrom magrittr %>%
 #' @importFrom dplyr desc
+#' @import ggplot2
 #'
 #' @name plotKmers
 #' @rdname plotKmers-methods

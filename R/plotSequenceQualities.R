@@ -53,27 +53,9 @@
 #' plotSequenceQualities(fdl[r1])
 #'
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 geom_rect
-#' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 scale_x_continuous
-#' @importFrom ggplot2 scale_colour_discrete
-#' @importFrom ggplot2 scale_fill_gradientn
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 guides
-#' @importFrom ggplot2 annotate
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_text
-#' @importFrom ggplot2 element_blank
 #' @importFrom dplyr vars funs
 #' @importFrom stats hclust dist
+#' @import ggplot2
 #'
 #' @name plotSequenceQualities
 #' @rdname plotSequenceQualities-methods
@@ -114,7 +96,7 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
           function(x, usePlotly = FALSE, counts = FALSE, warn = 30, fail = 20, pwfCols,
                    alpha = 0.2, ...){
 
-            df <- tryCatch(Per_sequence_quality_scores(x))
+            df <- Per_sequence_quality_scores(x)
 
             # Sort out the colours
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -144,6 +126,7 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               df <- dplyr::group_by(df, Filename)
               df <- dplyr::mutate(df, Frequency = Count / sum(Count))
               df <- dplyr::ungroup(df)
+              df$Frequency <- round(df$Frequency, 3)
               rects$ymax <- max(df$Frequency)
 
               qualPlot <- ggplot(df) +
@@ -173,7 +156,6 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               labs(x = "Mean Sequence Quality Per Read (Phred Score)") +
               guides(fill = FALSE) +
               theme_bw()
-
 
             if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
 
@@ -208,7 +190,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                    lineWidth = 0.2, alpha = 0.1, warn = 30, fail = 20, ...){
 
             # Read in data
-            df <- tryCatch(Per_sequence_quality_scores(x))
+            df <- Per_sequence_quality_scores(x)
 
             # Sort out the colours
             if(base::missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -251,6 +233,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                 df <- dplyr::group_by(df, Filename)
                 df <- dplyr::mutate(df, Frequency = Count / sum(Count))
                 df <- dplyr::ungroup(df)
+                df$Frequency <- round(df$Frequency, 3)
                 qualPlot <- ggplot(df, aes_string(x = "Quality", y = "Filename", fill = "Frequency"))
               }
               else{

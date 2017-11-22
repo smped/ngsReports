@@ -45,20 +45,8 @@
 #' plotNContent(fdl[[1]])
 #'
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_line geom_rect geom_tile
-#' @importFrom ggplot2 geom_text geom_blank
-#' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 scale_x_continuous scale_y_continuous
-#' @importFrom ggplot2 scale_x_discrete scale_y_discrete
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 guides
-#' @importFrom ggplot2 annotate
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 theme_bw theme
-#' @importFrom ggplot2 element_text element_blank element_rect
 #' @importFrom dplyr vars funs
+#' @import ggplot2
 #'
 #' @name plotNContent
 #' @rdname plotNContent-methods

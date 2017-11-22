@@ -44,20 +44,6 @@
 #' @importFrom dplyr bind_cols
 #' @importFrom magrittr %>%
 #' @importFrom magrittr set_names
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 geom_vline
-#' @importFrom ggplot2 geom_hline
-#' @importFrom ggplot2 scale_fill_gradientn
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 scale_x_discrete
-#' @importFrom ggplot2 scale_y_discrete
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_blank
-#' @importFrom ggplot2 element_text
 #' @importFrom grid unit
 #'
 #' @name plotSummary

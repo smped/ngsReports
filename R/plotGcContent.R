@@ -58,26 +58,10 @@
 #'
 #'
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 scale_colour_manual
-#' @importFrom ggplot2 scale_x_continuous
-#' @importFrom ggplot2 scale_fill_gradient2
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 scale_y_reverse
-#' @importFrom ggplot2 coord_flip
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 ggtitle
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_rect
-#' @importFrom ggplot2 element_text
-#' @importFrom ggplot2 element_blank
 #' @importFrom viridisLite inferno
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats hclust dist
+#' @import ggplot2
 #'
 #' @name plotGcContent
 #' @rdname plotGcContent-methods

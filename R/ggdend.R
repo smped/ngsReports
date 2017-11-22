@@ -1,6 +1,17 @@
-# A commonly used function for setting up dendrograms for interactive plots
+#' @title  A commonly used (hidden) function for setting up dendrograms for interactive plots
+#'
+#' @description A commonly used (hidden) function for setting up dendrograms for interactive plots
+#'
+#' @details Create plot using \code{theme_dendro}
+#'
+#' @param df A `data.frame` as required
+#'
+#' @import ggplot2
+#'
+#' @keywords internal
+#'
 ggdend <- function(df) {
-  ggplot2::ggplot() +
-    ggplot2::geom_segment(data = df, ggplot2::aes_string("x","y", xend = "xend", yend = "yend")) +
+  ggplot() +
+    geom_segment(data = df, aes_string("x","y", xend = "xend", yend = "yend")) +
     ggdendro::theme_dendro()
 }

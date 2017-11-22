@@ -44,17 +44,8 @@
 #'
 #' @return Returns a ggplot or plotly object
 #'
+#' @import ggplot2
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 geom_bar
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_text
-#' @importFrom ggplot2 scale_fill_manual
 #'
 #' @name plotReadTotals
 #' @rdname plotReadTotals-methods

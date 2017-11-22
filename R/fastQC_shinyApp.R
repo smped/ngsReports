@@ -92,7 +92,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                 br(),
                 checkboxInput("Sumcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              # ), width = "20%"),
+                # ), width = "20%"),
               ), width = "200px"),
             absolutePanel(
               h1("Summary of fastQC Flags"),
@@ -260,7 +260,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                                         "Illumina Universal",
                                         "Illumina Small RNA",
                                         "Nextera Transposase")),
-              checkboxInput("ACcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("ACcluster", "Cluster Filenames", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
               ), width = "20%"),
             absolutePanel(
@@ -309,8 +309,8 @@ fastqcShiny <- function(fastqcInput = NULL){
               h5("containing the FASTQC files you wish to make the log for. Currently even if files have been loaded"),
               h5("into the Shiny app the folder containing the data must still be selected."),
               width = "70%", left = "30%", right = "0%")
-      )
-    )
+          )
+        )
       )))
 
   server <- function(input, output, session){
@@ -353,9 +353,9 @@ fastqcShiny <- function(fastqcInput = NULL){
     dir <- reactive({
       input$dirs
       volumes <- shinyFiles::getVolumes()
-    shinyFiles::shinyDirChoose(input, "dirs", roots = volumes, session = session)
-    dirSelected <- shinyFiles::parseDirPath(volumes, input$dirs)
-    as.character(dirSelected)
+      shinyFiles::shinyDirChoose(input, "dirs", roots = volumes, session = session)
+      dirSelected <- shinyFiles::parseDirPath(volumes, input$dirs)
+      as.character(dirSelected)
     })
 
     observe({
@@ -368,7 +368,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       }
     })
 
-# Summary heatmap in first tab
+    # Summary heatmap in first tab
     output$SummaryFlags <- renderPlotly({
       plotSummary(data(), usePlotly = TRUE,
                   clusterNames = input$Sumcluster, dendrogram = TRUE) %>%
@@ -376,7 +376,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     })
 
 
-# report the number of files you ve read in
+    # report the number of files you ve read in
     output$report <- renderText({
       if(!length(data())){
         print("No Files Loaded")
@@ -461,11 +461,6 @@ fastqcShiny <- function(fastqcInput = NULL){
 
 
     # start rendering the input buttons for
-    # output$theoreticalGC <- renderUI({
-    #   if(input$GCheatType == "Frequency"){
-    #     checkboxInput("theoreticalGC", "Normalize Using Theoretical GC", value = FALSE)
-    #   }
-    # })
     output$theoreticalGC <- renderUI({
       if(input$theoreticalGC){
         radioButtons(inputId="theoreticalType", label="What type of data?",
@@ -475,18 +470,18 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     output$GCspecies <- renderUI({
       if(!is.null(input$theoreticalGC)){
-      if(input$theoreticalGC){
-        if(input$theoreticalType == "Genome"){
-        selectInput("GCspecies", "Select species for Theoretical GC",
-                    choices = genomes(gcTheoretical)$Name,
-                    selected = "Hsapiens")
-      }else{
-        selectInput("GCspecies", "Select species for Theoretical GC",
-                    choices = transcriptomes(gcTheoretical)$Name,
-                    selected = "Hsapiens")
-      }
-      }
-    }})
+        if(input$theoreticalGC){
+          if(input$theoreticalType == "Genome"){
+            selectInput("GCspecies", "Select species for Theoretical GC",
+                        choices = genomes(gcTheoretical)$Name,
+                        selected = "Hsapiens")
+          }else{
+            selectInput("GCspecies", "Select species for Theoretical GC",
+                        choices = transcriptomes(gcTheoretical)$Name,
+                        selected = "Hsapiens")
+          }
+        }
+      }})
 
 
 
@@ -550,7 +545,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       plotSequenceLengthDistribution(data(),
                                      clusterNames = input$SLcluster,
                                      dendrogram = TRUE,
-                                     counts= FALSE,
+                                     counts = input$SLType == "Counts",
                                      usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100))
     })
@@ -592,10 +587,10 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     output$seqQualHeatmap <- renderPlotly({
       plotSequenceQualities(data(),
-                                   clusterNames = input$SQcluster,
-                                   counts = FALSE,
-                                   dendrogram = TRUE,
-                                   usePlotly = TRUE) %>% layout(margin = list(r = 200))
+                            clusterNames = input$SQcluster,
+                            counts = FALSE,
+                            dendrogram = TRUE,
+                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
     })
 
     output$SeqQualitiesSingle <- renderPlotly({
@@ -605,19 +600,19 @@ fastqcShiny <- function(fastqcInput = NULL){
         click <- event_data("plotly_click")
         num <- which(fileName(data()) == click$key[[1]])
       }
-      sub_fdl <- data()[num]
-      qualPlot <- plotSequenceQualities(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
+      sub_fdl <- data()[[num]]
+      qualPlot <- plotSequenceQualities(sub_fdl, usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100),
                legend = list(orientation = 'h', title = ""))
     })
 
     output$NCheatmap <- renderPlotly({
 
-        plotNContent(data(),
-                           clusterNames = input$Ncluster,
-                           dendrogram = TRUE,
-                           usePlotly = TRUE) %>% layout(margin = list(r = 200))
-      })
+      plotNContent(data(),
+                   clusterNames = input$Ncluster,
+                   dendrogram = TRUE,
+                   usePlotly = TRUE) %>% layout(margin = list(r = 200))
+    })
 
 
     # N Content single plot
@@ -638,10 +633,10 @@ fastqcShiny <- function(fastqcInput = NULL){
     # Do we need to change the drop-down menu to accept the option "all"?
     output$ACheatmap <- renderPlotly({
       ACplot <- plotAdapterContent(data(),
-                         adapterType = input$ACtype,
-                         usePlotly = TRUE,
-                         dendrogram = TRUE,
-                         clusterNames = input$ACcluster)
+                                   adapterType = input$ACtype,
+                                   usePlotly = TRUE,
+                                   dendrogram = TRUE,
+                                   clusterNames = input$ACcluster)
       if(!is.null(ACplot)) ACplot %>% layout(margin = list(r = 200))
       else stop(paste("Sequences did not contain any", input$ACtype, "content, please select another."))
     })
@@ -686,7 +681,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         layout(margin = list(r = 200, l = 100))
       else stop(paste("Library did not contain any identified Kmers please select another."))
     })
-}
+  }
 
   shinyApp(ui = ui, server = server)
 

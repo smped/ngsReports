@@ -96,8 +96,8 @@ plotAdapterContent(fdl[r1])
 
 # Plot just the Universal Adapter
 # and change the y-axis using ggplot2::scale_y_continuous
-library(ggplot2)
 plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
-scale_y_continuous()
+facet_wrap(~Filename) +
+guides(colour = FALSE)
 
 }

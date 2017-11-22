@@ -55,29 +55,11 @@
 #'
 #' # Plot just the Universal Adapter
 #' # and change the y-axis using ggplot2::scale_y_continuous
-#' library(ggplot2)
 #' plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
-#' scale_y_continuous()
+#' facet_wrap(~Filename) +
+#' guides(colour = FALSE)
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 geom_line
-#' @importFrom ggplot2 geom_rect
-#' @importFrom ggplot2 facet_wrap
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 scale_x_continuous
-#' @importFrom ggplot2 scale_colour_discrete
-#' @importFrom ggplot2 scale_fill_gradientn
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 guides
-#' @importFrom ggplot2 annotate
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_text
-#' @importFrom ggplot2 element_blank
+#' @import ggplot2
 #' @importFrom plotly plotly_empty
 #' @importFrom dplyr vars
 #' @importFrom dplyr data_frame

@@ -8,7 +8,7 @@
 #' it will be a hidden function
 #'
 #' @include PwfCols.R
-#' @importFrom ggplot2 scale_fill_gradientn
+#' @import ggplot2
 #'
 #' @keywords internal
 #'

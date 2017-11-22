@@ -4,11 +4,7 @@
 #'
 #' @details Create plot using \code{theme_void} and only with the supplied text
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 geom_text
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 theme_void
-#' @importFrom ggplot2 xlim ylim
+#' @import ggplot2
 #'
 #' @keywords internal
 #'

@@ -6,14 +6,7 @@
 #' @param key A vector of values corresponding to the Filename column
 #' @param pwfCols An object of class PwfCols
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 scale_y_discrete
-#' @importFrom ggplot2 scale_x_continuous
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_blank
+#' @import ggplot2
 #' @importFrom plotly ggplotly
 #'
 #' @keywords internal

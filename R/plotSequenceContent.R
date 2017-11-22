@@ -36,18 +36,10 @@
 #' plotSequenceContent(fdl)
 #'
 #'
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 scale_x_continuous
-#' @importFrom ggplot2 scale_y_discrete
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_blank
-#' @importFrom ggplot2 element_rect
 #' @importFrom scales rescale
 #' @importFrom grDevices rgb
 #' @importFrom magrittr %>%
+#' @import ggplot2
 #'
 #' @name plotSequenceContent
 #' @rdname plotSequenceContent-methods
@@ -101,9 +93,10 @@ setMethod("plotSequenceContent", signature = "FastqcData",
 
             df$Filename <- labels[df$Filename]
             df <- df[!colnames(df) == "Base"]
-            df <- melt(df, id.vars = c("Filename", "Start"))
+            df <- reshape2::melt(df, id.vars = c("Filename", "Start"))
             colnames(df) <- c("Filename", "Position", "Base", "Percent")
             df$Base <- factor(df$Base, levels = c("T", "C", "A", "G"))
+            df$Percent <- round(df$Percent, 2)
 
             #set colours
             baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
@@ -144,12 +137,12 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, plotType = c("heatmap", "line"), pwfCols,
                    clusterNames = FALSE, dendrogram = TRUE, ...){
 
-            stopifnot(plotType %in% c("heatmap", "line"))
-            if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-
             # Get the SequenceContent
             df <- Per_base_sequence_content(x)
             df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
+
+            plotType <- match.arg(plotType)
+            if (missing(pwfCols)) pwfCols <- ngsReports::pwf
 
             # Drop the suffix, or check the alternate labels
             if (missing(labels)){
@@ -167,15 +160,17 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
             userTheme <- c()
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-            plotType <- match.arg(plotType)
-
             if (plotType == "heatmap"){
 
+              df$A <- round(df$A, 2)
+              df$C <- round(df$C, 2)
+              df$G <- round(df$G, 2)
+              df$T <- round(df$T, 2)
               maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
               df$opacity <- 1 - df$G / maxBase
-              df$colour <- with(df, rgb(red = round(`T` * opacity / maxBase, 2),
-                                        green = round(A * opacity / maxBase, 2),
-                                        blue = round(C * opacity / maxBase, 2)))
+              df$colour <- with(df, rgb(red = `T` * opacity / maxBase,
+                                        green = A * opacity / maxBase,
+                                        blue = C * opacity / maxBase))
 
               basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
 
@@ -214,6 +209,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 scale_fill_manual(values = tileCols) +
                 scale_x_continuous(expand = c(0, 0)) +
                 scale_y_discrete(expand = c(0, 0)) +
+                theme_bw() +
                 theme(legend.position = "none",
                       panel.grid.minor = element_blank(),
                       panel.grid.major = element_blank()) +
@@ -240,7 +236,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                     coord_flip() +
                     scale_y_reverse(expand = c(0, 0)) +
                     scale_x_continuous(expand = c(0, 0.5)) +
-                    theme(panel.background = element_rect(fill = "white"))
+                    theme(panel.background = element_blank(),
+                          panel.grid = element_blank())
 
                   scPlot <- suppressWarnings(
                     suppressMessages(
@@ -258,12 +255,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   )
                 }
               }
-              # else{
-              #   scPlot
-              # }
-              # scPlot %>%
-              #   plotly::layout(xaxis3 = list(title = "Position Along Read (bp)"), plot_bgcolor = "white")
-            }
+                          }
             if (plotType == "line"){
               df$Filename <- labels[df$Filename]
               df <- df[!colnames(df) == "Base"]

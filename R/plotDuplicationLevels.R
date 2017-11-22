@@ -47,25 +47,7 @@
 #'
 #' plotDuplicationLevels(fdl)
 #'
-#' @importFrom ggplot2 ggplot
-#' @importFrom ggplot2 aes
-#' @importFrom ggplot2 aes_string
-#' @importFrom ggplot2 geom_tile
-#' @importFrom ggplot2 geom_segment
-#' @importFrom ggplot2 scale_x_continuous
-#' @importFrom ggplot2 scale_y_continuous
-#' @importFrom ggplot2 scale_y_discrete
-#' @importFrom ggplot2 scale_y_reverse
-#' @importFrom ggplot2 scale_fill_gradientn
-#' @importFrom ggplot2 scale_fill_manual
-#' @importFrom ggplot2 scale_colour_manual
-#' @importFrom ggplot2 labs
-#' @importFrom ggplot2 theme_bw
-#' @importFrom ggplot2 theme
-#' @importFrom ggplot2 element_blank
-#' @importFrom ggplot2 coord_flip
-#' @importFrom ggplot2 guides
-#' @importFrom ggplot2 ggtitle
+#' @import ggplot2
 #' @importFrom stats hclust dist
 #'
 #'
@@ -153,18 +135,16 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
               scale_colour_manual(values = lineCols) +
               scale_x_continuous(breaks = unique(df$x), labels = levels(df$Duplication_Level), expand = c(0, 0)) +
               scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+              facet_wrap(~Filename) +
               labs(x = "Sequence Duplication Level",
                    colour = c()) +
               guides(fill = FALSE) +
-              ggtitle(unique(df$Filename)) +
               theme_bw() +
               theme(legend.position = c(1, 1),
                     legend.justification = c(1, 1),
                     legend.background = element_rect(colour = "black", size = 0.2),
                     plot.title = element_text(hjust = 0.5))
             if (!is.null(userTheme)) dupPlot <- dupPlot + userTheme
-
-            # browser()
 
             if (usePlotly){
 
