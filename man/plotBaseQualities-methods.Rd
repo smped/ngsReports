@@ -27,9 +27,9 @@ plotBaseQualities(x, usePlotly = FALSE, ...)
   warn = 25, fail = 20, ...)
 
 \S4method{plotBaseQualities}{FastqcDataList}(x, usePlotly = FALSE,
-  plotType = c("heatmap", "boxplot"), plotValue = "Mean",
-  clusterNames = FALSE, labels, dendrogram = FALSE, nc = 2, pwfCols,
-  warn = 25, fail = 20, ...)
+  plotType = c("heatmap", "boxplot"), plotValue = "Mean", cluster = FALSE,
+  labels, dendrogram = FALSE, nc = 2, pwfCols, warn = 25, fail = 20,
+  ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -49,15 +49,15 @@ values in plot}
 
 \item{plotValue}{\code{character} Type of quality data to be presented "Mean" or "Median"}
 
-\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+\item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
-if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+\item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 
 \item{nc}{\code{numeric}. The number of columns to create in the plot layout}

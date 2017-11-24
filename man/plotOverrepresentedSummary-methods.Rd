@@ -28,7 +28,7 @@ plotOverrepresentedSummary(x, usePlotly = FALSE, ...)
   labels, n = 10, pwfCols, ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcDataList}(x, usePlotly = FALSE,
-  labels, clusterNames = TRUE, dendrogram = TRUE, pwfCols, ...,
+  labels, cluster = TRUE, dendrogram = TRUE, pwfCols, ...,
   paletteName = "Set1")
 }
 \arguments{
@@ -48,11 +48,11 @@ File extensions are dropped by default.}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
-\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+\item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
-if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+\item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 
 \item{paletteName}{Name of the palette for colouring the possible sources of the overrepresented sequences.

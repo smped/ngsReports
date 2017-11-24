@@ -27,7 +27,7 @@ plotDuplicationLevels(x, usePlotly = FALSE, ...)
   pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)
 
 \S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, deduplication = c("pre", "post"), clusterNames = FALSE,
+  pwfCols, deduplication = c("pre", "post"), cluster = FALSE,
   dendrogram = FALSE, heatCol = inferno(50), ...)
 }
 \arguments{
@@ -52,11 +52,11 @@ values in plot}
 
 \item{deduplication}{Plot Duplication levels 'pre' or 'post' deduplication. Can only take values "pre" and "post"}
 
-\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+\item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
-if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+\item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 
 \item{heatCol}{Colour palette used for the heatmap}

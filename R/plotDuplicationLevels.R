@@ -20,10 +20,10 @@
 #' @param warn,fail The default values for warn and fail are 20 and 50 respectively (i.e. percentages)
 #' @param lineCols Colours of the lines drawn for individual libraries
 #' @param deduplication Plot Duplication levels 'pre' or 'post' deduplication. Can only take values "pre" and "post"
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param heatCol Colour palette used for the heatmap
 #' @param ... Used to pass additional attributes to theme() and between methods
@@ -169,7 +169,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
 setMethod("plotDuplicationLevels", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, pwfCols,
                    deduplication = c("pre", "post"),
-                   clusterNames = FALSE, dendrogram = FALSE,  heatCol = inferno(50), ...){
+                   cluster = FALSE, dendrogram = FALSE,  heatCol = inferno(50), ...){
 
             df <- Sequence_Duplication_Levels(x)
             deduplication <- match.arg(deduplication)
@@ -197,7 +197,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
             df <- reshape2::dcast(df, Filename ~ Duplication_Level, value.var = "Percentage_of_total")
 
             #cluster
-            if(clusterNames){
+            if(cluster){
               xx <- df[!colnames(df) == "Filename"]
               xx[is.na(xx)] <- 0
               clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
@@ -243,7 +243,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
             sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
               #plot dendrogram
-              if(dendrogram && clusterNames){
+              if(dendrogram && cluster){
 
                 dx <- ggdendro::dendro_data(clus)
                 dendro <- ggdend(dx$segments) +

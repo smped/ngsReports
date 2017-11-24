@@ -31,7 +31,7 @@ plotSequenceLengthDistribution(x, usePlotly = FALSE, ...)
 
 \S4method{plotSequenceLengthDistribution}{FastqcDataList}(x,
   usePlotly = FALSE, labels, counts = FALSE, plotType = "heatmap",
-  clusterNames = FALSE, dendrogram = FALSE, ..., expand.x = c(0, 0.2),
+  cluster = FALSE, dendrogram = FALSE, ..., expand.x = c(0, 0.2),
   gridlineCol = "grey20", gridlineWidth = 0.2, heatCol = inferno(50))
 }
 \arguments{
@@ -53,11 +53,11 @@ File extensions are dropped by default.}
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
 or \code{plotType = "line"}}
 
-\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+\item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{dendrogram}{\code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
-if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+\item{dendrogram}{\code{logical} redundant if \code{cluster} and \code{usePlotly} are \code{FALSE}.
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 
 \item{gridlineWidth, gridlineCol}{Passed to geom_hline and geom_vline to determine

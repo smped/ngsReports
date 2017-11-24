@@ -19,10 +19,10 @@
 #' @param plotType \code{character}. Can only take the values \code{plotType = "heatmap"}
 #' or \code{plotType = "line"}
 #' @param warn,fail The default values for warn and fail are 5 and 10 respectively (i.e. precentages)
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
@@ -186,7 +186,7 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
 setMethod("plotSequenceQualities", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, counts = FALSE, pwfCols,
                    labels, plotType = "heatmap", dendrogram = FALSE,
-                   clusterNames = FALSE, lineCol = "grey20",
+                   cluster = FALSE, lineCol = "grey20",
                    lineWidth = 0.2, alpha = 0.1, warn = 30, fail = 20, ...){
 
             # Read in data
@@ -215,7 +215,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
               df <- reshape2::dcast(df, Filename ~ Quality, value.var = "Count")
               df[is.na(df)] <- 0
 
-              if(clusterNames){
+              if(cluster){
                 xx <- dplyr::select(df, -Filename)
                 clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
                 row.ord <- order.dendrogram(clus)
@@ -265,7 +265,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
                 #plot dendrogram
-                if(dendrogram && clusterNames){
+                if(dendrogram && cluster){
 
                   dx <- ggdendro::dendro_data(clus)
                   dendro <- ggdend(dx$segments) +

@@ -21,10 +21,10 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default
 #' @param lineCol Defaults to red
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
@@ -162,7 +162,7 @@ setMethod("plotNContent", signature = "FastqcData",
 #' @export
 setMethod("plotNContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, warn = 5, fail = 20, pwfCols,
-                   clusterNames = FALSE, dendrogram = FALSE, ...){
+                   cluster = FALSE, dendrogram = FALSE, ...){
 
             # Get the NContent
             df <- Per_base_N_content(x)
@@ -199,7 +199,7 @@ setMethod("plotNContent", signature = "FastqcDataList",
             df <- reshape2::dcast(df, Filename ~ Start, value.var = "Percentage")
 
             #cluster
-            if(clusterNames){
+            if(cluster){
               xx <- df[!colnames(df) == "Filename"]
               xx[is.na(xx)] <- 0
               clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
@@ -280,7 +280,7 @@ setMethod("plotNContent", signature = "FastqcDataList",
                       axis.ticks.y = element_blank())
               if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
-              if (clusterNames && dendrogram){
+              if (cluster && dendrogram){
                 dx <- ggdendro::dendro_data(clus)
                 dendro <- ggdend(dx$segments) +
                   coord_flip() +

@@ -36,7 +36,7 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
 
 \S4method{plotGcContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, plotType = c("heatmap", "line"), pwfCols, clusterNames = FALSE,
+  GCobject, plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
   dendrogram = TRUE, ...)
 }
 \arguments{
@@ -74,11 +74,11 @@ If \code{counts = FALSE} the frequencies will be plotted}
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
 
-\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+\item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
-if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+\item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 }
 \value{

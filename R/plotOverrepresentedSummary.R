@@ -16,10 +16,10 @@
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
 #' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
 #' Must be a palette name from \code{RColorBrewer}.
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
@@ -171,7 +171,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, clusterNames = TRUE,
+          function(x, usePlotly = FALSE, labels, cluster = TRUE,
                    dendrogram = TRUE, pwfCols, ..., paletteName = "Set1"){
 
             df <- Overrepresented_sequences(x)
@@ -205,7 +205,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             df <- reshape2::dcast(df, Filename ~ Possible_Source, value.var = "Percentage")
 
             #cluster
-            if(clusterNames){
+            if(cluster){
               xx <- df[!colnames(df) == "Filename"]
               xx[is.na(xx)] <- 0
               clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
@@ -253,7 +253,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
 
               sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
-              if (clusterNames && dendrogram){
+              if (cluster && dendrogram){
                 dx <- ggdendro::dendro_data(clus)
                 dendro <- ggdend(dx$segments) +
                   coord_flip() +

@@ -29,10 +29,10 @@
 #' @param plotType Takes values "line" or "heatmap"
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param lineCols Colors for observed and theoretical GC lines in single plots
 #' @param ... Used to pass various potting parameters to theme.
@@ -224,7 +224,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
                    species = "Hsapiens", GCobject,  plotType = c("heatmap", "line"), pwfCols,
-                   clusterNames = FALSE, dendrogram = TRUE, ...){
+                   cluster = FALSE, dendrogram = TRUE, ...){
 
             df <- tryCatch(Per_sequence_GC_content(x))
             df$Type <- "GC count per read"
@@ -346,7 +346,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                 fillLab <- "Frequency"
               }
 
-              if(clusterNames){
+              if(cluster){
                 # Grab the main columns & cast from long to wide
                 mat <- reshape2::acast(df[c("Filename", "GC_Content", "Freq")], Filename ~ GC_Content, value.var = "Freq")
                 mat[is.na(mat)] <- 0
@@ -393,7 +393,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
 
 
                 #plot dendrogram
-                if(dendrogram && clusterNames){
+                if(dendrogram && cluster){
 
                   dx <- ggdendro::dendro_data(clus)
                   dendro <- ggdend(dx$segments) +

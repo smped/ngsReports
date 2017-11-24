@@ -20,10 +20,10 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param counts \code{logical} Should distributions be shown as counts or frequencies (percentages)
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} and \code{usePlotly} are \code{FALSE}.
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} and \code{usePlotly} are \code{FALSE}.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme()
 #' @param expand.x Passed to \code{scale_x_discrete}
@@ -162,7 +162,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
 #' @export
 setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, counts = FALSE, plotType = "heatmap",
-                   clusterNames = FALSE, dendrogram = FALSE, ...,
+                   cluster = FALSE, dendrogram = FALSE, ...,
                    expand.x = c(0,0.2), gridlineCol = "grey20",
                    gridlineWidth = 0.2, heatCol = inferno(50)){
 
@@ -202,7 +202,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
             df[is.na(df)] <- 0
 
 
-            if(clusterNames){
+            if(cluster){
               xx <- dplyr::select(df, -Filename)
               clus <- as.dendrogram(hclust(dist(xx)))
               row.ord <- order.dendrogram(clus)
@@ -301,7 +301,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
                 #plot dendrogram
-                if(dendrogram && clusterNames){
+                if(dendrogram && cluster){
 
                   dx <- ggdendro::dendro_data(clus)
                   dendro <- ggdend(dx$segments) +

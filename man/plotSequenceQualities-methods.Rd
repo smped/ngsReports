@@ -28,7 +28,7 @@ plotSequenceQualities(x, usePlotly = FALSE, ...)
 
 \S4method{plotSequenceQualities}{FastqcDataList}(x, usePlotly = FALSE,
   counts = FALSE, pwfCols, labels, plotType = "heatmap",
-  dendrogram = FALSE, clusterNames = FALSE, lineCol = "grey20",
+  dendrogram = FALSE, cluster = FALSE, lineCol = "grey20",
   lineWidth = 0.2, alpha = 0.1, warn = 30, fail = 20, ...)
 }
 \arguments{
@@ -57,11 +57,11 @@ File extensions are dropped by default.}
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
 or \code{plotType = "line"}}
 
-\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
-if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+\item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 
-\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+\item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{lineWidth, lineCol}{Passed to geom_hline and geom_vline to determine

@@ -12,10 +12,10 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass various potting parameters to theme.
 #' @param gridlineWidth,gridlineCol Passed to geom_hline and geom_vline to determine
@@ -73,7 +73,7 @@ setMethod("plotSummary", signature = "FastqcFileList",
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, pwfCols, clusterNames = FALSE, dendrogram = TRUE,
+          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = TRUE,
                    ..., gridlineWidth = 0.2, gridlineCol = "grey20"){
 
             df <- getSummary(x)
@@ -105,7 +105,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
             df$Filename <- labels[df$Filename]
             df$StatusNum <- as.integer(df$Status)
 
-            if(clusterNames){
+            if(cluster){
               dfClus <- df[colnames(df) != "Status"]
               dfClus <- reshape2::dcast(dfClus, Filename ~ Category, value.var = "StatusNum")
               xx <- dfClus[!colnames(dfClus) == "Filename"]
@@ -145,7 +145,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
               # Add any parameters from dotArgs
               if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
 
-              if (clusterNames && dendrogram){
+              if (cluster && dendrogram){
                 dx <- ggdendro::dendro_data(clus)
                 dendro <- ngsReports:::ggdend(dx$segments) +
                   coord_flip() +

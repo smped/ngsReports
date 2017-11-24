@@ -371,7 +371,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     # Summary heatmap in first tab
     output$SummaryFlags <- renderPlotly({
       plotSummary(data(), usePlotly = TRUE,
-                  clusterNames = input$Sumcluster, dendrogram = TRUE) %>%
+                  cluster = input$Sumcluster, dendrogram = TRUE) %>%
         layout(margin = list(r = 200))
     })
 
@@ -396,7 +396,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$OSummary <- renderPlotly({
       plotOverrepresentedSummary(data(),
                                  usePlotly = TRUE,
-                                 clusterNames = input$OScluster,
+                                 cluster = input$OScluster,
                                  dendrogram = TRUE) %>%
         layout(margin = list(r = 200))
 
@@ -419,7 +419,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$DupHeatmap <- renderPlotly({
 
       plotDuplicationLevels(data(),
-                            clusterNames = input$Dupcluster,
+                            cluster = input$Dupcluster,
                             dendrogram = TRUE,
                             usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100))
@@ -440,7 +440,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$SCHeatmap <- renderPlotly({
 
       plotSequenceContent(data(),
-                          clusterNames = input$SCcluster,
+                          cluster = input$SCcluster,
                           dendrogram = TRUE,
                           usePlotly = TRUE) %>%
         layout(margin = list(r = 200, l = 100))
@@ -494,7 +494,7 @@ fastqcShiny <- function(fastqcInput = NULL){
 
       if(is.null(input$theoreticalGC)){
         plotGcContent(data(),
-                      clusterNames = input$GCcluster,
+                      cluster = input$GCcluster,
                       plotType = "heatmap",
                       theoreticalType = input$theoreticalType,
                       dendrogram = TRUE,
@@ -502,7 +502,7 @@ fastqcShiny <- function(fastqcInput = NULL){
           layout(margin = list(r = 200))
       }else{
         plotGcContent(data(),
-                      clusterNames = input$GCcluster,
+                      cluster = input$GCcluster,
                       plotType = "heatmap",
                       theoreticalType = input$theoreticalType,
                       theoreticalGC = input$theoreticalGC,
@@ -543,7 +543,7 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     output$SLHeatmap <- renderPlotly({
       plotSequenceLengthDistribution(data(),
-                                     clusterNames = input$SLcluster,
+                                     cluster = input$SLcluster,
                                      dendrogram = TRUE,
                                      counts = input$SLType == "Counts",
                                      usePlotly = TRUE) %>%
@@ -567,7 +567,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                         usePlotly = TRUE,
                         plotType = "heatmap",
                         plotValue = input$BQplotValue,
-                        clusterNames = input$BQcluster,
+                        cluster = input$BQcluster,
                         dendrogram = TRUE) %>%
         layout(margin = list(r = 200))
     })
@@ -587,7 +587,7 @@ fastqcShiny <- function(fastqcInput = NULL){
 
     output$seqQualHeatmap <- renderPlotly({
       plotSequenceQualities(data(),
-                            clusterNames = input$SQcluster,
+                            cluster = input$SQcluster,
                             counts = FALSE,
                             dendrogram = TRUE,
                             usePlotly = TRUE) %>% layout(margin = list(r = 200))
@@ -609,7 +609,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$NCheatmap <- renderPlotly({
 
       plotNContent(data(),
-                   clusterNames = input$Ncluster,
+                   cluster = input$Ncluster,
                    dendrogram = TRUE,
                    usePlotly = TRUE) %>% layout(margin = list(r = 200))
     })
@@ -636,7 +636,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                                    adapterType = input$ACtype,
                                    usePlotly = TRUE,
                                    dendrogram = TRUE,
-                                   clusterNames = input$ACcluster)
+                                   cluster = input$ACcluster)
       if(!is.null(ACplot)) ACplot %>% layout(margin = list(r = 200))
       else stop(paste("Sequences did not contain any", input$ACtype, "content, please select another."))
     })
@@ -661,7 +661,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     output$Kheatmap <- renderPlotly({
       Kplot <- plotKmers(data(),
                          usePlotly = TRUE,
-                         clusterNames = input$KMcluster,
+                         cluster = input$KMcluster,
                          dendrogram = TRUE)
       if(!is.null(Kplot)) Kplot %>% layout(margin = list(r = 200))
       else stop(paste("Samples have no Kmer content"))

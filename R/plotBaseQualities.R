@@ -20,10 +20,10 @@
 #' @param plotValue \code{character} Type of quality data to be presented "Mean" or "Median"
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
@@ -167,7 +167,7 @@ setMethod("plotBaseQualities", signature = "FastqcData",
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcDataList",
           function(x,  usePlotly = FALSE,  plotType = c("heatmap", "boxplot"), plotValue = "Mean",
-                   clusterNames = FALSE, labels, dendrogram = FALSE,
+                   cluster = FALSE, labels, dendrogram = FALSE,
                    nc = 2, pwfCols, warn = 25, fail = 20, ...){
 
             # Get the data
@@ -266,7 +266,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
             if (plotType == "heatmap"){
 
               stopifnot(plotValue %in% c("Mean", "Median"))
-              stopifnot(is.logical(clusterNames))
+              stopifnot(is.logical(cluster))
 
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
@@ -309,7 +309,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               df <- reshape2::dcast(df, Filename ~ Start, value.var = plotValue)
 
               #cluster names true hclust names
-              if(clusterNames){
+              if(cluster){
                 xx <- dplyr::select(df, -Filename)
                 xx[is.na(xx)] <- 0
                 clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
@@ -352,7 +352,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
                 #plot dendrogram
-                if(dendrogram && clusterNames){
+                if(dendrogram && cluster){
 
                   dx <- ggdendro::dendro_data(clus)
                   dendro <- ggdend(dx$segments) +

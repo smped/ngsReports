@@ -18,10 +18,10 @@
 #' If the vector supplied is less than n, \code{grDevices::colorRampPalette()} will be used
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param heatCol Colour palette used for the heatmap. Default is \code{inferno} from the package \code{viridris}
 #'
@@ -200,7 +200,7 @@ setMethod("plotKmers", signature = "FastqcData",
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, clusterNames = FALSE,
+          function(x, usePlotly = FALSE, labels, cluster = FALSE,
                    dendrogram = FALSE, pwfCols, heatCol = inferno(50), ...){
 
             df <- Kmer_Content(x)
@@ -257,7 +257,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
             df <- reshape2::dcast(df, Filename ~ Position, value.var = "Total")
 
             #cluster
-            if(clusterNames){
+            if(cluster){
               xx <- df[!colnames(df) == "Filename"]
               xx[is.na(xx)] <- 0
               clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
@@ -312,7 +312,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
 
               sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
-              if (clusterNames && dendrogram){
+              if (cluster && dendrogram){
                 dx <- ggdendro::dendro_data(clus)
                 dendro <- ggdend(dx$segments) +
                   coord_flip() +

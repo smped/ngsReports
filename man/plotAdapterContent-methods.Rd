@@ -28,7 +28,7 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
 
 \S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = c("heatmap", "line"), labels, adapterType = "Total", pwfCols,
-  warn = 5, fail = 10, clusterNames = FALSE, dendrogram = FALSE, ...)
+  warn = 5, fail = 10, cluster = FALSE, dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -53,11 +53,11 @@ File extensions are dropped by default.}
 To plot all adapters summed, specify \code{adapterType = "Total"}.
 This is the default behaviour.}
 
-\item{clusterNames}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
+\item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{dendrogram}{\code{logical} redundant if \code{clusterNames} is \code{FALSE}
-if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+\item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 }
 \value{

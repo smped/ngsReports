@@ -37,7 +37,7 @@ library(readr)
 
 ```{r setGlobals}
 globals <- list(usePlotly = TRUE,
-								clusterNames = TRUE,
+								cluster = TRUE,
 								dendrogram = TRUE,
 								theoreticalGC = TRUE,
 								theoreticalType = params$dataType,
@@ -115,25 +115,25 @@ plotSummary(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
 ## Per Base Sequence Quality
 
 ```{r plotBaseQualities, fig.cap = "Heatmap showing mean base qualities for each library"}
-plotBaseQualities(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotBaseQualities(rawFastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Per Sequence Quality Scores
 
 ```{r plotSequenceQualitiesHeatmap, fig.cap = "Heatmap showing mean sequence qualities for each library"}
-plotSequenceQualities(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotSequenceQualities(rawFastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Per Base Sequence Content
 
 ```{r plotSequenceContent, fig.cap = "Heatmap of summed base distributions along each read"}
-plotSequenceContent(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotSequenceContent(rawFastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Per Sequence GC Content
 
 ```{r plotGCHeat, fig.cap = paste("GC Content Heatmap normalised to theoretical GC content in the", globals$species, globals$theoreticalType)}
-plotGcContent(rawFastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, theoreticalType = globals$theoreticalType, species = globals$species, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotGcContent(rawFastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, theoreticalType = globals$theoreticalType, species = globals$species, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 
@@ -144,13 +144,13 @@ plotGcContent(rawFastqcData, labels = plotLabels, theoreticalGC = globals$theore
 ## Sequence Length Distribution
 
 ```{r plotSequenceLengthDistribution}
-plotSequenceLengthDistribution(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotSequenceLengthDistribution(rawFastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Sequence Duplication Levels
 
 ```{r plotDuplicationLevels}
-plotDuplicationLevels(rawFastqcData, labels = plotLabels, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotDuplicationLevels(rawFastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Overrepresented Sequences
@@ -178,7 +178,7 @@ plotAdapterContent(rawFastqcData, labels = plotLabels, usePlotly = globals$usePl
 ## Kmer Content
 
 ```{r plotKmers}
-plotKmers(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly, clusterNames = globals$clusterNames, dendrogram = globals$dendrogram)
+plotKmers(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly, cluster = globals$cluster, dendrogram = globals$dendrogram)
 ```
 
 ```{r Kmer_Content}

@@ -12,10 +12,10 @@
 #' @param plotType \code{character}. Type of plot to generate. Must be "line" or "heatmap"
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 #' values in plot
-#' @param clusterNames \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{clusterNames} is \code{FALSE}
-#' if both \code{clusterNames} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
@@ -135,7 +135,7 @@ setMethod("plotSequenceContent", signature = "FastqcData",
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, plotType = c("heatmap", "line"), pwfCols,
-                   clusterNames = FALSE, dendrogram = TRUE, ...){
+                   cluster = FALSE, dendrogram = TRUE, ...){
 
             # Get the SequenceContent
             df <- Per_base_sequence_content(x)
@@ -187,7 +187,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               df$Position <- as.integer(df$Start)
               df$Filename <- labels[df$Filename]
 
-              if(clusterNames){
+              if(cluster){
                 mat <- reshape2::melt(df, id.vars = c("Filename", "Start"), measure.vars = c("A", "C", "G", "T"), variable.name = "Base", value.name = "Percent")
                 mat <- reshape2::acast(mat, Filename ~ Start + Base, value.var = "Percent")
                 mat[is.na(mat)] <- 0
@@ -230,7 +230,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
                 #plot dendro
-                if (clusterNames && dendrogram){
+                if (cluster && dendrogram){
                   dx <- ggdendro::dendro_data(clus)
                   dendro <- ggdend(dx$segments) +
                     coord_flip() +
