@@ -90,7 +90,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                 br(),
                 textOutput("report"),
                 br(),
-                checkboxInput("Sumcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("Sumcluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
                 # ), width = "20%"),
               ), width = "200px"),
@@ -105,10 +105,10 @@ fastqcShiny <- function(fastqcInput = NULL){
         tabPanel(
           "Total Sequences",
           splitLayout(
-            fixedPanel(
-              sidebarPanel(
-                width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+            # fixedPanel(
+            #   sidebarPanel(
+            #     width = "20%", left = "0%", right = "80%"
+            #   ), width = "20%"),
             absolutePanel(
               h1("Total Sequences"),
               h5("Total number of unique and duplicated reads in each sample"),
@@ -121,9 +121,9 @@ fastqcShiny <- function(fastqcInput = NULL){
               sidebarPanel(
                 radioButtons(inputId="BQplotValue", label="Base Quality",
                              choices=c("Mean","Median"), selected = "Mean"),
-                checkboxInput("BQcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("BQcluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Per Base Sequence Quality"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
@@ -139,9 +139,9 @@ fastqcShiny <- function(fastqcInput = NULL){
               sidebarPanel(
                 radioButtons(inputId="SQType", label="Sequence Quality",
                              choices=c("Frequency","Counts"), selected = "Frequency"),
-                checkboxInput("SQcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("SQcluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Per Sequence Quality Scores"),
               h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
@@ -155,9 +155,9 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("SCcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("SCcluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Per Base Sequence Content"),
               h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
@@ -171,12 +171,12 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("GCcluster", "Cluster Filenames", value = TRUE),
-                checkboxInput("theoreticalGC", "Normalize Using Theoretical GC", value = FALSE),
+                checkboxInput("GCcluster", "Cluster", value = TRUE),
+                checkboxInput("theoreticalGC", "Normalize To Theoretical GC", value = FALSE),
                 htmlOutput("theoreticalGC"),
                 htmlOutput("GCspecies"),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "250px"),
             absolutePanel(
               h1("Per Sequence GC Content"),
               h5("GC content (%) in sample, can either view total count or frequency"),
@@ -190,9 +190,9 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("Ncluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("Ncluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Per base N content"),
               h5("N content (%) in sample"),
@@ -208,9 +208,9 @@ fastqcShiny <- function(fastqcInput = NULL){
               sidebarPanel(
                 radioButtons(inputId="SLType", label="Value to plot",
                              choices=c("Frequency","Counts"), selected = "Frequency"),
-                checkboxInput("SLcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("SLcluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Sequence Length Distribution"),
               h5("Sequence length distribution in each sample, can either view total count or frequency"),
@@ -224,9 +224,9 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("Dupcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("Dupcluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Sequence Duplication Levels"),
               h5("Sequence duplication in each sample"),
@@ -240,9 +240,9 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("OScluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("OScluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Overrepresented Sequences"),
               h5("Origin of Overrepresented sequences within each sample"),
@@ -260,9 +260,9 @@ fastqcShiny <- function(fastqcInput = NULL){
                                         "Illumina Universal",
                                         "Illumina Small RNA",
                                         "Nextera Transposase")),
-                checkboxInput("ACcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("ACcluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Adapter content"),
               h5("Adapter content (%) across all reads"),
@@ -277,9 +277,9 @@ fastqcShiny <- function(fastqcInput = NULL){
           splitLayout(
             fixedPanel(
               sidebarPanel(
-                checkboxInput("KMcluster", "Cluster Filenames", value = TRUE),
+                checkboxInput("KMcluster", "Cluster", value = TRUE),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Kmer Content"),
               h5("Total Identified Kmer Count by Position.\nPlease select a file to see the top 6 Kmers."),
@@ -301,7 +301,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                 shinyDirButton(id = "dirs", label = "Choose directory", title = ""),
                 textOutput("report2"),
                 width = "20%", left = "0%", right = "80%"
-              ), width = "20%"),
+              ), width = "180px"),
             absolutePanel(
               h1("Output HTML Report Using the Default Template "),
               h5("Select the type of data used in your study (-omic) and a closely related organism"),
@@ -472,11 +472,11 @@ fastqcShiny <- function(fastqcInput = NULL){
       if(!is.null(input$theoreticalGC)){
         if(input$theoreticalGC){
           if(input$theoreticalType == "Genome"){
-            selectInput("GCspecies", "Select species for Theoretical GC",
+            selectInput("GCspecies", "Select species",
                         choices = genomes(gcTheoretical)$Name,
                         selected = "Hsapiens")
           }else{
-            selectInput("GCspecies", "Select species for Theoretical GC",
+            selectInput("GCspecies", "Select species",
                         choices = transcriptomes(gcTheoretical)$Name,
                         selected = "Hsapiens")
           }
