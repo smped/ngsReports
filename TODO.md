@@ -29,8 +29,7 @@
 - **plotOverrepresentedSummary**
     - Check plot for no overrepresented sequences: *Temporary version added...*    
     - Include in default report
-- Remove RProj files etc
-- Add inst/NEWS
+
 
 # Important But Not Pressing
 
