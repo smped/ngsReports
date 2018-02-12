@@ -189,6 +189,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
 
               if(cluster){
                 mat <- reshape2::melt(df, id.vars = c("Filename", "Start"), measure.vars = c("A", "C", "G", "T"), variable.name = "Base", value.name = "Percent")
+                
                 mat <- reshape2::acast(mat, Filename ~ Start + Base, value.var = "Percent")
                 mat[is.na(mat)] <- 0
                 clus <- as.dendrogram(hclust(dist(mat), method = "ward.D2"))
@@ -196,13 +197,14 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 df$Filename <- factor(df$Filename, levels = unique(df$Filename)[row.ord])
               }
               else{
-                df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+                df$Filename <- factor(df$Filename, levels = unique(df$Filename))
               }
-
-              key <- levels(df$Filename)
+              
+              key <-levels(df$Filename) 
+              key <- names(labels[match(key, labels)])
               tileCols <- unique(df$colour)
               names(tileCols) <- unique(df$colour)
-
+              
               scPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "colour",
                                               A = "A", C = "C", G = "G", T = "T")) +
                 geom_tile() +
@@ -215,20 +217,20 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                       panel.grid.major = element_blank()) +
                 labs(x = "Position in read (bp)",
                      y = "Filename")
-
+              
               if (!is.null(userTheme)) scPlot <- scPlot + userTheme
-
+              
               if (usePlotly){
                 scPlot <- scPlot +
                   theme(axis.ticks.y = element_blank(),
                         axis.text.y = element_blank())
-
+                
                 t <- getSummary(x)
                 t <- t[t$Category == "Per base sequence content",]
                 t$Filename <- labels[t$Filename]
                 t$Filename <- factor(t$Filename, levels = levels(df$Filename))
-                sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
-
+                sideBar <- ngsReports:::makeSidebar(status = t, key = key, pwfCols = pwfCols)
+                
                 #plot dendro
                 if (cluster && dendrogram){
                   dx <- ggdendro::dendro_data(clus)
@@ -238,7 +240,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                     scale_x_continuous(expand = c(0, 0.5)) +
                     theme(panel.background = element_blank(),
                           panel.grid = element_blank())
-
+                  
                   scPlot <- suppressWarnings(
                     suppressMessages(
                       plotly::subplot(dendro, sideBar, scPlot, widths = c(0.1,0.08,0.82),
@@ -255,14 +257,14 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   )
                 }
               }
-                          }
+            }
             if (plotType == "line"){
               df$Filename <- labels[df$Filename]
               df <- df[!colnames(df) == "Base"]
               df <- melt(df, id.vars = c("Filename", "Start"))
               colnames(df) <- c("Filename", "Position", "Base", "Percent")
               df$Base <- factor(df$Base, levels = c("T", "C", "A", "G"))
-
+              
               #set colours
               baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
 

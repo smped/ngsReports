@@ -14,6 +14,8 @@
 makeSidebar <- function(status, key, pwfCols){
   stopifnot(isValidPwf(pwfCols))
   nx <- length(status$Filename)
+  # make sure status is in right order so key can apply
+  status <- status[order(status$Filename),]
   # Make the basic plot
   sideBar <- ggplot(status, aes(x = 1, y = Filename, key = key)) +
     geom_tile(aes_string(fill = "Status")) +

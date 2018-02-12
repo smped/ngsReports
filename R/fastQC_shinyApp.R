@@ -452,7 +452,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         num <- 1
       }else {
         click <- event_data("plotly_click")
-        num <- which(grepl(click$key[[1]], fileName(data())))
+        num <- which(fileName(data()) == click$key[[1]])
       }
       sub_fdl <- data()[[num]]
       plotSequenceContent(sub_fdl, usePlotly = TRUE) %>%
