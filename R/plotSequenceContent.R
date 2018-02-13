@@ -234,28 +234,41 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 #plot dendro
                 if (cluster && dendrogram){
                   dx <- ggdendro::dendro_data(clus)
-                  dendro <- ggdend(dx$segments) +
+                  dendro <- ngsReports:::ggdend(dx$segments) +
                     coord_flip() +
                     scale_y_reverse(expand = c(0, 0)) +
                     scale_x_continuous(expand = c(0, 0.5)) +
                     theme(panel.background = element_blank(),
                           panel.grid = element_blank())
+
+                  
                   
                   scPlot <- suppressWarnings(
                     suppressMessages(
                       plotly::subplot(dendro, sideBar, scPlot, widths = c(0.1,0.08,0.82),
-                                      margin = 0.001, shareY = TRUE)
+                                      margin = 0.001, shareY = TRUE) 
                     ))
+                  
+                  
+                  
+                  
                 }
                 else{
                   # Return the plot
                   scPlot <- suppressWarnings(
                     suppressMessages(
                       plotly::subplot(plotly::plotly_empty(), sideBar, scPlot, widths = c(0.1,0.08,0.82),
-                                      margin = 0.001, shareY = TRUE)
+                                      margin = 0.001, shareY = TRUE) 
                     )
                   )
                 }
+                
+                ## manually edit tooltip to remove colour
+                sc <- lapply(1:length(scPlot$x$data), function(x){
+                  scPlot$x$data[[x]]$text <<- gsub("colour:.*<br />A", "A",  scPlot$x$data[[x]]$text)
+                  
+                })
+                
               }
             }
             if (plotType == "line"){
@@ -291,6 +304,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               # }
               # scPlot
             }
+           
             scPlot
           }
 )
