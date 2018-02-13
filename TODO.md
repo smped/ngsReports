@@ -2,12 +2,9 @@
 
 ## Chris
 
-- `Per_base_sequence_content` is selecting files in the reverse order
 - `Overrepresented_sequences` doesn't select file before first click
 - Add options for "Show Duplicated" in `Total Sequences`
 - Add `exportOverrepresented()`
-- **plotSequenceContent**
-    - Hide colour information from `hoverinfo`
 
 ## Hien
 
