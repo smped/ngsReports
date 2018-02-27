@@ -4,10 +4,11 @@
 
 - `Overrepresented_sequences` doesn't select file before first click
     - This seems OK now, but if you click on the bars in the barplot, you get an error. This needs to be disabled
+        - I dont get this error?
 - Add options for "Show Duplicated" in `Total Sequences`
 - Add `exportOverrepresented()`
 - `Per_base_sequence_content` doesn't show individual files on click
-- `Adapter_content` selects the wrong file, or gets the name wrong
+   - this works for me?
 
 ## Hien
 
