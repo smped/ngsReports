@@ -49,7 +49,8 @@
 #'
 #' @import ggplot2
 #' @importFrom stats hclust dist
-#'
+#' @importFrom viridisLite inferno
+#' @importFrom magrittr %>%
 #'
 #' @name plotDuplicationLevels
 #' @rdname plotDuplicationLevels-methods
@@ -212,25 +213,51 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
             df$Duplication_Level <- factor(df$Duplication_Level, levels = dupLevels)
             # df$x <- as.integer(df$Duplication_Level)
 
-            fillLabel <- gsub("Percentage_of_", "% ", type)
-            fillLabel <- paste(fillLabel, "\nSequences")
-            fillLabel <- stringr::str_to_title(fillLabel)
+            # fillLabel <- gsub("Percentage_of_", "% ", type)
+            # fillLabel <- paste(fillLabel, "\nSequences")
+            # fillLabel <- stringr::str_to_title(fillLabel)
 
-            dupPlot <- ggplot(df, aes_string("Duplication_Level", "Filename")) +
-              geom_tile(aes_string(fill = type)) +
-              # scale_x_continuous(breaks = unique(df$x), labels = levels(df$Duplication_Level), expand = c(0, 0)) +
-              scale_y_discrete(expand = c(0, 0)) +
-              scale_fill_gradientn(colours = heatCol) +
-              labs(x = "Sequence Duplication Level",
-                   fill = fillLabel) +
-              theme(panel.grid = element_blank(),
-                    panel.background = element_blank())
+            # dupPlot <- ggplot(df, aes_string("Duplication_Level", "Filename")) +
+            #   geom_tile(aes_string(fill = type)) +
+            #   scale_y_discrete(expand = c(0, 0)) +
+            #   scale_fill_gradientn(colours = heatCol) +
+            #   labs(x = "Sequence Duplication Level",
+            #        fill = fillLabel) +
+            #   theme(panel.grid = element_blank(),
+            #         panel.background = element_blank())
+            
+            # This is the new plotting function, which I think looks better
+            dupPlot <- df %>% 
+              dplyr::arrange(Filename, Duplication_Level) %>%
+              dplyr::group_by(Filename) %>% 
+              dplyr::mutate(xmax = cumsum(Percentage_of_total)) %>% 
+              split(f = .$Filename) %>%
+              lapply(dplyr::mutate, xmin = c(0, xmax[-16])) %>% 
+              dplyr::bind_rows() %>% 
+              dplyr:: mutate(ymax = as.integer(Filename) + 0.5, 
+                     ymin = ymax - 1) %>% 
+              ggplot(aes_string(fill = "Duplication_Level", 
+                                total = "Percentage_of_total")) + 
+              geom_rect(aes_string(xmin = "xmin", xmax = "xmax", 
+                                   ymin = "ymin", ymax = "ymax",
+                                   colour = "Duplication_Level")) + 
+              scale_fill_manual(values = colorRampPalette(heatCol)(length(dupLevels))) +
+              scale_colour_manual(values = colorRampPalette(heatCol)(length(dupLevels))) +
+              scale_y_continuous(breaks = seq_along(levels(df$Filename)),
+                                 labels = levels(df$Filename),
+                                 expand = c(0, 0)) +
+              scale_x_continuous(expand = c(0, 0)) +
+              labs(x = "Percentange of Total",
+                   fill = "Duplication\nLevel") +
+              guides(colour = FALSE) +
+              theme_bw() 
 
             if (usePlotly){
 
             dupPlot <- dupPlot +
               theme(axis.text.y = element_blank(),
-                    axis.ticks.y = element_blank())
+                    axis.ticks.y = element_blank(),
+                    legend.position = "none")
 
               t <- getSummary(x)
               t <- t[t$Category == "Sequence Duplication Levels",]
@@ -238,7 +265,6 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
 
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-
 
             sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
 
@@ -255,7 +281,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                   suppressMessages(
                     plotly::subplot(dendro, sideBar, dupPlot, widths = c(0.1,0.08,0.82),
                                     margin = 0.001, shareY = TRUE) %>%
-                      plotly::layout(xaxis3 = list(title = "Sequence Duplication Levels"))
+                      plotly::layout(xaxis3 = list(title = "Percentange of Total"))
                   ))
               }
               else{
