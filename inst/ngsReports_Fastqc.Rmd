@@ -10,7 +10,7 @@ output:
     toc: yes
 params:
     dataType: "Transcriptome"
-    species: "Hsapians"
+    species: "Hsapiens"
 ---
 
 ```{r setup, include=FALSE}
