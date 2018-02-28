@@ -8,6 +8,16 @@
 #'
 #' @include AllGenerics.R
 #'
+#' @examples
+#' # Get the files included with the package
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
+#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#
+#' # Load the FASTQC data as a FastqcDataList
+#' fdl <- getFastqcData(fileList)
+#'
 #' @export
 #' @rdname getFastqcData-methods
 setGeneric("getFastqcData", function(object){standardGeneric("getFastqcData")})
@@ -29,7 +39,7 @@ setMethod("getFastqcData", "FastqcFile",
               stopifnot(fl %in% allFiles)
               # # Open the connection & read the 12 lines
               uz <- unz(path, fl)
-              fastqcData <- readLines(uz)
+              fastqcLines <- readLines(uz)
               close(uz)
             }
             else{
@@ -37,17 +47,17 @@ setMethod("getFastqcData", "FastqcFile",
               # Check in case it has been deleted post-instantiation though
               fl <- file.path(path, "fastqc_data.txt")
               if (!file.exists(fl)) stop("'fastqc_data.txt' could not be found.")
-              fastqcData <- readLines(fl)
+              fastqcLines <- readLines(fl)
             }
             # Modified from Repitools::readFastQC
-            fastqcData <- gsub("#", "", fastqcData)
-            fastqcData <- fastqcData[!grepl(">>END_MODULE", fastqcData)]
+            fastqcLines <- gsub("#", "", fastqcLines)
+            fastqcLines <- fastqcLines[!grepl(">>END_MODULE", fastqcLines)]
 
             # The FastQC version NUMBER
-            vers <- gsub("\\t", "", fastqcData[1])
+            vers <- gsub("\\t", "", fastqcLines[1])
 
             # Setup the module names
-            modules <- grep("^>>", fastqcData, value = TRUE)
+            modules <- grep("^>>", fastqcLines, value = TRUE)
             modules <- gsub("^>>", "", modules) # Remove the leading '>>'
             modules <- gsub("(.+)\\t.+", "\\1", modules) # Grab the information before the \t
             modules <- gsub(" ", "_", modules) # Add underscores
@@ -59,11 +69,12 @@ setMethod("getFastqcData", "FastqcFile",
                             "Per_base_N_content", "Sequence_Length_Distribution",
                             "Sequence_Duplication_Levels", "Overrepresented_sequences",
                             "Adapter_Content", "Kmer_Content")
-            stopifnot(reqModules %in% modules)
+            # Check that at least oneof the required modules is present
+            if (!any(modules %in% reqModules)) stop("None of the default modules were able to be found in the data.")
 
             # Split the data
-            fastqcData <- split(fastqcData, cumsum(grepl("^>>", fastqcData)))[-1]
-            names(fastqcData) <- modules
+            fastqcLines <- split(fastqcLines, cumsum(grepl("^>>", fastqcLines)))[-1]
+            names(fastqcLines) <- modules
 
             # Define the output to have the same structure as fastqcData, except with
             # an additional slot to account for the changes in the Sequence Duplication Levels output
@@ -71,64 +82,98 @@ setMethod("getFastqcData", "FastqcFile",
             names(out) <- c(modules, "Total_Deduplicated_Percentage")
 
             ## Get the Basic Statistics
-            Basic_Statistics <- getBasicStatistics(fastqcData)
-            stopifnot(is.data.frame(Basic_Statistics))
+            Basic_Statistics <- c()
+            if ("Basic_Statistics" %in% modules){
+              Basic_Statistics <- getBasicStatistics(fastqcLines)
+              stopifnot(is.data.frame(Basic_Statistics))
+            }
             out[["Basic_Statistics"]] <- Basic_Statistics
 
             ## Get the Per Base Sequence Qualities
-            Per_base_sequence_quality <- getPerBaseSeqQuals(fastqcData)
-            stopifnot(is.data.frame(Per_base_sequence_quality))
+            Per_base_sequence_quality <- c()
+            if ("Per_base_sequence_quality" %in% modules){
+              Per_base_sequence_quality <- getPerBaseSeqQuals(fastqcLines)
+              stopifnot(is.data.frame(Per_base_sequence_quality))
+            }
             out[["Per_base_sequence_quality"]] <- Per_base_sequence_quality
 
             ## Get the Per Tile Sequence Qualities
-            Per_tile_sequence_quality <- getPerTileSeqQuals(fastqcData)
-            stopifnot(is.data.frame(Per_tile_sequence_quality))
+            Per_tile_sequence_quality <- c()
+            if ("Per_tile_sequence_quality" %in% modules){
+              Per_tile_sequence_quality <- getPerTileSeqQuals(fastqcLines)
+              stopifnot(is.data.frame(Per_tile_sequence_quality))
+            }
             out[["Per_tile_sequence_quality"]] <- Per_tile_sequence_quality
 
             ## Get the Per Sequence Quality Scores
-            Per_sequence_quality_scores <- getPerSeqQualScores(fastqcData)
+            Per_sequence_quality_scores <- getPerSeqQualScores(fastqcLines)
             stopifnot(is.data.frame(Per_sequence_quality_scores))
             out[["Per_sequence_quality_scores"]] <- Per_sequence_quality_scores
 
             ## Get the Per Base Sequence Qualities
-            Per_base_sequence_content <- getPerBaseSeqContent(fastqcData)
-            stopifnot(is.data.frame(Per_base_sequence_content))
+            Per_base_sequence_content <- c()
+            if ("Per_base_sequence_content" %in% modules){
+              Per_base_sequence_content <- getPerBaseSeqContent(fastqcLines)
+              stopifnot(is.data.frame(Per_base_sequence_content))
+            }
             out[["Per_base_sequence_content"]] <- Per_base_sequence_content
 
             ## Get the Per Sequence GC Content
-            Per_sequence_GC_content <- getPerSeqGcContent(fastqcData)
-            stopifnot(is.data.frame(Per_sequence_GC_content))
+            Per_sequence_GC_content <- c()
+            if("Per_sequence_GC_content" %in% modules){
+              Per_sequence_GC_content <- getPerSeqGcContent(fastqcLines)
+              stopifnot(is.data.frame(Per_sequence_GC_content))
+            }
             out[["Per_sequence_GC_content"]] <- Per_sequence_GC_content
 
             ## Get the Per Base Sequence Qualities
-            Per_base_N_content <- getPerBaseNContent(fastqcData)
-            stopifnot(is.data.frame(Per_base_N_content))
+            Per_base_N_content <- c()
+            if ("Per_base_N_content" %in% modules){
+              Per_base_N_content <- getPerBaseNContent(fastqcLines)
+              stopifnot(is.data.frame(Per_base_N_content))
+            }
             out[["Per_base_N_content"]] <- Per_base_N_content
 
             ## Get the Sequence Length Distribution
-            Sequence_Length_Distribution <- getSeqLengthDist(fastqcData)
-            stopifnot(is.data.frame(Sequence_Length_Distribution))
+            Sequence_Length_Distribution <- c()
+            if ("Sequence_Length_Distribution" %in% modules){
+              Sequence_Length_Distribution <- getSeqLengthDist(fastqcLines)
+              stopifnot(is.data.frame(Sequence_Length_Distribution))
+            }
             out[["Sequence_Length_Distribution"]] <- Sequence_Length_Distribution
 
             # Get the Sequence Duplication Levels
-            Sequence_Duplication_Levels <- getSeqDuplicationLevels(fastqcData)
-            stopifnot(is.data.frame(Sequence_Duplication_Levels[["Sequence_Duplication_Levels"]]))
+            Sequence_Duplication_Levels <- c()
+            Total_Deduplicated_Percentage <- c()
+            if("Sequence_Duplication_Levels" %in% modules){
+              Sequence_Duplication_Levels <- getSeqDuplicationLevels(fastqcLines)
+              stopifnot(is.data.frame(Sequence_Duplication_Levels[["Sequence_Duplication_Levels"]]))
+            }
             out[["Sequence_Duplication_Levels"]] <- Sequence_Duplication_Levels[["Sequence_Duplication_Levels"]]
             out[["Total_Deduplicated_Percentage"]] <- Sequence_Duplication_Levels[["Total_Deduplicated_Percentage"]]
 
             # Get the Overrepresented Sequences
-            Overrepresented_sequences <- getOverrepSeq(fastqcData)
-            stopifnot(is.data.frame(Overrepresented_sequences))
+            Overrepresented_sequences <- c()
+            if("Overrepresented_sequences" %in% modules) {
+              Overrepresented_sequences <- getOverrepSeq(fastqcLines)
+              stopifnot(is.data.frame(Overrepresented_sequences))
+            }
             out[["Overrepresented_sequences"]] <- Overrepresented_sequences
 
             # Get the Adapter Content
-            Adapter_Content <- getAdapterContent(fastqcData)
-            stopifnot(is.data.frame(Adapter_Content))
+            Adapter_Content <- c()
+            if("Adapter_Content" %in% modules){
+              Adapter_Content <- getAdapterContent(fastqcLines)
+              stopifnot(is.data.frame(Adapter_Content))
+            }
             out[["Adapter_Content"]] <- Adapter_Content
 
             # Get the Kmer Content
-            Kmer_Content <- getKmerContent(fastqcData)
-            stopifnot(is.data.frame(Kmer_Content))
+            Kmer_Content <- c()
+            if("Kmer_Content" %in% modules){
+              Kmer_Content <- getKmerContent(fastqcLines)
+              stopifnot(is.data.frame(Kmer_Content))
+            }
             out[["Kmer_Content"]] <- Kmer_Content
 
             #Get the summary
@@ -181,9 +226,10 @@ setMethod("getFastqcData", "FastqcFileList",
 
 # Define a series of functions for arranging the data
 # after splitting the input from readLines()
-getBasicStatistics <- function(fastqcData){
+getBasicStatistics <- function(fastqcLines){
 
-  x <- fastqcData[["Basic_Statistics"]][-(1:2)]
+
+  x <- fastqcLines[["Basic_Statistics"]][-(1:2)]
   vals <- gsub(".+\\t(.+)", "\\1", x)
   names(vals) <- gsub("(.+)\\t.+", "\\1", x)
   names(vals) <- gsub(" ", "_", names(vals))
@@ -205,9 +251,9 @@ getBasicStatistics <- function(fastqcData){
 
 }
 
-getPerBaseSeqQuals <- function(fastqcData){
+getPerBaseSeqQuals <- function(fastqcLines){
 
-  x <- fastqcData[["Per_base_sequence_quality"]][-1]
+  x <- fastqcLines[["Per_base_sequence_quality"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
   df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
@@ -224,9 +270,9 @@ getPerBaseSeqQuals <- function(fastqcData){
 
 }
 
-getPerTileSeqQuals <- function(fastqcData){
+getPerTileSeqQuals <- function(fastqcLines){
 
-  x <- fastqcData[["Per_tile_sequence_quality"]][-1]
+  x <- fastqcLines[["Per_tile_sequence_quality"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
   df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
@@ -241,9 +287,9 @@ getPerTileSeqQuals <- function(fastqcData){
 
 }
 
-getPerSeqQualScores <- function(fastqcData){
+getPerSeqQualScores <- function(fastqcLines){
 
-  x <- fastqcData[["Per_sequence_quality_scores"]][-1]
+  x <- fastqcLines[["Per_sequence_quality_scores"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
   df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
@@ -258,9 +304,9 @@ getPerSeqQualScores <- function(fastqcData){
   df
 }
 
-getPerBaseSeqContent <- function(fastqcData){
+getPerBaseSeqContent <- function(fastqcLines){
 
-  x <- fastqcData[["Per_base_sequence_content"]][-1]
+  x <- fastqcLines[["Per_base_sequence_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
   df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
@@ -275,9 +321,9 @@ getPerBaseSeqContent <- function(fastqcData){
 
 }
 
-getPerSeqGcContent <- function(fastqcData){
+getPerSeqGcContent <- function(fastqcLines){
 
-  x <- fastqcData[["Per_sequence_GC_content"]][-1]
+  x <- fastqcLines[["Per_sequence_GC_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
   df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
@@ -292,9 +338,9 @@ getPerSeqGcContent <- function(fastqcData){
   df
 }
 
-getPerBaseNContent <- function(fastqcData){
+getPerBaseNContent <- function(fastqcLines){
 
-  x <- fastqcData[["Per_base_N_content"]][-1]
+  x <- fastqcLines[["Per_base_N_content"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
   df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
@@ -309,9 +355,9 @@ getPerBaseNContent <- function(fastqcData){
 
 }
 
-getSeqLengthDist <- function(fastqcData){
+getSeqLengthDist <- function(fastqcLines){
 
-  x <- fastqcData[["Sequence_Length_Distribution"]][-1]
+  x <- fastqcLines[["Sequence_Length_Distribution"]][-1]
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
   df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
@@ -329,9 +375,9 @@ getSeqLengthDist <- function(fastqcData){
 
 }
 
-getSeqDuplicationLevels <- function(fastqcData){
+getSeqDuplicationLevels <- function(fastqcLines){
 
-  x <- fastqcData[["Sequence_Duplication_Levels"]][-1]
+  x <- fastqcLines[["Sequence_Duplication_Levels"]][-1]
 
   # Check for the presence of the Total Deduplicate Percentage value
   hasTotDeDup <- grepl("Total Deduplicated Percentage", x)
@@ -361,9 +407,9 @@ getSeqDuplicationLevels <- function(fastqcData){
 
 }
 
-getOverrepSeq <- function(fastqcData){
+getOverrepSeq <- function(fastqcLines){
 
-  x <- fastqcData[["Overrepresented_sequences"]][-1]
+  x <- fastqcLines[["Overrepresented_sequences"]][-1]
   if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
@@ -379,9 +425,9 @@ getOverrepSeq <- function(fastqcData){
   df
 }
 
-getAdapterContent <- function(fastqcData){
+getAdapterContent <- function(fastqcLines){
 
-  x <- fastqcData[["Adapter_Content"]][-1]
+  x <- fastqcLines[["Adapter_Content"]][-1]
   if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
@@ -398,9 +444,9 @@ getAdapterContent <- function(fastqcData){
 
 }
 
-getKmerContent <- function(fastqcData){
+getKmerContent <- function(fastqcLines){
 
-  x <- fastqcData[["Kmer_Content"]][-1]
+  x <- fastqcLines[["Kmer_Content"]][-1]
   if (length(x) <= 1) return(dplyr::data_frame())
   mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
   nc <- ncol(mat)
