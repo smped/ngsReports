@@ -155,24 +155,30 @@ plotDuplicationLevels(rawFastqcData, labels = plotLabels, cluster = globals$clus
 
 ## Overrepresented Sequences
 
-```{r Overrepresented_sequences, echo=FALSE, results='asis'}
+```{r Overrepresented_sequences, echo=FALSE, results='asis', message=TRUE}
 nOver <- 30
-Overrepresented_sequences(rawFastqcData) %>% 
-	mutate(Filename = plotLabels[Filename]) %>%
-	arrange(Sequence) %>%
-	dplyr::slice(1:nOver) %>%
-	pander(split.tables = Inf,
-				 style = "rmarkdown",
-				 justify = "llrrl",
-				 big.mark = ",",
-				 caption = paste("Summary of Overrepresented Sequences in all files.",
-				 								"A maximum of", nOver, "seqences are shown."))
+os <- Overrepresented_sequences(rawFastqcData) 
+if (nrow(os) > 0){
+	os %>% 
+		mutate(Filename = plotLabels[Filename]) %>%
+		arrange(Sequence) %>%
+		dplyr::slice(1:nOver) %>%
+		pander(split.tables = Inf,
+					 style = "rmarkdown",
+					 justify = "llrrl",
+					 big.mark = ",",
+					 caption = paste("Summary of Overrepresented Sequences in all files.",
+					 								"A maximum of", nOver, "seqences are shown."))
+}
+if (nrow(os) == 0){
+	message("No overrepresented sequences were detected by FastQC")
+}
 ```
 
 ## Adapter Content
 
 ```{r plotAdapterContent, fig.cap="Universal Adapter Content"}
-plotAdapterContent(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly) 
+plotAdapterContent(rawFastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly) 
 ```
 
 ## Kmer Content
@@ -181,19 +187,25 @@ plotAdapterContent(rawFastqcData, labels = plotLabels, usePlotly = globals$usePl
 plotKmers(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly, cluster = globals$cluster, dendrogram = globals$dendrogram)
 ```
 
-```{r Kmer_Content}
+```{r Kmer_Content, message=TRUE}
 nK <- 30
-Kmer_Content(rawFastqcData) %>%
-	arrange(desc(Count)) %>%
-	dplyr::slice(1:nK) %>%
-	arrange(Sequence) %>%
-	mutate(Filename = plotLabels[Filename]) %>%
-	pander(split.tables = Inf,
-				 style = "rmarkdown",
-				 justify = "llrrrr",
-				 big.mark = ",",
-				 caption = paste("Summary of Overrepresented Kmers in all files.",
-				 								"A maximum of", nK, "Kmers are shown."))
+kc <- Kmer_Content(rawFastqcData)
+if (nrow(kc) > 0){
+  kc %>%
+    arrange(desc(Count)) %>%
+    dplyr::slice(1:nK) %>%
+    arrange(Sequence) %>%
+    mutate(Filename = plotLabels[Filename]) %>%
+    pander(split.tables = Inf,
+           style = "rmarkdown",
+           justify = "llrrrr",
+           big.mark = ",",
+           caption = paste("Summary of Overrepresented Kmers in all files.",
+                           "A maximum of", nK, "Kmers are shown."))
+}
+if (nrow(kc) == 0){
+  message("No Kmers were detected by FastQC")
+}
 ```
 
 
