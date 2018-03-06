@@ -68,7 +68,7 @@
 #' @import ggplot2
 #' @import fastqcTheoreticalGC
 #' @importFrom Biostrings readDNAStringSet
-#' @import BiocGenerics
+#' @importFrom BiocGenerics width
 #' @importFrom utils read.table
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
