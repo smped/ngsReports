@@ -60,14 +60,16 @@
 #' plotGcContent(fdl[[1]])
 #'
 #' # Plot GC content with theoretical GC content generated from a given fasta file
-#' plotGcContent(fdl, Fastafile = system.file("extdata","chr1.fasta",package="ngsReports"))
+#' plotGcContent(fdl, Fastafile = system.file("extdata","Athaliana.TAIR10.tRNA.fasta",
+#' package="ngsReports"))
 #' @importFrom viridisLite inferno
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats hclust dist
 #' @import ggplot2
 #' @import fastqcTheoreticalGC
-#' @import Biostrings
+#' @importFrom Biostrings readDNAStringSet
 #' @import BiocGenerics
+#' @importFrom utils read.table
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
 #' @export

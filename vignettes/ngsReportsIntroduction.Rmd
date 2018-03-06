@@ -277,7 +277,7 @@ plotGcContent(fdl, theoreticalType = "Transcriptome", species = "Mmusculus")
 Customized theoretical GC content can be generated using input DNA sequences from a fasta file
 
 ```{r,message=FALSE,warning=FALSE}
-plotGcContent(fdl, Fastafile = system.file("extdata","chr1.fasta",package="ngsReports"))
+plotGcContent(fdl, Fastafile = system.file("extdata","Athaliana.TAIR10.tRNA.fasta",package="ngsReports"))
 ```
 
 

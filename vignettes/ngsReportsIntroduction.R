@@ -86,21 +86,3 @@ plotGcContent(fdl)
 ## --------------------------------------------------------------------------
 plotGcContent(fdl, theoreticalType = "Transcriptome", species = "Mmusculus")
 
-## --------------------------------------------------------------------------
-plotGcContent(fdl, theoreticalGC = FALSE)
-
-## --------------------------------------------------------------------------
-plotGcContent(fdl, plotType = "line",  theoreticalType = "Transcriptome")
-
-## --------------------------------------------------------------------------
-plotOverrepresentedSummary(fdl)
-
-## ---- fig.wide = TRUE------------------------------------------------------
-plotOverrepresentedSummary(fdl[[1]])
-
-## ---- eval = FALSE---------------------------------------------------------
-#  exportOverrepresented(fdl, n = 10)
-
-## ----sessionInfo, echo=FALSE-----------------------------------------------
-sessionInfo()
-

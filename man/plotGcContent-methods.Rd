@@ -120,5 +120,6 @@ plotGcContent(fdl)
 plotGcContent(fdl[[1]])
 
 # Plot GC content with theoretical GC content generated from a given fasta file
-plotGcContent(fdl, Fastafile = system.file("extdata","chr1.fasta",package="ngsReports"))
+plotGcContent(fdl, Fastafile = system.file("extdata","Athaliana.TAIR10.tRNA.fasta",
+package="ngsReports"))
 }
