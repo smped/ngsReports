@@ -274,6 +274,13 @@ Alternative species can be also be selected from those made available
 plotGcContent(fdl, theoreticalType = "Transcriptome", species = "Mmusculus")
 ```
 
+Customized theoretical GC content can be generated using input DNA sequences from a fasta file
+
+```{r,message=FALSE,warning=FALSE}
+plotGcContent(fdl, Fastafile = system.file("extdata","chr1.fasta",package="ngsReports"))
+```
+
+
 Alternatively, comparison to a Theoretical GCdistribution can be removed by setting `theoreticalGC = FALSE`
 
 ```{r}

@@ -16,28 +16,30 @@
 \title{Plot the Per Sequence GC Content}
 \usage{
 plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-  theoreticalType = "Genome", species = "Hsapiens", GCobject, ...)
+  theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
+  n = 1e+06, bp = 100, ...)
 
 \S4method{plotGcContent}{character}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, ...)
+  GCobject, Fastafile, n = 1e+06, bp = 100, ...)
 
 \S4method{plotGcContent}{FastqcFile}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, ...)
+  GCobject, Fastafile, n = 1e+06, bp = 100, ...)
 
 \S4method{plotGcContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, ...)
+  GCobject, Fastafile, n = 1e+06, bp = 100, ...)
 
 \S4method{plotGcContent}{FastqcData}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, counts = FALSE, lineCols = c("red", "blue"), ...)
+  GCobject, Fastafile, n = 1e+06, bp = 100, counts = FALSE,
+  lineCols = c("red", "blue"), ...)
 
 \S4method{plotGcContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
-  dendrogram = TRUE, ...)
+  GCobject, Fastafile, n = 1e+06, bp = 100, plotType = c("heatmap",
+  "line"), pwfCols, cluster = FALSE, dendrogram = TRUE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -61,6 +63,12 @@ Species currently supported can be obtained using \code{mData(gcTheoretical)}}
 
 \item{GCobject}{an object of class GCTheoretical.
 Defaults to the gcTheoretical object supplied witht= the package}
+
+\item{Fastafile}{a fasta file contains DNA sequences to generate theoretical GC content}
+
+\item{n}{number of simulated reads to generate theoretical GC content from \code{Fastafile}}
+
+\item{bp}{simulated read length to generate theoretical GC content from \code{Fastafile}}
 
 \item{...}{Used to pass various potting parameters to theme.}
 
@@ -111,6 +119,6 @@ plotGcContent(fdl)
 # Plot a single FastqcData object
 plotGcContent(fdl[[1]])
 
-
-
+# Plot GC content with theoretical GC content generated from a given fasta file
+plotGcContent(fdl, Fastafile = system.file("extdata","chr1.fasta",package="ngsReports"))
 }

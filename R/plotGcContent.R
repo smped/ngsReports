@@ -21,6 +21,9 @@
 #' "Transcriptome". Default is "Genome"
 #' @param GCobject an object of class GCTheoretical.
 #'  Defaults to the gcTheoretical object supplied witht= the package
+#' @param Fastafile a fasta file contains DNA sequences to generate theoretical GC content
+#' @param n number of simulated reads to generate theoretical GC content from \code{Fastafile}
+#' @param bp simulated read length to generate theoretical GC content from \code{Fastafile}
 #' @param species \code{character} if \code{gcTheory} is \code{TRUE} its must be accompanied by a species
 #' Species currently supported can be obtained using \code{mData(gcTheoretical)}
 #' @param labels An optional named vector of labels for the file names.
@@ -56,30 +59,32 @@
 #' # Plot a single FastqcData object
 #' plotGcContent(fdl[[1]])
 #'
-#'
-#'
+#' # Plot GC content with theoretical GC content generated from a given fasta file
+#' plotGcContent(fdl, Fastafile = system.file("extdata","chr1.fasta",package="ngsReports"))
 #' @importFrom viridisLite inferno
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats hclust dist
 #' @import ggplot2
-#'
+#' @import fastqcTheoreticalGC
+#' @import Biostrings
+#' @import BiocGenerics
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
 #' @export
 setGeneric("plotGcContent",
            function(x, usePlotly = FALSE, labels,
                     theoreticalGC = TRUE, theoreticalType = "Genome",
-                    species = "Hsapiens", GCobject, ...){standardGeneric("plotGcContent")})
+                    species = "Hsapiens", GCobject, Fastafile, n = 1e+6, bp = 100, ...){standardGeneric("plotGcContent")})
 #' @aliases plotGcContent,character
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "character",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject, ...){
+                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6, bp = 100, ...){
             x <- getFastqcData(x)
             plotGcContent(x, usePlotly, labels = labels, theoreticalGC = theoreticalGC,
-                          theoreticalType = theoreticalType, species = species, GCobject = GCobject, ...)
+                          theoreticalType = theoreticalType, species = species, GCobject = GCobject, Fastafile = Fastafile, n = n, bp = bp, ...)
           }
 )
 #' @aliases plotGcContent,FastqcFile
@@ -88,10 +93,10 @@ setMethod("plotGcContent", signature = "character",
 setMethod("plotGcContent", signature = "FastqcFile",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject, ...){
+                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6, bp = 100, ...){
             x <- getFastqcData(x)
             plotGcContent(x, usePlotly, labels = labels, theoreticalGC = theoreticalGC,
-                          theoreticalType = theoreticalType, species = species, GCobject = GCobject, ...)
+                          theoreticalType = theoreticalType, species = species, GCobject = GCobject,Fastafile = Fastafile, n = n, bp = bp, ...)
           }
 )
 #' @aliases plotGcContent,FastqcFileList
@@ -100,10 +105,10 @@ setMethod("plotGcContent", signature = "FastqcFile",
 setMethod("plotGcContent", signature = "FastqcFileList",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject, ...){
+                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6, bp = 100, ...){
             x <- getFastqcData(x)
             plotGcContent(x, usePlotly, labels = labels, theoreticalGC = theoreticalGC,
-                          theoreticalType = theoreticalType, species = species, GCobject = GCobject, ...)
+                          theoreticalType = theoreticalType, species = species, GCobject = GCobject, Fastafile = Fastafile, n = n, bp = bp, ...)
 
           }
 )
@@ -113,7 +118,7 @@ setMethod("plotGcContent", signature = "FastqcFileList",
 setMethod("plotGcContent", signature = "FastqcData",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject, counts = FALSE, lineCols = c("red", "blue"),
+                   species = "Hsapiens", GCobject, Fastafile, n = 1e+6, bp = 100, counts = FALSE, lineCols = c("red", "blue"),
                    ...){
 
             df <- tryCatch(Per_sequence_GC_content(x))
@@ -146,13 +151,20 @@ setMethod("plotGcContent", signature = "FastqcData",
             }
 
             if (theoreticalGC){
-              gcFun <- tryCatch(match.arg(tolower(theoreticalType), c("genomes","transcriptomes")))
-              avail <- do.call(gcFun, list(object = GCobject))
-              stopifnot(species %in% avail$Name)
-              gcTheoryDF <- getGC(GCobject, name = species, type = theoreticalType)
-              names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
+              if (!missing(Fastafile)){
+                gcTheoryDF <- gcFromFasta(Fastafile,n,bp)
+                subTitle <- paste("Theoretical Distribution based on file ",Fastafile)
+              } else{
+                gcFun <- tryCatch(match.arg(tolower(theoreticalType), c("genomes","transcriptomes")))
+                avail <- do.call(gcFun, list(object = GCobject))
+                stopifnot(species %in% avail$Name)
+                gcTheoryDF <- getGC(GCobject, name = species, type = theoreticalType)  
+                names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
+                subTitle <- paste("Theoretical Distribution based on the", species, theoreticalType)
+              }
               gcTheoryDF$Type <- "Theoretical Distribution"
-              subTitle <- paste("Theoretical Distribution based on the", species, theoreticalType)
+              gcTheoryDF$Filename <- "Theoretical Distribution"
+              gcTheoryDF$Freq <- round(gcTheoryDF$Freq,4)
             }
             else{
               gcTheoryDF <- c()
@@ -223,7 +235,7 @@ setMethod("plotGcContent", signature = "FastqcData",
 setMethod("plotGcContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject,  plotType = c("heatmap", "line"), pwfCols,
+                   species = "Hsapiens", GCobject, Fastafile, n=1e+6, bp=100, plotType = c("heatmap", "line"), pwfCols,
                    cluster = FALSE, dendrogram = TRUE, ...){
 
             df <- tryCatch(Per_sequence_GC_content(x))
@@ -274,15 +286,23 @@ setMethod("plotGcContent", signature = "FastqcDataList",
             }
 
             if (theoreticalGC){
-              gcFun <- tryCatch(match.arg(tolower(theoreticalType), c("genomes","transcriptomes")))
-              avail <- do.call(gcFun, list(object = GCobject))
-              stopifnot(species %in% avail$Name)
-              gcTheoryDF <- getGC(GCobject, name = species, type = theoreticalType)
-              names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
-              gcTheoryDF$Filename <- "Theoretical Distribution"
+              if (!missing(Fastafile)){
+                gcTheoryDF <- gcFromFasta(Fastafile,n,bp)
+                subTitle <- paste("Theoretical Distribution based on file ",Fastafile)
+              } else {
+                gcFun <- tryCatch(match.arg(tolower(theoreticalType), c("genomes","transcriptomes","custome")))
+                avail <- do.call(gcFun, list(object = GCobject))
+                stopifnot(species %in% avail$Name)
+                gcTheoryDF <- getGC(GCobject, name = species, type = theoreticalType)  
+                names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
+                gcTheoryDF$Type <- "Theoretical Distribution"
+                gcTheoryDF$Filename <- "Theoretical Distribution"
+                subTitle <- paste("Theoretical Distribution based on the", species, theoreticalType)
+                gcTheoryDF$Freq <- round(gcTheoryDF$Freq,4)
+              }
               gcTheoryDF$Type <- "Theoretical Distribution"
-              subTitle <- paste("Theoretical Distribution based on the", species, theoreticalType)
-              gcTheoryDF$Freq <- round(gcTheoryDF$Freq, 4)
+              gcTheoryDF$Filename <- "Theoretical Distribution"
+              gcTheoryDF$Freq <- round(gcTheoryDF$Freq,4)
             }
             else{
               gcTheoryDF <- c()
@@ -332,11 +352,9 @@ setMethod("plotGcContent", signature = "FastqcDataList",
             }
 
             if (plotType == "heatmap"){
-
               if (theoreticalGC){
                 df <- lapply(split(df, df$Filename), function(x){
-                  gcTheoryDF <- getGC(GCobject, name = species, type = theoreticalType)
-                  x$Freq <- x$Freq - unlist(gcTheoryDF[species])
+                  x$Freq <- x$Freq - unlist(gcTheoryDF$Freq)
                   x
                 }) %>%
                   dplyr::bind_rows()
@@ -417,3 +435,16 @@ setMethod("plotGcContent", signature = "FastqcDataList",
 
           }
 )
+
+#Calculate GC content from a set of DNA sequences provided by a fasta file
+gcFromFasta <- function(Fastafile,n=1e+6,bp=100){
+  ref <- readDNAStringSet(filepath = Fastafile)
+  file.gc = "gc.txt"
+  fastqcTheoreticalGC::generateDistn(ref, file = file.gc, n = n, bp = bp)
+  gc <- data.frame(read.table(file.gc,header = FALSE,stringsAsFactors = FALSE))
+  file.remove(file.gc)
+  colnames(gc) <- c("GC_Content","Freq")
+  gc$Freq <- gc$Freq/sum(gc$Freq)
+  gc
+}
+
