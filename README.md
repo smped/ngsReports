@@ -6,6 +6,7 @@ An R Package for managing FastQC reports and other NGS related log files inside 
 
 ## Installation
 To install required packages 
+Currently requires you to install the fastqcTheoreticalGC package seperately.
 
 ```
 source("https://bioconductor.org/biocLite.R")
