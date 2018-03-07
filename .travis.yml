@@ -2,9 +2,8 @@
 
 language: r
 r: bioc-release
+r_github_packages: mikelove/fastqcTheoreticalGC
 sudo: false
-install:
-- R -e 'devtools::install_github("mikelove/fastqcTheoreticalGC")'
 notifications:
   recipients:
     - bioinf_hub@adelaide.edu.au
