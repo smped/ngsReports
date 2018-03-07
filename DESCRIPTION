@@ -12,13 +12,13 @@ Description: Load FastQC reports and other NGS output summaries into R.
 License: LGPL (>= 2)
 Encoding: UTF-8
 Depends:
-  ggplot2,
-  fastqcTheoreticalGC
+  ggplot2
 Imports:
   BiocGenerics,
   Biostrings,
   checkmate,
   dplyr,
+  fastqcTheoreticalGC,
   ggdendro,
   lubridate,
   magrittr,
@@ -30,6 +30,7 @@ Imports:
   Rsamtools,
   scales,
   shiny,
+  shinydashboard,
   shinyFiles,
   ShortRead,
   stats,

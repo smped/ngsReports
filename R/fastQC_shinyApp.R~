@@ -1,0 +1,689 @@
+#' Run fastQC shiny app
+#'
+#' @description Returns a shiny app interface to parse many fastQC objects
+#'
+#' @details Currently some plots can take a while to render if the \code{FastqcDataList} passed to
+#' \code{fastqcInput} has many elements
+#'
+#' @param fastqcInput can be a \code{FastqcFileList}, \code{fastqcDataList},
+#' or simply a \code{character} vector of paths to fastqc files.
+#'
+#'
+#' @return UI data for fastQC shiny.
+#'
+#' @importFrom reshape2 dcast
+#' @importFrom magrittr %>%
+#' @importFrom plotly layout
+#' @importFrom plotly plotlyOutput
+#' @importFrom plotly renderPlotly
+#' @importFrom plotly event_data
+#' @importFrom shiny br
+#' @importFrom shiny shinyUI
+#' @importFrom shiny fluidPage
+#' @importFrom shiny navbarPage
+#' @importFrom shiny tabPanel
+#' @importFrom shiny splitLayout
+#' @importFrom shiny fixedPanel
+#' @importFrom shiny absolutePanel
+#' @importFrom shiny h1
+#' @importFrom shiny h5
+#' @importFrom shiny observe
+#' @importFrom shiny sidebarPanel
+#' @importFrom shiny radioButtons
+#' @importFrom shiny checkboxInput
+#' @importFrom shiny htmlOutput
+#' @importFrom shiny selectInput
+#' @importFrom shiny plotOutput
+#' @importFrom shiny sliderInput
+#' @importFrom shiny renderUI
+#' @importFrom shiny renderPrint
+#' @importFrom shiny shinyApp
+#' @importFrom shiny textOutput
+#' @importFrom shiny renderText
+#' @importFrom shiny reactive
+#' @importFrom shiny withProgress
+#' @importFrom shinyFiles shinyFilesButton
+#' @importFrom shinyFiles shinyFileChoose
+#' @importFrom shinyFiles shinyDirChoose
+#' @importFrom shinyFiles shinyDirButton
+#' @importFrom shinyFiles parseFilePaths
+#' @importFrom shinyFiles parseDirPath
+#' @importFrom shinyFiles getVolumes
+#'
+#' @examples
+#' \dontrun{
+#' #' # Get the files included with the package
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
+#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#'
+#' # Load the FASTQC data as a FastqcDataList
+#' fdl <- getFastqcData(fileList)
+#'
+#' # Run the Shiny app
+#' fastqcShiny(fdl)
+#' }
+#'
+#' @export
+#' @rdname fastqcShiny
+fastqcShiny <- function(fastqcInput = NULL){
+
+  if(!is.null(fastqcInput)){
+    stopifnot(length(fastqcInput) > 1)
+    stopifnot(class(fastqcInput) == "character" | class(fastqcInput)[1] == "FastqcDataList")
+  }
+
+
+  ui <- shinyUI(
+    fluidPage(
+      navbarPage(
+        "ngsReports::FASTQC",
+        #first panel is summary
+        tabPanel(
+          "FastQC Summary",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                h5("Choose FastQC Report:"),
+                shinyFiles::shinyFilesButton(id = "files", label = "Choose files", multiple = TRUE, title = ""),
+                br(),
+                textOutput("report"),
+                br(),
+                checkboxInput("Sumcluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+                # ), width = "20%"),
+              ), width = "200px"),
+            absolutePanel(
+              h1("Summary of fastQC Flags"),
+              h5("Heatmap of fastQC flags (pass, warning or fail) for each fastQC report"),
+              plotlyOutput("SummaryFlags"),
+              # width = "80%", left = "20%", right = "5%", height = "1100px")
+              top = "200px", left = "250px", right = "20px", height = 0)
+          )
+        ),
+        tabPanel(
+          "Total Sequences",
+          splitLayout(
+            # fixedPanel(
+            #   sidebarPanel(
+            #     width = "20%", left = "0%", right = "80%"
+            #   ), width = "20%"),
+            absolutePanel(
+              h1("Total Sequences"),
+              h5("Total number of unique and duplicated reads in each sample"),
+              plotlyOutput("ReadTotals"),
+              width = "70%", left = "30%", right = "0%"))),
+        tabPanel(
+          "Per Base Sequence Quality",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                radioButtons(inputId="BQplotValue", label="Base Quality",
+                             choices=c("Mean","Median"), selected = "Mean"),
+                checkboxInput("BQcluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Per Base Sequence Quality"),
+              h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
+              h5("Click sidebar on heatmap to change line plots"),
+              plotlyOutput("baseQualHeatmap"),
+              br(),
+              plotlyOutput("BaseQualitiesSingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Per Sequence Quality Scores",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                radioButtons(inputId="SQType", label="Sequence Quality",
+                             choices=c("Frequency","Counts"), selected = "Frequency"),
+                checkboxInput("SQcluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Per Sequence Quality Scores"),
+              h5("Per base sequence quality in each sample, can either view mean or median for each cycle"),
+              h5("Click sidebar on heatmap to change line plots"),
+              plotlyOutput("seqQualHeatmap"),
+              br(),
+              plotlyOutput("SeqQualitiesSingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Per Base Sequence Content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("SCcluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Per Base Sequence Content"),
+              h5("Per base sequence content in each sample, colours at each base indicate sequence bias"),
+              h5("G = Black, A = Green, T = Red, C = Blue"),
+              plotlyOutput("SCHeatmap"),
+              br(),
+              plotlyOutput("SCsingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Per Sequence GC Content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("GCcluster", "Cluster", value = TRUE),
+                checkboxInput("theoreticalGC", "Normalize To Theoretical GC", value = FALSE),
+                htmlOutput("theoreticalGC"),
+                htmlOutput("GCspecies"),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "250px"),
+            absolutePanel(
+              h1("Per Sequence GC Content"),
+              h5("GC content (%) in sample, can either view total count or frequency"),
+              h5("Click sidebar on heatmap to change line plots"),
+              plotlyOutput("GCheatmap"),
+              br(),
+              plotlyOutput("GCSingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Per base N content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("Ncluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Per base N content"),
+              h5("N content (%) in sample"),
+              h5("If dendrogram is truncated double click on dendrogram to resize"),
+              plotlyOutput("NCheatmap"),
+              br(),
+              plotlyOutput("NCsingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Sequence Length Distribution",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                radioButtons(inputId="SLType", label="Value to plot",
+                             choices=c("Frequency","Counts"), selected = "Frequency"),
+                checkboxInput("SLcluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Sequence Length Distribution"),
+              h5("Sequence length distribution in each sample, can either view total count or frequency"),
+              h5("Click sidebar on heatmap to change line plots"),
+              plotlyOutput("SLHeatmap"),
+              br(),
+              plotlyOutput("SLSingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Sequence Duplication Levels",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("Dupcluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Sequence Duplication Levels"),
+              h5("Sequence duplication in each sample"),
+              h5("Click sidebar on heatmap to change line plots"),
+              plotlyOutput("DupHeatmap"),
+              br(),
+              plotlyOutput("DupSingle"),
+              width = "70%", left = "30%", right = "0%"))),
+        tabPanel(
+          "Overrepresented Sequences",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("OScluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Overrepresented Sequences"),
+              h5("Origin of Overrepresented sequences within each sample"),
+              plotlyOutput("OSummary"),
+              br(),
+              plotlyOutput("OSsingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px"))),
+        tabPanel(
+          "Adapter Content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                selectInput("ACtype", "Choose Adapter Type",
+                            choices = c("Total",
+                                        "Illumina Universal",
+                                        "Illumina Small RNA",
+                                        "Nextera Transposase")),
+                checkboxInput("ACcluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Adapter content"),
+              h5("Adapter content (%) across all reads"),
+              plotlyOutput("ACheatmap"),
+              br(),
+              plotlyOutput("ACsingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px")
+          )
+        ),
+        tabPanel(
+          "Kmer Content",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                checkboxInput("KMcluster", "Cluster", value = TRUE),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Kmer Content"),
+              h5("Total Identified Kmer Count by Position.\nPlease select a file to see the top 6 Kmers."),
+              plotlyOutput("Kheatmap"),
+              br(),
+              plotlyOutput("Ksingle"),
+              width = "70%", left = "30%", right = "0%", height = "1100px")
+          )
+        ),
+        tabPanel(
+          "Output HTML Report",
+          splitLayout(
+            fixedPanel(
+              sidebarPanel(
+                radioButtons(inputId="omicsType", label="What type of -omic?",
+                             choices=c("Genome","Transcriptome"), selected = "Genome"),
+                htmlOutput("sequencedSpecies"),
+                h5("Output report for files"),
+                shinyDirButton(id = "dirs", label = "Choose directory", title = ""),
+                textOutput("report2"),
+                width = "20%", left = "0%", right = "80%"
+              ), width = "180px"),
+            absolutePanel(
+              h1("Output HTML Report Using the Default Template "),
+              h5("Select the type of data used in your study (-omic) and a closely related organism"),
+              h5("from the dropdown list. Upon selecting the applicable omic and species, select the directory"),
+              h5("containing the FASTQC files you wish to make the log for. Currently even if files have been loaded"),
+              h5("into the Shiny app the folder containing the data must still be selected."),
+              width = "70%", left = "30%", right = "0%")
+          )
+        )
+      )))
+
+  server <- function(input, output, session){
+
+
+    #rective function repsonsible for loading in the selected files of just using the fdl supplied
+    data <- reactive({
+      volumes <- shinyFiles::getVolumes()
+      shinyFiles::shinyFileChoose(input, "files", roots = volumes, session = session,
+                                  filetypes = "zip")
+      fileSelected <- shinyFiles::parseFilePaths(volumes, input$files)
+      fileSelected <- as.character(fileSelected$datapath)
+      selectedData <- getFastqcData(fileSelected)
+      if(is.null(input$files)){
+        if(class(fastqcInput) != "FastqcDataList") selectedData <- getFastqcData(fastqcInput)
+        else selectedData <- fastqcInput
+      }
+      selectedData
+    })
+
+
+    output$sequencedSpecies <- renderUI({
+
+      if(input$omicsType == "Genome"){
+        selectInput("omicSpecies", "Select species",
+                    choices = genomes(gcTheoretical)$Name,
+                    selected = "Hsapiens")
+      }else{
+        selectInput("omicSpecies", "Select species",
+                    choices = transcriptomes(gcTheoretical)$Name,
+                    selected = "Hsapiens")
+      }
+    })
+
+
+    species <- observeEvent(input$omicSpecies, {
+      values$omicSpecies <- input$omicSpecies
+    })
+
+    dir <- reactive({
+      input$dirs
+      volumes <- shinyFiles::getVolumes()
+      shinyFiles::shinyDirChoose(input, "dirs", roots = volumes, session = session)
+      dirSelected <- shinyFiles::parseDirPath(volumes, input$dirs)
+      as.character(dirSelected)
+    })
+
+    observe({
+      dir()
+      if(length(dir())){
+        withProgress(min = 0, max = 1, value = 0.8, message = "Writing report", {
+          writeHtmlReport(dir(), species = values$omicSpecies, dataType = input$omicsType)
+        })
+        output$report2 <- renderText("Done!")
+      }
+    })
+
+    # Summary heatmap in first tab
+    output$SummaryFlags <- renderPlotly({
+      plotSummary(data(), usePlotly = TRUE,
+                  cluster = input$Sumcluster, dendrogram = TRUE) %>%
+        layout(margin = list(r = 200))
+    })
+
+
+    # report the number of files you ve read in
+    output$report <- renderText({
+      if(!length(data())){
+        print("No Files Loaded")
+      }else{
+        paste(length(data()), "Files Loaded")
+      }
+    })
+
+
+    # plot read totals
+
+    output$ReadTotals <- renderPlotly({
+      plotReadTotals(data(), usePlotly = TRUE, duplicated = TRUE) %>%
+        layout(margin = list(r = 200))
+    })
+
+    output$OSummary <- renderPlotly({
+      plotOverrepresentedSummary(data(),
+                                 usePlotly = TRUE,
+                                 cluster = input$OScluster,
+                                 dendrogram = TRUE) %>%
+        layout(margin = list(r = 200))
+
+    })
+
+
+    output$OSsingle <- output$DupSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotOverrepresentedSummary(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+
+    output$DupHeatmap <- renderPlotly({
+
+      plotDuplicationLevels(data(),
+                            cluster = input$Dupcluster,
+                            dendrogram = TRUE,
+                            usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+    output$DupSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotDuplicationLevels(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+    output$SCHeatmap <- renderPlotly({
+
+      plotSequenceContent(data(),
+                          cluster = input$SCcluster,
+                          dendrogram = TRUE,
+                          usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+
+    output$SCsingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotSequenceContent(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+
+    # start rendering the input buttons for
+    output$theoreticalGC <- renderUI({
+      if(input$theoreticalGC){
+        radioButtons(inputId="theoreticalType", label="What type of data?",
+                     choices=c("Genome","Transcriptome"), selected = "Genome")
+      }
+    })
+
+    output$GCspecies <- renderUI({
+      if(!is.null(input$theoreticalGC)){
+        if(input$theoreticalGC){
+          if(input$theoreticalType == "Genome"){
+            selectInput("GCspecies", "Select species",
+                        choices = genomes(gcTheoretical)$Name,
+                        selected = "Hsapiens")
+          }else{
+            selectInput("GCspecies", "Select species",
+                        choices = transcriptomes(gcTheoretical)$Name,
+                        selected = "Hsapiens")
+          }
+        }
+      }})
+
+
+
+    output$GCheatmap <- renderPlotly({
+      if(is.null(input$GCspecies)){
+        GCspecies <- FALSE
+      }else GCspecies <- input$GCspecies
+
+      GCtype <- input$GCheatType == "Count"
+
+      if(is.null(input$theoreticalGC)){
+        plotGcContent(data(),
+                      cluster = input$GCcluster,
+                      plotType = "heatmap",
+                      theoreticalType = input$theoreticalType,
+                      dendrogram = TRUE,
+                      usePlotly = TRUE) %>%
+          layout(margin = list(r = 200))
+      }else{
+        plotGcContent(data(),
+                      cluster = input$GCcluster,
+                      plotType = "heatmap",
+                      theoreticalType = input$theoreticalType,
+                      theoreticalGC = input$theoreticalGC,
+                      dendrogram = TRUE,
+                      species = GCspecies,
+                      usePlotly = TRUE) %>%
+          layout(margin = list(r = 200))
+      }
+
+    })
+
+    output$GCSingle <- renderPlotly({
+      if(is.null(input$GCspecies)){
+        GCspecies <- FALSE
+      }else GCspecies <- input$GCspecies
+
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      if(is.null(input$theoreticalGC)){
+        GCSingle <- plotGcContent(sub_fdl, usePlotly = TRUE,
+                                  counts = FALSE)
+      }else{
+        GCSingle <- plotGcContent(sub_fdl, usePlotly = TRUE,
+                                  counts = FALSE, theoreticalGC = input$theoreticalGC,
+                                  theoreticalType = input$theoreticalType,
+                                  species = GCspecies)
+      }
+      GCSingle %>%
+        layout(margin = list(r = 200, l = 100),
+               legend = list(orientation = 'h', title = ""))
+    })
+
+
+    output$SLHeatmap <- renderPlotly({
+      plotSequenceLengthDistribution(data(),
+                                     cluster = input$SLcluster,
+                                     dendrogram = TRUE,
+                                     counts = input$SLType == "Counts",
+                                     usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+    output$SLSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotSequenceLengthDistribution(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+    output$baseQualHeatmap <- renderPlotly({
+      plotBaseQualities(data(),
+                        usePlotly = TRUE,
+                        plotType = "heatmap",
+                        plotValue = input$BQplotValue,
+                        cluster = input$BQcluster,
+                        dendrogram = TRUE) %>%
+        layout(margin = list(r = 200))
+    })
+
+    output$BaseQualitiesSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+
+    output$seqQualHeatmap <- renderPlotly({
+      plotSequenceQualities(data(),
+                            cluster = input$SQcluster,
+                            counts = FALSE,
+                            dendrogram = TRUE,
+                            usePlotly = TRUE) %>% layout(margin = list(r = 200))
+    })
+
+    output$SeqQualitiesSingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      qualPlot <- plotSequenceQualities(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100),
+               legend = list(orientation = 'h', title = ""))
+    })
+
+    output$NCheatmap <- renderPlotly({
+
+      plotNContent(data(),
+                   cluster = input$Ncluster,
+                   dendrogram = TRUE,
+                   usePlotly = TRUE) %>% layout(margin = list(r = 200))
+    })
+
+
+    # N Content single plot
+
+    output$NCsingle <- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      plotNContent(sub_fdl, usePlotly = TRUE) %>%
+        layout(margin = list(r = 200, l = 100))
+    })
+
+    # By default, this method will now plot the sum of all adapter types
+    # Do we need to change the drop-down menu to accept the option "all"?
+    output$ACheatmap <- renderPlotly({
+      ACplot <- plotAdapterContent(data(),
+                                   adapterType = input$ACtype,
+                                   usePlotly = TRUE,
+                                   dendrogram = TRUE,
+                                   cluster = input$ACcluster)
+      if(!is.null(ACplot)) ACplot %>% layout(margin = list(r = 200))
+      else stop(paste("Sequences did not contain any", input$ACtype, "content, please select another."))
+    })
+
+    output$ACsingle<- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(fileName(data()) == click$key[[1]])
+      }
+      sub_fdl <- data()[[num]]
+      ACsing <- plotAdapterContent(sub_fdl, usePlotly = TRUE)
+
+      if(!is.null(ACsing)) ACsing %>%
+        layout(margin = list(r = 200, l = 100),
+               legend = list(orientation = 'h', title = ""))
+      else stop(paste("Sequences did not contain any",
+                      input$ACtype, "content, please select another."))
+    })
+
+    output$Kheatmap <- renderPlotly({
+      Kplot <- plotKmers(data(),
+                         usePlotly = TRUE,
+                         cluster = input$KMcluster,
+                         dendrogram = TRUE)
+      if(!is.null(Kplot)) Kplot %>% layout(margin = list(r = 200))
+      else stop(paste("Samples have no Kmer content"))
+    })
+
+    output$Ksingle<- renderPlotly({
+      if(is.null(event_data("plotly_click")$key[[1]])){
+        num <- 1
+      }else {
+        click <- event_data("plotly_click")
+        num <- which(grepl(click$key[[1]], fileName(data())))
+      }
+      sub_fdl <- data()[[num]]
+      Ksing <- plotKmers(sub_fdl, usePlotly = TRUE)
+
+      if(!is.null(Ksing)) Ksing %>%
+        layout(margin = list(r = 200, l = 100))
+      else stop(paste("Library did not contain any identified Kmers please select another."))
+    })
+  }
+
+  shinyApp(ui = ui, server = server)
+
+}
+

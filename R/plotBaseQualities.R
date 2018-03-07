@@ -325,7 +325,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               # Reorganise the data frame
               df[[plotValue]] <- as.numeric(df$Data)
               df$Start <- as.integer(as.character(df$Start))
-              df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
               maxVal <- max(df[[plotValue]], na.rm = TRUE)
               phredMax <- ifelse(maxVal <= warn, 41, ceiling(maxVal + 1))
 

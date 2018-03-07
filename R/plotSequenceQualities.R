@@ -225,7 +225,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
               key <- df$Filename
               df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Quality", value.name = "Count")
               df$Filename <- labels[df$Filename]
-              df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
+              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 
               if (!counts){
                 Count <- NULL # To avoid NOTE messages in R CMD check
