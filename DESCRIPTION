@@ -40,6 +40,8 @@ Imports:
   viridis,
   viridisLite,
   zoo
+remotes:
+  mikelove/fastqcTheoreticalGC/
 LazyData: true
 RoxygenNote: 6.0.1
 Collate: 
