@@ -173,7 +173,7 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               )
               
               qualPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(), qualPlot, widths = c(0.16,0.84)) %>% 
+                plotly::subplot(plotly::plotly_empty(), qualPlot, widths = c(0.14,0.86)) %>% 
                   layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"), yaxis2 = list(title = yax)))
               
               

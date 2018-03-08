@@ -158,7 +158,7 @@ setMethod("plotBaseQualities", signature = "FastqcData",
                                                         "`10th_Percentile`","`90th_Percentile`"))
               ) 
                 qualPlot <- suppressMessages(
-                  plotly::subplot(plotly::plotly_empty(), qualPlot, widths = c(0.16,0.84)) %>% 
+                  plotly::subplot(plotly::plotly_empty(), qualPlot, widths = c(0.15,0.85)) %>% 
                     layout(yaxis2 = list(title = paste0("Quality Scores (", enc, " encoding)"))))
               
             }

@@ -144,7 +144,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
                        showlegend = FALSE)
               
               overPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(), overPlot, widths = c(0.16,0.84)) %>% 
+                plotly::subplot(plotly::plotly_empty(), overPlot, widths = c(0.14,0.86)) %>% 
                   layout(xaxis2 = list(title = "Percent of Total Reads (%)"), 
                          yaxis2 = list(title = "Overrepresented Sequence", showticklabels = FALSE)))
               

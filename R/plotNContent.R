@@ -147,7 +147,7 @@ setMethod("plotNContent", signature = "FastqcData",
               ))
               
              nPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(), nPlot, widths = c(0.16,0.84)) %>% 
+                plotly::subplot(plotly::plotly_empty(), nPlot, widths = c(0.14,0.86)) %>% 
                   layout(yaxis2 = list(title = "N Content (%)")))
               
               

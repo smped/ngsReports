@@ -188,8 +188,8 @@ setMethod("plotKmers", signature = "FastqcData",
                 ylab("Log2 Obs/Exp") +
                 xlab("")
               kMerPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(), kMerPlot, widths = c(0.16,0.84)) %>% 
-                  layout(xaxis2 = list(title = "Position in read (bp)"), yaxis2 = list(title = "Log(2) Obs/Exp"),
+                plotly::subplot(plotly::plotly_empty(), kMerPlot, widths = c(0.14,0.86)) %>% 
+                  layout(yaxis2 = list(title = "Log(2) Obs/Exp"),
                          legend = list(orientation = "v", x = 1, y = 1)))
             }
             kMerPlot

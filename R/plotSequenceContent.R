@@ -121,7 +121,7 @@ setMethod("plotSequenceContent", signature = "FastqcData",
             if(usePlotly){
 
               scPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(), scPlot, widths = c(0.16,0.84)) %>% 
+                plotly::subplot(plotly::plotly_empty(), scPlot, widths = c(0.14,0.86)) %>% 
                   layout(xaxis2 = list(title = "Position in read (bp)"), yaxis2 = list(title = "Percent (%)")))
             }
 

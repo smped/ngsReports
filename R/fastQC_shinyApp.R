@@ -1032,7 +1032,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         Ksing <- plotKmers(sub_fdl, usePlotly = TRUE)
         
         if(!is.null(Ksing)) Ksing %>%
-          layout(margin = list(r = 200))
+          layout(margin = list(r = 200, b = 50))
         else stop(paste("Library did not contain any identified Kmers please select another."))
       })
     }

@@ -153,7 +153,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
               )
               
               lenPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(), lenPlot, widths = c(0.16,0.84)) %>% 
+                plotly::subplot(plotly::plotly_empty(), lenPlot, widths = c(0.14,0.86)) %>% 
                   layout(xaxis2 = list(title = "Sequence Length (bp)"), yaxis2 = list(title = "Count")))
               
             }
