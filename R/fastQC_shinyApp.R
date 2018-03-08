@@ -73,6 +73,7 @@ fastqcShiny <- function(fastqcInput = NULL){
   }
   
   menuItemLogic <- function(flags){
+    
     menuLogic <- list()
     if(all(flags$Status == "PASS")){
       
@@ -109,7 +110,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       valueBox(
         value = paste(count[1], count[2], sep = "/"), subtitle = status, icon = icon(ic,
                                                                                      class = "fa-lg"),
-        color = c, width = 2
+        color = c
       )
     })
   }
@@ -125,10 +126,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                                 textOutput("report"),
                                 br(),
                                 checkboxInput("Sumcluster", "Cluster", value = TRUE), 
-                                collapsible = TRUE, width = NULL, title = "Options"),
-                            valueBoxOutput("BSboxP",width = NULL),
-                            valueBoxOutput("BSboxW",width = NULL),
-                            valueBoxOutput("BSboxF",width = NULL)),
+                                collapsible = TRUE, width = NULL, title = "Options")),
                      box(h1("Summary of fastQC Flags"),
                          h5("Heatmap of fastQC flags (pass, warning or fail) for each fastQC report"),
                          plotlyOutput("SummaryFlags"), width = 10)),
@@ -333,7 +331,7 @@ fastqcShiny <- function(fastqcInput = NULL){
     dashboardHeader(title = "ngsR::FASTQC"),
     dashboardSidebar(
       sidebarMenu(
-        menuItemOutput("BSflag"), 
+        menuItem(text = "Summary", tabName = "BS"), 
         menuItem(text = "Total Sequences", tabName = "TS"),
         menuItemOutput("BQflag"),
         menuItemOutput("SQflag"),
@@ -412,27 +410,6 @@ fastqcShiny <- function(fastqcInput = NULL){
       
       
  # dynamic tabs to show pass warn Fail     
-      output$BSflag <- renderMenu({
-        if(!is.null(fastqcInput) | !is.null(input$files)){
-          flags <- getSummary(data())
-          flags <- subset(flags, flags$Category == "Basic Statistics")
-          
-          items <- menuItemLogic(flags = flags)
-          
-          values$BSflag <- items[[1]]
-          values$BScolour <- items[[2]]
-          values$BScountF <- items[[3]]
-          values$BScountW <- items[[4]]
-          values$BScountP <- items[[5]]
-          
-          menuItem(text = "Summary", tabName = "BS", badgeLabel = values$BSflag, badgeColor = values$BScolour)
-          
-        }
-        else{
-          menuItem(text = "Summary", tabName = "BS")
-        }
-      })
-      
       
       output$BQflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
@@ -646,11 +623,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
       })
       
-      
-      
       #render fail value boxes
-      output$BSboxF <- renderValBox(count = values$BScountF, status = "FAIL", ic = "times", c = "red")
-      
       output$BQboxF <- renderValBox(count = values$BQcountF, status = "FAIL", ic = "times", c = "red")
       
       output$SQboxF <- renderValBox(count = values$SQcountF, status = "FAIL", ic = "times", c = "red")
@@ -672,7 +645,6 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$KCboxF <- renderValBox(count = values$KCcountF, status = "FAIL", ic = "times", c = "red")
       
       #render warn value boxes
-      output$BSboxW <- renderValBox(count = values$BScountW, status = "WARN", ic = "exclamation", c = "yellow")
       
       output$BQboxW <- renderValBox(count = values$BQcountW, status = "WARN", ic = "exclamation", c = "yellow")
       
@@ -696,8 +668,6 @@ fastqcShiny <- function(fastqcInput = NULL){
       
       #render Pass value boxes
       
-      output$BSboxP <- renderValBox(count = values$BScountP, status = "PASS", ic = "check", c = "green")
-      
       output$BQboxP <- renderValBox(count = values$BQcountP, status = "PASS", ic = "check", c = "green")
       
       output$SQboxP <- renderValBox(count = values$SQcountP, status = "PASS", ic = "check", c = "green")
@@ -718,6 +688,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       
       output$KCboxP <- renderValBox(count = values$KCcountP, status = "PASS", ic = "check", c = "green")
       
+      
 # render plots       
       
       ####################
@@ -736,7 +707,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       
       output$ReadTotals <- renderPlotly({
         plotReadTotals(data(), usePlotly = TRUE, duplicated = input$showDup) %>%
-          layout(margin = list(r = 200))
+          layout(margin = list(l = 100, r = 200))
       })
 
       ####################
@@ -762,7 +733,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
         sub_fdl <- data()[[num]]
         plotBaseQualities(sub_fdl, usePlotly = TRUE) %>%
-          layout(margin = list(r = 200, l = 210, b = 50))
+          layout(margin = list(r = 200, b = 50))
       })
       
       ####################
@@ -786,7 +757,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
         sub_fdl <- data()[[num]]
         qualPlot <- plotSequenceQualities(sub_fdl, usePlotly = TRUE) %>%
-          layout(margin = list(r = 200, l = 210, b = 50),
+          layout(margin = list(r = 200),
                  legend = list(orientation = 'h', title = ""))
       })
       
@@ -813,7 +784,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
         sub_fdl <- data()[[num]]
         plotSequenceContent(sub_fdl, usePlotly = TRUE) %>%
-          layout(margin = list(r = 200, l = 210, b = 50))
+          layout(margin = list(r = 200))
       })
       
       
@@ -896,7 +867,7 @@ fastqcShiny <- function(fastqcInput = NULL){
                                     species = GCspecies)
         }
         GCSingle %>%
-          layout(margin = list(r = 200, l = 210, b = 50),
+          layout(margin = list(r = 200),
                  legend = list(orientation = 'h', title = ""))
       })
       
@@ -925,7 +896,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
         sub_fdl <- data()[[num]]
         plotNContent(sub_fdl, usePlotly = TRUE) %>%
-          layout(margin = list(r = 200, l = 210, b = 50))
+          layout(margin = list(r = 200, b = 50))
       })
       
       
@@ -951,7 +922,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
         sub_fdl <- data()[[num]]
         plotSequenceLengthDistribution(sub_fdl, usePlotly = TRUE, plotType = "line") %>%
-          layout(margin = list(r = 200, l = 210, b = 50))
+          layout(margin = list(r = 200))
       })
       
       ####################
@@ -976,7 +947,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
         sub_fdl <- data()[[num]]
         plotDuplicationLevels(sub_fdl, usePlotly = TRUE) %>%
-          layout(margin = list(r = 200, l = 210, b = 50))
+          layout(margin = list(r = 200))
       })
       
       ####################
@@ -1002,7 +973,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
         sub_fdl <- data()[[num]]
         plotOverrepresentedSummary(sub_fdl, usePlotly = TRUE) %>%
-          layout(margin = list(r = 200, l = 210, b = 50))
+          layout(margin = list(r = 200))
       })
       
       ####################
@@ -1030,7 +1001,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         ACsing <- plotAdapterContent(sub_fdl, usePlotly = TRUE)
         
         if(!is.null(ACsing)) ACsing %>%
-          layout(margin = list(r = 200, l = 210, b = 50),
+          layout(margin = list(r = 200),
                  legend = list(orientation = 'h', title = ""))
         else stop(paste("Sequences did not contain any",
                         input$ACtype, "content, please select another."))
@@ -1061,7 +1032,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         Ksing <- plotKmers(sub_fdl, usePlotly = TRUE)
         
         if(!is.null(Ksing)) Ksing %>%
-          layout(margin = list(r = 200, l = 210, b = 50))
+          layout(margin = list(r = 200))
         else stop(paste("Library did not contain any identified Kmers please select another."))
       })
     }

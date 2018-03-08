@@ -225,6 +225,10 @@ setMethod("plotGcContent", signature = "FastqcData",
                 plotly::ggplotly(gcPlot, tooltip = c("GC_Content", value, "Type"))) %>%
                     layout(legend = list(x = 0.622, y = 1))
                 )
+              gcPlot <- suppressMessages(
+                plotly::subplot(plotly::plotly_empty(), gcPlot, widths = c(0.14,0.86)) %>% 
+                  layout(xaxis2 = list(title = "GC content (%)"), yaxis2 = list(title = ylab)))
+              
             }
 
             # Draw the plot

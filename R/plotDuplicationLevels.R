@@ -150,11 +150,16 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
             if (usePlotly){
 
               dupPlot <- dupPlot +
-                xlab("") +
                 theme(legend.position = "none")
               dupPlot <- suppressMessages(
                 plotly::ggplotly(dupPlot, tooltip = c("colour", "Percentage"))
               )
+              
+              dupPlot <- suppressMessages(
+                plotly::subplot(plotly::plotly_empty(), dupPlot, widths = c(0.16,0.84)) %>% 
+                  layout(xaxis2 = list(title = "Sequence Duplicaiton Levels"), yaxis2 = list(title = "Percentage (%)")))
+              
+              
               dupPlot$x$data[[1]]$hoveron <- "points"
               dupPlot$x$data[[2]]$hoveron <- "points"
               dupPlot$x$data[[3]]$hoveron <- "points"

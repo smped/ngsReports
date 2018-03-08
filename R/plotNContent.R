@@ -143,9 +143,14 @@ setMethod("plotNContent", signature = "FastqcData",
               nPlot <- nPlot + xlab("")
               nPlot <- suppressMessages(
                 plotly::ggplotly(nPlot + theme(legend.position = "none"),
-                                 hoverinfo = c("x", "y", "colour")) %>%
-                  plotly::layout(xaxis = list(title = "Position in Read (bp)"), margin = list(b = 70))
-              )
+                                 hoverinfo = c("x", "y", "colour")
+              ))
+              
+             nPlot <- suppressMessages(
+                plotly::subplot(plotly::plotly_empty(), nPlot, widths = c(0.16,0.84)) %>% 
+                  layout(yaxis2 = list(title = "N Content (%)")))
+              
+              
               # Set the hoverinfo for bg rectangles to the vertices only,
               # This will effectively hide them
               nPlot$x$data[[1]]$hoveron <- "points"

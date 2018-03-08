@@ -134,6 +134,8 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                           aes_string(xmin = "xmin", xmax = "xmax",
                                      ymin = "ymin", ymax = "ymax", fill = "Status")) +
                 geom_line(aes_string(x = "Quality", y = "Frequency", colour = "Filename"))
+              
+              yax <- "Frequency"
 
 
             }
@@ -144,6 +146,8 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                           aes_string(xmin = "xmin", xmax = "xmax",
                                      ymin = "ymin", ymax = "ymax", fill = "Status")) +
                 geom_line(aes_string(x = "Quality", y = "Count", colour = "Filename"))
+              
+              yax <- "Count"
 
             }
 
@@ -167,6 +171,12 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                 plotly::ggplotly(qualPlot,
                                  hoverinfo = c("x", "y", "colour"))
               )
+              
+              qualPlot <- suppressMessages(
+                plotly::subplot(plotly::plotly_empty(), qualPlot, widths = c(0.16,0.84)) %>% 
+                  layout(xaxis2 = list(title = "Mean Sequence Quality Per Read (Phred Score)"), yaxis2 = list(title = yax)))
+              
+              
               # Set the hoverinfo for bg rectangles to the vertices only,
               # This will effectively hide them
               qualPlot$x$data[[1]]$hoveron <- "points"

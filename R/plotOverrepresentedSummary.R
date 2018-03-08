@@ -139,11 +139,15 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
                                                 Possible_Source,
                                                 "<br> Status: ",
                                                 Status)) %>%
-                layout(xaxis = list(title = "Percent of Total Reads"),
-                       yaxis = list(title = "Overrepresented Sequence",
-                                    showticklabels = FALSE),
-                       title = df$Filename[1],
-                       bargap = 0.05)
+                layout(title = df$Filename[1],
+                       bargap = 0.05,
+                       showlegend = FALSE)
+              
+              overPlot <- suppressMessages(
+                plotly::subplot(plotly::plotly_empty(), overPlot, widths = c(0.16,0.84)) %>% 
+                  layout(xaxis2 = list(title = "Percent of Total Reads (%)"), 
+                         yaxis2 = list(title = "Overrepresented Sequence", showticklabels = FALSE)))
+              
             }
             else{
               overPlot <- ggplot(df, aes_string(x = "Sequence", y = "Percentage", fill = "Status")) +

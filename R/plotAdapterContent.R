@@ -163,9 +163,8 @@ setMethod("plotAdapterContent", signature = "FastqcData",
             # Make interacive if required
             if (usePlotly){
               acPlot <- suppressMessages(
-                plotly::ggplotly(acPlot + theme(legend.position = "none"),
-                                 hoverinfo = c("x", "y", "colour"))
-              )
+                plotly::subplot(plotly::plotly_empty(), acPlot, widths = c(0.17,0.83)) %>% 
+                  layout(xaxis2 = list(title = "Position in read (bp)"), yaxis2 = list(title = "Percent (%)")))
               # Set the hoverinfo for bg rectangles to the vertices only,
               # This will effectively hide them
               acPlot$x$data[[1]]$hoveron <- "points"

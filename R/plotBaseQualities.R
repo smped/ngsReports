@@ -155,8 +155,12 @@ setMethod("plotBaseQualities", signature = "FastqcData",
               qualPlot <- suppressMessages(
                 plotly::ggplotly(qualPlot, hoverinfo = c("Base", "Mean", "Median",
                                                          "Upper_Quartile", "Lower_Quartile",
-                                                         "`10th_Percentile`","`90th_Percentile`"))
-              )
+                                                        "`10th_Percentile`","`90th_Percentile`"))
+              ) 
+                qualPlot <- suppressMessages(
+                  plotly::subplot(plotly::plotly_empty(), qualPlot, widths = c(0.16,0.84)) %>% 
+                    layout(yaxis2 = list(title = paste0("Quality Scores (", enc, " encoding)"))))
+              
             }
 
             qualPlot
