@@ -257,7 +257,10 @@ fastqcShiny <- function(fastqcInput = NULL){
              ),
              tabItem(tabName = "OS",
                      column(width = 2, box(
-                       checkboxInput("OScluster", "Cluster", value = TRUE), collapsible = TRUE, width = NULL, title = "Options" 
+                       checkboxInput("OScluster", "Cluster", value = TRUE), 
+                       h5("Export Overrepresented Sequences"),
+                       shinyDirButton(id = "dirOS", label = "Choose directory", title = ""),
+                       collapsible = TRUE, width = NULL, title = "Options" 
                      ),
                      valueBoxOutput("OSboxP", width = NULL),
                      valueBoxOutput("OSboxW", width = NULL),
@@ -390,6 +393,22 @@ fastqcShiny <- function(fastqcInput = NULL){
         values$omicSpecies <- input$omicSpecies
       })
       
+      #export overrepresented
+      
+      expOS <- reactive({
+        volumes <- shinyFiles::getVolumes()
+        shinyFiles::shinyDirChoose(input, "dirOS", roots = volumes, session = session)
+        dirSelected <- shinyFiles::parseDirPath(volumes, input$dirOS)
+        as.character(dirSelected)
+      })
+      
+       observe({
+        if(length(expOS())){
+        exportOverrepresented(data(), path = paste0(expOS(), "/OverrepSequences", "-", Sys.Date()), n = 10, noAdapters = TRUE)
+        }
+      })
+      
+   # export HTML    
       dir <- reactive({
         input$dirs
         volumes <- shinyFiles::getVolumes()
@@ -687,6 +706,10 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$ACboxP <- renderValBox(count = values$ACcountP, status = "PASS", ic = "check", c = "green")
       
       output$KCboxP <- renderValBox(count = values$KCcountP, status = "PASS", ic = "check", c = "green")
+      
+      
+      
+
       
       
 # render plots       
