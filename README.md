@@ -21,6 +21,10 @@ library(ngsReports)
 The vignette for usage is [here](https://uofabioinformaticshub.github.io/ngsReports/vignettes/ngsReportsIntroduction)
 
 # ShinyApp Usage 
+
+*We recomend opening the shiny app into Google Chrome*
+this can be done by clicking `Open in Browser` after executing `fastqcShiny()`
+
 For a analysis of multiple fastqc reports use the shinyApp by running:
 `fastqcShiny()`
 once inside the shiny app, files can be input by clicking the `Choose Files` button.
