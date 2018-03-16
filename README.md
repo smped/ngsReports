@@ -22,7 +22,8 @@ The vignette for usage is [here](https://uofabioinformaticshub.github.io/ngsRepo
 
 # ShinyApp Usage 
 
-*We recomend opening the shiny app into Google Chrome*
+**We recomend opening the shiny app into Google Chrome**
+
 this can be done by clicking `Open in Browser` after executing `fastqcShiny()`
 
 For a analysis of multiple fastqc reports use the shinyApp by running:
