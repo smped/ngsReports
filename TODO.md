@@ -2,11 +2,6 @@
 
 ## Chris
 
-- `Overrepresented_sequences` doesn't select file before first click
-    - This seems OK now, but if you click on the bars in the barplot, you get an error. This needs to be disabled
-        - I dont get this error?
-- Add `exportOverrepresented()`
-
 
 ## Hien
 
