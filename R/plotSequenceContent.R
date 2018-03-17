@@ -139,6 +139,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
             # Get the SequenceContent
             df <- Per_base_sequence_content(x)
             df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
+            df$End <- as.integer(gsub("[0-9]*-([0-9]*)", "\\1", df$Base))
 
             plotType <- match.arg(plotType)
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -174,15 +175,15 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
 
               df <- dplyr::right_join(df, basicStat, by = "Filename")
-              df <- df[c("Filename", "Start", "colour", "Longest_sequence", "A", "C", "G", "T")]
+              df <- df[c("Filename", "Start", "End", "colour", "Longest_sequence", "A", "C", "G", "T")]
 
-              df <- split(df, f = df$Filename) %>%
-                lapply(function(x){
-                  dfFill <- data.frame(Start = 1:x[["Longest_sequence"]][1])
-                  x <- dplyr::right_join(x, dfFill, by = "Start") %>%
-                    zoo::na.locf()
-                }) %>%
-                dplyr::bind_rows()
+              # df <- split(df, f = df$Filename) %>%
+              #   lapply(function(x){
+              #     dfFill <- data.frame(Start = 1:x[["Longest_sequence"]][1])
+              #     x <- dplyr::right_join(x, dfFill, by = "Start") %>%
+              #       zoo::na.locf()
+              #   }) %>%
+              #   dplyr::bind_rows()
               df$Position <- as.integer(df$Start)
               df$Filename <- labels[df$Filename]
 
@@ -204,9 +205,15 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               tileCols <- unique(df$colour)
               names(tileCols) <- unique(df$colour)
               
-              scPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "colour",
-                                              A = "A", C = "C", G = "G", T = "T")) +
-                geom_tile() +
+              df$ymax <- as.integer(df$Filename) + 0.5
+              df$ymin <- df$ymax - 1
+              df$xmax <- df$End + 0.5
+              df$xmin <- df$Start - 1
+              df$Window <- paste(df$Start, "-", df$End, "bp")
+              
+              scPlot <- ggplot(df, aes_string(fill = "colour", A = "A", C = "C", G = "G", T = "T", 
+                                     Filename = "Filename", Window = "Window")) + 
+                geom_rect(aes_string(xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax")) +
                 scale_fill_manual(values = tileCols) +
                 scale_x_continuous(expand = c(0, 0)) +
                 scale_y_discrete(expand = c(0, 0)) +
@@ -216,6 +223,21 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                       panel.grid.major = element_blank()) +
                 labs(x = "Position in read (bp)",
                      y = "Filename")
+              
+              
+              
+              # scPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "colour",
+              #                                 A = "A", C = "C", G = "G", T = "T")) +
+              #   geom_tile() +
+              #   scale_fill_manual(values = tileCols) +
+              #   scale_x_continuous(expand = c(0, 0)) +
+              #   scale_y_discrete(expand = c(0, 0)) +
+              #   theme_bw() +
+              #   theme(legend.position = "none",
+              #         panel.grid.minor = element_blank(),
+              #         panel.grid.major = element_blank()) +
+              #   labs(x = "Position in read (bp)",
+              #        y = "Filename")
               
               if (!is.null(userTheme)) scPlot <- scPlot + userTheme
               
