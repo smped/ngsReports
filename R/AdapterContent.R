@@ -22,7 +22,8 @@
 setMethod("Adapter_Content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Adapter_Content)
-            dplyr::bind_rows(df)
+            if(length(unlist(df))) dplyr::bind_rows(df)
+            else NULL
           })
 
 #' @export
@@ -31,8 +32,11 @@ setMethod("Adapter_Content", "FastqcDataList",
 setMethod("Adapter_Content", "FastqcData",
           function(object){
             df <- object@Adapter_Content
-            df$Filename <- fileName(object)
+            if(length(df)){
+             df$Filename <- fileName(object)
             dplyr::select(df, dplyr::one_of("Filename"), dplyr::everything())
+            }
+            else NULL
           })
 
 #' @export

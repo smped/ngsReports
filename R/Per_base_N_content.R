@@ -18,8 +18,11 @@
 setMethod("Per_base_N_content", "FastqcData",
           function(object){
             df <- object@Per_base_N_content
+            if(length(df)){
             df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
+            }
+            else NULL
           })
 
 #' @export
@@ -28,7 +31,8 @@ setMethod("Per_base_N_content", "FastqcData",
 setMethod("Per_base_N_content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_base_N_content)
-            dplyr::bind_rows(df)
+            if(length(unlist(df))) dplyr::bind_rows(df)
+            else NULL
           })
 
 #' @export

@@ -18,8 +18,11 @@
 setMethod("Per_sequence_quality_scores", "FastqcData",
           function(object){
             df <- object@Per_sequence_quality_scores
+            if(length(df)){
             df$Filename<- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
+            }
+            else NULL
           })
 
 #' @export
@@ -28,8 +31,9 @@ setMethod("Per_sequence_quality_scores", "FastqcData",
 setMethod("Per_sequence_quality_scores", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_sequence_quality_scores)
-            dplyr::bind_rows(df)
-          })
+            if(length(unlist(df))) dplyr::bind_rows(df)
+            else NULL
+            })
 
 #' @export
 #' @rdname Per_sequence_quality_scores

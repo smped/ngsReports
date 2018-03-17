@@ -103,77 +103,85 @@ setMethod("plotAdapterContent", signature = "FastqcFileList",
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcData",
           function(x, usePlotly = FALSE, pwfCols, warn = 5, fail = 10, ...){
-
+            
             df <- Adapter_Content(x)
-
-            # Sort out the colours & pass/warn/fail breaks
-            if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-            stopifnot(isValidPwf(pwfCols))
-            stopifnot(is.numeric(c(warn, fail)))
-            stopifnot(all(fail < 100, warn < fail,  warn > 0))
-            # Get any arguments for dotArgs that have been set manually
-            dotArgs <- list(...)
-            allowed <- names(formals(ggplot2::theme))
-            keepArgs <- which(names(dotArgs) %in% allowed)
-            userTheme <- c()
-            if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
-            # Change to long form and remove the _ symbols between words
-            df <- reshape2::melt(df, id.vars = c("Filename", "Position"),
-                                 value.name = "Percent", variable.name = "Type")
-            df <- dplyr::mutate(df, Type = gsub("_", " ", Type))
-
-            # Set the positions as a factor
-            df$Position <- gsub("([0-9]*)-.+", "\\1", df$Position)
-            df$Position <- as.numeric(df$Position)
-            # Round the percent for nicer plotting
-            df$Percent <- round(df$Percent, 2)
-
-            # Add transparency to background colours & define the rectangles
-            pwfCols <- setAlpha(pwfCols, 0.2)
-            x <- list(min = min(df$Position), max = max(df$Position))
-            rects <- dplyr::data_frame(xmin = 0,
-                                       xmax = max(df$Position),
-                                       ymin = c(0, warn, fail),
-                                       ymax = c(warn, fail, 100),
-                                       Status = c("PASS", "WARN", "FAIL"))
-
-
-            # Create the basic plot
-            acPlot <- ggplot(df) +
-              geom_rect(data = rects,
-                        aes_string(xmin = "xmin", xmax = "xmax",
-                                   ymin = "ymin", ymax = "ymax", fill = "Status")) +
-              geom_line(aes_string(x = "Position", y = "Percent",colour = "Type")) +
-              scale_y_continuous(limits = c(0, 100), expand =c(0, 0)) +
-              scale_x_continuous(expand = c(0, 0)) +
-              scale_fill_manual(values = getColours(pwfCols)) +
-              scale_colour_discrete() +
-              facet_wrap(~Filename, ncol = 1) +
-              labs(x = "Position",
-                   y = "Percent (%)") +
-              guides(fill = FALSE) +
-              theme_bw() +
-              theme(legend.position = c(1, 1),
-                    legend.justification = c(1, 1),
-                    legend.title = element_blank())
-
-            # Add the basic customisations
-            if (!is.null(userTheme)) acPlot <- acPlot + userTheme
-            # Make interacive if required
-            if (usePlotly){
-              acPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(), acPlot, widths = c(0.14,0.86)) %>% 
-                  layout(xaxis2 = list(title = "Position in read (bp)"), yaxis2 = list(title = "Percent (%)")))
-              # Set the hoverinfo for bg rectangles to the vertices only,
-              # This will effectively hide them
-              acPlot$x$data[[1]]$hoveron <- "points"
-              acPlot$x$data[[2]]$hoveron <- "points"
-              acPlot$x$data[[3]]$hoveron <- "points"
+            
+            if(length(df)){
+              
+              # Sort out the colours & pass/warn/fail breaks
+              if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+              stopifnot(isValidPwf(pwfCols))
+              stopifnot(is.numeric(c(warn, fail)))
+              stopifnot(all(fail < 100, warn < fail,  warn > 0))
+              # Get any arguments for dotArgs that have been set manually
+              dotArgs <- list(...)
+              allowed <- names(formals(ggplot2::theme))
+              keepArgs <- which(names(dotArgs) %in% allowed)
+              userTheme <- c()
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              
+              # Change to long form and remove the _ symbols between words
+              df <- reshape2::melt(df, id.vars = c("Filename", "Position"),
+                                   value.name = "Percent", variable.name = "Type")
+              df <- dplyr::mutate(df, Type = gsub("_", " ", Type))
+              
+              # Set the positions as a factor
+              df$Position <- gsub("([0-9]*)-.+", "\\1", df$Position)
+              df$Position <- as.numeric(df$Position)
+              # Round the percent for nicer plotting
+              df$Percent <- round(df$Percent, 2)
+              
+              # Add transparency to background colours & define the rectangles
+              pwfCols <- setAlpha(pwfCols, 0.2)
+              x <- list(min = min(df$Position), max = max(df$Position))
+              rects <- dplyr::data_frame(xmin = 0,
+                                         xmax = max(df$Position),
+                                         ymin = c(0, warn, fail),
+                                         ymax = c(warn, fail, 100),
+                                         Status = c("PASS", "WARN", "FAIL"))
+              
+              
+              # Create the basic plot
+              acPlot <- ggplot(df) +
+                geom_rect(data = rects,
+                          aes_string(xmin = "xmin", xmax = "xmax",
+                                     ymin = "ymin", ymax = "ymax", fill = "Status")) +
+                geom_line(aes_string(x = "Position", y = "Percent",colour = "Type")) +
+                scale_y_continuous(limits = c(0, 100), expand =c(0, 0)) +
+                scale_x_continuous(expand = c(0, 0)) +
+                scale_fill_manual(values = getColours(pwfCols)) +
+                scale_colour_discrete() +
+                facet_wrap(~Filename, ncol = 1) +
+                labs(x = "Position",
+                     y = "Percent (%)") +
+                guides(fill = FALSE) +
+                theme_bw() +
+                theme(legend.position = c(1, 1),
+                      legend.justification = c(1, 1),
+                      legend.title = element_blank())
+              
+              # Add the basic customisations
+              if (!is.null(userTheme)) acPlot <- acPlot + userTheme
+              # Make interacive if required
+              if (usePlotly){
+                acPlot <- suppressMessages(
+                  plotly::subplot(plotly::plotly_empty(), acPlot, widths = c(0.14,0.86)) %>% 
+                    layout(xaxis2 = list(title = "Position in read (bp)"), yaxis2 = list(title = "Percent (%)")))
+                # Set the hoverinfo for bg rectangles to the vertices only,
+                # This will effectively hide them
+                acPlot$x$data[[1]]$hoveron <- "points"
+                acPlot$x$data[[2]]$hoveron <- "points"
+                acPlot$x$data[[3]]$hoveron <- "points"
+              }
             }
-
+            
+            else{
+              acPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
+            }
+            
             acPlot
-
+            
           }
 )
 #' @aliases plotAdapterContent,FastqcDataList
@@ -188,6 +196,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
             df <- Adapter_Content(x)
 
+            if(length(df)){
+            
+            
             # Sort out the colours & pass/warn/fail breaks
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
             stopifnot(isValidPwf(pwfCols))
@@ -397,7 +408,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 facet_wrap(~Type, ncol = 1) +
                 theme_bw()
               if (!is.null(userTheme)) acPlot <- acPlot + userTheme
-
+              
               # And draw the plot
               if (usePlotly){
                 acPlot <- acPlot + theme(legend.position = "none")
@@ -410,7 +421,12 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 acPlot$x$data[[2]]$hoveron <- "points"
                 acPlot$x$data[[3]]$hoveron <- "points"
               }
-
+              
+            }
+            }
+            else{
+              acPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
             }
             acPlot
           }

@@ -98,6 +98,8 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
 
             df <- Per_sequence_quality_scores(x)
 
+            if(length(df)){
+          
             # Sort out the colours
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
             stopifnot(isValidPwf(pwfCols))
@@ -183,6 +185,15 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               qualPlot$x$data[[2]]$hoveron <- "points"
               qualPlot$x$data[[3]]$hoveron <- "points"
             }
+            
+            
+            }
+            
+            else{
+              qualPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) qualPlot <- ggplotly(nPlot, tooltip = "")
+            }
+            
 
             # Draw the plot
             qualPlot
@@ -201,6 +212,8 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
 
             # Read in data
             df <- Per_sequence_quality_scores(x)
+            
+            if(length(df)){
 
             # Sort out the colours
             if(base::missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -373,6 +386,13 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                 qualPlot$x$data[[2]]$hoveron <- "points"
                 qualPlot$x$data[[3]]$hoveron <- "points"
               }}
+            
+            }
+            else{
+              qualPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
+            }
+            
             qualPlot
             }
 

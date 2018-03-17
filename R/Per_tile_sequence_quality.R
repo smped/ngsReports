@@ -19,8 +19,11 @@
 setMethod("Per_tile_sequence_quality", "FastqcData",
           function(object){
             df <- object@Per_tile_sequence_quality
+            if(length(df)){
             df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
+            }
+            else NULL
           })
 
 #' @export
@@ -29,7 +32,8 @@ setMethod("Per_tile_sequence_quality", "FastqcData",
 setMethod("Per_tile_sequence_quality", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_tile_sequence_quality)
-            dplyr::bind_rows(df)
+            if(length(unlist(df))) dplyr::bind_rows(df)
+            else NULL
           })
 
 #' @export

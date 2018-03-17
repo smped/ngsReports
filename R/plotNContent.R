@@ -87,6 +87,9 @@ setMethod("plotNContent", signature = "FastqcData",
 
             # Get the NContent
             df <- Per_base_N_content(x)
+            
+            
+            if(length(df)){
             colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
             # Sort out the colours
@@ -157,7 +160,12 @@ setMethod("plotNContent", signature = "FastqcData",
               nPlot$x$data[[2]]$hoveron <- "points"
               nPlot$x$data[[3]]$hoveron <- "points"
             }
-
+            }
+            else{
+            nPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+            if(usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
+            }
+            
             nPlot
 
           }
@@ -168,9 +176,10 @@ setMethod("plotNContent", signature = "FastqcData",
 setMethod("plotNContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, warn = 5, fail = 20, pwfCols,
                    cluster = FALSE, dendrogram = FALSE, ...){
-
             # Get the NContent
             df <- Per_base_N_content(x)
+            
+            if(length(df)){
             colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
             # Sort out the colours
@@ -309,6 +318,11 @@ setMethod("plotNContent", signature = "FastqcDataList",
               nPlot <- nPlot %>%
                 plotly::layout(xaxis3 = list(title = "Position in Read (bp)"), margin = list(b = 45))
 
+            }
+          }
+            else{
+              nPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
             }
 
             nPlot

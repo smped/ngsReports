@@ -90,6 +90,8 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
           function(x, usePlotly = FALSE, labels, pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...){
 
             df <- Sequence_Duplication_Levels(x)
+            
+            if(length(df)) {
             df <- reshape2::melt(df, id.vars = c("Filename", "Duplication_Level"),
                                  value.name = "Percentage", variable.name = "Type")
             df$Duplication_Level <- factor(df$Duplication_Level, levels = unique(df$Duplication_Level))
@@ -164,7 +166,11 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
               dupPlot$x$data[[2]]$hoveron <- "points"
               dupPlot$x$data[[3]]$hoveron <- "points"
             }
-
+            }
+            else{
+              dupPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) dupPlot <- ggplotly(dupPlot, tooltip = "")
+            }
             dupPlot
 
           }
@@ -178,6 +184,8 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                    cluster = FALSE, dendrogram = FALSE,  heatCol = inferno(50), ...){
 
             df <- Sequence_Duplication_Levels(x)
+            
+            if(length(df)){
             deduplication <- match.arg(deduplication)
             type <- c(pre = "Percentage_of_total", post = "Percentage_of_deduplicated")[deduplication]
             df <- df[c("Filename", "Duplication_Level",type)]
@@ -301,6 +309,11 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                 )
               }
 
+            }
+            }
+            else{
+              dupPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) dupPlot <- ggplotly(dupPlot, tooltip = "")
             }
 
             dupPlot

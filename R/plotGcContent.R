@@ -124,6 +124,8 @@ setMethod("plotGcContent", signature = "FastqcData",
                    ...){
 
             df <- tryCatch(Per_sequence_GC_content(x))
+            if(length(df)){
+            
             df$Type <- "GC count per read"
 
             # Get the correct y-axis label
@@ -230,6 +232,11 @@ setMethod("plotGcContent", signature = "FastqcData",
                   layout(xaxis2 = list(title = "GC content (%)"), yaxis2 = list(title = ylab)))
               
             }
+            }
+            else{
+              gcPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) dupPlot <- ggplotly(gcPlot, tooltip = "")
+            }
 
             # Draw the plot
             gcPlot
@@ -245,6 +252,9 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                    cluster = FALSE, dendrogram = TRUE, ...){
 
             df <- tryCatch(Per_sequence_GC_content(x))
+            
+            
+            if(length(df)){
             df$Type <- "GC count per read"
 
             # Drop the suffix, or check the alternate labels
@@ -436,6 +446,11 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                 )
 
               }
+            }
+            }
+            else{
+              gcPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) dupPlot <- ggplotly(gcPlot, tooltip = "")
             }
             gcPlot
 

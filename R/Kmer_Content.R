@@ -18,10 +18,13 @@
 #' @aliases Kmer_Content
 setMethod("Kmer_Content", "FastqcData",
           function(object){
-            df <- dplyr::mutate(object@Kmer_Content,
-                                Filename = fileName(object))
+            df <- dplyr::mutate(object@Kmer_Content)
+            if(length(df)){
+            df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
-          })
+            }
+            else NULL
+            })
 
 #' @export
 #' @rdname Kmer_Content
@@ -29,7 +32,8 @@ setMethod("Kmer_Content", "FastqcData",
 setMethod("Kmer_Content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Kmer_Content)
-            dplyr::bind_rows(df)
+            if(length(unlist(df))) dplyr::bind_rows(df)
+            else NULL
           })
 
 #' @export

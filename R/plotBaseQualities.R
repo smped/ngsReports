@@ -93,6 +93,9 @@ setMethod("plotBaseQualities", signature = "FastqcData",
 
             # Get the data
             df <- tryCatch(Per_base_sequence_quality(x))
+            
+            if(length(df)){
+            
             df$Base <- factor(df$Base, levels = unique(df$Base))
             df$x <- as.integer(df$Base)
             df$xmin <- df$x - 0.4
@@ -162,6 +165,12 @@ setMethod("plotBaseQualities", signature = "FastqcData",
                     layout(yaxis2 = list(title = paste0("Quality Scores (", enc, " encoding)"))))
               
             }
+            
+            }
+            else{
+              qualPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
+            }
 
             qualPlot
           }
@@ -176,6 +185,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
 
             # Get the data
             df <- Per_base_sequence_quality(x)
+            
+            if(length(df)){
 
             # Sort out the colours
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -388,6 +399,11 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                 # Add the custom themes
                 if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
               }
+            }
+            }
+            else{
+              qualPlot <- emptyPlot("Per Base N Content Module is missing from the input")
+              if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
             }
 
             qualPlot
