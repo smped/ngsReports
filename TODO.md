@@ -5,11 +5,6 @@
 
 ## Hien
 
-- Genome build information for `gcTheoretical`
-- Vignette: 
-    - How to create a new object of class `TheoreticalGC` for other organisms
-        - Fasta to BSgenome (just point to BSgeneome help)
-        - Generate GC content using Mike Love's scripts/package
 
 ## Steve
 
