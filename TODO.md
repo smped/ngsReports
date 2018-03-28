@@ -14,11 +14,12 @@
 - **Test on outlier FastQC reports (1 sequence etc)**
 - Finish Vignette
     - Add summary tables
-- `Per_base-sequence_quality` colour scheme is incorrect when all > 30
 - **plotOverrepresentedSummary**
     - Check plot for no overrepresented sequences: *Temporary version added...*    
     - Include in default report
-
+- Change plotly `plotReadTotals()` to use rectangles (as for `plotDuplicationLevels()`)
+- Fix NOTES from `plotDuplicationLevels()` and write correctly
+- Fix handling of zero OverrepresentedSequences in writeHTMLReport template file
 
 # Important But Not Pressing
 
