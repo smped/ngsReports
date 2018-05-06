@@ -13,9 +13,9 @@ License: LGPL (>= 2)
 Encoding: UTF-8
 Depends:
   fastqcTheoreticalGC,
-  ggplot2
+  ggplot2,
+  BiocGenerics
 Imports:
-  BiocGenerics,
   Biostrings,
   checkmate,
   dplyr,

@@ -33,6 +33,3 @@
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot/status
 
-## Chris
-- PCA plot for >50 samples
-- fix travis error
