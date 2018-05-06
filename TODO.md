@@ -35,3 +35,4 @@
 
 ## Chris
 - PCA plot for >50 samples
+- fix travis error
