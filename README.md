@@ -12,7 +12,7 @@ Currently you need to install the fastqcTheoreticalGC package seperately.
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "tidyverse",  "viridis", "viridisLite", "zoo", "shinyFiles"))
 devtools::install_github('mikelove/fastqcTheoreticalGC')
-devtools::install_github('UofABioinformaticsHub/ngsReports')
+devtools::install_github('UofABioinformaticsHub/ngsReports', ref = "BioC_3.7", build_vignettes = FALSE)
 library(ngsReports)
 ```
 
