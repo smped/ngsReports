@@ -1,10 +1,15 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: r
-before_install:
-  - export TRAVIS_R_VERSION=3.4
 r: 
-  - bioc-release
+  - oldrel
+bioc_packages:
+  - BiocGenerics
+  - Biostrings
+  - BSgenome
+  - Rsamtools
+  - ShortRead
+r_github_packages: mikelove/fastqcTheoreticalGC
 sudo: false
 notifications:
   recipients:
