@@ -41,7 +41,7 @@ runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
   # Check the FastqFileList
   stopifnot(class(object) == "FastqFileList")
   nm <- names(object)
-  if (any(!grepl("(fastq|fastq.gz|fq|fq.gz)$", Rsamtools::path(object)))) stop("Files can only contain the fasqt|fq suffix")
+  if (any(!grepl("(fastq|fastq.gz|fq|fq.gz)$", BiocGenerics::path(object)))) stop("Files can only contain the fasqt|fq suffix")
   # Make sure they are all of the same format
   suffix <- gsub(".+(fastq|fastq.gz|fq|fq.gz)$", "\\1", nm)
   suffix <- paste0(".", unique(suffix))
@@ -101,7 +101,7 @@ runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
 
   args <- paste("-o", outPath, threads, casava, extract, nogroup, contaminants, adapters, kmers)
   args <- gsub(" +", " ", args) #Remove any double spaces
-  files <- paste(Rsamtools::path(object), collapse = " ")
+  files <- paste(BiocGenerics::path(object), collapse = " ")
 
   # Run the command
   message("Executing the command '", paste(exec, args), "'")
