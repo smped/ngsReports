@@ -1,4 +1,7 @@
 ## --------------------------------------------------------------------------
+knitr::opts_chunk$set(message = FALSE,warning = FALSE)
+
+## --------------------------------------------------------------------------
 library(ngsReports)
 
 ## ---- eval = FALSE---------------------------------------------------------
@@ -85,4 +88,25 @@ plotGcContent(fdl)
 
 ## --------------------------------------------------------------------------
 plotGcContent(fdl, theoreticalType = "Transcriptome", species = "Mmusculus")
+
+## ----message=FALSE,warning=FALSE-------------------------------------------
+plotGcContent(fdl, Fastafile = system.file("extdata","Athaliana.TAIR10.tRNA.fasta",package="ngsReports"))
+
+## --------------------------------------------------------------------------
+plotGcContent(fdl, theoreticalGC = FALSE)
+
+## --------------------------------------------------------------------------
+plotGcContent(fdl, plotType = "line",  theoreticalType = "Transcriptome")
+
+## --------------------------------------------------------------------------
+plotOverrepresentedSummary(fdl)
+
+## ---- fig.wide = TRUE------------------------------------------------------
+plotOverrepresentedSummary(fdl[[1]])
+
+## ---- eval = FALSE---------------------------------------------------------
+#  exportOverrepresented(fdl, n = 10)
+
+## ----sessionInfo, echo=FALSE-----------------------------------------------
+sessionInfo()
 

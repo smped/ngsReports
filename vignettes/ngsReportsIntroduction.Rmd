@@ -17,6 +17,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r}
+knitr::opts_chunk$set(message = FALSE,warning = FALSE)
+```
+
+
 # Introduction
 
 The package `ngsReports` is designed to bolt into data processing pipelines and produce combined plots for FastQC reports across an entire set of libraries.
