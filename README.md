@@ -8,8 +8,9 @@ An R Package for managing FastQC reports and other NGS related log files inside 
 To install required packages follows the instructions below.
 Currently you need to install the fastqcTheoreticalGC package seperately.
 
-**NB: This package is currently only compatible with Bioconductor <=3.6**.
-This will be rectified shortly.
+**NB: This branch is currently only compatible with Bioconductor <=3.6**.
+To install using Bioconductor 3.7, select the branch BioC_3.7 and follow the installation -instructions on the corresponding page.
+
 
 ```
 source("https://bioconductor.org/biocLite.R")
