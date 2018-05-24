@@ -13,7 +13,7 @@ This will be rectified shortly.
 
 ```
 source("https://bioconductor.org/biocLite.R")
-biocLite(c("BiocGenerics", "BiocStyle", "BSGenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "tidyverse",  "viridis", "viridisLite", "zoo", "shinyFiles"))
+biocLite(c("BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "tidyverse",  "viridis", "viridisLite", "zoo", "shinyFiles"))
 devtools::install_github('mikelove/fastqcTheoreticalGC')
 devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = TRUE)
 library(ngsReports)
