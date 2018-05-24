@@ -56,7 +56,6 @@ Draw a barplot of read totals using the standard ggplot2 syntax.
 Read totals will be plotted in millions as this is the most common.
 The raw data from \code{\link{readTotals}} can otherwise be used to manually create a plot.
 
-By default, the estimated percentage of dupicated and unique sequences will be drawn.
 However, this is based on the value shown on FASTQC reports at the top of DeDuplicatedTotals plot,
 and is known to be inaccurate.
 As it still gives a good guide as to sequence diversity it is included as the default.

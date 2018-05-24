@@ -5,7 +5,18 @@
 \title{Construct a scale using PwfCols}
 \usage{
 scale_fill_pwf(vals, pwfCols, breaks = c(0, 5, 10, 100), passLow = TRUE,
-  na.value)
+  na.value = "white")
+}
+\arguments{
+\item{vals}{The values which need to have the scale generated}
+
+\item{pwfCols}{An object of class PwfCols}
+
+\item{breaks}{The breaks for the PWF bins}
+
+\item{passLow}{Is the PASS category at the low or high end of the numeric range}
+
+\item{na.value}{The colour to plot for missing values}
 }
 \description{
 Construct a scale using PwfCols
