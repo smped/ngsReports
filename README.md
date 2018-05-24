@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=master)](https://travis-ci.org/UofABioinformaticsHub/ngsReports)
+[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=BioC_3.7)](https://travis-ci.org/UofABioinformaticsHub/ngsReports)
 
 # ngsReports
 
@@ -7,9 +7,6 @@ An R Package for managing FastQC reports and other NGS related log files inside 
 ## Installation
 To install required packages follows the instructions below.
 Currently you need to install the fastqcTheoreticalGC package seperately.
-
-**NB: This package is currently only compatible with Bioconductor <=3.6**.
-This will be rectified shortly.
 
 ```
 source("https://bioconductor.org/biocLite.R")
