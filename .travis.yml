@@ -1,7 +1,9 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: r
-r: bioc-release
+r: 
+ - oldrel
+ - bioc-release
 sudo: false
 notifications:
   recipients:
