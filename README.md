@@ -2,11 +2,12 @@
 
 # ngsReports
 
-An R Package for managing FastQC reports and other NGS related log files inside R
+An R Package for managing FastQC reports and other NGS related log files inside R.
+This branch is compatible with Bioconductor 3.7.
 
 ## Installation
 To install required packages follows the instructions below.
-Currently you need to install the fastqcTheoreticalGC package seperately.
+Currently you need to install the fastqcTheoreticalGC package separately.
 
 ```
 source("https://bioconductor.org/biocLite.R")
@@ -29,10 +30,10 @@ this can be done by clicking `Open in Browser` after executing `fastqcShiny()`
 For a analysis of multiple fastqc reports use the shinyApp by running:
 `fastqcShiny()`
 once inside the shiny app, files can be input by clicking the `Choose Files` button.
-This will then open a pop-up window to select your fastqcReports (select multiple files by holding control, ect.) 
+This will then open a pop-up window to select your fastqcReports (select multiple files by holding control, etc.) 
 once selected files will load and first plot will appear.
 
-ShinyApp can also be passed a character vector of filenames or a fastqcFileList
+ShinyApp can also be passed a character vector of file names or a `fastqcFileList`
 
 Pass character vector fileList to shinyApp
 
@@ -41,7 +42,7 @@ Pass character vector fileList to shinyApp
  fastqcShiny(fastqcInput = fileList)
  ```
  
-Pass fastqcFileList to shinyApp
+Pass `fastqcFileList` to shinyApp
 
  ```
  fdl <- getFastqcData(fileList)
