@@ -1,25 +1,26 @@
 # Immediate Issues
 
 ## Chris
-
-
+- **Add methods for zero results for all plots, based on plotNContent()**
+- **Test on outlier FastQC reports (1 sequence etc)**
+- **plotOverrepresentedSummary**
+    - Check plot for no overrepresented sequences: *Temporary version added...*    
+    - Include in default report
+ - Change plotly `plotReadTotals()` to use rectangles (as for `plotDuplicationLevels()`)
+ - Fix NOTES from `plotDuplicationLevels()` and write correctly
+ - Fix handling of zero OverrepresentedSequences in writeHTMLReport template file
 ## Hien
 
 
 ## Steve
 
-- **Add methods for zero results for all plots, based on plotNContent()**
+
 - Validation Functions for `fastqcData` and `fastqcDataLists` objects
 - Build unit tests for classes and methods
-- **Test on outlier FastQC reports (1 sequence etc)**
 - Finish Vignette
     - Add summary tables
-- **plotOverrepresentedSummary**
-    - Check plot for no overrepresented sequences: *Temporary version added...*    
-    - Include in default report
-- Change plotly `plotReadTotals()` to use rectangles (as for `plotDuplicationLevels()`)
-- Fix NOTES from `plotDuplicationLevels()` and write correctly
-- Fix handling of zero OverrepresentedSequences in writeHTMLReport template file
+
+
 
 # Important But Not Pressing
 
@@ -32,4 +33,5 @@
 - Calculate Ranks on each module and summarise
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot/status
+- BigData shiny app (PCA?)
 
