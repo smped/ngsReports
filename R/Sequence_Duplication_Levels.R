@@ -19,8 +19,11 @@
 setMethod("Sequence_Duplication_Levels", "FastqcData",
           function(object){
             df <- object@Sequence_Duplication_Levels
+            if(length(df)){
             df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
+            }
+            else NULL
           })
 
 #' @export
@@ -29,7 +32,8 @@ setMethod("Sequence_Duplication_Levels", "FastqcData",
 setMethod("Sequence_Duplication_Levels", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Sequence_Duplication_Levels)
-            dplyr::bind_rows(df)
+            if(length(unlist(df))) dplyr::bind_rows(df)
+            else NULL
           })
 
 #' @export

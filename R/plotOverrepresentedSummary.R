@@ -86,13 +86,11 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
 
             df <- Overrepresented_sequences(x)
 
-            if (nrow(df) == 0) {
+            if (!length(df)) {
               #stop("No overrepresented sequences were detected by FastQC")
-              overPlot <- ggplot() +
-                geom_text(aes(x = 0.5, y = 0.8, label = "No overrepresented sequences")) +
-                theme_void() +
-                xlim(c(0, 1)) +
-                ylim(c(0, 1))
+              overPlot <- emptyPlot("No Overrepresented Sequences")
+                
+              if(usePlotly) overPlot <- ggplotly(overPlot, tooltip = "")
               return(overPlot)
             }
 

@@ -80,6 +80,16 @@ setMethod("plotSequenceContent", signature = "FastqcData",
 
             # Get the SequenceContent
             df <- Per_base_sequence_content(x)
+            
+            if (!length(df)) {
+              #stop("No sequence content Module")
+              scPlot <- emptyPlot("No Sequence Content Module Detected")
+              
+              if(usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
+              return(scPlot)
+            }
+            
+            
             df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
 
             # Drop the suffix, or check the alternate labels
@@ -138,6 +148,15 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
 
             # Get the SequenceContent
             df <- Per_base_sequence_content(x)
+            
+            if (!length(df)) {
+              #stop("No sequence content Module")
+              scPlot <- emptyPlot("No Sequence Content Module Detected")
+              
+              if(usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
+              return(scPlot)
+            }
+            
             df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
             df$End <- as.integer(gsub("[0-9]*-([0-9]*)", "\\1", df$Base))
 

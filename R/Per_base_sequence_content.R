@@ -20,8 +20,8 @@ setMethod("Per_base_sequence_content", "FastqcData",
           function(object){
             df <- object@Per_base_sequence_content
             if(length(df)){
-            df$Filename <- fileName(object)
-            dplyr::select(df, Filename, dplyr::everything())
+              df$Filename <- fileName(object)
+              dplyr::select(df, Filename, dplyr::everything())
             }
             else NULL
           })

@@ -19,8 +19,11 @@
 setMethod("Sequence_Length_Distribution", "FastqcData",
           function(object){
             df <- object@Sequence_Length_Distribution
+            if(length(df)){
             df$Filename <- fileName(object)
             dplyr::select(df, Filename, dplyr::everything())
+            }
+            else NULL
           })
 
 #' @export
@@ -29,7 +32,8 @@ setMethod("Sequence_Length_Distribution", "FastqcData",
 setMethod("Sequence_Length_Distribution", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Sequence_Length_Distribution)
-            dplyr::bind_rows(df)
+            if(length(unlist(df))) dplyr::bind_rows(df)
+            else NULL
           })
 
 #' @export

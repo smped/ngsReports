@@ -93,6 +93,15 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
 
             df <- Sequence_Length_Distribution(x)
 
+            if (!length(df)) {
+              #stop("No sequence length Module")
+              lenPlot <- emptyPlot("No Sequence Length Module Detected")
+              
+              if(usePlotly) lenPlot <- ggplotly(lenPlot, tooltip = "")
+              return(lenPlot)
+            }
+            
+            
             # Drop the suffix, or check the alternate labels
             if (missing(labels)){
               labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
@@ -157,7 +166,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
                   layout(xaxis2 = list(title = "Sequence Length (bp)"), yaxis2 = list(title = "Count")))
               
             }
-
+            
             lenPlot
 
           }
@@ -173,6 +182,15 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
 
             df <- Sequence_Length_Distribution(x)
 
+            if (!length(df)) {
+              #stop("No sequence length Module")
+              lenPlot <- emptyPlot("No Sequence Length Module Detected")
+              
+              if(usePlotly) lenPlot <- ggplotly(lenPlot, tooltip = "")
+              return(lenPlot)
+            }
+            
+            
             # Check for valid plotType
             stopifnot(plotType %in% c("line", "heatmap"))
 

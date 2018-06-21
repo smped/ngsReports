@@ -84,11 +84,14 @@ setMethod("plotKmers", signature = "FastqcData",
             # Get the basic data frame
             df <- Kmer_Content(x)
 
-            if (nrow(df) == 0) {
-              #stop("No overrepresented kmers were detected by FastQC")
-              label <- paste0(fileName(x), ": No overrepresented kmers")
-              return(emptyPlot(label))
+            if (!length(df)) {
+              #stop("No Overrep kmers")
+              kMerPlot <- emptyPlot("No Adapter Content Module Detected")
+              
+              if(usePlotly) kMerPlot <- ggplotly(kMerPlot, tooltip = "")
+              return(kMerPlot)
             }
+            
 
             # Drop the suffix, or check the alternate labels
             if (missing(labels)){
@@ -204,10 +207,12 @@ setMethod("plotKmers", signature = "FastqcDataList",
 
             df <- Kmer_Content(x)
 
-            if (nrow(df) == 0) {
-              #stop("No overrepresented kmers were detected by FastQC")
-              label <- paste0("No overrepresented kmers in any library")
-              return(emptyPlot(label))
+            if (!length(df)) {
+              #stop("No Overrep kmers")
+              kMerPlot <- emptyPlot("No Overrepresented Kmers Detected")
+              
+              if(usePlotly) kMerPlot <- ggplotly(kMerPlot, tooltip = "")
+              return(kMerPlot)
             }
 
             # Sort out the colours

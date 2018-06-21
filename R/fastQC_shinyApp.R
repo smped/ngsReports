@@ -433,6 +433,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$BQflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
+          Category <- c()
           flags <- subset(flags, Category == "Per base sequence quality")
           
           items <- menuItemLogic(flags = flags)

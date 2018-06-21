@@ -33,8 +33,8 @@ setMethod("Adapter_Content", "FastqcData",
           function(object){
             df <- object@Adapter_Content
             if(length(df)){
-             df$Filename <- fileName(object)
-            dplyr::select(df, dplyr::one_of("Filename"), dplyr::everything())
+              df$Filename <- fileName(object)
+              dplyr::select(df, dplyr::one_of("Filename"), dplyr::everything())
             }
             else NULL
           })
