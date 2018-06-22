@@ -1,14 +1,9 @@
 # Immediate Issues
 
 ## Chris
-- **Add methods for zero results for all plots, based on plotNContent()**
 - **Test on outlier FastQC reports (1 sequence etc)**
-- **plotOverrepresentedSummary**
-    - Check plot for no overrepresented sequences: *Temporary version added...*    
-    - Include in default report
- - Change plotly `plotReadTotals()` to use rectangles (as for `plotDuplicationLevels()`)
- - Fix NOTES from `plotDuplicationLevels()` and write correctly
- - Fix handling of zero OverrepresentedSequences in writeHTMLReport template file
+
+
 ## Hien
 
 

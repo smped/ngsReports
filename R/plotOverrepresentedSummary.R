@@ -177,6 +177,14 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                    dendrogram = TRUE, pwfCols, ..., paletteName = "Set1"){
 
             df <- Overrepresented_sequences(x)
+            
+            if (!length(df)) {
+              #stop("No overrepresented sequences were detected by FastQC")
+              overPlot <- emptyPlot("No Overrepresented Sequences")
+              
+              if(usePlotly) overPlot <- ggplotly(overPlot, tooltip = "")
+              return(overPlot)
+            }
 
             if (missing(pwfCols)) pwfCols <- ngsReports::pwf
 
