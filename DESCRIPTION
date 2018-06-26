@@ -50,7 +50,7 @@ Collate:
     'FastqcFileList.R'
     'FastqcFile.R'
     'AllGenerics.R'
-    'AllClasses.R'
+    'FastqcData.R'
     'AdapterContent.R'
     'Basic_Statistics.R'
     'Kmer_Content.R'

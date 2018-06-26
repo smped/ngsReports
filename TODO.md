@@ -10,7 +10,7 @@
 ## Steve
 
 
-- Validation Functions for `fastqcData` and `fastqcDataLists` objects
+- Validation Functions for `fastqcData` objects
 - Build unit tests for classes and methods
 - Finish Vignette
     - Add summary tables

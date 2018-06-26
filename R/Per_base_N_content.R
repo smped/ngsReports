@@ -5,7 +5,7 @@
 #' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData}, \code{fastqcDataList},
 #' or simply a \code{character} vector of paths to fastqc files
 #'
-#' @include AllClasses.R
+#' @include FastqcData.R
 #' @include AllGenerics.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports

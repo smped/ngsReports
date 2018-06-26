@@ -7,7 +7,7 @@
 #'
 #' @return A character vector
 #'
-#' @include AllClasses.R
+#' @include FastqcData.R
 #' @include AllGenerics.R
 #'
 #' @docType methods
@@ -22,7 +22,7 @@ setMethod("Version", "FastqcData", function(object){object@Version})
 #' @aliases Version
 setMethod("Version", "FastqcDataList",
           function(object){
-            data_frame(Filename = fileName(object),
-                       Version = vapply(object@.Data, Version, character(1)))
+            tibble::tibble(Filename = fileName(object),
+                           Version = vapply(object@.Data, Version, character(1)))
           })
 

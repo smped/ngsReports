@@ -1,4 +1,12 @@
-# Define object classes
+#' @title The FastqcData Object Class
+#'
+#' @description The FastqcData Object Class
+#'
+#' @return An object of class FastqcData
+#'
+#' @include validationFunctions.R
+#'
+#' @slot ... this can either be a single character vector of paths to FASTQC files, or several instances of FastqcFile objects
 setClass("FastqcData", slots = c(Summary = "data.frame",
                                  Basic_Statistics = "data.frame",
                                  Per_base_sequence_quality = "data.frame",
@@ -15,8 +23,12 @@ setClass("FastqcData", slots = c(Summary = "data.frame",
                                  Total_Deduplicated_Percentage = "numeric",
                                  Version = "character",
                                  path = "character"))
+setValidity("FastqcData", isValidFastqcData) 
 
-
-# Set the validation functions for any object classes
-#' @include validationFunctions.R
-# setValidity("FastqcData", isValidFastqcData) # Not written or defined yet
+# The show method doesn't need exporting
+setMethod("show", "FastqcData",
+          function(object){
+            cat("FastqcData for", object@Basic_Statistics$Filename, "\n")
+            cat("Source Fastq file contains", scales::comma(object@Basic_Statistics$Total_Sequences), "reads.\n")
+            cat("Source FastQC file is located in", object@path)
+          })
