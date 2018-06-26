@@ -1,22 +1,19 @@
-[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=master)](https://travis-ci.org/UofABioinformaticsHub/ngsReports)
+[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg)](https://travis-ci.org/UofABioinformaticsHub/ngsReports)
 
 # ngsReports
 
-An R Package for managing FastQC reports and other NGS related log files inside R
+An R Package for managing FastQC reports and other NGS related log files inside R.
+This branch is compatible with Bioconductor >= 3.7.
 
 ## Installation
 To install required packages follows the instructions below.
 Currently you need to install the fastqcTheoreticalGC package separately.
 
-**NB: This branch is currently only compatible with Bioconductor <=3.6**.
-To install using Bioconductor 3.7, select the branch BioC_3.7 using the drop-down menu above, then follow the installation instructions on the corresponding page.
-
-
 ```
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "tidyverse",  "viridis", "viridisLite", "zoo", "shinyFiles"))
 devtools::install_github('mikelove/fastqcTheoreticalGC')
-devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = TRUE)
+devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = FALSE)
 library(ngsReports)
 ```
 
@@ -33,7 +30,7 @@ this can be done by clicking `Open in Browser` after executing `fastqcShiny()`
 For a analysis of multiple fastqc reports use the shinyApp by running:
 `fastqcShiny()`
 once inside the shiny app, files can be input by clicking the `Choose Files` button.
-This will then open a pop-up window to select your fastqcReports (select multiple files by holding control, ect.) 
+This will then open a pop-up window to select your fastqcReports (select multiple files by holding control, etc.) 
 once selected files will load and first plot will appear.
 
 ShinyApp can also be passed a character vector of file names or a `fastqcFileList`

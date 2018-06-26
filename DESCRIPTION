@@ -12,7 +12,7 @@ Description: Load FastQC reports and other NGS output summaries into R.
 License: LGPL (>= 2)
 Encoding: UTF-8
 Depends:
-  R (<= 3.4.4),
+  R (>= 3.5.0),
   fastqcTheoreticalGC,
   ggplot2,
   BiocGenerics
