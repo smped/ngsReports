@@ -304,14 +304,12 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
               }
               else{
 
+                pwfCols <- ngsReports::pwf
+                
                 lenPlot <- lenPlot  +
                   theme(axis.ticks.y = element_blank(),
-                        axis.text.y = element_blank())
-
-                pwfCols <- ngsReports::pwf
-
-                lenPlot <- lenPlot +
-                  theme(panel.background = element_blank())
+                        axis.text.y = element_blank(),
+                        panel.background = element_blank())
 
                 t <- getSummary(x)
                 t <- t[t$Category == "Sequence Length Distribution",]
@@ -338,7 +336,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
 
                 lenPlot <- suppressMessages(
                   plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.08, 0.82),
-                                  margin = 0.001, shareY = TRUE)
+                                  margin = 0.001, shareY = TRUE, titleX = TRUE)
                 )
               }
 
