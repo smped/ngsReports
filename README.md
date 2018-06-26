@@ -16,7 +16,7 @@ To install using Bioconductor 3.7, select the branch `master` using the drop-dow
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "tidyverse",  "viridis", "viridisLite", "zoo", "shinyFiles"))
 devtools::install_github('mikelove/fastqcTheoreticalGC')
-devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = TRUE)
+devtools::install_github('UofABioinformaticsHub/ngsReports', ref = "Bioc3.6", build_vignettes = TRUE)
 library(ngsReports)
 ```
 
