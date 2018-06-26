@@ -9,8 +9,11 @@ output:
     fig_width: 10
     toc: yes
 params:
+    tgtsFile: "targets.csv"
     dataType: "Transcriptome"
     species: "Hsapiens"
+    nOver: 30
+    nKmer: 30
 ---
 
 ```{r setup, include=FALSE}
@@ -50,17 +53,15 @@ rawFastqcFiles <- list.files(pattern = "(fastqc.zip|fastqc)$")
 stopifnot(length(rawFastqcFiles) > 1)
 message("FastQC files found. Loading FastQC data")
 rawFastqcData <- tryCatch(getFastqcData(rawFastqcFiles))
-plotLabels <- structure(gsub(".(fastq|fastq.gz|bam)", "", fileName(rawFastqcData)),
-												names = fileName(rawFastqcData))
+plotLabels <- structure(gsub(".(fastq|fastq.gz|bam)", "", fileName(rawFastqcData)),	names = fileName(rawFastqcData))
 ```
 
 
 ```{r}
-message("Checking for targets.csv")
-tgtsFile <- "targets.csv"
-if (file.exists(tgtsFile)){
+message("Checking for ", params$tgtsFile)
+if (file.exists(params$tgtsFile)){
 	message("Found targets.csv...checking columns")
-	targets <- read_csv(tgtsFile)
+	targets <- read_csv(params$tgtsFile)
 	fCol <- grep("[Ff]ile[Nn]ame", colnames(targets))
 	lCol <- grep("[Ll]abel", colnames(targets))
 	if (length(fCol) == 1 && length(lCol) == 1){
@@ -72,8 +73,8 @@ if (file.exists(tgtsFile)){
 		message("No valid labels found")
 	}
 }
-if (!file.exists(tgtsFile)){
-	message("targets.csv not found. Using default labels")
+if (!file.exists(params$tgtsFile)){
+	message(params$tgtsFile, " not found. Using default labels")
 }
 ```
 
@@ -156,29 +157,26 @@ plotDuplicationLevels(rawFastqcData, labels = plotLabels, cluster = globals$clus
 ## Overrepresented Summary
 
 ```{r Overrepresented_summary}
-
 plotOverrepresentedSummary(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
-
 ```
 
 ## Overrepresented Sequences
 
 ```{r Overrepresented_sequences, echo=FALSE, results='asis', message=TRUE}
-nOver <- 30
 os <- Overrepresented_sequences(rawFastqcData) 
-if (nrow(os) > 0){
+if (!is.null(os)){
 	os %>% 
 		mutate(Filename = plotLabels[Filename]) %>%
 		arrange(Sequence) %>%
-		dplyr::slice(1:nOver) %>%
+		dplyr::slice(1:params$nOver) %>%
 		pander(split.tables = Inf,
 					 style = "rmarkdown",
 					 justify = "llrrl",
 					 big.mark = ",",
 					 caption = paste("Summary of Overrepresented Sequences in all files.",
-					 								"A maximum of", nOver, "seqences are shown."))
+					 								"A maximum of", params$nOver, "seqences are shown."))
 }
-if (nrow(os) == 0){
+if (is.null(os)){
 	message("No overrepresented sequences were detected by FastQC")
 }
 ```
@@ -197,12 +195,11 @@ plotKmers(rawFastqcData, labels = plotLabels, usePlotly = globals$usePlotly, clu
 ```
 
 ```{r Kmer_Content, message=TRUE}
-nK <- 30
 kc <- Kmer_Content(rawFastqcData)
-if (nrow(kc) > 0){
+if (!is.null(kc)){
   kc %>%
     arrange(desc(Count)) %>%
-    dplyr::slice(1:nK) %>%
+    dplyr::slice(1:params$nKmer) %>%
     arrange(Sequence) %>%
     mutate(Filename = plotLabels[Filename]) %>%
     pander(split.tables = Inf,
@@ -210,9 +207,9 @@ if (nrow(kc) > 0){
            justify = "llrrrr",
            big.mark = ",",
            caption = paste("Summary of Overrepresented Kmers in all files.",
-                           "A maximum of", nK, "Kmers are shown."))
+                           "A maximum of", params$nKmer, "Kmers are shown."))
 }
-if (nrow(kc) == 0){
+if (is.null(kc)){
   message("No Kmers were detected by FastQC")
 }
 ```
