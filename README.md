@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=master)](https://travis-ci.org/UofABioinformaticsHub/ngsReports)
+[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=Bioc3.6)](https://travis-ci.org/UofABioinformaticsHub/ngsReports)
 
 # ngsReports
 
