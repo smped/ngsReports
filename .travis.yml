@@ -2,8 +2,8 @@
 
 language: r
 r:
-  - release
-  - devel
+  - bioc-release
+  - bioc-devel
 bioc_packages:
   - BiocGenerics
   - Biostrings
