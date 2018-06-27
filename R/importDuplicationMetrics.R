@@ -31,7 +31,7 @@ importDuplicationMetrics <- function(x){
     df$LIBRARY <- basename(libName)
     # Get the HISTOGRAM module
     hstart <- grep("## HISTOGRAM\tjava.lang.Double", l) + 1
-    h <- stringr::str_split_fixed(l[hstart + 1:100], "\t", n = 2)
+    h <- stringr::str_split_fixed(l[hstart + seq_len(100)], "\t", n = 2)
     colnames(h) <- stringr::str_split_fixed(l[hstart], "\t", 2)
     h <- dplyr::as_data_frame(h)
     h$BIN <- as.integer(h$BIN)

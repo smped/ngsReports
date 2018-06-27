@@ -177,9 +177,6 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               
               joinedDf <- dplyr::left_join(deDup, df, by = "Filename")
               
-              
-              
-              
               if (bars == "adjacent"){
                 
                 
@@ -187,8 +184,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                 joinedDf$Deduplicated <- round(joinedDf$Percentage*joinedDf$Total_Sequences/100, 0)
                 if (!millions) joinedDf$Deduplicated <- as.integer(round(joinedDf$Deduplicated, 0))
                 
-                colnames(joinedDf)[which(colnames(joinedDf) == "Total_Sequences")] <- "Total"
-                
+                colnames(joinedDf) <- gsub("Total_Sequences", "Total",colnames(joinedDf))
                 joinedDf <- joinedDf[colnames(joinedDf) != "Percentage"]
                 
                 joinedDfL <- reshape2::melt(joinedDf, id.vars = "Filename", variable.name = "Type", value.name = c("Total"))
@@ -196,19 +192,16 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                 offsetList <- list(c(0.5, 0.1), c(0.1, -0.4))
                 joinedDfL <- split(joinedDfL, joinedDfL$Type)
                 
-                
-                joinedDf <- lapply(1:2, function(x){
+                joinedDf <- lapply(c(1,2), function(x){
                   
                   df <- joinedDfL[[x]]
                   df$ymin <- as.integer(joinedDf[["Filename"]]) - offsetList[[x]][1]
                   df$ymax <- as.integer(joinedDf[["Filename"]]) - offsetList[[x]][2]
                   df
-                }) %>% dplyr::bind_rows()
-                
+                }) 
+                joinedDf <- dplyr::bind_rows(joinedDf)
                 joinedDf$xmin <- 0
-                
                 joinedDf$Type <- factor(joinedDf$Type)
-                
                 
                 rtPlot <- ggplot(joinedDf, aes_string(Total = "Total", fill = "Type")) + 
                   geom_rect(aes_string(xmin = "xmin", xmax = "Total", 

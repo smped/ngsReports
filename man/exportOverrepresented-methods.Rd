@@ -42,10 +42,8 @@ Fasta will contain \code{Filename}, \code{Possible Source}, \code{Percent of tot
 \examples{
 \dontrun{
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+fileDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList
 fdl <- getFastqcData(fileList)

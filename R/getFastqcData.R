@@ -228,8 +228,7 @@ setMethod("getFastqcData", "FastqcFileList",
 # after splitting the input from readLines()
 getBasicStatistics <- function(fastqcLines){
 
-
-  x <- fastqcLines[["Basic_Statistics"]][-(1:2)]
+  x <- fastqcLines[["Basic_Statistics"]][-seq_len(2)]
   vals <- gsub(".+\\t(.+)", "\\1", x)
   names(vals) <- gsub("(.+)\\t.+", "\\1", x)
   names(vals) <- gsub(" ", "_", names(vals))

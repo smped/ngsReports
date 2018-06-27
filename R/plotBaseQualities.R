@@ -319,7 +319,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               df <- split(df, f = df$Filename) %>%
                 lapply(function(x){
                   Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1", x$Base)))
-                  dfFill <- data.frame(Start = 1:Longest_sequence)
+                  dfFill <- data.frame(Start = seq_len(Longest_sequence))
                   x <- dplyr::right_join(x, dfFill, by = "Start") %>%
                     zoo::na.locf()
                 }) %>%

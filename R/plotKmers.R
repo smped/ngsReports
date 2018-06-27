@@ -108,7 +108,7 @@ setMethod("plotKmers", signature = "FastqcData",
             allK <- unique(df$Sequence)
             n <- tryCatch(as.integer(n))
             n <- min(length(allK), n)
-            topK <- unique(df$Sequence[o])[1:n]
+            topK <- unique(df$Sequence[o])[seq_len(n)]
             # Tidy up the data
             df <- dplyr::filter(df, Sequence %in% topK)
             colnames(df) <- gsub("Max_Obs/Exp_Position", "Base", colnames(df))
@@ -162,7 +162,7 @@ setMethod("plotKmers", signature = "FastqcData",
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
             # And the colours
-            if (n < length(pal)) pal <- pal[1:n]
+            if (n < length(pal)) pal <- pal[seq_len(n)]
             if (n > length(pal)) pal <- grDevices::colorRampPalette(pal)(n)
 
             # Now draw the basic plots

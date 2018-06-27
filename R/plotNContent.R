@@ -225,7 +225,7 @@ setMethod("plotNContent", signature = "FastqcDataList",
             df <- split(df, f = df$Filename) %>%
               lapply(function(x){
                 Longest_sequence <- max(x$Start)
-                dfFill <- data.frame(Start = 1:Longest_sequence)
+                dfFill <- data.frame(Start = seq_len(Longest_sequence))
                 x <- dplyr::right_join(x, dfFill, by = "Start") %>%
                   zoo::na.locf()
               }) %>%
