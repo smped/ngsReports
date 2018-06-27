@@ -14,8 +14,12 @@ mData(object)
 \item{object}{An object of class Theoretical GC}
 }
 \value{
-A \code{data.frame} object
+A \code{tibble} object
 }
 \description{
 Extract Metadata for TheoreticalGC objects
+}
+\examples{
+mData(gcTheoretical)
+
 }

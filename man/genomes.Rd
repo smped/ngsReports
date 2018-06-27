@@ -14,8 +14,12 @@ genomes(object)
 \item{object}{An object of class Theoretical GC}
 }
 \value{
-A \code{data.frame} object
+A \code{tibble} object
 }
 \description{
 List available genomes in a TheoreticalGC object
+}
+\examples{
+genomes(gcTheoretical)
+
 }

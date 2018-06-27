@@ -4,7 +4,24 @@
 #'
 #' @param object An object of class FastqcFile, FastqcFileList, FastqcData or FastqcDataList
 #'
-#' @return Returns the filenames, without the preceding directories, i.e. basename
+#' @return Returns the filenames, without the preceding directories, i.e. basename.
+#' For a FastqcFile/FastqcFileList these will be the underlying FastQC files.
+#' For a FastqcData/FastqcDataList, these will correspond to the fastq files 
+#' about which the FastQC report was written.
+#' 
+#' @examples 
+#' 
+#' # Get the files included with the package
+#' fileDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+#' 
+#' # Form a FastqcFileList
+#' ffl <- FastqcFileList(fileList)
+#' fileName(ffl)
+#' 
+#' # Form a FastqcDataList
+#' fdl <- getFastqcData(ffl)
+#' fileName(fdl)
 #'
 #' @importMethodsFrom BiocGenerics fileName
 #' @export

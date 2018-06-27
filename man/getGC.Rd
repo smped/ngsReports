@@ -18,8 +18,12 @@ getGC(object, name, type)
 \item{type}{The type of GC content. Can only be either "Genome" or "Transcriptome"}
 }
 \value{
-A \code{data.frame} object
+A \code{tibble} object
 }
 \description{
 Get the GC content data from a TheoreticalGC object
+}
+\examples{
+getGC(gcTheoretical, name = "Hsapiens", type = "Genome")
+
 }

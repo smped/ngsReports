@@ -251,7 +251,8 @@ setMethod("plotGcContent", signature = "FastqcData",
 setMethod("plotGcContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject, Fastafile, n=1e+6, bp=100, plotType = c("heatmap", "line"), pwfCols,
+                   species = "Hsapiens", GCobject, Fastafile, n=1e+6, bp=100,
+                   plotType = c("heatmap", "line"), pwfCols,
                    cluster = FALSE, dendrogram = TRUE, ...){
             
             df <- tryCatch(Per_sequence_GC_content(x))
@@ -315,7 +316,8 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                 gcTheoryDF <- suppressMessages(gcFromFasta(Fastafile,n,bp))
                 subTitle <- paste("Theoretical Distribution based on file ",
                                   basename(Fastafile))
-              } else {
+              } 
+              else {
                 gcFun <- tryCatch(match.arg(tolower(theoreticalType), c("genomes","transcriptomes","custome")))
                 avail <- do.call(gcFun, list(object = GCobject))
                 stopifnot(species %in% avail$Name)

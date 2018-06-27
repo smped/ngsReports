@@ -6,7 +6,17 @@
 #'
 #' @param object An object of class FastqcFile or FastqcFileList
 #'
-#' @return A character vector of the file paths
+#' @return A character vector of the file paths to the underlying FastQC reports
+#' 
+#' @examples 
+#' 
+#' # Get the files included with the package
+#' fileDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+#' 
+#' # Form a FastqcDataList
+#' fdl <- getFastqcData(fileList)
+#' path(fdl)
 #'
 #' @importMethodsFrom BiocGenerics path
 #' @name path
