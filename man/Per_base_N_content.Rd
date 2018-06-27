@@ -44,6 +44,6 @@ fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
 fdl <- getFastqcData(fileList)
 
 # Print any N Content
-Per_base_N-content(fdl)
+Per_base_N_content(fdl)
 
 }
