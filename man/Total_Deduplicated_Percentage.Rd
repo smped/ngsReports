@@ -34,3 +34,16 @@ A single \code{data_frame} containing all information combined from all supplied
 \description{
 Retrieve the Total Deduplicated Percentage module from one or more FastQC reports
 }
+\examples{
+
+# Get the files included with the package
+fileDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+
+# Form a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Get the estimate total deduplicated percentage
+Total_Deduplicated_Percentage(fdl)
+
+}

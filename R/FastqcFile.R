@@ -8,19 +8,27 @@
 #'
 #'
 #' @return An object of class FastqcFile
+#' 
+#' @examples
+#'
+#' # Get the files included with the package
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
+#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#'
+#' # As this is the root structure, we can only call this 
+#' # function with an individual file
+#' ff <- FastqcFile(fileList[[1]])
 #'
 #' @include validationFunctions.R
 #'
 #' @slot path Character vector of length 1 which contains a valid file path.
 #' @export
+#' @rdname FastqcFile
 setClass("FastqcFile", slots = c(path = "character"))
 setValidity("FastqcFile", isValidFastqcFile)
 
-
-#' @title Create a new FastqcFile Object
-#' @description Create a new FastqcFile Object
-#' @details Create a new FastqcFile Object from an external file
-#' @return An object of class FastqcFile
 #' @param x Character vector (1) specifying a valid path to a file/directory as output by FastQC
 #' @importFrom methods new
 #' @export

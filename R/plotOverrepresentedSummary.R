@@ -21,7 +21,7 @@
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #' @param expand.x,expand.y Vectors of length 2. Passed to `scale_*_continuous()`
-#' #' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
+#' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
 #' Must be a palette name from \code{RColorBrewer}.
 #'
 #' @return A standard ggplot2 object

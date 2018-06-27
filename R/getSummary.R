@@ -7,6 +7,20 @@
 #' @return A \code{tibble} will be returned when supplying a \code{FastqcFile} object,
 #' whilst a list of tibbles will be returned when supplying a \code{FastqcFileList} object
 #'
+#' @examples
+#'
+#' # Get the files included with the package
+#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
+#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
+#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
+#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#'
+#' # Load the FASTQC data as a FastqcDataList
+#' fdl <- getFastqcData(fileList)
+#'
+#' # Return a data_frame/tibble with the raw information
+#' getSummary(fdl)
+#'
 #' @importFrom utils unzip
 #'
 #' @include AllGenerics.R

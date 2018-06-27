@@ -106,3 +106,4 @@ Collate:
     'writeHtmlReport.R'
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, testthat
+biocViews: QualityControl, ReportWriting

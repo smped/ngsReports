@@ -34,3 +34,16 @@ A single \code{data_frame} containing all information combined from all supplied
 \description{
 Retrieve the Per Tile Sequence Quality module from one or more FastQC reports
 }
+\examples{
+
+# Get the files included with the package
+fileDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+
+# Form a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Print the Per_tile_sequence_quality
+Per_tile_sequence_quality(fdl)   
+
+}

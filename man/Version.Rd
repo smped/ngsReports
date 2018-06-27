@@ -16,8 +16,21 @@
 \item{object}{An object of class \code{FastqcData} or \code{FastqcDataList}}
 }
 \value{
-A character vector
+A character vector (FastqcData), or data_frame (FastqcDataList)
 }
 \description{
 Get the FASTQC version used to generate the intial files
+}
+\examples{
+
+# Get the files included with the package
+fileDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+
+# Form a FastqcDataList
+fdl <- getFastqcData(fileList)
+
+# Get the FASTQC version
+Version(fdl)
+
 }

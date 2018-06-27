@@ -10,6 +10,18 @@
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
 #'
+#' @examples 
+#' 
+#' # Get the files included with the package
+#' fileDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+#' 
+#' # Form a FastqcDataList
+#' fdl <- getFastqcData(fileList)
+#' 
+#' # Print any N Content
+#' Per_base_N_content(fdl)
+#' 
 #' @docType methods
 #'
 #' @export
