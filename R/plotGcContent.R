@@ -164,8 +164,9 @@ setMethod("plotGcContent", signature = "FastqcData",
             if (theoreticalGC){
               if (!missing(Fastafile)){
                 gcTheoryDF <- gcFromFasta(Fastafile,n,bp)
-                subTitle <- paste("Theoretical Distribution based on file ",Fastafile)
-              } else{
+                subTitle <- paste("Theoretical Distribution based on file", Fastafile)
+              } 
+              else{
                 gcFun <- tryCatch(match.arg(tolower(theoreticalType), c("genomes","transcriptomes")))
                 avail <- do.call(gcFun, list(object = GCobject))
                 stopifnot(species %in% avail$Name)
@@ -311,8 +312,9 @@ setMethod("plotGcContent", signature = "FastqcDataList",
             
             if (theoreticalGC){
               if (!missing(Fastafile)){
-                gcTheoryDF <- gcFromFasta(Fastafile,n,bp)
-                subTitle <- paste("Theoretical Distribution based on file ",Fastafile)
+                gcTheoryDF <- suppressMessages(gcFromFasta(Fastafile,n,bp))
+                subTitle <- paste("Theoretical Distribution based on file ",
+                                  basename(Fastafile))
               } else {
                 gcFun <- tryCatch(match.arg(tolower(theoreticalType), c("genomes","transcriptomes","custome")))
                 avail <- do.call(gcFun, list(object = GCobject))
@@ -462,11 +464,11 @@ setMethod("plotGcContent", signature = "FastqcDataList",
 )
 
 #Calculate GC content from a set of DNA sequences provided by a fasta file
-gcFromFasta <- function(Fastafile,n=1e+6,bp=100){
+gcFromFasta <- function(Fastafile, n=1e+6, bp=100){
   ref <- readDNAStringSet(filepath = Fastafile)
   file.gc = "gc.txt"
   fastqcTheoreticalGC::generateDistn(ref, file = file.gc, n = n, bp = bp)
-  gc <- data.frame(read.table(file.gc,header = FALSE,stringsAsFactors = FALSE))
+  gc <- data.frame(read.table(file.gc, header = FALSE, stringsAsFactors = FALSE))
   file.remove(file.gc)
   colnames(gc) <- c("GC_Content","Freq")
   gc$Freq <- gc$Freq/sum(gc$Freq)

@@ -21,7 +21,8 @@ plotReadTotals(x, usePlotly = FALSE, duplicated = TRUE, bars = "stacked",
   duplicated = TRUE, bars = "stacked", ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(x, usePlotly = FALSE,
-  duplicated = TRUE, bars = "stacked", labels, millions, barCols, ...)
+  duplicated = TRUE, bars = "stacked", labels, millions, barCols,
+  expand.x = c(0, 0), expand.y = c(0, 0), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -44,6 +45,8 @@ File extensions are dropped by default.}
 Unless specified, will be set as TRUE automatically if the highest total is > 2e06.}
 
 \item{barCols}{Colours for duplicated and unique reads.}
+
+\item{expand.x, expand.y}{Vectors of length 2. Passed to `scale_*_continuous()`}
 }
 \value{
 Returns a ggplot or plotly object

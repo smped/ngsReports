@@ -14,14 +14,15 @@
 #' File extensions are dropped by default.
 #' @param n The number of sequences to plot from an individual file
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
-#' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
-#' Must be a palette name from \code{RColorBrewer}.
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
 #' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
+#' @param expand.x,expand.y Vectors of length 2. Passed to `scale_*_continuous()`
+#' #' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
+#' Must be a palette name from \code{RColorBrewer}.
 #'
 #' @return A standard ggplot2 object
 #'
@@ -174,7 +175,8 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, cluster = TRUE,
-                   dendrogram = TRUE, pwfCols, ..., paletteName = "Set1"){
+                   dendrogram = TRUE, pwfCols, ..., paletteName = "Set1",
+                   expand.x = c(0, 0), expand.y = c(0.0, 0)){
 
             df <- Overrepresented_sequences(x)
             
@@ -233,6 +235,9 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             # Set the axis limits. Just scale the upper limit by 1.05
             ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename),
                                          Total = sum(Percentage))$Total)*1.05
+            # Check the axis expansion
+            stopifnot(is.numeric(expand.x), is.numeric(expand.y))
+            stopifnot(length(expand.x) == 2, length(expand.y) == 2)
 
             # Define the palette
             stopifnot(paletteName %in% rownames(RColorBrewer::brewer.pal.info))
@@ -267,8 +272,8 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                 dx <- ggdendro::dendro_data(clus)
                 dendro <- ggdend(dx$segments) +
                   coord_flip() +
-                  scale_y_reverse(expand = c(0, 0)) +
-                  scale_x_continuous(expand = c(0, 0.5))
+                  scale_y_reverse(expand = expand.x) +
+                  scale_x_continuous(expand = expand.y)
 
                 overPlot <- suppressWarnings(
                   suppressMessages(
@@ -291,7 +296,8 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                 geom_bar(stat = "identity") +
                 labs(y = "Overrepresented Sequences (% of Total)",
                      fill = "Possible Source") +
-                scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
+                scale_y_continuous(limits = c(0, ymax), expand = expand.x) +
+                scale_x_discrete(expand = expand.y) +
                 scale_fill_manual(values = pal) +
                 theme_bw() +
                 coord_flip()

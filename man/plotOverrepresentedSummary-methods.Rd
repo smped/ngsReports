@@ -29,7 +29,7 @@ plotOverrepresentedSummary(x, usePlotly = FALSE, ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcDataList}(x, usePlotly = FALSE,
   labels, cluster = TRUE, dendrogram = TRUE, pwfCols, ...,
-  paletteName = "Set1")
+  paletteName = "Set1", expand.x = c(0, 0), expand.y = c(0, 0))
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -55,7 +55,8 @@ fastqc data will be clustered using hierarchical clustering}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 
-\item{paletteName}{Name of the palette for colouring the possible sources of the overrepresented sequences.
+\item{expand.x, expand.y}{Vectors of length 2. Passed to `scale_*_continuous()`
+#' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
 Must be a palette name from \code{RColorBrewer}.}
 }
 \value{
