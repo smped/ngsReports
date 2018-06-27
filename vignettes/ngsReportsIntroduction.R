@@ -27,7 +27,8 @@ reads <- readTotals(fdl)
 ## --------------------------------------------------------------------------
 library(dplyr)
 library(pander)
-filter(reads, grepl("R1", Filename)) %>% pander()
+filter(reads, grepl("R1", Filename)) %>% 
+  pander(big.mark = ",")
 
 ## ----plotSummary, fig.cap="Default summary of FastQC flags.", fig.wide = TRUE----
 plotSummary(fdl)
