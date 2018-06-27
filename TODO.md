@@ -14,8 +14,6 @@
 ## Steve
 
 - Build unit tests for classes and methods
-- Finish Vignette
-    - Add summary tables
 - Fix `scale_fill_pwf()`
 
 
