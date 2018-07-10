@@ -32,20 +32,3 @@ For a analysis of multiple fastqc reports use the shinyApp by running:
 once inside the shiny app, files can be input by clicking the `Choose Files` button.
 This will then open a pop-up window to select your fastqcReports (select multiple files by holding control, etc.) 
 once selected files will load and first plot will appear.
-
-ShinyApp can also be passed a character vector of file names or a `fastqcFileList`
-
-Pass character vector fileList to shinyApp
-
-```
- fileList <- list.files(path = "mydir/", pattern = ".zip$", full.names = TRUE)
- fastqcShiny(fastqcInput = fileList)
- ```
- 
-Pass `fastqcFileList` to shinyApp
-
- ```
- fdl <- getFastqcData(fileList)
- fastqcShiny(fdl)
- ```
-
