@@ -18,28 +18,7 @@
 #' @importFrom plotly plotlyOutput
 #' @importFrom plotly renderPlotly
 #' @importFrom plotly event_data
-#' @importFrom shiny br
-#' @importFrom shiny h1
-#' @importFrom shiny h5
-#' @importFrom shiny observe
-#' @importFrom shiny sidebarPanel
-#' @importFrom shiny radioButtons
-#' @importFrom shiny checkboxInput
-#' @importFrom shiny column
-#' @importFrom shiny reactiveValues
-#' @importFrom shiny observeEvent
-#' @importFrom shiny icon
-#' @importFrom shiny htmlOutput
-#' @importFrom shiny selectInput
-#' @importFrom shiny plotOutput
-#' @importFrom shiny sliderInput
-#' @importFrom shiny renderUI
-#' @importFrom shiny renderPrint
-#' @importFrom shiny shinyApp
-#' @importFrom shiny textOutput
-#' @importFrom shiny renderText
-#' @importFrom shiny reactive
-#' @importFrom shiny withProgress
+#' @import shiny
 #' @importFrom shinyFiles shinyFilesButton
 #' @importFrom shinyFiles shinyFileChoose
 #' @importFrom shinyFiles shinyDirChoose
@@ -368,7 +347,7 @@ fastqcShiny <- function(fastqcInput = NULL){
         fileSelected <- shinyFiles::parseFilePaths(volumes, input$files)
         fileSelected <- as.character(fileSelected$datapath)
         selectedData <- getFastqcData(fileSelected)
-        if(is.null(input$files)){
+        if(!length(input$files)){
           if(class(fastqcInput) != "FastqcDataList") selectedData <- getFastqcData(fastqcInput)
           else selectedData <- fastqcInput
         }
@@ -432,9 +411,9 @@ fastqcShiny <- function(fastqcInput = NULL){
       
       output$BQflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
-          flags <- getSummary(data())
           Category <- c()
-          flags <- subset(flags, Category == "Per base sequence quality")
+          flags <- getSummary(data())
+          flags <- subset(flags, flags$Category == "Per base sequence quality")
           
           items <- menuItemLogic(flags = flags)
         
@@ -456,7 +435,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$SQflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Per sequence quality scores")
+          flags <- subset(flags, flags$Category == "Per sequence quality scores")
           
           items <- menuItemLogic(flags = flags)
           
@@ -477,7 +456,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$SCflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Per base sequence content")
+          flags <- subset(flags, flags$Category == "Per base sequence content")
           
           items <- menuItemLogic(flags = flags)
           
@@ -498,7 +477,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$GCflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Per sequence GC content")
+          flags <- subset(flags, flags$Category == "Per sequence GC content")
           
           items <- menuItemLogic(flags = flags)
           
@@ -519,7 +498,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$NCflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Per base N content")
+          flags <- subset(flags, flags$Category == "Per base N content")
           
           items <- menuItemLogic(flags = flags)
           
@@ -540,7 +519,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$SLDflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Sequence Length Distribution")
+          flags <- subset(flags, flags$Category == "Sequence Length Distribution")
           
           items <- menuItemLogic(flags = flags)
           
@@ -561,7 +540,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$SDLflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Sequence Duplication Levels")
+          flags <- subset(flags, flags$Category == "Sequence Duplication Levels")
           
           items <- menuItemLogic(flags = flags)
           
@@ -582,7 +561,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$OSflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Overrepresented sequences")
+          flags <- subset(flags, flags$Category == "Overrepresented sequences")
           
           items <- menuItemLogic(flags = flags)
           
@@ -604,7 +583,7 @@ fastqcShiny <- function(fastqcInput = NULL){
       output$ACflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Adapter Content")
+          flags <- subset(flags, flags$Category == "Adapter Content")
           
           items <- menuItemLogic(flags = flags)
           
@@ -622,10 +601,10 @@ fastqcShiny <- function(fastqcInput = NULL){
         }
       })
       
-      output$ACflag <- renderMenu({
+      output$KCflag <- renderMenu({
         if(!is.null(fastqcInput) | !is.null(input$files)){
           flags <- getSummary(data())
-          flags <- subset(flags, Category == "Kmer Content")
+          flags <- subset(flags, flags$Category == "Kmer Content")
           
           items <- menuItemLogic(flags = flags)
           

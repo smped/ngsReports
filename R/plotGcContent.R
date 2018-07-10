@@ -435,7 +435,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                 
                 if (missing(pwfCols)) pwfCols <- ngsReports::pwf
                 
-                sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+                sideBar <- ngsReports:::makeSidebar(status = t, key = key, pwfCols = pwfCols)
                 
                 
                 #plot dendrogram
