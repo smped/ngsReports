@@ -278,7 +278,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                 
                 rtPlot <- suppressMessages(
                   ggplotly(rtPlot) %>%
-                    layout(xaxis = list(title = "Percentage of Total Reads"),
+                    layout(xaxis = list(title = xlab),
                            margin=list(l=l, b = 50))
                 )
                 
