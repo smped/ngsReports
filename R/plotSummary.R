@@ -167,7 +167,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
 
               else{
                 suppressWarnings(
-                  suppressMessages(ggplotly(sumPlot, tooltip = c("Category", "Filename", "Status")))
+                  suppressMessages(ggplotly(sumPlot, tooltip = c("x", "y", "key")))
                 )
               }
             }

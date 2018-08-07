@@ -22,7 +22,8 @@
 #' @param ... Used to pass additional attributes to theme() and between methods
 #' @param expand.x,expand.y Vectors of length 2. Passed to `scale_*_continuous()`
 #' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
-#' Must be a palette name from \code{RColorBrewer}.
+#' Must be a palette name from \code{RColorBrewer}
+#' @param xlab Character label for the x-axis
 #'
 #' @return A standard ggplot2 object
 #'
@@ -90,7 +91,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
             if (!length(df)) {
               #stop("No overrepresented sequences were detected by FastQC")
               overPlot <- emptyPlot("No Overrepresented Sequences")
-                
+
               if(usePlotly) overPlot <- ggplotly(overPlot, tooltip = "")
               return(overPlot)
             }
@@ -141,12 +142,12 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
                 layout(title = df$Filename[1],
                        bargap = 0.05,
                        showlegend = FALSE)
-              
+
               overPlot <- suppressMessages(
-                plotly::subplot(plotly::plotly_empty(), overPlot, widths = c(0.14,0.86)) %>% 
-                  layout(xaxis2 = list(title = "Percent of Total Reads (%)"), 
+                plotly::subplot(plotly::plotly_empty(), overPlot, widths = c(0.14,0.86)) %>%
+                  layout(xaxis2 = list(title = "Percent of Total Reads (%)"),
                          yaxis2 = list(title = "Overrepresented Sequence", showticklabels = FALSE)))
-              
+
             }
             else{
               overPlot <- ggplot(df, aes_string(x = "Sequence", y = "Percentage", fill = "Status")) +
@@ -176,14 +177,14 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
 setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, cluster = TRUE,
                    dendrogram = TRUE, pwfCols, ..., paletteName = "Set1",
-                   expand.x = c(0, 0), expand.y = c(0.0, 0)){
+                   expand.x = c(0, 0), expand.y = c(0.0, 0), xlab){
 
             df <- Overrepresented_sequences(x)
-            
+
             if (!length(df)) {
               #stop("No overrepresented sequences were detected by FastQC")
               overPlot <- emptyPlot("No Overrepresented Sequences")
-              
+
               if(usePlotly) overPlot <- ggplotly(overPlot, tooltip = "")
               return(overPlot)
             }
@@ -244,6 +245,13 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             nSource <- length(unique(df$Possible_Source))
             pal <- RColorBrewer::brewer.pal(nSource, paletteName) %>% set_names(unique(df$Possible_Source))
 
+            # Set the axis label
+            if (missing(xlab)){
+              xlab <- "Overrepresented Sequences (% of Total)"
+            }
+            xlab <- as.character(xlab)[[1]]
+
+
             if (usePlotly){
 
               overPlot <- plot_ly(df, x = ~Percentage, y = ~Filename, type = "bar", color = ~Possible_Source,
@@ -254,11 +262,11 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                                     Percentage,
                                     "<br> Possible Source: ",
                                     Possible_Source)) %>%
-                layout(xaxis = list(title = "Percent of Total Reads"),
-                       yaxis = list(showticklabels = FALSE),
-                       barmode = "stack",
-                       bargap = 0.05,
-                       showlegend = FALSE)
+                plotly::layout(xaxis = list(title = xlab),
+                               yaxis = list(showticklabels = FALSE),
+                               barmode = "stack",
+                               bargap = 0.05,
+                               showlegend = FALSE)
 
               t <- getSummary(x)
               t <- t[t$Category == "Overrepresented sequences",]
@@ -294,7 +302,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
             else{
               overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Possible_Source")) +
                 geom_bar(stat = "identity") +
-                labs(y = "Overrepresented Sequences (% of Total)",
+                labs(y = xlab,
                      fill = "Possible Source") +
                 scale_y_continuous(limits = c(0, ymax), expand = expand.x) +
                 scale_x_discrete(expand = expand.y) +
