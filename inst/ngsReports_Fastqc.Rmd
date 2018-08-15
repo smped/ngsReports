@@ -91,7 +91,7 @@ bs %>%
 	set_names(str_to_title(names(.))) %>%
 	set_names(gsub("Sequences", "", names(.))) %>%
 	set_names(str_trim(names(.))) %>%
-	rename(`%GC` = `%Gc`) %>%
+	dplyr::rename(`%GC` = `%Gc`) %>%
 	pander(big.mark = ",",
 				 split.tables = Inf,
 				 style = "rmarkdown",
