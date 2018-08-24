@@ -209,13 +209,15 @@ nK <- 30
 kc <- Kmer_Content(rawFastqcData)
 if (!is.null(kc)){
   kc %>%
-    dplyr::arrange(desc(Percentage)) %>%
+    group_by(Sequence, `Max_Obs/Exp_Position`) %>%
+    summarise(`Total Abundance` = sum(Count),
+              `Present In` = n()) %>%
+    ungroup() %>%
+    arrange(desc(`Present In`), desc(`Total Abundance`), Sequence) %>%
     dplyr::slice(1:nK) %>%
-    dplyr::arrange(Sequence) %>%
-    mutate(Filename = plotLabels[Filename]) %>%
     pander(split.tables = Inf,
            style = "rmarkdown",
-           justify = "llrrrr",
+           justify = "lrrr",
            big.mark = ",",
            caption = paste("Summary of Overrepresented Kmers in all files.",
                            "A maximum of", nK, "Kmers are shown."))
