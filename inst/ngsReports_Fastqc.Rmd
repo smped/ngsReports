@@ -176,7 +176,7 @@ if (!is.null(os)){
 		ungroup() %>%
 		mutate(`Overall Percentage` = percent(Total / sum(bs$Total_Sequences)),
 					 Max_Percentage = percent(Max_Percentage)) %>%
-		arrange(desc(Total)) %>%
+		dplyr::arrange(desc(Total)) %>%
 		dplyr::slice(1:nOver) %>%
 		dplyr::select(Sequence, Total, `Present In` = Files, `Overall Percentage`, Max_Percentage, Possible_Source) %>%
 		pander(split.tables = Inf,
@@ -209,9 +209,9 @@ nK <- 30
 kc <- Kmer_Content(rawFastqcData)
 if (!is.null(kc)){
   kc %>%
-    arrange(desc(Percentage)) %>%
+    dplyr::arrange(desc(Percentage)) %>%
     dplyr::slice(1:nK) %>%
-    arrange(Sequence) %>%
+    dplyr::arrange(Sequence) %>%
     mutate(Filename = plotLabels[Filename]) %>%
     pander(split.tables = Inf,
            style = "rmarkdown",
