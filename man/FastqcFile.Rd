@@ -34,12 +34,10 @@ Files can be zipped (*_fastqc.zip) or extracted directories
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# As this is the root structure, we can only call this 
+# As this is the root structure, we can only call this
 # function with an individual file
 ff <- FastqcFile(fileList[[1]])
 

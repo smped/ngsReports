@@ -13,6 +13,17 @@ The FastqcDataList Object Class
 \section{Slots}{
 
 \describe{
-\item{\code{...}}{this can either be a single character vector of paths to FASTQC files, or several instances of FastqcFile objects}
+\item{\code{...}}{this can either be a single character vector of paths to FASTQC
+files, or several instances of FastqcFile objects}
 }}
 
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+}

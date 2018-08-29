@@ -32,10 +32,10 @@ Obtains the file.path for objects of multiple classes
 \examples{
 
 # Get the files included with the package
-fileDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Form a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 path(fdl)
 

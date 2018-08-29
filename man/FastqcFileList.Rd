@@ -15,7 +15,8 @@ FastqcFileList(x)
 \S4method{FastqcFileList}{list}(x)
 }
 \arguments{
-\item{x}{Character vector specifying a valid paths to files/directories as output by FastQC}
+\item{x}{Character vector specifying a valid paths to files/directories as
+output by FastQC}
 }
 \value{
 An object of class FastqcFile
@@ -31,16 +32,15 @@ Files can be any combination of zipped (*_fastqc.zip) or extracted directories
 \section{Slots}{
 
 \describe{
-\item{\code{...}}{this can either be a single character vector of paths to FASTQC files, or several instances of FastqcFile objects}
+\item{\code{...}}{this can either be a single character vector of paths to FASTQC
+files, or several instances of FastqcFile objects}
 }}
 
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcFileList
 ffl <- FastqcFileList(fileList)

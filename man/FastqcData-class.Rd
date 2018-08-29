@@ -16,3 +16,15 @@ The FastqcData Object Class
 \item{\code{...}}{this can either be a single character vector of paths to FASTQC files, or several instances of FastqcFile objects}
 }}
 
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcData object
+# As this is the underlying structure for a FastqcDataList, an object of
+# FastqcData will only be returned from an individual file.
+fd <- getFastqcData(fileList[1])
+
+}

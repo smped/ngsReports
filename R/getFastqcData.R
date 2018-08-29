@@ -10,12 +10,10 @@
 #'
 #' @examples
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
-#
-#' # Load the FASTQC data as a FastqcDataList
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#'
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
 #' @export
@@ -29,52 +27,75 @@ setGeneric("getFastqcData", function(object){standardGeneric("getFastqcData")})
 #' @export
 setMethod("getFastqcData", "FastqcFile",
           function(object){
+            # Setup the path to the file & use tryCatch to ensure it exists
+            # when testing to see if it is compressed
             path <- path(object)
-            if (isCompressed(path, type = "zip")){
+            comp <- tryCatch(isCompressed(path, type = "zip"))
+
+            if (comp){
+
               # Get the internal path within the zip archive
-              if (!file.exists(path)) stop("The zip archive can not be found.")
               fl <- file.path( gsub(".zip$", "", fileName(object)), "fastqc_data.txt")
-              # Check the required file exists
+
+              # Check the required file exists within the file
               allFiles <- unzip(path, list = TRUE)$Name
               stopifnot(fl %in% allFiles)
+
               # # Open the connection & read the 12 lines
               uz <- unz(path, fl)
               fastqcLines <- readLines(uz)
               close(uz)
+
             }
             else{
-              # The existence of this file will have been checked at object instantion
-              # Check in case it has been deleted post-instantiation though
+
+              # The existence of this file will have been checked at instantiation
+              # of the FastqcFile. Check in case it has been deleted post-instantiation
               fl <- file.path(path, "fastqc_data.txt")
               if (!file.exists(fl)) stop("'fastqc_data.txt' could not be found.")
               fastqcLines <- readLines(fl)
+
             }
+
             # Modified from Repitools::readFastQC
+            # Remove any '#' symbols
             fastqcLines <- gsub("#", "", fastqcLines)
+            # Remove any lines which specify '>>END_MODULE'
             fastqcLines <- fastqcLines[!grepl(">>END_MODULE", fastqcLines)]
 
             # The FastQC version NUMBER
-            vers <- gsub("\\t", "", fastqcLines[1])
+            vers <- strsplit(fastqcLines[[1]], split = "\t")[[1]][2]
+            # Remove the version line for easier module identification
+            fastqcLines <- fastqcLines[-1]
 
             # Setup the module names
             modules <- grep("^>>", fastqcLines, value = TRUE)
-            modules <- gsub("^>>", "", modules) # Remove the leading '>>'
-            modules <- gsub("(.+)\\t.+", "\\1", modules) # Grab the information before the \t
+            # Extract the text after the '>>' & before the tab
+            modules <- gsub("^>>(.+)\\t.+", "\\1", modules)
             modules <- gsub(" ", "_", modules) # Add underscores
 
-            # Check all required modules are present in the data
+            # Define the standard modules
             reqModules <- c("Basic_Statistics", "Per_base_sequence_quality",
                             "Per_tile_sequence_quality", "Per_sequence_quality_scores",
                             "Per_base_sequence_content", "Per_sequence_GC_content",
                             "Per_base_N_content", "Sequence_Length_Distribution",
                             "Sequence_Duplication_Levels", "Overrepresented_sequences",
                             "Adapter_Content", "Kmer_Content")
-            # Check that at least oneof the required modules is present
-            if (!any(modules %in% reqModules)) stop("None of the default modules were able to be found in the data.")
+            # Check that at least one of the standard modules is present
+            if (!any(modules %in% reqModules)) stop("None of the standard modules were able to be found in the data.")
 
-            # Split the data
-            fastqcLines <- split(fastqcLines, cumsum(grepl("^>>", fastqcLines)))[-1]
-            names(fastqcLines) <- modules
+            # Split the data based on the '>>' pattern, which will indicate the
+            # beginning of a new module
+            fastqcLines <- split(fastqcLines, cumsum(grepl("^>>", fastqcLines)))
+            # Assign the module names
+            names(fastqcLines) <- vapply(fastqcLines, function(x){
+              # Get the first line before the tab separator
+              nm <- gsub(">>(.+)\\t.+", "\\1", x[[1]])
+              # Replace the space with underscore
+              gsub(" ", "_", nm)
+            }, character(1))
+            # Remove the name from each module's data
+            fastqcLines <- lapply(fastqcLines, function(x){x[-1]})
 
             # Define the output to have the same structure as fastqcData, except with
             # an additional slot to account for the changes in the Sequence Duplication Levels output
@@ -228,7 +249,7 @@ setMethod("getFastqcData", "FastqcFileList",
 # after splitting the input from readLines()
 getBasicStatistics <- function(fastqcLines){
 
-  x <- fastqcLines[["Basic_Statistics"]][-seq_len(2)]
+  x <- fastqcLines[["Basic_Statistics"]][-1]
   vals <- gsub(".+\\t(.+)", "\\1", x)
   names(vals) <- gsub("(.+)\\t.+", "\\1", x)
   names(vals) <- gsub(" ", "_", names(vals))
@@ -465,4 +486,20 @@ getKmerContent <- function(fastqcLines){
 
 }
 
+# Define a function to split each module by the tab symbol
+# By default, this will place the first element as the column names
+splitByTab <- function(x, firstRowToNames = TRUE, tab = "\\t"){
 
+  nCol <- stringr::str_count(x[1], pattern = tab) + 1
+  if (firstRowToNames){
+    # Get the first element as a vector
+    nm <- stringr::str_split_fixed(x[1], pattern = tab, n = nCol)
+    # Split the remainder
+    df <- stringr::str_split_fixed(x[-1], pattern = tab, n = nCol)
+    colnames(df) <- nm
+  }
+  else {
+    df <- stringr::str_split_fixed(x, pattern = tab, n = nCol)
+  }
+  as.data.frame(df)
+}
