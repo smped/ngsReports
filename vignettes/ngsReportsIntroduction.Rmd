@@ -56,18 +56,6 @@ altTemplate <- file.path("path", "to", "template.Rmd")
 writeHtmlReport(fileDir, template = altTemplate)
 ```
 
-
-## Using the `shiny` app
-
-The `shiny` app can be called by simply calling the function `fastqcShiny()` and loading files manually.
-Alternatively, a predefined set of `FastQC` files can be passed as a character vector, `FastqcFileList` or as a `FastqcDataList` (defined below).
-In the following, the supplied example files are passed to the app as a simple `character` vector.
-
-```{r, eval=FALSE}
-files <- list.files(fileDir, pattern = "fastqc.zip$", full.names = TRUE)
-fastqcShiny(files)
-```
-
 # Advanced Usage
 
 ## Classes Defined in the Package
