@@ -17,9 +17,9 @@ plotSummary(x, usePlotly = FALSE, ...)
 
 \S4method{plotSummary}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels, pwfCols,
-  cluster = FALSE, dendrogram = TRUE, ..., gridlineWidth = 0.2,
-  gridlineCol = "grey20")
+\S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels,
+  pwfCols, cluster = FALSE, dendrogram = TRUE, ...,
+  gridlineWidth = 0.2, gridlineCol = "grey20")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

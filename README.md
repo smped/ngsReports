@@ -11,7 +11,7 @@ Currently you need to install the fastqcTheoreticalGC package separately.
 
 ```
 source("https://bioconductor.org/biocLite.R")
-biocLite(c("BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "Rsamtools", "scales", "shiny", "ShortRead", "tidyverse",  "viridis", "viridisLite", "zoo", "shinyFiles"))
+biocLite(c("BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "Rsamtools", "scales", "ShortRead", "tidyverse",  "viridis", "viridisLite", "zoo"))
 devtools::install_github('mikelove/fastqcTheoreticalGC')
 devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = FALSE)
 library(ngsReports)
@@ -21,14 +21,4 @@ library(ngsReports)
 
 The vignette for usage is [here](https://uofabioinformaticshub.github.io/ngsReports/vignettes/ngsReportsIntroduction)
 
-# ShinyApp Usage 
 
-**We recomend opening the shiny app into Google Chrome**
-
-this can be done by clicking `Open in Browser` after executing `fastqcShiny()`
-
-For a analysis of multiple fastqc reports use the shinyApp by running:
-`fastqcShiny()`
-once inside the shiny app, files can be input by clicking the `Choose Files` button.
-This will then open a pop-up window to select your fastqcReports (select multiple files by holding control, etc.) 
-once selected files will load and first plot will appear.

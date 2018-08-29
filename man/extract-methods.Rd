@@ -5,10 +5,8 @@
 \alias{[}
 \alias{[,FastqcFileList,ANY,missing-method}
 \alias{[,FastqcFileList,ANY,missing,ANY-method}
-\alias{[}
 \alias{[,FastqcFileList,character,missing-method}
 \alias{[,FastqcFileList,character,missing,ANY-method}
-\alias{[}
 \alias{[,FastqcDataList,ANY,missing-method}
 \alias{[,FastqcDataList,ANY,missing,ANY-method}
 \alias{[[}
@@ -17,7 +15,8 @@
 \usage{
 \S4method{[}{FastqcFileList,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
 
-\S4method{[}{FastqcFileList,character,missing,ANY}(x, i, j, ..., drop = TRUE)
+\S4method{[}{FastqcFileList,character,missing,ANY}(x, i, j, ...,
+  drop = TRUE)
 
 \S4method{[}{FastqcDataList,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
 

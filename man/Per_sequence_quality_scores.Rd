@@ -5,13 +5,9 @@
 \alias{Per_sequence_quality_scores,FastqcData-method}
 \alias{Per_sequence_quality_scores}
 \alias{Per_sequence_quality_scores,FastqcDataList-method}
-\alias{Per_sequence_quality_scores}
 \alias{Per_sequence_quality_scores,FastqcFile-method}
-\alias{Per_sequence_quality_scores}
 \alias{Per_sequence_quality_scores,FastqcFileList-method}
-\alias{Per_sequence_quality_scores}
 \alias{Per_sequence_quality_scores,character-method}
-\alias{Per_sequence_quality_scores}
 \title{Get the Per Sequence Quality Scores information}
 \usage{
 \S4method{Per_sequence_quality_scores}{FastqcData}(object)

@@ -5,7 +5,6 @@
 \alias{FastqcFile-class}
 \alias{FastqcFile}
 \alias{FastqcFile,character-method}
-\alias{FastqcFile}
 \title{The FastqcFile Object Class}
 \usage{
 FastqcFile(x)

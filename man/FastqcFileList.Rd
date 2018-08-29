@@ -5,9 +5,7 @@
 \alias{FastqcFileList-class}
 \alias{FastqcFileList}
 \alias{FastqcFileList,character-method}
-\alias{FastqcFileList}
 \alias{FastqcFileList,list-method}
-\alias{FastqcFileList}
 \title{The FastqcFileList Object Class}
 \usage{
 FastqcFileList(x)

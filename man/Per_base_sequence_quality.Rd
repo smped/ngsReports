@@ -5,13 +5,9 @@
 \alias{Per_base_sequence_quality,FastqcData-method}
 \alias{Per_base_sequence_quality}
 \alias{Per_base_sequence_quality,FastqcDataList-method}
-\alias{Per_base_sequence_quality}
 \alias{Per_base_sequence_quality,FastqcFile-method}
-\alias{Per_base_sequence_quality}
 \alias{Per_base_sequence_quality,FastqcFileList-method}
-\alias{Per_base_sequence_quality}
 \alias{Per_base_sequence_quality,character-method}
-\alias{Per_base_sequence_quality}
 \title{Get the Per Base Sequence Quality information}
 \usage{
 \S4method{Per_base_sequence_quality}{FastqcData}(object)

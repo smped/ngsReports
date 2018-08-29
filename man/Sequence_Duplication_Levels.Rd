@@ -5,13 +5,9 @@
 \alias{Sequence_Duplication_Levels,FastqcData-method}
 \alias{Sequence_Duplication_Levels}
 \alias{Sequence_Duplication_Levels,FastqcDataList-method}
-\alias{Sequence_Duplication_Levels}
 \alias{Sequence_Duplication_Levels,FastqcFile-method}
-\alias{Sequence_Duplication_Levels}
 \alias{Sequence_Duplication_Levels,FastqcFileList-method}
-\alias{Sequence_Duplication_Levels}
 \alias{Sequence_Duplication_Levels,character-method}
-\alias{Sequence_Duplication_Levels}
 \title{Get the Sequence Duplication Levels information}
 \usage{
 \S4method{Sequence_Duplication_Levels}{FastqcData}(object)

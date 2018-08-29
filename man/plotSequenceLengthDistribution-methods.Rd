@@ -17,17 +17,17 @@
 \usage{
 plotSequenceLengthDistribution(x, usePlotly = FALSE, ...)
 
-\S4method{plotSequenceLengthDistribution}{character}(x, usePlotly = FALSE,
-  ...)
+\S4method{plotSequenceLengthDistribution}{character}(x,
+  usePlotly = FALSE, ...)
 
-\S4method{plotSequenceLengthDistribution}{FastqcFile}(x, usePlotly = FALSE,
-  ...)
+\S4method{plotSequenceLengthDistribution}{FastqcFile}(x,
+  usePlotly = FALSE, ...)
 
 \S4method{plotSequenceLengthDistribution}{FastqcFileList}(x,
   usePlotly = FALSE, ...)
 
-\S4method{plotSequenceLengthDistribution}{FastqcData}(x, usePlotly = FALSE,
-  labels, ..., expand.x = c(0, 0.2))
+\S4method{plotSequenceLengthDistribution}{FastqcData}(x,
+  usePlotly = FALSE, labels, ..., expand.x = c(0, 0.2))
 
 \S4method{plotSequenceLengthDistribution}{FastqcDataList}(x,
   usePlotly = FALSE, labels, counts = FALSE, plotType = "heatmap",

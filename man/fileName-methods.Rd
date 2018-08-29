@@ -4,11 +4,8 @@
 \name{fileName}
 \alias{fileName}
 \alias{fileName,FastqcFile-method}
-\alias{fileName}
 \alias{fileName,FastqcFileList-method}
-\alias{fileName}
 \alias{fileName,FastqcData-method}
-\alias{fileName}
 \alias{fileName,FastqcDataList-method}
 \title{Return the File Names from an Object}
 \usage{

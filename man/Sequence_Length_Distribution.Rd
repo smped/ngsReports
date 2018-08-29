@@ -5,13 +5,9 @@
 \alias{Sequence_Length_Distribution,FastqcData-method}
 \alias{Sequence_Length_Distribution}
 \alias{Sequence_Length_Distribution,FastqcDataList-method}
-\alias{Sequence_Length_Distribution}
 \alias{Sequence_Length_Distribution,FastqcFile-method}
-\alias{Sequence_Length_Distribution}
 \alias{Sequence_Length_Distribution,FastqcFileList-method}
-\alias{Sequence_Length_Distribution}
 \alias{Sequence_Length_Distribution,character-method}
-\alias{Sequence_Length_Distribution}
 \title{Get the Sequence Length Distribution information}
 \usage{
 \S4method{Sequence_Length_Distribution}{FastqcData}(object)

@@ -21,13 +21,15 @@ plotDuplicationLevels(x, usePlotly = FALSE, ...)
 
 \S4method{plotDuplicationLevels}{FastqcFile}(x, usePlotly = FALSE, ...)
 
-\S4method{plotDuplicationLevels}{FastqcFileList}(x, usePlotly = FALSE, ...)
+\S4method{plotDuplicationLevels}{FastqcFileList}(x, usePlotly = FALSE,
+  ...)
 
-\S4method{plotDuplicationLevels}{FastqcData}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)
+\S4method{plotDuplicationLevels}{FastqcData}(x, usePlotly = FALSE,
+  labels, pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"),
+  ...)
 
-\S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, deduplication = c("pre", "post"), cluster = FALSE,
+\S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE,
+  labels, pwfCols, deduplication = c("pre", "post"), cluster = FALSE,
   dendrogram = FALSE, heatCol = inferno(50), ...)
 }
 \arguments{

@@ -4,11 +4,8 @@
 \name{path}
 \alias{path}
 \alias{path,FastqcFile-method}
-\alias{path}
 \alias{path,FastqcFileList-method}
-\alias{path}
 \alias{path,FastqcData-method}
-\alias{path}
 \alias{path,FastqcDataList-method}
 \title{Return the File Paths from an object}
 \usage{

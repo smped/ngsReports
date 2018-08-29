@@ -21,7 +21,8 @@ plotSequenceQualities(x, usePlotly = FALSE, ...)
 
 \S4method{plotSequenceQualities}{FastqcFile}(x, usePlotly = FALSE, ...)
 
-\S4method{plotSequenceQualities}{FastqcFileList}(x, usePlotly = FALSE, ...)
+\S4method{plotSequenceQualities}{FastqcFileList}(x, usePlotly = FALSE,
+  ...)
 
 \S4method{plotSequenceQualities}{FastqcData}(x, usePlotly = FALSE,
   counts = FALSE, warn = 30, fail = 20, pwfCols, alpha = 0.2, ...)

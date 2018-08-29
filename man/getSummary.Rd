@@ -5,13 +5,9 @@
 \alias{getSummary,FastqcFile-method}
 \alias{getSummary}
 \alias{getSummary,FastqcFileList-method}
-\alias{getSummary}
 \alias{getSummary,character-method}
-\alias{getSummary}
 \alias{getSummary,FastqcData-method}
-\alias{getSummary}
 \alias{getSummary,FastqcDataList-method}
-\alias{getSummary}
 \title{Get the summary information from Fastqc Files}
 \usage{
 \S4method{getSummary}{FastqcFile}(object)

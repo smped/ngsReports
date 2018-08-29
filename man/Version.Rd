@@ -5,7 +5,6 @@
 \alias{Version,FastqcData-method}
 \alias{Version}
 \alias{Version,FastqcDataList-method}
-\alias{Version}
 \title{Get the FASTQC version}
 \usage{
 \S4method{Version}{FastqcData}(object)

@@ -3,13 +3,9 @@
 \docType{methods}
 \name{getFastqcData}
 \alias{getFastqcData}
-\alias{getFastqcData}
 \alias{getFastqcData,FastqcFile-method}
-\alias{getFastqcData}
 \alias{getFastqcData,NULL-method}
-\alias{getFastqcData}
 \alias{getFastqcData,character-method}
-\alias{getFastqcData}
 \alias{getFastqcData,FastqcFileList-method}
 \title{Get all data from FastQC files}
 \usage{

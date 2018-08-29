@@ -4,9 +4,10 @@
 \alias{runFastQC}
 \title{A wrapper for the bash shell command fastqc.}
 \usage{
-runFastQC(object, outPath, exec = "/usr/local/bin/fastqc", threads = 1L,
-  casava = FALSE, nofilter = FALSE, extract = FALSE, nogroup = FALSE,
-  contaminants = c(), adapters = c(), kmers = 7, overWrite = FALSE)
+runFastQC(object, outPath, exec = "/usr/local/bin/fastqc",
+  threads = 1L, casava = FALSE, nofilter = FALSE, extract = FALSE,
+  nogroup = FALSE, contaminants = c(), adapters = c(), kmers = 7,
+  overWrite = FALSE)
 }
 \arguments{
 \item{object}{A \code{\link{FastqFileList}}}

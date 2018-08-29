@@ -23,12 +23,12 @@ plotNContent(x, usePlotly = FALSE, ...)
 
 \S4method{plotNContent}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels, warn = 5,
-  fail = 20, pwfCols, ..., lineCol = "red")
+\S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels,
+  warn = 5, fail = 20, pwfCols, ..., lineCol = "red")
 
 \S4method{plotNContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  warn = 5, fail = 20, pwfCols, cluster = FALSE, dendrogram = FALSE,
-  ...)
+  warn = 5, fail = 20, pwfCols, cluster = FALSE,
+  dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

@@ -16,30 +16,34 @@
 \title{Plot the Per Sequence GC Content}
 \usage{
 plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-  theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-  n = 1e+06, bp = 100, ...)
+  theoreticalType = "Genome", species = "Hsapiens", GCobject,
+  Fastafile, n = 1e+06, bp = 100, ...)
 
 \S4method{plotGcContent}{character}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, Fastafile, n = 1e+06, bp = 100, ...)
+  theoreticalGC = TRUE, theoreticalType = "Genome",
+  species = "Hsapiens", GCobject, Fastafile, n = 1e+06, bp = 100,
+  ...)
 
 \S4method{plotGcContent}{FastqcFile}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, Fastafile, n = 1e+06, bp = 100, ...)
+  theoreticalGC = TRUE, theoreticalType = "Genome",
+  species = "Hsapiens", GCobject, Fastafile, n = 1e+06, bp = 100,
+  ...)
 
 \S4method{plotGcContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, Fastafile, n = 1e+06, bp = 100, ...)
+  theoreticalGC = TRUE, theoreticalType = "Genome",
+  species = "Hsapiens", GCobject, Fastafile, n = 1e+06, bp = 100,
+  ...)
 
 \S4method{plotGcContent}{FastqcData}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, Fastafile, n = 1e+06, bp = 100, counts = FALSE,
-  lineCols = c("red", "blue"), ...)
+  theoreticalGC = TRUE, theoreticalType = "Genome",
+  species = "Hsapiens", GCobject, Fastafile, n = 1e+06, bp = 100,
+  counts = FALSE, lineCols = c("red", "blue"), ...)
 
 \S4method{plotGcContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, theoreticalType = "Genome", species = "Hsapiens",
-  GCobject, Fastafile, n = 1e+06, bp = 100, plotType = c("heatmap",
-  "line"), pwfCols, cluster = FALSE, dendrogram = TRUE, ...)
+  theoreticalGC = TRUE, theoreticalType = "Genome",
+  species = "Hsapiens", GCobject, Fastafile, n = 1e+06, bp = 100,
+  plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
+  dendrogram = TRUE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

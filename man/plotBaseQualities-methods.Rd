@@ -27,9 +27,9 @@ plotBaseQualities(x, usePlotly = FALSE, ...)
   warn = 25, fail = 20, ...)
 
 \S4method{plotBaseQualities}{FastqcDataList}(x, usePlotly = FALSE,
-  plotType = c("heatmap", "boxplot"), plotValue = "Mean", cluster = FALSE,
-  labels, dendrogram = FALSE, nc = 2, pwfCols, warn = 25, fail = 20,
-  ...)
+  plotType = c("heatmap", "boxplot"), plotValue = "Mean",
+  cluster = FALSE, labels, dendrogram = FALSE, nc = 2, pwfCols,
+  warn = 25, fail = 20, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

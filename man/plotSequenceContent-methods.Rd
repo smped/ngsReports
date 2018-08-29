@@ -17,17 +17,20 @@
 \usage{
 plotSequenceContent(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSequenceContent}{character}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotSequenceContent}{FastqcFile}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotSequenceContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotSequenceContent}{character}(x, usePlotly = FALSE, labels,
   ...)
 
-\S4method{plotSequenceContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSequenceContent}{FastqcFile}(x, usePlotly = FALSE, labels,
+  ...)
 
-\S4method{plotSequenceContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
+\S4method{plotSequenceContent}{FastqcFileList}(x, usePlotly = FALSE,
+  labels, ...)
+
+\S4method{plotSequenceContent}{FastqcData}(x, usePlotly = FALSE, labels,
+  ...)
+
+\S4method{plotSequenceContent}{FastqcDataList}(x, usePlotly = FALSE,
+  labels, plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
   dendrogram = TRUE, ...)
 }
 \arguments{

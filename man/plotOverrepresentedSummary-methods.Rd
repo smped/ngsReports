@@ -17,19 +17,22 @@
 \usage{
 plotOverrepresentedSummary(x, usePlotly = FALSE, ...)
 
-\S4method{plotOverrepresentedSummary}{character}(x, usePlotly = FALSE, ...)
-
-\S4method{plotOverrepresentedSummary}{FastqcFile}(x, usePlotly = FALSE, ...)
-
-\S4method{plotOverrepresentedSummary}{FastqcFileList}(x, usePlotly = FALSE,
+\S4method{plotOverrepresentedSummary}{character}(x, usePlotly = FALSE,
   ...)
+
+\S4method{plotOverrepresentedSummary}{FastqcFile}(x, usePlotly = FALSE,
+  ...)
+
+\S4method{plotOverrepresentedSummary}{FastqcFileList}(x,
+  usePlotly = FALSE, ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcData}(x, usePlotly = FALSE,
   labels, n = 10, pwfCols, ...)
 
-\S4method{plotOverrepresentedSummary}{FastqcDataList}(x, usePlotly = FALSE,
-  labels, cluster = TRUE, dendrogram = TRUE, pwfCols, ...,
-  paletteName = "Set1", expand.x = c(0, 0), expand.y = c(0, 0), xlab)
+\S4method{plotOverrepresentedSummary}{FastqcDataList}(x,
+  usePlotly = FALSE, labels, cluster = TRUE, dendrogram = TRUE,
+  pwfCols, ..., paletteName = "Set1", expand.x = c(0, 0),
+  expand.y = c(0, 0), xlab)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

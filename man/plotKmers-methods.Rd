@@ -23,13 +23,13 @@ plotKmers(x, usePlotly = FALSE, ...)
 
 \S4method{plotKmers}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, n = 6, labels, ...,
-  lineWidth = 0.5, pal = c("red", "blue", "green", "black", "magenta",
-  "yellow"))
+\S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, n = 6, labels,
+  ..., lineWidth = 0.5, pal = c("red", "blue", "green", "black",
+  "magenta", "yellow"))
 
 \S4method{plotKmers}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  cluster = FALSE, dendrogram = FALSE, pwfCols, heatCol = inferno(50),
-  ...)
+  cluster = FALSE, dendrogram = FALSE, pwfCols,
+  heatCol = inferno(50), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
