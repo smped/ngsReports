@@ -178,3 +178,65 @@ test_that("Check getSeqLengthDist() errors and nulls",{
   expect_null(getSeqLengthDist(fastqcLines[otherMods]))
   expect_error(getSeqLengthDist(fastqcLines))
 })
+
+test_that("Check getSeqDuplicationLevels() provides correct output",{
+  res <- getSeqDuplicationLevels(fastqcLines)
+  expect_true(
+    setequal(names(res),
+             c("Total_Deduplicated_Percentage", "Sequence_Duplication_Levels"))
+  )
+  expect_equal(typeof(res[["Total_Deduplicated_Percentage"]]), "double")
+  expect_true(
+    setequal(
+      names(res[["Sequence_Duplication_Levels"]]),
+      c("Duplication_Level", "Percentage_of_deduplicated", "Percentage_of_total")
+    )
+  )
+  expect_true(
+    all(
+      vapply(res[["Sequence_Duplication_Levels"]], typeof, character(1)) == c(
+        "character", "double", "double"
+      )
+    )
+  )
+  expect_true(
+    setequal(res[["Sequence_Duplication_Levels"]][["Duplication_Level"]],
+             c(1:9, paste0(">", c(10, 50, 100, 500, "1k", "5k", "10k+"))))
+  )
+
+})
+
+test_that("Check getSeqDuplicationLevels() errors and nulls",{
+  fastqcLines[["Sequence_Duplication_Levels"]] <- fastqcLines[["Sequence_Duplication_Levels"]][-1]
+  otherMods <- names(fastqcLines) != "Sequence_Duplication_Levels"
+  expect_equal(
+    getSeqDuplicationLevels(fastqcLines[otherMods]),
+    list(Total_Deduplicated_Percentage = NULL, Sequence_Duplication_Levels = NULL)
+    )
+  expect_true(
+    is.na(getSeqDuplicationLevels(fastqcLines)[["Total_Deduplicated_Percentage"]])
+    )
+  fastqcLines[["Sequence_Duplication_Levels"]] <- fastqcLines[["Sequence_Duplication_Levels"]][-1]
+  expect_error(getSeqDuplicationLevels(fastqcLines))
+})
+
+test_that("Check getOverrepSeq() is correct",{
+  df <- getOverrepSeq(fastqcLines)
+  expect_true(
+    setequal(names(df), c("Sequence", "Count", "Percentage", "Possible_Source"))
+  )
+  expect_true(
+    all(
+      vapply(df, typeof, character(1)) == c("character", "integer", "double", "character")
+    )
+  )
+  expect_equal(nrow(df), 182)
+})
+
+
+test_that("Check getOverrepSeq() errors and nulls",{
+  fastqcLines[["Overrepresented_sequences"]] <- fastqcLines[["Overrepresented_sequences"]][-1]
+  otherMods <- names(fastqcLines) != "Overrepresented_sequences"
+  expect_null(getOverrepSeq(fastqcLines[otherMods]))
+  expect_error(getOverrepSeq(fastqcLines))
+})

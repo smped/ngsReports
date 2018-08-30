@@ -106,47 +106,21 @@ setMethod("getFastqcData", "FastqcFile",
             allModules <- unique(c(reqModules, modules, "Total_Deduplicated_Percentage"))
             out <- sapply(allModules, function(x){NULL}, simplify = FALSE)
 
-            ## Get the Basic Statistics
+            ## Get the Modules
             out[["Basic_Statistics"]] <- getBasicStatistics(fastqcLines)
-
-            ## Get the Per Base Sequence Qualities
             out[["Per_base_sequence_quality"]] <- getPerBaseSeqQuals(fastqcLines)
-
-            ## Get the Per Tile Sequence Qualities
             out[["Per_tile_sequence_quality"]] <- getPerTileSeqQuals(fastqcLines)
-
-            ## Get the Per Sequence Quality Scores
             out[["Per_sequence_quality_scores"]] <- getPerSeqQualScores(fastqcLines)
-
-            ## Get the Per Base Sequence Qualities
             out[["Per_base_sequence_content"]] <- getPerBaseSeqContent(fastqcLines)
-
-            ## Get the Per Sequence GC Content
             out[["Per_sequence_GC_content"]] <- getPerSeqGcContent(fastqcLines)
-
-            ## Get the Per Base Sequence Qualities
             out[["Per_base_N_content"]] <-  getPerBaseNContent(fastqcLines)
-
-            ## Get the Sequence Length Distribution
             out[["Sequence_Length_Distribution"]] <- getSeqLengthDist(fastqcLines)
+            out[["Overrepresented_sequences"]] <- getOverrepSeq(fastqcLines)
 
             # Get the Sequence Duplication Levels
-            Sequence_Duplication_Levels <- c()
-            Total_Deduplicated_Percentage <- c()
-            if("Sequence_Duplication_Levels" %in% modules){
-              Sequence_Duplication_Levels <- getSeqDuplicationLevels(fastqcLines)
-              stopifnot(is.data.frame(Sequence_Duplication_Levels[["Sequence_Duplication_Levels"]]))
-            }
+            Sequence_Duplication_Levels <- getSeqDuplicationLevels(fastqcLines)
             out[["Sequence_Duplication_Levels"]] <- Sequence_Duplication_Levels[["Sequence_Duplication_Levels"]]
             out[["Total_Deduplicated_Percentage"]] <- Sequence_Duplication_Levels[["Total_Deduplicated_Percentage"]]
-
-            # Get the Overrepresented Sequences
-            Overrepresented_sequences <- c()
-            if("Overrepresented_sequences" %in% modules) {
-              Overrepresented_sequences <- getOverrepSeq(fastqcLines)
-              stopifnot(is.data.frame(Overrepresented_sequences))
-            }
-            out[["Overrepresented_sequences"]] <- Overrepresented_sequences
 
             # Get the Adapter Content
             Adapter_Content <- c()
@@ -282,7 +256,7 @@ getPerSeqQualScores <- function(fastqcLines){
   # Return NULL if the module is missing
   if (!"Per_sequence_quality_scores" %in% names(fastqcLines)) return(NULL)
   df <- splitByTab(fastqcLines[["Per_sequence_quality_scores"]])
-  
+
   # Check for the required values
   reqVals <- c("Quality", "Count")
   stopifnot(reqVals %in% names(df))
@@ -292,7 +266,7 @@ getPerSeqQualScores <- function(fastqcLines){
 }
 
 getPerBaseSeqContent <- function(fastqcLines){
-  
+
   # Return NULL if the module is missing
   if (!"Per_base_sequence_content" %in% names(fastqcLines)) return(NULL)
   df <- splitByTab(fastqcLines[["Per_base_sequence_content"]])
@@ -308,7 +282,7 @@ getPerBaseSeqContent <- function(fastqcLines){
 }
 
 getPerSeqGcContent <- function(fastqcLines){
-  
+
   # Return NULL if the module is missing
   if (!"Per_sequence_GC_content" %in% names(fastqcLines)) return(NULL)
   df <- splitByTab(fastqcLines[["Per_sequence_GC_content"]])
@@ -325,7 +299,7 @@ getPerSeqGcContent <- function(fastqcLines){
 }
 
 getPerBaseNContent <- function(fastqcLines){
-  
+
   # Return NULL if the module is missing
   if (!"Per_base_N_content" %in% names(fastqcLines)) return(NULL)
   df <- splitByTab(fastqcLines[["Per_base_N_content"]])
@@ -340,7 +314,7 @@ getPerBaseNContent <- function(fastqcLines){
 }
 
 getSeqLengthDist <- function(fastqcLines){
-  
+
   # Return NULL if the module is missing
   if (!"Sequence_Length_Distribution" %in% names(fastqcLines)) return(NULL)
   df <- splitByTab(fastqcLines[["Sequence_Length_Distribution"]])
@@ -354,13 +328,18 @@ getSeqLengthDist <- function(fastqcLines){
   df$Upper <- as.integer(gsub(".*-(.*)", "\\1", df$Length))
   df$Count <- as.integer(df$Count)
   df <- tibble::as_tibble(df)
-  
+
   df[c("Length", "Lower", "Upper", "Count")]
 
 }
 
 getSeqDuplicationLevels <- function(fastqcLines){
 
+  # Return NULL if the module is missing
+  if (!"Sequence_Duplication_Levels" %in% names(fastqcLines)) {
+    return(list(Total_Deduplicated_Percentage = NULL,
+                Sequence_Duplication_Levels = NULL))
+  }
   x <- fastqcLines[["Sequence_Duplication_Levels"]]
 
   # Check for the presence of the Total Deduplicate Percentage value
@@ -368,37 +347,32 @@ getSeqDuplicationLevels <- function(fastqcLines){
   Total_Deduplicated_Percentage <- NA_real_
   if (any(hasTotDeDup)){
     Total_Deduplicated_Percentage <- as.numeric(gsub(".+\\t(.*)", "\\1", x[hasTotDeDup]))
-    stopifnot(length(Total_Deduplicated_Percentage) == 1)
   }
+  if (length(Total_Deduplicated_Percentage) > 1) stop("Too many elements matched Total_Deduplicated_Percentage")
 
   # Remove the Total value entry from the original object
-  x <- x[!hasTotDeDup]
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  df <- splitByTab(x[!hasTotDeDup])
+  names(df) <- gsub(" ", "_", names(df))
 
   # Check for the required values
   reqVals <- c("Duplication_Level", "Percentage_of_deduplicated", "Percentage_of_total")
   stopifnot(reqVals %in% names(df))
 
-  # Convert to numeric
+  # Convert percentages to numeric
   df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
 
   # Return a list with both values
   list(Total_Deduplicated_Percentage = Total_Deduplicated_Percentage,
-       Sequence_Duplication_Levels = df)
+       Sequence_Duplication_Levels = tibble::as_tibble(df))
 
 }
 
 getOverrepSeq <- function(fastqcLines){
 
-  x <- fastqcLines[["Overrepresented_sequences"]]
-  if (length(x) <= 1) return(dplyr::data_frame())
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  # Return NULL if the module is missing
+  if (!"Overrepresented_sequences" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Overrepresented_sequences"]])
+  names(df) <- gsub(" ", "_", names(df))
 
   # Check for the required values
   reqVals <- c("Sequence", "Count", "Percentage", "Possible_Source")
@@ -406,7 +380,8 @@ getOverrepSeq <- function(fastqcLines){
 
   df$Count <- as.integer(df$Count)
   df$Percentage <- as.numeric(df$Percentage)
-  df
+  tibble::as_tibble(df)
+
 }
 
 getAdapterContent <- function(fastqcLines){
