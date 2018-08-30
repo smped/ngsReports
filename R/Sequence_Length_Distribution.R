@@ -33,7 +33,7 @@ setMethod("Sequence_Length_Distribution", "FastqcData",
             df <- object@Sequence_Length_Distribution
             if(length(df)){
             df$Filename <- fileName(object)
-            dplyr::select(df, "Filename", dplyr::everything())
+            dplyr::select(df, "Filename", tidyselect::everything())
             }
             else NULL
           })

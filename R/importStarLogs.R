@@ -67,14 +67,14 @@ importStarLogs <- function(x){
   df$Filename <- basename(x)
   df$Mapping_Duration <- with(df, Finished_On - Started_Mapping_On)
   df$Total_Mapped_Percent <- with(df, 100*(Uniquely_Mapped_Reads_Number + Number_Of_Reads_Mapped_To_Multiple_Loci) / Number_Of_Input_Reads)
-  df <- dplyr::select(df, Filename,
-                      dplyr::starts_with("Total"),
-                      dplyr::contains("Input"),
-                      dplyr::contains("Mapped"),
-                      dplyr::contains("Splice"),
-                      dplyr::ends_with("On"),
-                      dplyr::contains("Mapping"),
-                      dplyr::everything())
+  df <- dplyr::select(df, "Filename",
+                      tidyselect::starts_with("Total"),
+                      tidyselect::contains("Input"),
+                      tidyselect::contains("Mapped"),
+                      tidyselect::contains("Splice"),
+                      tidyselect::ends_with("On"),
+                      tidyselect::contains("Mapping"),
+                      tidyselect::everything())
 
   tibble::as_tibble(df)
 }

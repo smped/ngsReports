@@ -69,11 +69,11 @@ importHisat2Logs <- function(x){
   out <- dplyr::bind_rows(out)
   out$Filename <- names(data)
 
-  dplyr::select(out, Filename,
-                dplyr::ends_with("Reads"),
-                dplyr::contains("Unique"),
-                dplyr::contains("Multiple"),
-                dplyr::everything())
+  dplyr::select(out, "Filename",
+                tidyselect::ends_with("Reads"),
+                tidyselect::contains("Unique"),
+                tidyselect::contains("Multiple"),
+                tidyselect::everything())
 
 }
 

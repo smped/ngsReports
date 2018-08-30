@@ -120,7 +120,7 @@ setMethod("plotBaseQualities", signature = "FastqcData",
             # Set the limits & rectangles
             ylim <- c(0, max(df$`90th_Percentile`) + 1)
             expand_x <- round(0.015*(max(df$x) - min(df$x)), 1)
-            rects <- dplyr::data_frame(xmin = min(df$x) - expand_x,
+            rects <- tibble::tibble(xmin = min(df$x) - expand_x,
                                        xmax = max(df$x) + expand_x,
                                        ymin = c(0, fail, warn),
                                        ymax = c(fail, warn, max(ylim)),
@@ -225,7 +225,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               # Set the limits & rectangles
               ylim <- c(0, max(df$`90th_Percentile`) + 1)
               expand_x <- round(0.015*(max(df$x) - min(df$x)), 1)
-              rects <- dplyr::data_frame(xmin = min(df$x) - expand_x,
+              rects <- tibble::tibble(xmin = min(df$x) - expand_x,
                                          xmax = max(df$x) + expand_x,
                                          ymin = c(0, fail, warn),
                                          ymax = c(fail, warn, max(ylim)),

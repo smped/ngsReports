@@ -62,7 +62,7 @@ setGeneric("genomes", function(object){standardGeneric("genomes")})
 #' @aliases genomes,TheoreticalGC-method
 setMethod("genomes", "TheoreticalGC", function(object){
   gn <- object@mData$Genome
-  dplyr::select(object@mData[gn,], -dplyr::ends_with("ome"))
+  dplyr::select(object@mData[gn,], -tidyselect::ends_with("ome"))
 })
 
 #' @title List Available Transcriptomes
@@ -87,7 +87,7 @@ setGeneric("transcriptomes", function(object){standardGeneric("transcriptomes")}
 #' @aliases transcriptomes,TheoreticalGC-method
 setMethod("transcriptomes", "TheoreticalGC", function(object){
   tr <- object@mData$Transcriptome
-  dplyr::select(object@mData[tr,], -dplyr::ends_with("ome"))
+  dplyr::select(object@mData[tr,], -tidyselect::ends_with("ome"))
 })
 
 #' @title Get Theoretical GC content

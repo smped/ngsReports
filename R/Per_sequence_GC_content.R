@@ -33,7 +33,7 @@ setMethod("Per_sequence_GC_content", "FastqcData",
             df <- object@Per_sequence_GC_content
             if(length(df)){
             df$Filename<- fileName(object)
-            dplyr::select(df, "Filename", dplyr::everything())
+            dplyr::select(df, "Filename", tidyselect::everything())
             }
             else NULL
           })

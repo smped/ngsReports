@@ -123,7 +123,7 @@ setMethod("plotNContent", signature = "FastqcData",
             df$xValue <- as.integer(df$Base)
             
             # Setup the BG colours
-            rects <- dplyr::data_frame(xmin = 0,
+            rects <- tibble::tibble(xmin = 0,
                                        xmax = max(df$xValue),
                                        ymin = c(0, warn, fail),
                                        ymax = c(warn, fail, 100),

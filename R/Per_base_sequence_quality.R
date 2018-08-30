@@ -33,7 +33,7 @@ setMethod("Per_base_sequence_quality", "FastqcData",
             df <- object@Per_base_sequence_quality
             if(length(df)){
             df$Filename <- fileName(object)
-            dplyr::select(df, "Filename", dplyr::everything())
+            dplyr::select(df, "Filename", tidyselect::everything())
             }
             else NULL
           })

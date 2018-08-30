@@ -128,7 +128,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
             stopifnot(isValidPwf(pwfCols))
             pwfCols <- setAlpha(pwfCols, 0.2)
 
-            rects <- dplyr::data_frame(xmin = min(df$x) - 1,
+            rects <- tibble::tibble(xmin = min(df$x) - 1,
                                        xmax = max(df$x) + 1,
                                        ymin = c(0, 100 - fail, 100 - warn),
                                        ymax = c(100 - fail, 100 - warn, 100),

@@ -33,7 +33,7 @@ setMethod("Sequence_Duplication_Levels", "FastqcData",
             df <- object@Sequence_Duplication_Levels
             if(length(df)){
             df$Filename <- fileName(object)
-            dplyr::select(df, "Filename", dplyr::everything())
+            dplyr::select(df, "Filename", tidyselect::everything())
             }
             else NULL
           })

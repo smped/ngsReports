@@ -146,7 +146,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
             # Add transparency to background colours & define the rectangles
             pwfCols <- setAlpha(pwfCols, 0.2)
             x <- list(min = min(df$Position), max = max(df$Position))
-            rects <- dplyr::data_frame(xmin = 0,
+            rects <- tibble::tibble(xmin = 0,
                                        xmax = max(df$Position),
                                        ymin = c(0, warn, fail),
                                        ymax = c(warn, fail, 100),
@@ -320,7 +320,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               
               if (allZero){
                 # will put the message only in the center of the plot
-                label_df <- dplyr::data_frame(
+                label_df <- tibble::tibble(
                   Filename = levels(df$Filename)[floor(mean(as.integer(df$Filename)))],
                   Start = df$Start,
                   text = "No Adapter Content Detected")

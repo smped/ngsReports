@@ -116,7 +116,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
                        # Fix global environment error
                        Lower <- NULL
                        dplyr::bind_rows(x,
-                                        dplyr::data_frame(Filename = x$Filename[1],
+                                        tibble::tibble(Filename = x$Filename[1],
                                                           Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
                                                           Upper = Lower,
                                                           Length = as.character(Lower),
@@ -209,7 +209,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
                        # Fix global environment error
                        Lower <- NULL
                        dplyr::bind_rows(x,
-                                        dplyr::data_frame(Filename = x$Filename[1],
+                                        tibble::tibble(Filename = x$Filename[1],
                                                           Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
                                                           Upper = Lower,
                                                           Length = as.character(Lower),

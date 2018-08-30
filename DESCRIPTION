@@ -19,10 +19,10 @@ Depends:
 Imports:
   Biostrings,
   checkmate,
-  dplyr,
+  dplyr (>= 0.7.5),
   ggdendro,
   lubridate,
-  magrittr,
+  magrittr (>= 1.5),
   methods,
   pander,
   plotly,
@@ -37,8 +37,9 @@ Imports:
   ShortRead,
   stats,
   stringr,
-  tibble,
+  tibble (>= 1.3.1),
   tidyr,
+  tidyselect (>= 0.2.3),
   viridis,
   viridisLite,
   zoo

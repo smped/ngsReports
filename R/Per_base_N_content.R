@@ -32,7 +32,7 @@ setMethod("Per_base_N_content", "FastqcData",
             df <- object@Per_base_N_content
             if(length(df)){
             df$Filename <- fileName(object)
-            dplyr::select(df, "Filename", dplyr::everything())
+            dplyr::select(df, "Filename", tidyselect::everything())
             }
             else NULL
           })

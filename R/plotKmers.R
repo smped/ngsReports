@@ -121,7 +121,7 @@ setMethod("plotKmers", signature = "FastqcData",
             # The most complete will be Per_base_sequence_quality
             # These values can then be incorporated in the final df for accurate plotting & labelling
             refForX <- unique(Per_base_sequence_quality(x)$Base)
-            refForX <- dplyr::data_frame(Base = as.character(refForX),
+            refForX <- tibble::tibble(Base = as.character(refForX),
                                          Position = gsub("([0-9]*)-[0-9]*", "\\1", Base))
             refForX$Position <- as.integer(refForX$Position)
 
@@ -240,7 +240,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
 
             # Setup the x-axis
             refForX <- unique(Per_base_sequence_quality(x)$Base)
-            refForX <- dplyr::data_frame(Base = as.character(refForX),
+            refForX <- tibble::tibble(Base = as.character(refForX),
                                          Position = gsub("([0-9]*)-[0-9]*", "\\1", Base))
             refForX$Position <- as.integer(refForX$Position)
 

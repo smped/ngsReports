@@ -30,7 +30,7 @@
 #' @aliases Total_Deduplicated_Percentage
 setMethod("Total_Deduplicated_Percentage", "FastqcData",
           function(object){
-            dplyr::data_frame(Filename = fileName(object),
+            tibble::tibble(Filename = fileName(object),
                               Total = object@Total_Deduplicated_Percentage)
           })
 

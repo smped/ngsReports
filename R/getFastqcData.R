@@ -200,8 +200,8 @@ getBasicStatistics <- function(fastqcLines){
   df[intVals] <-lapply(df[intVals], as.integer)
   dplyr::select(df,
                 "Filename", "Total_Sequences",
-                dplyr::contains("quality"), dplyr::ends_with("sequence"),
-                dplyr::one_of("%GC", "File_type", "Encoding"))
+                tidyselect::contains("quality"), tidyselect::ends_with("sequence"),
+                tidyselect::one_of("%GC", "File_type", "Encoding"))
 
 }
 
