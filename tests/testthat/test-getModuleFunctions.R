@@ -1,11 +1,7 @@
-context("Test all functions for getting module data")
+context("Test all functions for correct module data")
 
 # Define the example file with known structure
 x <- system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports")
-
-test_that("Example file exists",{
-  expect_true(file.exists(x))
-})
 
 # Extract the fastqc data as the lines using the code from `getFastqcData()`
 fl <- file.path( gsub(".zip$", "", basename(x)), "fastqc_data.txt")
@@ -32,18 +28,6 @@ names(fastqcLines) <- vapply(fastqcLines, function(x){
 fastqcLines <- lapply(fastqcLines, function(x){x[-1]})
 # Now all the tests can be run
 
-test_that("Example file is correct", {
-  expect_true(
-    setequal(names(fastqcLines),
-             c("Basic_Statistics", "Per_base_sequence_quality",
-               "Per_tile_sequence_quality", "Per_sequence_quality_scores",
-               "Per_base_sequence_content", "Per_sequence_GC_content",
-               "Per_base_N_content", "Sequence_Length_Distribution",
-               "Sequence_Duplication_Levels", "Overrepresented_sequences",
-               "Adapter_Content", "Kmer_Content"))
-  )
-})
-
 test_that("Check getBasicStatistics() is correct",{
   bs <- getBasicStatistics(fastqcLines)
   expect_true(
@@ -56,13 +40,6 @@ test_that("Check getBasicStatistics() is correct",{
       "character", rep("integer", 4), rep("character", 3)
     )))
   expect_equal(nrow(bs), 1)
-})
-
-test_that("Check getBasicStatistics() errors and nulls",{
-  fastqcLines[["Basic_Statistics"]] <- fastqcLines[["Basic_Statistics"]][-1]
-  otherMods <- names(fastqcLines) != "Basic_Statistics"
-  expect_null(getBasicStatistics(fastqcLines[otherMods]))
-  expect_error(getBasicStatistics(fastqcLines))
 })
 
 test_that("Check getPerBaseSeqQuals() is correct",{
@@ -80,13 +57,6 @@ test_that("Check getPerBaseSeqQuals() is correct",{
   expect_equal(nrow(sq), 47)
 })
 
-test_that("Check getPerBaseSeqQuals() errors and nulls",{
-  fastqcLines[["Per_base_sequence_quality"]] <- fastqcLines[["Per_base_sequence_quality"]][-1]
-  otherMods <- names(fastqcLines) != "Per_base_sequence_quality"
-  expect_null(getPerBaseSeqQuals(fastqcLines[otherMods]))
-  expect_error(getPerBaseSeqQuals(fastqcLines))
-})
-
 test_that("Check getPerTileSeqQuals() is correct",{
   sq <- getPerTileSeqQuals(fastqcLines)
   expect_true(
@@ -100,13 +70,6 @@ test_that("Check getPerTileSeqQuals() is correct",{
   expect_equal(nrow(sq), 4512)
 })
 
-test_that("Check getPerTileSeqQuals() errors and nulls",{
-  fastqcLines[["Per_tile_sequence_quality"]] <- fastqcLines[["Per_tile_sequence_quality"]][-1]
-  otherMods <- names(fastqcLines) != "Per_tile_sequence_quality"
-  expect_null(getPerTileSeqQuals(fastqcLines[otherMods]))
-  expect_error(getPerTileSeqQuals(fastqcLines))
-})
-
 test_that("Check getPerSeqQualScores() is correct",{
   sq <- getPerSeqQualScores(fastqcLines)
   expect_true(
@@ -116,13 +79,6 @@ test_that("Check getPerSeqQualScores() is correct",{
     all(vapply(sq, is.integer, logical(1)))
     )
   expect_equal(nrow(sq), 39)
-})
-
-test_that("Check getPerSeqQualScores() errors and nulls",{
-  fastqcLines[["Per_sequence_quality_scores"]] <- fastqcLines[["Per_sequence_quality_scores"]][-1]
-  otherMods <- names(fastqcLines) != "Per_sequence_quality_scores"
-  expect_null(getPerSeqQualScores(fastqcLines[otherMods]))
-  expect_error(getPerSeqQualScores(fastqcLines))
 })
 
 test_that("Check getPerBaseSeqContent() is correct",{
@@ -136,13 +92,6 @@ test_that("Check getPerBaseSeqContent() is correct",{
   expect_equal(nrow(sc), 47)
 })
 
-test_that("Check getPerBaseSeqContent() errors and nulls",{
-  fastqcLines[["Per_base_sequence_content"]] <- fastqcLines[["Per_base_sequence_content"]][-1]
-  otherMods <- names(fastqcLines) != "Per_base_sequence_content"
-  expect_null(getPerBaseSeqContent(fastqcLines[otherMods]))
-  expect_error(getPerBaseSeqContent(fastqcLines))
-})
-
 test_that("Check getPerSeqGcContent() is correct",{
   gc <- getPerSeqGcContent(fastqcLines)
   expect_true(
@@ -154,13 +103,6 @@ test_that("Check getPerSeqGcContent() is correct",{
   expect_equal(nrow(gc), 101)
 })
 
-test_that("Check getPerSeqGcContent() errors and nulls",{
-  fastqcLines[["Per_sequence_GC_content"]] <- fastqcLines[["Per_sequence_GC_content"]][-1]
-  otherMods <- names(fastqcLines) != "Per_sequence_GC_content"
-  expect_null(getPerSeqGcContent(fastqcLines[otherMods]))
-  expect_error(getPerSeqGcContent(fastqcLines))
-})
-
 test_that("Check getSeqLengthDist() is correct",{
   df <- getSeqLengthDist(fastqcLines)
   expect_true(
@@ -170,13 +112,6 @@ test_that("Check getSeqLengthDist() is correct",{
     all(vapply(df, typeof, character(1)) == c("character", rep("integer", 3)))
   )
   expect_equal(nrow(df), 1)
-})
-
-test_that("Check getSeqLengthDist() errors and nulls",{
-  fastqcLines[["Sequence_Length_Distribution"]] <- fastqcLines[["Sequence_Length_Distribution"]][-1]
-  otherMods <- names(fastqcLines) != "Sequence_Length_Distribution"
-  expect_null(getSeqLengthDist(fastqcLines[otherMods]))
-  expect_error(getSeqLengthDist(fastqcLines))
 })
 
 test_that("Check getSeqDuplicationLevels() provides correct output",{
@@ -239,4 +174,35 @@ test_that("Check getOverrepSeq() errors and nulls",{
   otherMods <- names(fastqcLines) != "Overrepresented_sequences"
   expect_null(getOverrepSeq(fastqcLines[otherMods]))
   expect_error(getOverrepSeq(fastqcLines))
+})
+
+test_that("Check getAdapterContent() is correct",{
+  df <- getAdapterContent(fastqcLines)
+  nAdapTypes <- ncol(df) - 1
+  expect_equal(names(df)[1], "Position")
+  expect_gt(ncol(df), 1)
+  expect_true(
+    all(
+      vapply(df, typeof, character(1)) == c("character", 
+                                            rep("double", nAdapTypes))
+    )
+  )
+  expect_equal(nrow(df), 72)
+})
+
+test_that("Check getKmerContent() is correct",{
+  df <- getKmerContent(fastqcLines)
+  expect_true(
+    setequal(names(df), 
+             c("Sequence", "Count", "PValue", "Obs/Exp_Max", 
+               "Max_Obs/Exp_Position")
+    )
+  )
+  expect_true(
+    all(
+      vapply(df, typeof, character(1)) == c("character", "integer",
+                                            "double", "double", "character")
+    )
+  )
+  expect_equal(nrow(df), 20)
 })

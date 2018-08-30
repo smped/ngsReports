@@ -116,27 +116,13 @@ setMethod("getFastqcData", "FastqcFile",
             out[["Per_base_N_content"]] <-  getPerBaseNContent(fastqcLines)
             out[["Sequence_Length_Distribution"]] <- getSeqLengthDist(fastqcLines)
             out[["Overrepresented_sequences"]] <- getOverrepSeq(fastqcLines)
-
+            out[["Adapter_Content"]] <- getAdapterContent(fastqcLines)
+            out[["Kmer_Content"]] <- getKmerContent(fastqcLines)
+            
             # Get the Sequence Duplication Levels
             Sequence_Duplication_Levels <- getSeqDuplicationLevels(fastqcLines)
-            out[["Sequence_Duplication_Levels"]] <- Sequence_Duplication_Levels[["Sequence_Duplication_Levels"]]
-            out[["Total_Deduplicated_Percentage"]] <- Sequence_Duplication_Levels[["Total_Deduplicated_Percentage"]]
-
-            # Get the Adapter Content
-            Adapter_Content <- c()
-            if("Adapter_Content" %in% modules){
-              Adapter_Content <- getAdapterContent(fastqcLines)
-              stopifnot(is.data.frame(Adapter_Content))
-            }
-            out[["Adapter_Content"]] <- Adapter_Content
-
-            # Get the Kmer Content
-            Kmer_Content <- c()
-            if("Kmer_Content" %in% modules){
-              Kmer_Content <- getKmerContent(fastqcLines)
-              stopifnot(is.data.frame(Kmer_Content))
-            }
-            out[["Kmer_Content"]] <- Kmer_Content
+            dupMods <- names(Sequence_Duplication_Levels)
+            out[dupMods] <- Sequence_Duplication_Levels[dupMods]
 
             #Get the summary
             Summary <- getSummary(object)
@@ -385,32 +371,29 @@ getOverrepSeq <- function(fastqcLines){
 }
 
 getAdapterContent <- function(fastqcLines){
-
-  x <- fastqcLines[["Adapter_Content"]]
-  if (length(x) <= 1) return(dplyr::data_frame())
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  
+  # Return NULL if the module is missing
+  if (!"Adapter_Content" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Adapter_Content"]])
+  names(df) <- gsub(" ", "_", names(df))
 
   # Check for the required values
   reqVals <- "Position"
   stopifnot(reqVals %in% names(df))
   stopifnot(ncol(df) > 1)
 
-  df[!names(df) %in% reqVals] <- lapply(df[!names(df) %in% reqVals], as.numeric)
-  df
+  numCols <- !names(df) %in% reqVals
+  df[numCols] <- lapply(df[numCols], as.numeric)
+  tibble::as_tibble(df)
 
 }
 
 getKmerContent <- function(fastqcLines){
-
-  x <- fastqcLines[["Kmer_Content"]]
-  if (length(x) <= 1) return(dplyr::data_frame())
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  
+  # Return NULL if the module is missing
+  if (!"Kmer_Content" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Kmer_Content"]])
+  names(df) <- gsub(" ", "_", names(df))
 
   # Check for the required values
   reqVals <- c("Sequence", "Count", "PValue", "Obs/Exp_Max", "Max_Obs/Exp_Position")
@@ -419,9 +402,8 @@ getKmerContent <- function(fastqcLines){
   df$Count <- as.integer(df$Count)
   df$PValue <- as.numeric(df$PValue)
   df$`Obs/Exp_Max` <- as.numeric(df$`Obs/Exp_Max`)
-  df$`Max_Obs/Exp_Position` <- as.character(df$`Max_Obs/Exp_Position`)
 
-  df
+  tibble::as_tibble(df)
 
 }
 
