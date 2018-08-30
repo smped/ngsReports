@@ -1,36 +1,180 @@
 context("Test all functions for getting module data")
 
-# Define the example file
+# Define the example file with known structure
 x <- system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports")
 
 test_that("Example file exists",{
   expect_true(file.exists(x))
 })
 
-# Extract the fastqc data
-# Change this to test the lower-level functions...
-fqcData <- getFastqcData(x)
+# Extract the fastqc data as the lines using the code from `getFastqcData()`
+fl <- file.path( gsub(".zip$", "", basename(x)), "fastqc_data.txt")
+uz <- unz(x, fl)
+fastqcLines <- readLines(uz)
+close(uz)
 
-test_that("Basic Statistics is correct",{
+# Remove any '#' symbols
+fastqcLines <- gsub("#", "", fastqcLines)
+# Remove any lines which specify '>>END_MODULE'
+fastqcLines <- fastqcLines[!grepl(">>END_MODULE", fastqcLines)]
+# Remove the first (FastQC version) line
+fastqcLines <- fastqcLines[-1]
+# Split into modules
+fastqcLines <- split(fastqcLines, cumsum(grepl("^>>", fastqcLines)))
+# Assign the module names
+names(fastqcLines) <- vapply(fastqcLines, function(x){
+  # Get the first line before the tab separator
+  nm <- gsub(">>(.+)\\t.+", "\\1", x[[1]])
+  # Replace the space with underscore
+  gsub(" ", "_", nm)
+}, character(1))
+# Remove the first line
+fastqcLines <- lapply(fastqcLines, function(x){x[-1]})
+# Now all the tests can be run
 
-  bs <- Basic_Statistics(fqcData)
+test_that("Example file is correct", {
   expect_true(
-    setequal(names(bs), c("Filename", "Total_Sequences",
-                          "Sequences_flagged_as_poor_quality",
-                          "Shortest_sequence", "Longest_sequence",
-                          "%GC", "File_type", "Encoding")) &&
-      setequal(vapply(bs, typeof, character(1)),
-               c("character", rep("integer", 4),rep("character", 3)))
+    setequal(names(fastqcLines),
+             c("Basic_Statistics", "Per_base_sequence_quality",
+               "Per_tile_sequence_quality", "Per_sequence_quality_scores",
+               "Per_base_sequence_content", "Per_sequence_GC_content",
+               "Per_base_N_content", "Sequence_Length_Distribution",
+               "Sequence_Duplication_Levels", "Overrepresented_sequences",
+               "Adapter_Content", "Kmer_Content"))
   )
 })
 
-test_that("Per base sequence qualities is correct",{
-  sq <- Per_base_sequence_quality(fqcData)
+test_that("Check getBasicStatistics() is correct",{
+  bs <- getBasicStatistics(fastqcLines)
   expect_true(
-    setequal(names(sq), c("Filename", "Base", "Mean", "Median",
-                          "Lower_Quartile", "Upper_Quartile",
-                          "10th_Percentile", "90th_Percentile")) &&
-      setequal(vapply(sq,typeof, character(1)),
-               c(rep("character", 2), rep("double", 6)))
+    setequal(names(bs), 
+             c("Filename", "Total_Sequences", "Sequences_flagged_as_poor_quality",
+               "Shortest_sequence", "Longest_sequence", "%GC", "File_type", 
+               "Encoding")))
+  expect_true(
+    all(vapply(bs, typeof, character(1)) == c(
+      "character", rep("integer", 4), rep("character", 3)
+    )))
+  expect_equal(nrow(bs), 1)
+})
+
+test_that("Check getBasicStatistics() errors and nulls",{
+  fastqcLines[["Basic_Statistics"]] <- fastqcLines[["Basic_Statistics"]][-1]
+  otherMods <- names(fastqcLines) != "Basic_Statistics"
+  expect_null(getBasicStatistics(fastqcLines[otherMods]))
+  expect_error(getBasicStatistics(fastqcLines))
+})
+
+test_that("Check getPerBaseSeqQuals() is correct",{
+  sq <- getPerBaseSeqQuals(fastqcLines)
+  expect_true(
+    setequal(
+      names(sq), 
+      c("Base", "Mean", "Median", "Lower_Quartile", "Upper_Quartile", 
+        "10th_Percentile","90th_Percentile")
+      ))
+  expect_true(
+      all(
+        vapply(sq, typeof, character(1)) == c("character", rep("double", 6))
+        ))
+  expect_equal(nrow(sq), 47)
+})
+
+test_that("Check getPerBaseSeqQuals() errors and nulls",{
+  fastqcLines[["Per_base_sequence_quality"]] <- fastqcLines[["Per_base_sequence_quality"]][-1]
+  otherMods <- names(fastqcLines) != "Per_base_sequence_quality"
+  expect_null(getPerBaseSeqQuals(fastqcLines[otherMods]))
+  expect_error(getPerBaseSeqQuals(fastqcLines))
+})
+
+test_that("Check getPerTileSeqQuals() is correct",{
+  sq <- getPerTileSeqQuals(fastqcLines)
+  expect_true(
+    setequal(
+      names(sq), c("Tile", "Base", "Mean")
+    ))
+  expect_true(
+    all(
+      vapply(sq, typeof, character(1)) == c("character", "character", "double")
+    ))
+  expect_equal(nrow(sq), 4512)
+})
+
+test_that("Check getPerTileSeqQuals() errors and nulls",{
+  fastqcLines[["Per_tile_sequence_quality"]] <- fastqcLines[["Per_tile_sequence_quality"]][-1]
+  otherMods <- names(fastqcLines) != "Per_tile_sequence_quality"
+  expect_null(getPerTileSeqQuals(fastqcLines[otherMods]))
+  expect_error(getPerTileSeqQuals(fastqcLines))
+})
+
+test_that("Check getPerSeqQualScores() is correct",{
+  sq <- getPerSeqQualScores(fastqcLines)
+  expect_true(
+    setequal(names(sq), c("Quality","Count"))
+    )
+  expect_true(
+    all(vapply(sq, is.integer, logical(1)))
+    )
+  expect_equal(nrow(sq), 39)
+})
+
+test_that("Check getPerSeqQualScores() errors and nulls",{
+  fastqcLines[["Per_sequence_quality_scores"]] <- fastqcLines[["Per_sequence_quality_scores"]][-1]
+  otherMods <- names(fastqcLines) != "Per_sequence_quality_scores"
+  expect_null(getPerSeqQualScores(fastqcLines[otherMods]))
+  expect_error(getPerSeqQualScores(fastqcLines))
+})
+
+test_that("Check getPerBaseSeqContent() is correct",{
+  sc <- getPerBaseSeqContent(fastqcLines)
+  expect_true(
+    setequal(names(sc), c("Base", "G", "A", "T", "C"))
   )
+  expect_true(
+    all(vapply(sc, typeof, character(1)) == c("character", rep("double", 4)))
+  )
+  expect_equal(nrow(sc), 47)
+})
+
+test_that("Check getPerBaseSeqContent() errors and nulls",{
+  fastqcLines[["Per_base_sequence_content"]] <- fastqcLines[["Per_base_sequence_content"]][-1]
+  otherMods <- names(fastqcLines) != "Per_base_sequence_content"
+  expect_null(getPerBaseSeqContent(fastqcLines[otherMods]))
+  expect_error(getPerBaseSeqContent(fastqcLines))
+})
+
+test_that("Check getPerSeqGcContent() is correct",{
+  gc <- getPerSeqGcContent(fastqcLines)
+  expect_true(
+    setequal(names(gc), c("GC_Content", "Count"))
+  )
+  expect_true(
+    all(vapply(gc, typeof, character(1)) == c("integer", "double"))
+  )
+  expect_equal(nrow(gc), 101)
+})
+
+test_that("Check getPerSeqGcContent() errors and nulls",{
+  fastqcLines[["Per_sequence_GC_content"]] <- fastqcLines[["Per_sequence_GC_content"]][-1]
+  otherMods <- names(fastqcLines) != "Per_sequence_GC_content"
+  expect_null(getPerSeqGcContent(fastqcLines[otherMods]))
+  expect_error(getPerSeqGcContent(fastqcLines))
+})
+
+test_that("Check getSeqLengthDist() is correct",{
+  df <- getSeqLengthDist(fastqcLines)
+  expect_true(
+    setequal(names(df), c("Length", "Lower", "Upper", "Count"))
+  )
+  expect_true(
+    all(vapply(df, typeof, character(1)) == c("character", rep("integer", 3)))
+  )
+  expect_equal(nrow(df), 1)
+})
+
+test_that("Check getSeqLengthDist() errors and nulls",{
+  fastqcLines[["Sequence_Length_Distribution"]] <- fastqcLines[["Sequence_Length_Distribution"]][-1]
+  otherMods <- names(fastqcLines) != "Sequence_Length_Distribution"
+  expect_null(getSeqLengthDist(fastqcLines[otherMods]))
+  expect_error(getSeqLengthDist(fastqcLines))
 })

@@ -113,49 +113,22 @@ setMethod("getFastqcData", "FastqcFile",
             out[["Per_base_sequence_quality"]] <- getPerBaseSeqQuals(fastqcLines)
 
             ## Get the Per Tile Sequence Qualities
-            Per_tile_sequence_quality <- c()
-            if ("Per_tile_sequence_quality" %in% modules){
-              Per_tile_sequence_quality <- getPerTileSeqQuals(fastqcLines)
-              stopifnot(is.data.frame(Per_tile_sequence_quality))
-            }
-            out[["Per_tile_sequence_quality"]] <- Per_tile_sequence_quality
+            out[["Per_tile_sequence_quality"]] <- getPerTileSeqQuals(fastqcLines)
 
             ## Get the Per Sequence Quality Scores
-            Per_sequence_quality_scores <- getPerSeqQualScores(fastqcLines)
-            stopifnot(is.data.frame(Per_sequence_quality_scores))
-            out[["Per_sequence_quality_scores"]] <- Per_sequence_quality_scores
+            out[["Per_sequence_quality_scores"]] <- getPerSeqQualScores(fastqcLines)
 
             ## Get the Per Base Sequence Qualities
-            Per_base_sequence_content <- c()
-            if ("Per_base_sequence_content" %in% modules){
-              Per_base_sequence_content <- getPerBaseSeqContent(fastqcLines)
-              stopifnot(is.data.frame(Per_base_sequence_content))
-            }
-            out[["Per_base_sequence_content"]] <- Per_base_sequence_content
+            out[["Per_base_sequence_content"]] <- getPerBaseSeqContent(fastqcLines)
 
             ## Get the Per Sequence GC Content
-            Per_sequence_GC_content <- c()
-            if("Per_sequence_GC_content" %in% modules){
-              Per_sequence_GC_content <- getPerSeqGcContent(fastqcLines)
-              stopifnot(is.data.frame(Per_sequence_GC_content))
-            }
-            out[["Per_sequence_GC_content"]] <- Per_sequence_GC_content
+            out[["Per_sequence_GC_content"]] <- getPerSeqGcContent(fastqcLines)
 
             ## Get the Per Base Sequence Qualities
-            Per_base_N_content <- c()
-            if ("Per_base_N_content" %in% modules){
-              Per_base_N_content <- getPerBaseNContent(fastqcLines)
-              stopifnot(is.data.frame(Per_base_N_content))
-            }
-            out[["Per_base_N_content"]] <- Per_base_N_content
+            out[["Per_base_N_content"]] <-  getPerBaseNContent(fastqcLines)
 
             ## Get the Sequence Length Distribution
-            Sequence_Length_Distribution <- c()
-            if ("Sequence_Length_Distribution" %in% modules){
-              Sequence_Length_Distribution <- getSeqLengthDist(fastqcLines)
-              stopifnot(is.data.frame(Sequence_Length_Distribution))
-            }
-            out[["Sequence_Length_Distribution"]] <- Sequence_Length_Distribution
+            out[["Sequence_Length_Distribution"]] <- getSeqLengthDist(fastqcLines)
 
             # Get the Sequence Duplication Levels
             Sequence_Duplication_Levels <- c()
@@ -291,105 +264,97 @@ getPerBaseSeqQuals <- function(fastqcLines){
 
 getPerTileSeqQuals <- function(fastqcLines){
 
-  x <- fastqcLines[["Per_tile_sequence_quality"]]
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  # Return NULL if the module is missing
+  if (!"Per_tile_sequence_quality" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Per_tile_sequence_quality"]])
 
   # Check for the required values
   reqVals <- c("Tile", "Base", "Mean")
   stopifnot(reqVals %in% names(df))
 
   df[["Mean"]] <- as.numeric(df[["Mean"]])
-  df
+  tibble::as_tibble(df)
 
 }
 
 getPerSeqQualScores <- function(fastqcLines){
 
-  x <- fastqcLines[["Per_sequence_quality_scores"]]
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
-
+  # Return NULL if the module is missing
+  if (!"Per_sequence_quality_scores" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Per_sequence_quality_scores"]])
+  
   # Check for the required values
   reqVals <- c("Quality", "Count")
   stopifnot(reqVals %in% names(df))
 
-  df$Quality <- as.integer(df$Quality)
-  df$Count <- as.integer(df$Count)
-  df
+  df <- lapply(df, as.integer)
+  tibble::as_tibble(df)
 }
 
 getPerBaseSeqContent <- function(fastqcLines){
-
-  x <- fastqcLines[["Per_base_sequence_content"]]
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  
+  # Return NULL if the module is missing
+  if (!"Per_base_sequence_content" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Per_base_sequence_content"]])
 
   # Check for the required values
   reqVals <- c("Base", "G", "A", "T", "C")
   stopifnot(reqVals %in% names(df))
 
+  # Set all as numeric except the 'Base'column
   df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
-  df
+  tibble::as_tibble(df)
 
 }
 
 getPerSeqGcContent <- function(fastqcLines){
-
-  x <- fastqcLines[["Per_sequence_GC_content"]]
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  
+  # Return NULL if the module is missing
+  if (!"Per_sequence_GC_content" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Per_sequence_GC_content"]])
+  names(df) <- gsub(" ", "_", names(df))
 
   # Check for the required values
   reqVals <- c("GC_Content", "Count")
   stopifnot(reqVals %in% names(df))
 
-  df$GC_Content <- as.integer(df$GC_Content)
-  df$Count <- as.integer(df$Count)
-  df
+  # Convert to integers
+  df[["GC_Content"]] <- as.integer(df[["GC_Content"]])
+  df[["Count"]] <- as.numeric(df[["Count"]])
+  tibble::as_tibble(df)
 }
 
 getPerBaseNContent <- function(fastqcLines){
-
-  x <- fastqcLines[["Per_base_N_content"]]
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  
+  # Return NULL if the module is missing
+  if (!"Per_base_N_content" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Per_base_N_content"]])
 
   # Check for the required values
   reqVals <- c("Base", "N-Count")
   stopifnot(reqVals %in% names(df))
 
-  df$`N-Count` <- as.integer(df$`N-Count`)
-  df
+  df[["N-Count"]] <- as.integer(df[["N-Count"]])
+  tibble::as_tibble(df)
 
 }
 
 getSeqLengthDist <- function(fastqcLines){
-
-  x <- fastqcLines[["Sequence_Length_Distribution"]]
-  mat <- stringr::str_split(x, pattern = "\t", simplify = TRUE)
-  nc <- ncol(mat)
-  df <- tibble::as_tibble(matrix(mat[-1,], ncol= nc))
-  names(df) <- gsub(" ", "_", mat[1,])
+  
+  # Return NULL if the module is missing
+  if (!"Sequence_Length_Distribution" %in% names(fastqcLines)) return(NULL)
+  df <- splitByTab(fastqcLines[["Sequence_Length_Distribution"]])
 
   # Check for the required values
   reqVals <- c("Length", "Count")
   stopifnot(reqVals %in% names(df))
 
+  # If there is a range, separate into Lower & Upper values
   df$Lower <- as.integer(gsub("(.*)-.*", "\\1", df$Length))
   df$Upper <- as.integer(gsub(".*-(.*)", "\\1", df$Length))
-  df$Count = as.integer(df$Count)
-
+  df$Count <- as.integer(df$Count)
+  df <- tibble::as_tibble(df)
+  
   df[c("Length", "Lower", "Upper", "Count")]
 
 }
