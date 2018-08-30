@@ -12,10 +12,6 @@ library(ngsReports)
 #  altTemplate <- file.path("path", "to", "template.Rmd")
 #  writeHtmlReport(fileDir, template = altTemplate)
 
-## ---- eval=FALSE-----------------------------------------------------------
-#  files <- list.files(fileDir, pattern = "fastqc.zip$", full.names = TRUE)
-#  fastqcShiny(files)
-
 ## --------------------------------------------------------------------------
 fileDir <- system.file("extdata", package = "ngsReports")
 files <- list.files(fileDir, pattern = "fastqc.zip$", full.names = TRUE)
