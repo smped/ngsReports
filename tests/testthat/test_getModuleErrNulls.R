@@ -52,57 +52,127 @@ test_that("Check getBasicStatistics() errors and nulls",{
 })
 
 test_that("Check getPerBaseSeqQuals() errors and nulls",{
-  fastqcLines[["Per_base_sequence_quality"]] <- fastqcLines[["Per_base_sequence_quality"]][-1]
-  otherMods <- names(fastqcLines) != "Per_base_sequence_quality"
+  mod <- "Per_base_sequence_quality"
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
   expect_null(getPerBaseSeqQuals(fastqcLines[otherMods]))
+  expect_null(getPerBaseSeqQuals(empty))
   expect_error(getPerBaseSeqQuals(fastqcLines))
 })
 
 test_that("Check getPerTileSeqQuals() errors and nulls",{
-  fastqcLines[["Per_tile_sequence_quality"]] <- fastqcLines[["Per_tile_sequence_quality"]][-1]
-  otherMods <- names(fastqcLines) != "Per_tile_sequence_quality"
+  mod <- "Per_tile_sequence_quality"
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
   expect_null(getPerTileSeqQuals(fastqcLines[otherMods]))
+  expect_null(getPerTileSeqQuals(empty))
   expect_error(getPerTileSeqQuals(fastqcLines))
 })
 
 test_that("Check getPerSeqQualScores() errors and nulls",{
-  fastqcLines[["Per_sequence_quality_scores"]] <- fastqcLines[["Per_sequence_quality_scores"]][-1]
-  otherMods <- names(fastqcLines) != "Per_sequence_quality_scores"
+
+  mod <- "Per_sequence_quality_scores"
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
   expect_null(getPerSeqQualScores(fastqcLines[otherMods]))
+  expect_null(getPerSeqQualScores(empty))
   expect_error(getPerSeqQualScores(fastqcLines))
+  
 })
 
 test_that("Check getPerBaseSeqContent() errors and nulls",{
-  fastqcLines[["Per_base_sequence_content"]] <- fastqcLines[["Per_base_sequence_content"]][-1]
-  otherMods <- names(fastqcLines) != "Per_base_sequence_content"
+
+  mod <- "Per_base_sequence_content"
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
   expect_null(getPerBaseSeqContent(fastqcLines[otherMods]))
+  expect_null(getPerBaseSeqContent(empty))
   expect_error(getPerBaseSeqContent(fastqcLines))
+  
 })
 
 test_that("Check getPerSeqGcContent() errors and nulls",{
-  fastqcLines[["Per_sequence_GC_content"]] <- fastqcLines[["Per_sequence_GC_content"]][-1]
-  otherMods <- names(fastqcLines) != "Per_sequence_GC_content"
+
+  mod <- "Per_sequence_GC_content"
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
   expect_null(getPerSeqGcContent(fastqcLines[otherMods]))
+  expect_null(getPerSeqGcContent(empty))
   expect_error(getPerSeqGcContent(fastqcLines))
+  
 })
 
 test_that("Check getSeqLengthDist() errors and nulls",{
-  fastqcLines[["Sequence_Length_Distribution"]] <- fastqcLines[["Sequence_Length_Distribution"]][-1]
-  otherMods <- names(fastqcLines) != "Sequence_Length_Distribution"
+
+  mod <- "Sequence_Length_Distribution"
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
   expect_null(getSeqLengthDist(fastqcLines[otherMods]))
+  expect_null(getSeqLengthDist(empty))
   expect_error(getSeqLengthDist(fastqcLines))
+  
 })
 
 test_that("Check getKmerContent() errors and nulls",{
-  fastqcLines[["Kmer_Content"]] <- fastqcLines[["Kmer_Content"]][-1]
-  otherMods <- names(fastqcLines) != "Kmer_Content"
+
+  mod <- "Kmer_Content"
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
   expect_null(getKmerContent(fastqcLines[otherMods]))
+  expect_null(getKmerContent(empty))
   expect_error(getKmerContent(fastqcLines))
+  
 })
 
 test_that("Check getAdapterContent() errors and nulls",{
-  fastqcLines[["Adapter_Content"]] <- fastqcLines[["Adapter_Content"]][-1]
-  otherMods <- names(fastqcLines) != "Adapter_Content"
+
+  mod <- "Adapter_Content"
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
   expect_null(getAdapterContent(fastqcLines[otherMods]))
+  expect_null(getAdapterContent(empty))
   expect_error(getAdapterContent(fastqcLines))
+  
+})
+
+test_that("Check getSeqDuplicationLevels() errors and nulls",{
+  
+  mod <- "Sequence_Duplication_Levels"
+  # Remove the first line
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  otherMods <- names(fastqcLines) != mod
+  empty <- list(character(0))
+  names(empty) <- mod
+  expect_equal(
+    getSeqDuplicationLevels(fastqcLines[otherMods]),
+    list(Total_Deduplicated_Percentage = NULL, 
+         Sequence_Duplication_Levels = NULL)
+  )
+  expect_equal(
+    getSeqDuplicationLevels(empty),
+    list(Total_Deduplicated_Percentage = NULL, 
+         Sequence_Duplication_Levels = NULL)
+  )
+  expect_true(
+    is.na(getSeqDuplicationLevels(fastqcLines)[["Total_Deduplicated_Percentage"]])
+  )
+  # Now remove the second line
+  fastqcLines[[mod]] <- fastqcLines[[mod]][-1]
+  expect_error(getSeqDuplicationLevels(fastqcLines))
 })

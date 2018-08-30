@@ -141,20 +141,6 @@ test_that("Check getSeqDuplicationLevels() provides correct output",{
 
 })
 
-test_that("Check getSeqDuplicationLevels() errors and nulls",{
-  fastqcLines[["Sequence_Duplication_Levels"]] <- fastqcLines[["Sequence_Duplication_Levels"]][-1]
-  otherMods <- names(fastqcLines) != "Sequence_Duplication_Levels"
-  expect_equal(
-    getSeqDuplicationLevels(fastqcLines[otherMods]),
-    list(Total_Deduplicated_Percentage = NULL, Sequence_Duplication_Levels = NULL)
-    )
-  expect_true(
-    is.na(getSeqDuplicationLevels(fastqcLines)[["Total_Deduplicated_Percentage"]])
-    )
-  fastqcLines[["Sequence_Duplication_Levels"]] <- fastqcLines[["Sequence_Duplication_Levels"]][-1]
-  expect_error(getSeqDuplicationLevels(fastqcLines))
-})
-
 test_that("Check getOverrepSeq() is correct",{
   df <- getOverrepSeq(fastqcLines)
   expect_true(
