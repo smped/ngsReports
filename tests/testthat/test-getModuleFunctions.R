@@ -8,7 +8,8 @@ test_that("Example file exists",{
 })
 
 # Extract the fastqc data
-# Change this to test the lower-level functions...
+# Change this to test the lower-level functions.
+# Read the lines in instead & test for the correct output
 fqcData <- getFastqcData(x)
 
 test_that("Basic Statistics is correct",{
