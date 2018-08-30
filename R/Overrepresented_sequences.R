@@ -12,10 +12,10 @@
 #' @examples 
 #' 
 #' # Get the files included with the package
-#' fileDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
-#' 
-#' # Form a FastqcDataList
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#'
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #' 
 #' # Print the Overrepresented Sequences
@@ -29,7 +29,7 @@ setMethod("Overrepresented_sequences", "FastqcData",
             df <- dplyr::mutate(object@Overrepresented_sequences)
             if(length(df)){
             df$Filename <- fileName(object)
-            dplyr::select(df, Filename, dplyr::everything())
+            dplyr::select(df, "Filename", dplyr::everything())
             }
             else NULL
           })

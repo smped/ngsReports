@@ -32,15 +32,15 @@ The File Names from an object
 \examples{
 
 # Get the files included with the package
-fileDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
 # Form a FastqcFileList
 ffl <- FastqcFileList(fileList)
 fileName(ffl)
 
-# Form a FastqcDataList
-fdl <- getFastqcData(ffl)
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
 fileName(fdl)
 
 }

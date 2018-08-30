@@ -174,12 +174,14 @@ setMethod("getFastqcData", "FastqcFileList",
 
 # Define a series of quick functions for arranging the data
 # after splitting the input from readLines()
+# These are all tested using testthat to ensure they're working correctly
 getBasicStatistics <- function(fastqcLines){
 
   # Return NULL if the module is missing
-  if (!"Basic_Statistics" %in% names(fastqcLines)) return(NULL)
+  mod <- "Basic_Statistics"
+  if (!mod %in% names(fastqcLines)) return(NULL)
 
-  x <- splitByTab(fastqcLines[["Basic_Statistics"]])
+  x <- splitByTab(fastqcLines[[mod]])
   stopifnot(setequal(names(x), c("Measure", "Value")))
   vals <- x[["Value"]]
   names(vals) <- gsub(" ", "_", x[["Measure"]])

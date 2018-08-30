@@ -42,10 +42,10 @@ Fasta will contain \code{Filename}, \code{Possible Source}, \code{Percent of tot
 \examples{
 \dontrun{
 # Get the files included with the package
-fileDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # Export the top10 Overrepresented Sequences as a single fasta file

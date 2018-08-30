@@ -109,12 +109,10 @@ For a FastqcFileList, or FastqcDataList either a line plot or heatmap can be dra
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # The default plot for a FastqcDataList
@@ -126,4 +124,5 @@ plotGcContent(fdl[[1]])
 # Plot GC content with theoretical GC content generated from a given fasta file
 plotGcContent(fdl, Fastafile = system.file("extdata","Athaliana.TAIR10.tRNA.fasta",
 package="ngsReports"))
+
 }
