@@ -12,7 +12,8 @@
 #'
 #' @param path The path to one or more files
 #' @param type The type of compression to check for.
-#' Currently only ZIP files have been implemented.
+#' Currently only ZIP/GZIP files have been implemented.
+#' @param verbose logical/integer Determine the level of output to show as messages
 #'
 #' @return
 #' A \code{logical} vector
@@ -25,15 +26,22 @@
 #' isCompressed(allFiles)
 #'
 #' @export
-isCompressed <- function(path, type = "zip"){
+isCompressed <- function(path, type = "zip", verbose = FALSE){
 
   stopifnot(file.exists(path))
-  if (type != "zip") stop("Currently only zip files are implemented")
+  type <- match.arg(type, c("zip", "gzip"))
+  if (verbose > 0) message(sprintf("Checking %i file(s) for %s compression",
+                                   length(path), type))
+  # This is the length of the magic number for each compression type
+  n <- c(zip = 4L, gzip = 3L)[type]
+  magicNum <- list(zip = c(80, 75, 3, 4),
+                   gzip = c(31, 139, 8))[[type]]
 
   vapply(path, function(x){
-    # Read the first 4 bytes as hexadecimal values
-    rw <- readBin(x, what = "raw", n = 4L)
-    rawToChar(rw) == "PK\003\004" # Magic number
+    # Get the magic number from the files
+    rw <- readBin(x, what = "raw", n = n)
+    if (verbose > 1) message(rw)
+    all(rw == magicNum)
   }, logical(1))
 
 }

@@ -1,7 +1,5 @@
 # Immediate Issues
 
-- Tests on all hidden functions
-- Get build time down
 - Resolve all issues from `R CMD BiocCheck`
 
 ## Chris

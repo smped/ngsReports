@@ -65,9 +65,12 @@ setMethod("getFastqcData", "FastqcFile",
             fastqcLines <- fastqcLines[!grepl(">>END_MODULE", fastqcLines)]
 
             # The FastQC version NUMBER
-            vers <- strsplit(fastqcLines[[1]], split = "\t")[[1]][2]
-            # Remove the version line for easier module identification
-            fastqcLines <- fastqcLines[-1]
+            if (grepl("[Ff][Aa][Ss][Tt][Qq][Cc]\\t", fastqcLines[1])){
+              vers <- gsub("[Ff][Aa][Ss][Tt][Qq][Cc]\\t(.+)", "\\1",
+                           fastqcLines[1])
+              # Remove the version line for easier module identification
+              fastqcLines <- fastqcLines[-1]
+            }
 
             # Setup the module names
             modules <- grep("^>>", fastqcLines, value = TRUE)

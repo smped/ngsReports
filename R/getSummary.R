@@ -37,10 +37,10 @@ setMethod("getSummary", "FastqcFile",
               fl <- file.path( gsub(".zip$", "", fileName(object)), "summary.txt")
               # Check the required file exists
               allFiles <- unzip(path, list = TRUE)$Name
-              stopifnot(fl %in% allFiles)
-              # Open the connection & read the 12 lines
+              if(!fl %in% allFiles) stop("summary.txt is missing from the zip archive")
+              # Open the connection & read all lines
               uz <- unz(path,fl)
-              summaryData <- readLines(uz, 12L)
+              summaryData <- readLines(uz)
               close(uz)
               # Form the output
               summaryData <- stringr::str_split_fixed(summaryData, pattern = "\t", n = 3)
@@ -72,10 +72,10 @@ setMethod("getSummary", "FastqcFileList",
 setMethod("getSummary", "character",
           function(object){
             if(length(object) ==1) {
-              object <- FastqcFile(object)
+              tryCatch(object <- FastqcFile(object))
             }
             else{
-              object <- FastqcFileList(object)
+              tryCatch(object <- FastqcFileList(object))
             }
             getSummary(object)
           })

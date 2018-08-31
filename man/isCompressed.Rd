@@ -4,13 +4,15 @@
 \alias{isCompressed}
 \title{Check to see if a file is compressed}
 \usage{
-isCompressed(path, type = "zip")
+isCompressed(path, type = "zip", verbose = FALSE)
 }
 \arguments{
 \item{path}{The path to one or more files}
 
 \item{type}{The type of compression to check for.
-Currently only ZIP files have been implemented.}
+Currently only ZIP/GZIP files have been implemented.}
+
+\item{verbose}{logical/integer Determine the level of output to show as messages}
 }
 \value{
 A \code{logical} vector
