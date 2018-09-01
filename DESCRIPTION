@@ -21,15 +21,16 @@ Imports:
   checkmate,
   dplyr (>= 0.7.5),
   ggdendro,
+  grDevices, 
+  grid,
   lubridate,
   magrittr (>= 1.5),
   methods,
-  pander,
+  parallel,
   plotly,
   readr,
   reshape2,
   rmarkdown,
-  Rsamtools,
   scales,
   ShortRead,
   stats,
@@ -37,7 +38,7 @@ Imports:
   tibble (>= 1.3.1),
   tidyr,
   tidyselect (>= 0.2.3),
-  viridis,
+  utils,
   viridisLite,
   zoo
 Remotes: mikelove/fastqcTheoreticalGC
@@ -72,6 +73,7 @@ Collate:
     'exportOverrepresented.R'
     'extract.R'
     'fileName.R'
+    'getColours.R'
     'getFastqcData.R'
     'getSummary.R'
     'ggdend.R'
@@ -103,5 +105,9 @@ Collate:
     'splitByTab.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr
-Suggests: BiocStyle, knitr, testthat
+Suggests: 
+  BiocStyle, 
+  knitr, 
+  pander,
+  testthat
 biocViews: QualityControl, ReportWriting

@@ -31,6 +31,7 @@
 #' @seealso \code{\link{FastqFileList}}
 #'
 #' @importFrom parallel detectCores
+#' @importClassesFrom ShortRead FastqFile FastqFileList
 #'
 #' @export
 runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",

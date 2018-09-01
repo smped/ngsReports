@@ -33,8 +33,12 @@
 
 \item{drop}{not used}
 }
+\value{
+Will return a subset of the original object following the standard
+rules for subsetting objects
+}
 \description{
-Extract elements from FastqcFileList Objects
+Extract elements from Fastqc*List Objects
 }
 \details{
 Extract elements in a consistent manner with R conventions
@@ -48,7 +52,7 @@ fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
-# Denomstrate subsetting using the standard methods
+# Subsetting using the standard methods
 fdl[1]
 fdl[[1]]
 
