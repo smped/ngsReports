@@ -34,24 +34,34 @@ setMethod("getSummary", "FastqcFile",
             if (isCompressed(path, type = "zip")){
               #Get the internal path within the zip archive
               if (!file.exists(path)) stop("The zip archive can not be found.")
-              fl <- file.path( gsub(".zip$", "", fileName(object)), "summary.txt")
+              fl <- file.path( gsub(".zip$", "", fileName(object)),
+                               "summary.txt")
               # Check the required file exists
               allFiles <- unzip(path, list = TRUE)$Name
-              if(!fl %in% allFiles) stop("summary.txt is missing from the zip archive")
+              if(!fl %in% allFiles) stop(
+                "summary.txt is missing from the zip archive"
+                )
               # Open the connection & read all lines
               uz <- unz(path,fl)
               summaryData <- readLines(uz)
               close(uz)
+              if (length(summaryData) < 12) stop(
+                "summary.txt contains incomplete data. 12 modules should be present."
+                )
               # Form the output
               summaryData <- stringr::str_split_fixed(summaryData, pattern = "\t", n = 3)
               summaryData <- tibble::as_tibble(summaryData)
             }
             else{
-              # The existence of this file will have been checked at object instantion
+              # The existence of this file will have been checked at object
+              # instantion
               # Check in case it has been deleted post-instantiation though
               fl <- file.path(path, "summary.txt")
               if (!file.exists(fl)) stop("'summary.txt' could not be found.")
               summaryData <- readr::read_delim(fl, delim = "\t", col_names = FALSE)
+              if (nrow(summaryData) < 12) stop(
+                "summary.txt contains incomplete data. 12 modules should be present."
+              )
             }
             colnames(summaryData) <- c("Status", "Category", "Filename")
             summaryData
