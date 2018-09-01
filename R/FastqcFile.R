@@ -42,6 +42,6 @@ setMethod("FastqcFile", "character", function(x){new("FastqcFile", path = x)})
 # The show method doesn't need exporting
 setMethod("show", "FastqcFile",
           function(object){
-            cat(fileName(object), "\n")
-            cat("Located in", dirname(path(object)), "\n")
+              cat(fileName(object), "\n")
+              cat("Located in", dirname(path(object)), "\n")
           })

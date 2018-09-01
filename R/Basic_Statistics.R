@@ -39,16 +39,16 @@ setMethod("Basic_Statistics", "FastqcData",
 #' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "FastqcDataList",
           function(object){
-            df <- lapply(object@.Data, Basic_Statistics)
-            nulls <- vapply(df, 
-                            function(x){
-                              length(x) == 0
-                            }, logical(1))
-            if (sum(nulls) > 0) message(
-              sprintf("The Basic_Statistics module was missing from:\n%s",
-                      paste(path(object)[nulls], sep = "\n"))
-            )
-            dplyr::bind_rows(df)
+              df <- lapply(object@.Data, Basic_Statistics)
+              nulls <- vapply(df, 
+                              function(x){
+                                  length(x) == 0
+                              }, logical(1))
+              if (sum(nulls) > 0) message(
+                  sprintf("The Basic_Statistics module was missing from:\n%s",
+                          paste(path(object)[nulls], sep = "\n"))
+              )
+              dplyr::bind_rows(df)
           })
 
 #' @export
@@ -56,8 +56,8 @@ setMethod("Basic_Statistics", "FastqcDataList",
 #' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "FastqcFile",
           function(object){
-            object <- getFastqcData(object)
-            Basic_Statistics(object)
+              object <- getFastqcData(object)
+              Basic_Statistics(object)
           })
 
 #' @export
@@ -65,8 +65,8 @@ setMethod("Basic_Statistics", "FastqcFile",
 #' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "FastqcFileList",
           function(object){
-            object <- getFastqcData(object)
-            Basic_Statistics(object)
+              object <- getFastqcData(object)
+              Basic_Statistics(object)
           })
 
 #' @export
@@ -74,6 +74,6 @@ setMethod("Basic_Statistics", "FastqcFileList",
 #' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "character",
           function(object){
-            object <- getFastqcData(object)
-            Basic_Statistics(object)
+              object <- getFastqcData(object)
+              Basic_Statistics(object)
           })

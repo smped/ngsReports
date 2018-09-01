@@ -23,6 +23,6 @@ setValidity("FastqcDataList", isValidFastqcDataList)
 # The show method doesn't need exporting
 setMethod("show", "FastqcDataList",
           function(object){
-            l <- length(object)
-            cat("FastqcDataList for", l, "files.\n")
+              l <- length(object)
+              cat("FastqcDataList for", l, "files.\n")
           })

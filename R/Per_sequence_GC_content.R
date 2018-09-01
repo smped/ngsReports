@@ -30,15 +30,15 @@
 #' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "FastqcData",
           function(object){
-            df <- object@Per_sequence_GC_content
-            if(length(df)){ # Check there is data in the module
-              # Add a Filename column if there is any data
-              df$Filename <- fileName(object)
-              dplyr::select(df, "Filename", tidyselect::everything())
-            }
-            else { # Otherwise return the blank data.frame
-              df
-            }
+              df <- object@Per_sequence_GC_content
+              if(length(df)){ # Check there is data in the module
+                  # Add a Filename column if there is any data
+                  df$Filename <- fileName(object)
+                  dplyr::select(df, "Filename", tidyselect::everything())
+              }
+              else { # Otherwise return the blank data.frame
+                  df
+              }
           })
 
 #' @export
@@ -46,16 +46,16 @@ setMethod("Per_sequence_GC_content", "FastqcData",
 #' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "FastqcDataList",
           function(object){
-            df <- lapply(object@.Data, Per_sequence_GC_content)
-            nulls <- vapply(df, 
-                            function(x){
-                              length(x) == 0
-                            }, logical(1))
-            if (sum(nulls) > 0) message(
-              sprintf("The Per_sequence_GC_content module was missing from:\n%s",
-                      paste(path(object)[nulls], sep = "\n"))
-            )
-            dplyr::bind_rows(df)
+              df <- lapply(object@.Data, Per_sequence_GC_content)
+              nulls <- vapply(df, 
+                              function(x){
+                                  length(x) == 0
+                              }, logical(1))
+              if (sum(nulls) > 0) message(
+                  sprintf("The Per_sequence_GC_content module was missing from:\n%s",
+                          paste(path(object)[nulls], sep = "\n"))
+              )
+              dplyr::bind_rows(df)
           })
 
 #' @export
@@ -63,8 +63,8 @@ setMethod("Per_sequence_GC_content", "FastqcDataList",
 #' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "FastqcFile",
           function(object){
-            object <- getFastqcData(object)
-            Per_sequence_GC_content(object)
+              object <- getFastqcData(object)
+              Per_sequence_GC_content(object)
           })
 
 #' @export
@@ -72,8 +72,8 @@ setMethod("Per_sequence_GC_content", "FastqcFile",
 #' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "FastqcFileList",
           function(object){
-            object <- getFastqcData(object)
-            Per_sequence_GC_content(object)
+              object <- getFastqcData(object)
+              Per_sequence_GC_content(object)
           })
 
 #' @export
@@ -81,6 +81,6 @@ setMethod("Per_sequence_GC_content", "FastqcFileList",
 #' @aliases Per_sequence_GC_content
 setMethod("Per_sequence_GC_content", "character",
           function(object){
-            object <- getFastqcData(object)
-            Per_sequence_GC_content(object)
+              object <- getFastqcData(object)
+              Per_sequence_GC_content(object)
           })

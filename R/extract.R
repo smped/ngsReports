@@ -32,9 +32,9 @@
 #' @export
 setMethod("[", signature = c(x = "FastqcFileList", i = "ANY", j = "missing"),
           function(x, i, j, ..., drop){
-            if (is.numeric(i) && max(i) > length(x)) stop("Error: subscript out of bounds")
-            if (is.logical(i) && length(i) != length(x)) stop("Invalid vector length for subsetting")
-            FastqcFileList(x@.Data[i])}
+              if (is.numeric(i) && max(i) > length(x)) stop("Error: subscript out of bounds")
+              if (is.logical(i) && length(i) != length(x)) stop("Invalid vector length for subsetting")
+              FastqcFileList(x@.Data[i])}
 )
 
 #' @name [
@@ -43,12 +43,12 @@ setMethod("[", signature = c(x = "FastqcFileList", i = "ANY", j = "missing"),
 #' @export
 setMethod("[", signature = c(x = "FastqcFileList", i = "character", j = "missing"),
           function(x, i, j, ..., drop){
-            sub <- match(i, fileName(x))
-            if (any(is.na(sub))) {
-              msg <- paste("Names not found:", i[is.na(sub)], sep = "\n")
-              stop(msg)
-            }
-            FastqcFileList(x@.Data[sub])}
+              sub <- match(i, fileName(x))
+              if (any(is.na(sub))) {
+                  msg <- paste("Names not found:", i[is.na(sub)], sep = "\n")
+                  stop(msg)
+              }
+              FastqcFileList(x@.Data[sub])}
 )
 
 #' @name [
@@ -57,7 +57,7 @@ setMethod("[", signature = c(x = "FastqcFileList", i = "character", j = "missing
 #' @export
 setMethod("[", signature = c(x = "FastqcDataList", i = "ANY", j = "missing"),
           function(x, i, j, ..., drop = TRUE){
-            new("FastqcDataList", x@.Data[i])
+              new("FastqcDataList", x@.Data[i])
           })
 
 
@@ -67,12 +67,12 @@ setMethod("[", signature = c(x = "FastqcDataList", i = "ANY", j = "missing"),
 #' @export
 setMethod("[[", signature = c(x = "FastqcFileList", i = "character", j = "missing"),
           function(x, i, j, ...){
-            sub <- match(i, fileName(x))
-            if (any(is.na(sub))) {
-              msg <- paste("Names not found:", i[is.na(sub)], sep = "\n")
-              stop(msg)
-            }
-            x@.Data[[sub]]
+              sub <- match(i, fileName(x))
+              if (any(is.na(sub))) {
+                  msg <- paste("Names not found:", i[is.na(sub)], sep = "\n")
+                  stop(msg)
+              }
+              x@.Data[[sub]]
           }
 )
 

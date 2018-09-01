@@ -18,25 +18,25 @@
 #'
 #' @export
 maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
-
-  stopifnot(is.numeric(digits) && is.logical(asPercent))
-  
-  # Get the AdapterContent
-  ac <- tryCatch(Adapter_Content(x))
-
-  # Perform the summary
-  ac <- reshape2::melt(ac, id.vars = c("Filename", "Position"),
-                       variable.name = "Type")
-  ac <- dplyr::group_by(ac, Filename, Type)
-  ac <- dplyr::summarise_at(ac, dplyr::vars("value"), dplyr::funs("max"))
-
-  # Format the output
-  digits <- floor(digits)[1] # Silently ignore any additional values
-  ac$value <- round(ac$value, digits)
-  
-  if (asPercent) ac$value <- scales::percent(0.01*ac$value)
-
-  ac <- reshape2::dcast(ac, Filename~Type, value.var = "value")
-  tibble::as_tibble(ac)
-
+    
+    stopifnot(is.numeric(digits) && is.logical(asPercent))
+    
+    # Get the AdapterContent
+    ac <- tryCatch(Adapter_Content(x))
+    
+    # Perform the summary
+    ac <- reshape2::melt(ac, id.vars = c("Filename", "Position"),
+                         variable.name = "Type")
+    ac <- dplyr::group_by(ac, Filename, Type)
+    ac <- dplyr::summarise_at(ac, dplyr::vars("value"), dplyr::funs("max"))
+    
+    # Format the output
+    digits <- floor(digits)[1] # Silently ignore any additional values
+    ac$value <- round(ac$value, digits)
+    
+    if (asPercent) ac$value <- scales::percent(0.01*ac$value)
+    
+    ac <- reshape2::dcast(ac, Filename~Type, value.var = "value")
+    tibble::as_tibble(ac)
+    
 }

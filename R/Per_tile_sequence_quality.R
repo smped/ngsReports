@@ -30,15 +30,15 @@
 #' @aliases Per_tile_sequence_quality
 setMethod("Per_tile_sequence_quality", "FastqcData",
           function(object){
-            df <- object@Per_tile_sequence_quality
-            if(length(df)){ # Check there is data in the module
-              # Add a Filename column if there is any data
-              df$Filename <- fileName(object)
-              dplyr::select(df, "Filename", tidyselect::everything())
-            }
-            else { # Otherwise return the blank data.frame
-              df
-            }
+              df <- object@Per_tile_sequence_quality
+              if(length(df)){ # Check there is data in the module
+                  # Add a Filename column if there is any data
+                  df$Filename <- fileName(object)
+                  dplyr::select(df, "Filename", tidyselect::everything())
+              }
+              else { # Otherwise return the blank data.frame
+                  df
+              }
           })
 
 #' @export
@@ -46,16 +46,16 @@ setMethod("Per_tile_sequence_quality", "FastqcData",
 #' @aliases Per_tile_sequence_quality
 setMethod("Per_tile_sequence_quality", "FastqcDataList",
           function(object){
-            df <- lapply(object@.Data, Per_tile_sequence_quality)
-            nulls <- vapply(df, 
-                            function(x){
-                              length(x) == 0
-                            }, logical(1))
-            if (sum(nulls) > 0) message(
-              sprintf("The Per_tile_sequence_quality module was missing from:\n%s",
-                      paste(path(object)[nulls], sep = "\n"))
-            )
-            dplyr::bind_rows(df)
+              df <- lapply(object@.Data, Per_tile_sequence_quality)
+              nulls <- vapply(df, 
+                              function(x){
+                                  length(x) == 0
+                              }, logical(1))
+              if (sum(nulls) > 0) message(
+                  sprintf("The Per_tile_sequence_quality module was missing from:\n%s",
+                          paste(path(object)[nulls], sep = "\n"))
+              )
+              dplyr::bind_rows(df)
           })
 
 #' @export
@@ -63,8 +63,8 @@ setMethod("Per_tile_sequence_quality", "FastqcDataList",
 #' @aliases Per_tile_sequence_quality
 setMethod("Per_tile_sequence_quality", "FastqcFile",
           function(object){
-            object <- getFastqcData(object)
-            Per_tile_sequence_quality(object)
+              object <- getFastqcData(object)
+              Per_tile_sequence_quality(object)
           })
 
 #' @export
@@ -72,8 +72,8 @@ setMethod("Per_tile_sequence_quality", "FastqcFile",
 #' @aliases Per_tile_sequence_quality
 setMethod("Per_tile_sequence_quality", "FastqcFileList",
           function(object){
-            object <- getFastqcData(object)
-            Per_tile_sequence_quality(object)
+              object <- getFastqcData(object)
+              Per_tile_sequence_quality(object)
           })
 
 #' @export
@@ -81,6 +81,6 @@ setMethod("Per_tile_sequence_quality", "FastqcFileList",
 #' @aliases Per_tile_sequence_quality
 setMethod("Per_tile_sequence_quality", "character",
           function(object){
-            object <- getFastqcData(object)
-            Per_tile_sequence_quality(object)
+              object <- getFastqcData(object)
+              Per_tile_sequence_quality(object)
           })

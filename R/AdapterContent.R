@@ -33,16 +33,16 @@
 #' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcDataList",
           function(object){
-            df <- lapply(object@.Data, Adapter_Content)
-            nulls <- vapply(df, 
-                            function(x){
-                              length(x) == 0
-                            }, logical(1))
-            if (sum(nulls) > 0) message(
-              sprintf("The Adapter_Content module was missing from:\n%s",
-                      paste(path(object)[nulls], sep = "\n"))
+              df <- lapply(object@.Data, Adapter_Content)
+              nulls <- vapply(df, 
+                              function(x){
+                                  length(x) == 0
+                              }, logical(1))
+              if (sum(nulls) > 0) message(
+                  sprintf("The Adapter_Content module was missing from:\n%s",
+                          paste(path(object)[nulls], sep = "\n"))
               )
-            dplyr::bind_rows(df)
+              dplyr::bind_rows(df)
           })
 
 #' @export
@@ -50,15 +50,15 @@ setMethod("Adapter_Content", "FastqcDataList",
 #' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcData",
           function(object){
-            df <- object@Adapter_Content
-            if(length(df)){ # Check there is data in the module
-              # Add a Filename column if there is any data
-              df$Filename <- fileName(object)
-              dplyr::select(df, "Filename", tidyselect::everything())
-            }
-            else { # Otherwise return the blank data.frame
-              df
-            }
+              df <- object@Adapter_Content
+              if(length(df)){ # Check there is data in the module
+                  # Add a Filename column if there is any data
+                  df$Filename <- fileName(object)
+                  dplyr::select(df, "Filename", tidyselect::everything())
+              }
+              else { # Otherwise return the blank data.frame
+                  df
+              }
           })
 
 #' @export
@@ -66,8 +66,8 @@ setMethod("Adapter_Content", "FastqcData",
 #' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcFile",
           function(object){
-            object <- getFastqcData(object)
-            Adapter_Content(object)
+              object <- getFastqcData(object)
+              Adapter_Content(object)
           })
 
 #' @export
@@ -75,8 +75,8 @@ setMethod("Adapter_Content", "FastqcFile",
 #' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcFileList",
           function(object){
-            object <- getFastqcData(object)
-            Adapter_Content(object)
+              object <- getFastqcData(object)
+              Adapter_Content(object)
           })
 
 #' @export
@@ -84,6 +84,6 @@ setMethod("Adapter_Content", "FastqcFileList",
 #' @aliases Adapter_Content
 setMethod("Adapter_Content", "character",
           function(object){
-            object <- getFastqcData(object)
-            Adapter_Content(object)
+              object <- getFastqcData(object)
+              Adapter_Content(object)
           })

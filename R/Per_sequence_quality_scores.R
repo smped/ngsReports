@@ -29,15 +29,15 @@
 #' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "FastqcData",
           function(object){
-            df <- object@Per_sequence_quality_scores
-            if(length(df)){ # Check there is data in the module
-              # Add a Filename column if there is any data
-              df$Filename <- fileName(object)
-              dplyr::select(df, "Filename", tidyselect::everything())
-            }
-            else { # Otherwise return the blank data.frame
-              df
-            }
+              df <- object@Per_sequence_quality_scores
+              if(length(df)){ # Check there is data in the module
+                  # Add a Filename column if there is any data
+                  df$Filename <- fileName(object)
+                  dplyr::select(df, "Filename", tidyselect::everything())
+              }
+              else { # Otherwise return the blank data.frame
+                  df
+              }
           })
 
 #' @export
@@ -45,25 +45,25 @@ setMethod("Per_sequence_quality_scores", "FastqcData",
 #' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "FastqcDataList",
           function(object){
-            df <- lapply(object@.Data, Per_sequence_quality_scores)
-            nulls <- vapply(df, 
-                            function(x){
-                              length(x) == 0
-                            }, logical(1))
-            if (sum(nulls) > 0) message(
-              sprintf("The Per_sequence_quality_scores module was missing from:\n%s",
-                      paste(path(object)[nulls], sep = "\n"))
-            )
-            dplyr::bind_rows(df)
-            })
+              df <- lapply(object@.Data, Per_sequence_quality_scores)
+              nulls <- vapply(df, 
+                              function(x){
+                                  length(x) == 0
+                              }, logical(1))
+              if (sum(nulls) > 0) message(
+                  sprintf("The Per_sequence_quality_scores module was missing from:\n%s",
+                          paste(path(object)[nulls], sep = "\n"))
+              )
+              dplyr::bind_rows(df)
+          })
 
 #' @export
 #' @rdname Per_sequence_quality_scores
 #' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "FastqcFile",
           function(object){
-            object <- getFastqcData(object)
-            Per_sequence_quality_scores(object)
+              object <- getFastqcData(object)
+              Per_sequence_quality_scores(object)
           })
 
 #' @export
@@ -71,8 +71,8 @@ setMethod("Per_sequence_quality_scores", "FastqcFile",
 #' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "FastqcFileList",
           function(object){
-            object <- getFastqcData(object)
-            Per_sequence_quality_scores(object)
+              object <- getFastqcData(object)
+              Per_sequence_quality_scores(object)
           })
 
 #' @export
@@ -80,6 +80,6 @@ setMethod("Per_sequence_quality_scores", "FastqcFileList",
 #' @aliases Per_sequence_quality_scores
 setMethod("Per_sequence_quality_scores", "character",
           function(object){
-            object <- getFastqcData(object)
-            Per_sequence_quality_scores(object)
+              object <- getFastqcData(object)
+              Per_sequence_quality_scores(object)
           })

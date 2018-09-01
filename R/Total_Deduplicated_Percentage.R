@@ -30,8 +30,8 @@
 #' @aliases Total_Deduplicated_Percentage
 setMethod("Total_Deduplicated_Percentage", "FastqcData",
           function(object){
-            tibble::tibble(Filename = fileName(object),
-                              Total = object@Total_Deduplicated_Percentage)
+              tibble::tibble(Filename = fileName(object),
+                             Total = object@Total_Deduplicated_Percentage)
           })
 
 #' @export
@@ -39,8 +39,8 @@ setMethod("Total_Deduplicated_Percentage", "FastqcData",
 #' @aliases Total_Deduplicated_Percentage
 setMethod("Total_Deduplicated_Percentage", "FastqcDataList",
           function(object){
-            df <- lapply(object@.Data, Total_Deduplicated_Percentage)
-            dplyr::bind_rows(df)
+              df <- lapply(object@.Data, Total_Deduplicated_Percentage)
+              dplyr::bind_rows(df)
           })
 
 #' @export
@@ -48,8 +48,8 @@ setMethod("Total_Deduplicated_Percentage", "FastqcDataList",
 #' @aliases Total_Deduplicated_Percentage
 setMethod("Total_Deduplicated_Percentage", "FastqcFile",
           function(object){
-            object <- getFastqcData(object)
-            Total_Deduplicated_Percentage(object)
+              object <- getFastqcData(object)
+              Total_Deduplicated_Percentage(object)
           })
 
 #' @export
@@ -57,8 +57,8 @@ setMethod("Total_Deduplicated_Percentage", "FastqcFile",
 #' @aliases Total_Deduplicated_Percentage
 setMethod("Total_Deduplicated_Percentage", "FastqcFileList",
           function(object){
-            object <- getFastqcData(object)
-            Total_Deduplicated_Percentage(object)
+              object <- getFastqcData(object)
+              Total_Deduplicated_Percentage(object)
           })
 
 #' @export
@@ -66,6 +66,6 @@ setMethod("Total_Deduplicated_Percentage", "FastqcFileList",
 #' @aliases Total_Deduplicated_Percentage
 setMethod("Total_Deduplicated_Percentage", "character",
           function(object){
-            object <- getFastqcData(object)
-            Total_Deduplicated_Percentage(object)
+              object <- getFastqcData(object)
+              Total_Deduplicated_Percentage(object)
           })

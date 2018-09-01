@@ -17,7 +17,7 @@
 # The show method doesn't need exporting
 setMethod("show", "FastqcData",
           function(object){
-            cat("FastqcData for", object@Basic_Statistics$Filename, "\n")
-            cat("Source Fastq file contains", scales::comma(object@Basic_Statistics$Total_Sequences), "reads.\n")
-            cat("Source FastQC file is located in", object@path)
+              cat("FastqcData for", object@Basic_Statistics$Filename, "\n")
+              cat("Source Fastq file contains", scales::comma(object@Basic_Statistics$Total_Sequences), "reads.\n")
+              cat("Source FastQC file is located in", object@path)
           })

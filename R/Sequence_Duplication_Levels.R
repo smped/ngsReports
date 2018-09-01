@@ -30,15 +30,15 @@
 #' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "FastqcData",
           function(object){
-            df <- object@Sequence_Duplication_Levels
-            if(length(df)){ # Check there is data in the module
-              # Add a Filename column if there is any data
-              df$Filename <- fileName(object)
-              dplyr::select(df, "Filename", tidyselect::everything())
-            }
-            else { # Otherwise return the blank data.frame
-              df
-            }
+              df <- object@Sequence_Duplication_Levels
+              if(length(df)){ # Check there is data in the module
+                  # Add a Filename column if there is any data
+                  df$Filename <- fileName(object)
+                  dplyr::select(df, "Filename", tidyselect::everything())
+              }
+              else { # Otherwise return the blank data.frame
+                  df
+              }
           })
 
 #' @export
@@ -46,16 +46,16 @@ setMethod("Sequence_Duplication_Levels", "FastqcData",
 #' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "FastqcDataList",
           function(object){
-            df <- lapply(object@.Data, Sequence_Duplication_Levels)
-            nulls <- vapply(df, 
-                            function(x){
-                              length(x) == 0
-                            }, logical(1))
-            if (sum(nulls) > 0) message(
-              sprintf("The Sequence_Duplication_Levels module was missing from:\n%s",
-                      paste(path(object)[nulls], sep = "\n"))
-            )
-            dplyr::bind_rows(df)
+              df <- lapply(object@.Data, Sequence_Duplication_Levels)
+              nulls <- vapply(df, 
+                              function(x){
+                                  length(x) == 0
+                              }, logical(1))
+              if (sum(nulls) > 0) message(
+                  sprintf("The Sequence_Duplication_Levels module was missing from:\n%s",
+                          paste(path(object)[nulls], sep = "\n"))
+              )
+              dplyr::bind_rows(df)
           })
 
 #' @export
@@ -63,8 +63,8 @@ setMethod("Sequence_Duplication_Levels", "FastqcDataList",
 #' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "FastqcFile",
           function(object){
-            object <- getFastqcData(object)
-            Sequence_Duplication_Levels(object)
+              object <- getFastqcData(object)
+              Sequence_Duplication_Levels(object)
           })
 
 #' @export
@@ -72,8 +72,8 @@ setMethod("Sequence_Duplication_Levels", "FastqcFile",
 #' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "FastqcFileList",
           function(object){
-            object <- getFastqcData(object)
-            Sequence_Duplication_Levels(object)
+              object <- getFastqcData(object)
+              Sequence_Duplication_Levels(object)
           })
 
 #' @export
@@ -81,6 +81,6 @@ setMethod("Sequence_Duplication_Levels", "FastqcFileList",
 #' @aliases Sequence_Duplication_Levels
 setMethod("Sequence_Duplication_Levels", "character",
           function(object){
-            object <- getFastqcData(object)
-            Sequence_Duplication_Levels(object)
+              object <- getFastqcData(object)
+              Sequence_Duplication_Levels(object)
           })

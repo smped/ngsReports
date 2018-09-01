@@ -6,6 +6,9 @@
 \usage{
 emptyPlot(x)
 }
+\value{
+A ggplot2 object
+}
 \description{
 Create an empty plot with supplied text
 }

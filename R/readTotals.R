@@ -21,8 +21,8 @@
 #'
 #' @export
 readTotals <- function(x){
-
-  df <-  tryCatch(Basic_Statistics(x))
-  df[c("Filename", "Total_Sequences")]
-
+    
+    df <-  tryCatch(Basic_Statistics(x))
+    df[c("Filename", "Total_Sequences")]
+    
 }

@@ -20,64 +20,64 @@
 #'
 #' @export
 importBowtieLogs <- function(x){
-
-  x <- unique(x) # Remove any  duplicates
-  stopifnot(file.exists(x)) # Check they all exist
-
-  # Load the data
-  data <- suppressWarnings(lapply(x, readLines))
-  names(data) <- basename(x)
-
-  # Define a quick check
-  isValidBowtieLog <- function(x){
-    nLines <- length(x)
-    if (!any(grepl("Time loading forward index", x))) return(FALSE)
-    if (!any(grepl("Time loading mirror index:", x))) return(FALSE)
-    if (!any(grepl("Seeded quality full-index search:", x))) return(FALSE)
-    if (!any(grepl("# reads processed:", x))) return(FALSE)
-    if (!any(grepl("# reads with at least one reported alignment:", x))) return(FALSE)
-    if (!any(grepl("# reads that failed to align:", x))) return(FALSE)
-    if (!any(grepl("Time searching:", x))) return(FALSE)
-    if (!any(grepl("Overall time:", x))) return(FALSE)
-    TRUE
-  }
-  validLogs <- vapply(data, isValidBowtieLog, logical(1))
-  if (any(!validLogs)) {
-    stop(paste("Incorrect file structure for:", names(validLogs)[!validLogs], collapse = "\n"))
-  }
-
-  df <- lapply(data, function(x){
-    x <- gsub("# ", "", x)
-    total <- grep("Reported .* alignments", x = x, value = TRUE)
-    x <- setdiff(x, total)
-    x <- stringr::str_split_fixed(x, pattern = ": ", 2)
-    x[,1] <- stringr::str_to_title(x[,1])
-    x[,1] <- gsub("( |-)", "_", x[,1])
-    x[,2] <- gsub("(.+) \\(.+\\)", "\\1", x[,2])
-    df <- structure(as.list(x[,2]), names = x[,1])
-    df <- as.data.frame(df, stringsAsFactors = FALSE)
-  })
-  df <- dplyr::bind_rows(df)
-
-  # Some colnames may have a flag from the original bowtie code
-  # This will replace that after the conversion steps above
-  names(df) <- gsub("__(.)", "_-\\L\\1", names(df), perl = TRUE)
-
-  # Reformat the columns
-  timeCols <- grepl("(Time|Full_Index_Search)", names(df))
-  df[!timeCols] <- suppressWarnings(lapply(df[!timeCols], as.integer))
-  df[timeCols] <- lapply(df[timeCols], function(x){
-    x <- stringr::str_split_fixed(x, ":", 3)
-    x <- as.numeric(x)
-    x <- matrix(x, ncol = 3)
-    dhours(x[,1]) + dminutes(x[,2]) + dseconds(x[,3])
-  })
-  df$Filename <- basename(x)
-  df <- dplyr::select(df,
-                      "Filename",
-                      tidyselect::contains("Reads"),
-                      tidyselect::contains("Time"),
-                      tidyselect::everything())
-
-  tibble::as_tibble(df)
+    
+    x <- unique(x) # Remove any  duplicates
+    stopifnot(file.exists(x)) # Check they all exist
+    
+    # Load the data
+    data <- suppressWarnings(lapply(x, readLines))
+    names(data) <- basename(x)
+    
+    # Define a quick check
+    isValidBowtieLog <- function(x){
+        nLines <- length(x)
+        if (!any(grepl("Time loading forward index", x))) return(FALSE)
+        if (!any(grepl("Time loading mirror index:", x))) return(FALSE)
+        if (!any(grepl("Seeded quality full-index search:", x))) return(FALSE)
+        if (!any(grepl("# reads processed:", x))) return(FALSE)
+        if (!any(grepl("# reads with at least one reported alignment:", x))) return(FALSE)
+        if (!any(grepl("# reads that failed to align:", x))) return(FALSE)
+        if (!any(grepl("Time searching:", x))) return(FALSE)
+        if (!any(grepl("Overall time:", x))) return(FALSE)
+        TRUE
+    }
+    validLogs <- vapply(data, isValidBowtieLog, logical(1))
+    if (any(!validLogs)) {
+        stop(paste("Incorrect file structure for:", names(validLogs)[!validLogs], collapse = "\n"))
+    }
+    
+    df <- lapply(data, function(x){
+        x <- gsub("# ", "", x)
+        total <- grep("Reported .* alignments", x = x, value = TRUE)
+        x <- setdiff(x, total)
+        x <- stringr::str_split_fixed(x, pattern = ": ", 2)
+        x[,1] <- stringr::str_to_title(x[,1])
+        x[,1] <- gsub("( |-)", "_", x[,1])
+        x[,2] <- gsub("(.+) \\(.+\\)", "\\1", x[,2])
+        df <- structure(as.list(x[,2]), names = x[,1])
+        df <- as.data.frame(df, stringsAsFactors = FALSE)
+    })
+    df <- dplyr::bind_rows(df)
+    
+    # Some colnames may have a flag from the original bowtie code
+    # This will replace that after the conversion steps above
+    names(df) <- gsub("__(.)", "_-\\L\\1", names(df), perl = TRUE)
+    
+    # Reformat the columns
+    timeCols <- grepl("(Time|Full_Index_Search)", names(df))
+    df[!timeCols] <- suppressWarnings(lapply(df[!timeCols], as.integer))
+    df[timeCols] <- lapply(df[timeCols], function(x){
+        x <- stringr::str_split_fixed(x, ":", 3)
+        x <- as.numeric(x)
+        x <- matrix(x, ncol = 3)
+        dhours(x[,1]) + dminutes(x[,2]) + dseconds(x[,3])
+    })
+    df$Filename <- basename(x)
+    df <- dplyr::select(df,
+                        "Filename",
+                        tidyselect::contains("Reads"),
+                        tidyselect::contains("Time"),
+                        tidyselect::everything())
+    
+    tibble::as_tibble(df)
 }

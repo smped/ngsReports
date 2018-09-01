@@ -61,8 +61,8 @@ setGeneric("genomes", function(object){standardGeneric("genomes")})
 #' @rdname genomes
 #' @aliases genomes,TheoreticalGC-method
 setMethod("genomes", "TheoreticalGC", function(object){
-  gn <- object@mData$Genome
-  dplyr::select(object@mData[gn,], -tidyselect::ends_with("ome"))
+    gn <- object@mData$Genome
+    dplyr::select(object@mData[gn,], -tidyselect::ends_with("ome"))
 })
 
 #' @title List Available Transcriptomes
@@ -86,8 +86,8 @@ setGeneric("transcriptomes", function(object){standardGeneric("transcriptomes")}
 #' @rdname transcriptomes
 #' @aliases transcriptomes,TheoreticalGC-method
 setMethod("transcriptomes", "TheoreticalGC", function(object){
-  tr <- object@mData$Transcriptome
-  dplyr::select(object@mData[tr,], -tidyselect::ends_with("ome"))
+    tr <- object@mData$Transcriptome
+    dplyr::select(object@mData[tr,], -tidyselect::ends_with("ome"))
 })
 
 #' @title Get Theoretical GC content
@@ -114,28 +114,28 @@ setGeneric("getGC", function(object, name, type){standardGeneric("getGC")})
 #' @aliases getGC,TheoreticalGC-method
 setMethod("getGC", "TheoreticalGC",
           function(object, name, type){
-
-            type <- stringr::str_to_title(type)
-            type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
-
-            if (type == "Genome"){
-              col <- tryCatch(match.arg(name, colnames(object@Genome)))
-              df <- object@Genome[c("GC_Content", col)]
-            }
-            else{
-              col <- tryCatch(match.arg(name, colnames(object@Transcriptome)))
-              df <- object@Transcriptome[c("GC_Content", col)]
-            }
-            
-            df
-
+              
+              type <- stringr::str_to_title(type)
+              type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
+              
+              if (type == "Genome"){
+                  col <- tryCatch(match.arg(name, colnames(object@Genome)))
+                  df <- object@Genome[c("GC_Content", col)]
+              }
+              else{
+                  col <- tryCatch(match.arg(name, colnames(object@Transcriptome)))
+                  df <- object@Transcriptome[c("GC_Content", col)]
+              }
+              
+              df
+              
           })
 
 
 setMethod("show", "TheoreticalGC", function(object){
-  meta <- mData(object)
-  nGenomes <- sum(meta$Genome)
-  nTranscriptomes <- sum(meta$Transcriptome)
-  cat("TheoreticalGC Object for:\n")
-  cat(nGenomes, "Genomes &", nTranscriptomes, "Transcriptomes\n")
+    meta <- mData(object)
+    nGenomes <- sum(meta$Genome)
+    nTranscriptomes <- sum(meta$Transcriptome)
+    cat("TheoreticalGC Object for:\n")
+    cat(nGenomes, "Genomes &", nTranscriptomes, "Transcriptomes\n")
 })

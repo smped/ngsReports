@@ -40,8 +40,8 @@ setGeneric("FastqcFileList", function(x){standardGeneric("FastqcFileList")})
 setMethod("FastqcFileList", "character",
           function(x)
           {
-            fls <- lapply(x, FastqcFile)
-            new("FastqcFileList", fls)
+              fls <- lapply(x, FastqcFile)
+              new("FastqcFileList", fls)
           })
 
 #' @export
@@ -50,15 +50,15 @@ setMethod("FastqcFileList", "character",
 setMethod("FastqcFileList", "list",
           function(x)
           {
-            cls <- vapply(x, class, character(1))
-            if (any(!cls %in% "FastqcFile")) stop("Method can only be applied to\nFastqcFile objects as a generic list.")
-            new("FastqcFileList", x)
+              cls <- vapply(x, class, character(1))
+              if (any(!cls %in% "FastqcFile")) stop("Method can only be applied to\nFastqcFile objects as a generic list.")
+              new("FastqcFileList", x)
           })
 
 # The show method doesn't need exporting
 setMethod("show", "FastqcFileList",
           function(object){
-            l <- length(object)
-            cat("FastqcFileList of", l, "file(s).\n")
-            cat("Located in:\n", paste(unique(dirname(path(object))), collapse = "\n"))
+              l <- length(object)
+              cat("FastqcFileList of", l, "file(s).\n")
+              cat("Located in:\n", paste(unique(dirname(path(object))), collapse = "\n"))
           })

@@ -9,6 +9,9 @@ ggdend(df)
 \arguments{
 \item{df}{A `data.frame` as required}
 }
+\value{
+A ggplot2 object
+}
 \description{
 A commonly used (hidden) function for setting up dendrograms for interactive plots
 }
