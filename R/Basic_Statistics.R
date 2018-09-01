@@ -31,15 +31,24 @@
 #' @export
 #' @rdname Basic_Statistics
 #' @aliases Basic_Statistics
-setMethod("Basic_Statistics", "FastqcData", function(object){object@Basic_Statistics})
+setMethod("Basic_Statistics", "FastqcData", 
+          function(object){object@Basic_Statistics})
 
 #' @export
 #' @rdname Basic_Statistics
 #' @aliases Basic_Statistics
 setMethod("Basic_Statistics", "FastqcDataList",
           function(object){
-            x <- lapply(object@.Data, Basic_Statistics)
-            dplyr::bind_rows(x)
+            df <- lapply(object@.Data, Basic_Statistics)
+            nulls <- vapply(df, 
+                            function(x){
+                              length(x) == 0
+                            }, logical(1))
+            if (sum(nulls) > 0) message(
+              sprintf("The Basic_Statistics module was missing from:\n%s",
+                      paste(path(object)[nulls], sep = "\n"))
+            )
+            dplyr::bind_rows(df)
           })
 
 #' @export

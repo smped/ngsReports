@@ -31,11 +31,14 @@
 setMethod("Per_sequence_GC_content", "FastqcData",
           function(object){
             df <- object@Per_sequence_GC_content
-            if(length(df)){
-            df$Filename<- fileName(object)
-            dplyr::select(df, "Filename", tidyselect::everything())
+            if(length(df)){ # Check there is data in the module
+              # Add a Filename column if there is any data
+              df$Filename <- fileName(object)
+              dplyr::select(df, "Filename", tidyselect::everything())
             }
-            else NULL
+            else { # Otherwise return the blank data.frame
+              df
+            }
           })
 
 #' @export
@@ -44,8 +47,15 @@ setMethod("Per_sequence_GC_content", "FastqcData",
 setMethod("Per_sequence_GC_content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Per_sequence_GC_content)
-            if(length(unlist(df))) dplyr::bind_rows(df)
-            else NULL
+            nulls <- vapply(df, 
+                            function(x){
+                              length(x) == 0
+                            }, logical(1))
+            if (sum(nulls) > 0) message(
+              sprintf("The Per_sequence_GC_content module was missing from:\n%s",
+                      paste(path(object)[nulls], sep = "\n"))
+            )
+            dplyr::bind_rows(df)
           })
 
 #' @export

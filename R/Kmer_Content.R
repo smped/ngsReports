@@ -32,12 +32,16 @@
 setMethod("Kmer_Content", "FastqcData",
           function(object){
             df <- dplyr::mutate(object@Kmer_Content)
-            if(length(df)){
-            df$Filename <- fileName(object)
-            dplyr::select(df, "Filename", tidyselect::everything())
+            if(length(df)){ # Check there is data in the module
+              # Add a Filename column if there is any data
+              df$Filename <- fileName(object)
+              dplyr::select(df, "Filename", tidyselect::everything())
             }
-            else NULL
-            })
+            else { # Otherwise return the blank data.frame
+              df
+            }
+          }
+)
 
 #' @export
 #' @rdname Kmer_Content
@@ -45,8 +49,15 @@ setMethod("Kmer_Content", "FastqcData",
 setMethod("Kmer_Content", "FastqcDataList",
           function(object){
             df <- lapply(object@.Data, Kmer_Content)
-            if(length(unlist(df))) dplyr::bind_rows(df)
-            else NULL
+            nulls <- vapply(df, 
+                            function(x){
+                              length(x) == 0
+                            }, logical(1))
+            if (sum(nulls) > 0) message(
+              sprintf("The Kmer_Content module was missing from:\n%s",
+                      paste(path(object)[nulls], sep = "\n"))
+            )
+            dplyr::bind_rows(df)
           })
 
 #' @export
