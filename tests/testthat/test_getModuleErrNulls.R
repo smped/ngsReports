@@ -194,3 +194,4 @@ test_that("Completely empty fastqc file errors",{
   expect_error(getFastqcData(fqcFile))
   expect_error(getSummary(fqcFile))
 })
+
