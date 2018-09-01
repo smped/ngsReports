@@ -19,6 +19,8 @@
 #' @export
 maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
 
+  stopifnot(is.numeric(digits) && is.logical(asPercent))
+  
   # Get the AdapterContent
   ac <- tryCatch(Adapter_Content(x))
 
@@ -29,13 +31,9 @@ maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
   ac <- dplyr::summarise_at(ac, dplyr::vars("value"), dplyr::funs("max"))
 
   # Format the output
-  if (!is.numeric(digits)) {
-    message("The digits argument was not supplied as a numeric value and will be ignored.")
-  }
-  else {
-    digits <- floor(digits)[1] # Silently ignore any additional values
-    ac$value <- round(ac$value, digits)
-  }
+  digits <- floor(digits)[1] # Silently ignore any additional values
+  ac$value <- round(ac$value, digits)
+  
   if (asPercent) ac$value <- scales::percent(0.01*ac$value)
 
   ac <- reshape2::dcast(ac, Filename~Type, value.var = "value")
