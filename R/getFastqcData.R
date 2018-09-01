@@ -107,7 +107,7 @@ setMethod("getFastqcData", "FastqcFile",
             # Initialise an empty list based on the standard modules after checking
             # for the Total_Deduplicated Percentage
             allModules <- unique(c(reqModules, modules, "Total_Deduplicated_Percentage"))
-            out <- sapply(allModules, function(x){NULL}, simplify = FALSE)
+            out <- sapply(allModules, function(x){data.frame(NULL)}, simplify = FALSE)
 
             ## Get the Modules
             out[["Basic_Statistics"]] <- getBasicStatistics(fastqcLines)
@@ -126,10 +126,9 @@ setMethod("getFastqcData", "FastqcFile",
             Sequence_Duplication_Levels <- getSeqDuplicationLevels(fastqcLines)
             dupMods <- names(Sequence_Duplication_Levels)
             out[dupMods] <- Sequence_Duplication_Levels[dupMods]
-
+            
             #Get the summary
             Summary <- getSummary(object)
-            stopifnot(is.data.frame(Summary))
 
             args <- c(list(Class = "FastqcData",
                            path = path(object),
@@ -182,7 +181,8 @@ getBasicStatistics <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Basic_Statistics"
-  if (!mod %in% names(fastqcLines)) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
 
   x <- splitByTab(fastqcLines[[mod]])
   stopifnot(setequal(names(x), c("Measure", "Value")))
@@ -212,8 +212,8 @@ getPerBaseSeqQuals <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Per_base_sequence_quality"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
   
   df <- splitByTab(fastqcLines[[mod]])
   names(df) <- gsub(" ", "_", names(df))
@@ -233,8 +233,8 @@ getPerTileSeqQuals <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Per_tile_sequence_quality"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
   
   df <- splitByTab(fastqcLines[[mod]])
 
@@ -251,8 +251,8 @@ getPerSeqQualScores <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Per_sequence_quality_scores"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
   
   df <- splitByTab(fastqcLines[[mod]])
 
@@ -268,8 +268,8 @@ getPerBaseSeqContent <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Per_base_sequence_content"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
   
   df <- splitByTab(fastqcLines[[mod]])
 
@@ -287,8 +287,8 @@ getPerSeqGcContent <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Per_sequence_GC_content"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
   
   df <- splitByTab(fastqcLines[[mod]])
   names(df) <- gsub(" ", "_", names(df))
@@ -307,8 +307,8 @@ getPerBaseNContent <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Per_base_N_content"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
   
   df <- splitByTab(fastqcLines[[mod]])
 
@@ -325,8 +325,8 @@ getSeqLengthDist <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Sequence_Length_Distribution"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
 
   df <- splitByTab(fastqcLines[[mod]])
 
@@ -349,12 +349,12 @@ getSeqDuplicationLevels <- function(fastqcLines){
   # Return NULL if the module is missing
   mod <- "Sequence_Duplication_Levels"
   if (!mod %in% names(fastqcLines)) {
-    return(list(Total_Deduplicated_Percentage = NULL,
-                Sequence_Duplication_Levels = NULL))
+    return(list(Total_Deduplicated_Percentage = NA_real_,
+                Sequence_Duplication_Levels = data.frame(NULL)))
   }
   if (length(fastqcLines[[mod]]) == 0) {
-    return(list(Total_Deduplicated_Percentage = NULL,
-                Sequence_Duplication_Levels = NULL))
+    return(list(Total_Deduplicated_Percentage = NA_real_,
+                Sequence_Duplication_Levels = data.frame(NULL)))
   }
   x <- fastqcLines[[mod]]
 
@@ -387,8 +387,8 @@ getOverrepSeq <- function(fastqcLines){
 
   # Return NULL if the module is missing
   mod <- "Overrepresented_sequences"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
   
   df <- splitByTab(fastqcLines[[mod]])
   names(df) <- gsub(" ", "_", names(df))
@@ -407,8 +407,8 @@ getAdapterContent <- function(fastqcLines){
   
   # Return NULL if the module is missing
   mod <- "Adapter_Content"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
 
   df <- splitByTab(fastqcLines[[mod]])
   names(df) <- gsub(" ", "_", names(df))
@@ -428,8 +428,8 @@ getKmerContent <- function(fastqcLines){
   
   # Return NULL if the module is missing
   mod <- "Kmer_Content"
-  if (!mod %in% names(fastqcLines)) return(NULL)
-  if (length(fastqcLines[[mod]]) == 0) return(NULL)
+  if (!mod %in% names(fastqcLines)) return(data.frame(NULL))
+  if (length(fastqcLines[[mod]]) == 0) return(data.frame(NULL))
 
   df <- splitByTab(fastqcLines[[mod]])
   names(df) <- gsub(" ", "_", names(df))

@@ -155,13 +155,6 @@ test_that("Check getOverrepSeq() is correct",{
 })
 
 
-test_that("Check getOverrepSeq() errors and nulls",{
-  fastqcLines[["Overrepresented_sequences"]] <- fastqcLines[["Overrepresented_sequences"]][-1]
-  otherMods <- names(fastqcLines) != "Overrepresented_sequences"
-  expect_null(getOverrepSeq(fastqcLines[otherMods]))
-  expect_error(getOverrepSeq(fastqcLines))
-})
-
 test_that("Check getAdapterContent() is correct",{
   df <- getAdapterContent(fastqcLines)
   nAdapTypes <- ncol(df) - 1
