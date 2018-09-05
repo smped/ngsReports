@@ -102,6 +102,7 @@ Collate:
     'readTotals.R'
     'runFastQC.R'
     'scale_fill_pwf.R'
+    'setLabels.R'
     'splitByTab.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr

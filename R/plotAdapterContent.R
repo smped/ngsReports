@@ -61,9 +61,6 @@
 #'
 #' @import ggplot2
 #' @importFrom plotly plotly_empty ggplotly
-#' @importFrom dplyr vars
-#' @importFrom dplyr data_frame
-#' @importFrom dplyr funs
 #' @importFrom magrittr %>%
 #' @importFrom stats hclust dist
 #'
@@ -158,13 +155,14 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                                       ymax = c(warn, fail, 100),
                                       Status = c("PASS", "WARN", "FAIL"))
               
-              
               # Create the basic plot
               acPlot <- ggplot(df) +
                   geom_rect(data = rects,
                             aes_string(xmin = "xmin", xmax = "xmax",
-                                       ymin = "ymin", ymax = "ymax", fill = "Status")) +
-                  geom_line(aes_string(x = "Position", y = "Percent",colour = "Type")) +
+                                       ymin = "ymin", ymax = "ymax", 
+                                       fill = "Status")) +
+                  geom_line(aes_string(x = "Position", y = "Percent",
+                                       colour = "Type")) +
                   scale_y_continuous(limits = c(0, 100), expand =c(0, 0)) +
                   scale_x_continuous(expand = c(0, 0)) +
                   scale_fill_manual(values = getColours(pwfCols)) +
@@ -212,66 +210,57 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                    adapterType = "Total",
                    pwfCols, warn = 5, fail = 10,
                    cluster = FALSE, dendrogram = FALSE,
-                   ...){
+                   ..., xlab = "Position in read (bp)", ylab = "Percent (%)"){
               
               df <- Adapter_Content(x)
               
-              
               if (!length(df)) {
-                  #stop("No Adapter content Module")
                   acPlot <- emptyPlot("No Adapter Content Module Detected")
-                  
                   if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
                   return(acPlot)
               }
               
-              if (sum(colSums(df[!colnames(df) %in% c("Filename", "Position")])) == 0) {
-                  #stop("No Adapter content were detected by FastQC")
+              valueCols <- setdiff(colnames(df), c("Filename", "Position"))
+              if (sum(df[valueCols]) == 0) {
                   acPlot <- emptyPlot("No Adapter Content in Sequences")
-                  
                   if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
                   return(acPlot)
               }
-              
               
               # Sort out the colours & pass/warn/fail breaks
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               stopifnot(isValidPwf(pwfCols))
               stopifnot(is.numeric(c(warn, fail)))
               stopifnot(all(fail < 100, warn < fail,  warn > 0))
+              breaks <- c(0, warn, fail, 100)
               
-              # Check for valid plotType
-              stopifnot(plotType %in% c("line", "heatmap"))
-              
-              # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)),
-                                      names = unique(df$Filename))
-              }
-              else{
-                  if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              # Check for valid plotType & labels
+              plotType <- match.arg(plotType, c("line", "heatmap"))
+              labels <- setLabels(df)
               
               # Change to long form and remove the _ symbols between words
-              df <- reshape2::melt(df, id.vars = c("Filename", "Position"),
-                                   value.name = "Percent", variable.name = "Type")
-              df <- dplyr::mutate(df, Type = gsub("_", " ", Type))
-              # Set the positions & Type as factors
-              df$Position <- factor(df$Position, levels = unique(df$Position))
+              df <- tidyr::gather(df, key = "Type", value = "Percent", 
+                                  tidyselect::one_of(valueCols))   
+              df$Type <- gsub("_", " ", df$Type)
               df$Type <- as.factor(df$Type)
+              # Set the positions & Type as factors
+              # df$Position <- factor(df$Position, levels = unique(df$Position))
               
-              if (adapterType[1] == "Total") {
+              adapterType <- adapterType[1]
+              if (adapterType == "Total") {
                   # Sum the adapters by filename& position
                   df <- dplyr::group_by(df, Filename, Position)
-                  df <- dplyr::summarise_at(df, vars("Percent"), funs(Percent = sum), na.rm = TRUE)
+                  df <- dplyr::summarise_at(df, 
+                                            dplyr::vars("Percent"), 
+                                            dplyr::funs(Percent = sum), 
+                                            na.rm = TRUE)
                   df <- dplyr::ungroup(df)
-                  df$Type <- "Total Adapter Content"
+                  adapterType <- "Total Adapter Content"
+                  df$Type <- adapterType
               }
               else{
-                  type <- grep(adapterType[1], levels(df$Type),value = TRUE)
-                  stopifnot(length(type) == 1)
-                  df <- dplyr::filter(df, Type == type)
+                  adapterType <- match.arg(type, unique(df$Type))
+                  df <- dplyr::filter(df, Type == adapterType)
               }
               df <- droplevels(df)
               df$Percent <- round(df$Percent, 4)
@@ -287,31 +276,29 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-              
-              breaks <- c(0, warn, fail, 100)
-              plotType <- match.arg(plotType)
-              
+
               if (plotType == "heatmap"){
                   
                   # Get the longest sequence
-                  df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Position))
+                  df$Start <- as.integer(
+                      gsub("([0-9]*)-[0-9]*", "\\1", as.character(df$Position))
+                      )
                   df <- df[c("Filename", "Start", "Percent", "Position", "Type")]
+                  # Adjust the data for files with varying read lengths
+                  # This will fill NA valus with the previous
+                  df <- lapply(split(df, f = df$Filename), function(x){
+                      Longest_sequence <- gsub(".*-([0-9]*)", "\\1", 
+                                               as.character(x$Position))
+                      Longest_sequence <- max(as.integer(Longest_sequence))
+                      dfFill <- data.frame(Start = seq_len(Longest_sequence))
+                      x <- dplyr::right_join(x, dfFill, by = "Start")
+                      zoo::na.locf(x)
+                  }) 
+                  df <- dplyr::bind_rows(df)
+                  plotCols <- c("Filename", "Start", "Percent")
+                  df <- tidyr::spread(df[plotCols], Start, Percent)
                   
-                  df <- split(df, f = df$Filename) %>%
-                      lapply(function(x){
-                          Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1", x$Position)))
-                          dfFill <- data.frame(Start = seq_len(Longest_sequence))
-                          x <- dplyr::right_join(x, dfFill, by = "Start") %>%
-                              zoo::na.locf()
-                      }) %>%
-                      dplyr::bind_rows()
-                  
-                  df$Start <- as.integer(df$Start)
-                  type <- df$Type
-                  df <- df[colnames(df) %in% c("Filename", "Start", "Percent")]
-                  df <- reshape2::dcast(df, Filename ~ Start, value.var = "Percent")
-                  
-                  
+                  # Arrange by row if clustering
                   if(cluster){
                       xx <- df[!colnames(df) == "Filename"]
                       xx[is.na(xx)] <- 0
@@ -321,16 +308,18 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   }
                   
                   key <- df$Filename
-                  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Percent")
+                  df <- tidyr::gather(df, key = "Start", value = "Percent",
+                                      -tidyselect::one_of("Filename"))
                   df$Filename <- labels[df$Filename]
                   
                   # Reverse the factor levels for a better looking default plot
-                  df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+                  df$Filename <- factor(df$Filename, 
+                                        levels = unique(df$Filename))
                   df$Percent <- as.numeric(df$Percent)
                   df$Start <- as.integer(as.character(df$Start))
                   
                   # Return an empty plot if required
-                  allZero <- ifelse(sum(df$Percent, na.rm = TRUE) == 0, TRUE, FALSE)
+                  allZero <- sum(df$Percent, na.rm = TRUE) == 0
                   
                   if (allZero){
                       # will put the message only in the center of the plot
@@ -342,8 +331,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                       acPlot <- ggplot(df) +
                           geom_blank(aes_string("Start", "Filename")) +
                           geom_text(data = label_df, aes_string(label = "text"), x = max(df$Start)/2, y = length(x)/2) +
-                          labs(x = "Position in Read (bp)",
-                               y = "Filename") +
+                          labs(x = xlab, y = "Filename") +
                           theme_bw() +
                           theme(panel.background = element_rect(fill = "white"),
                                 panel.grid = element_blank())
@@ -351,10 +339,13 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   else{
                       
                       # Make the heatmap
-                      acPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = "Percent")) +
+                      acPlot <- ggplot(df, 
+                                       aes_string(x = "Start", y = "Filename", 
+                                                  fill = "Percent")) +
                           geom_tile() +
-                          ggplot2::ggtitle(as.character(unique(type))) +
-                          scale_fill_pwf(df$Percent, pwf, breaks = breaks, na.value = "white") +
+                          ggplot2::ggtitle(adapterType) +
+                          scale_fill_pwf(df$Percent, pwf, breaks = breaks, 
+                                         na.value = "white") +
                           theme_bw() +
                           theme(plot.title = element_text(hjust = 0.5))
                       
@@ -367,8 +358,11 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   if (usePlotly){
                       
                       # Reset the status using current values
-                      status <- dplyr::summarise_at(dplyr::group_by(df, Filename),
-                                                    vars("Percent"), funs(Percent = max), na.rm = TRUE)
+                      status <- dplyr::summarise_at(
+                          dplyr::group_by(df, Filename),
+                          dplyr::vars("Percent"), 
+                          dplyr::funs(Percent = max), 
+                          na.rm = TRUE)
                       status$Status <- cut(status$Percent, breaks = breaks, include.lowest = TRUE,
                                            labels = c("PASS", "WARN", "FAIL"))
                       
@@ -378,7 +372,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                       # Customise for plotly
                       acPlot <- acPlot +
                           theme(panel.background = element_blank(),
-                                axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+                                axis.text.x = element_text(angle = 90, 
+                                                           hjust = 1, 
+                                                           vjust = 0.5),
                                 axis.text.y = element_blank(),
                                 axis.ticks.y = element_blank())
                       if (!is.null(userTheme)) acPlot <- acPlot + userTheme
@@ -393,22 +389,34 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                           
                           acPlot <- suppressWarnings(
                               suppressMessages(
-                                  plotly::subplot(dendro, sideBar, acPlot, widths = c(0.08,0.08,0.82),
-                                                  margin = 0.001, shareY = TRUE)
+                                  plotly::subplot(dendro, sideBar,
+                                                  acPlot, 
+                                                  widths = c(0.08,0.08,0.82),
+                                                  margin = 0.001, 
+                                                  shareY = TRUE)
                               ))
                       }
                       else{
                           # Return the plot
-                          acPlot <- suppressWarnings(suppressMessages(
-                              plotly::subplot(plotly_empty(), sideBar, acPlot, widths = c(0.1,0.08,0.82), margin = 0.001, shareY = TRUE) %>%
-                                  plotly::layout(annotations = list(text = "Filename", showarrow = FALSE,
-                                                                    textangle = -90))
-                          ))
+                          acPlot <- suppressWarnings(
+                              suppressMessages(
+                                  plotly::subplot(plotly::plotly_empty(), 
+                                                  sideBar, 
+                                                  acPlot, 
+                                                  widths = c(0.1,0.08,0.82), 
+                                                  margin = 0.001, 
+                                                  shareY = TRUE)))
+                          acPlot <- plotly::layout(acPlot,
+                                                   annotations = list(
+                                                       text = "Filename", 
+                                                       showarrow = FALSE,
+                                                       textangle = -90))
                       }
                       
                       # Add axis labels and scale plot
-                      acPlot <- acPlot %>%
-                          plotly::layout(xaxis3 = list(title = "Position in Read (bp)"), margin = list(b = 52))
+                      acPlot <- plotly::layout(acPlot,
+                                               xaxis3 = list(title = xlab), 
+                                               margin = list(b = 52))
                       
                   }
               }
@@ -421,25 +429,26 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   
                   # Set the transparency & position of bg rectangles
                   pwfCols <- setAlpha(pwfCols, 0.2)
-                  rects <- data_frame(xmin = 0,
-                                      xmax = max(df$Position),
-                                      ymin = c(0, warn, fail),
-                                      ymax = c(warn, fail, 100),
-                                      Status = c("PASS", "WARN", "FAIL"))
+                  rects <- tibble::tibble(xmin = 0,
+                                          xmax = max(df$Position),
+                                          ymin = c(0, warn, fail),
+                                          ymax = c(warn, fail, 100),
+                                          Status = c("PASS", "WARN", "FAIL"))
                   
                   # Create the basic plot
                   acPlot <- ggplot(df) +
                       geom_rect(data = rects,
                                 aes_string(xmin = "xmin", xmax = "xmax",
-                                           ymin = "ymin", ymax = "ymax", fill = "Status")) +
-                      geom_line(aes_string(x = "Position", y = "Percent", colour = "Filename")) +
+                                           ymin = "ymin", ymax = "ymax",
+                                           fill = "Status")) +
+                      geom_line(aes_string(x = "Position", y = "Percent", 
+                                           colour = "Filename")) +
                       scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
                       scale_x_continuous(expand = c(0, 0)) +
                       scale_colour_discrete(labels = labels) +
                       scale_fill_manual(values = getColours(pwfCols)) +
                       guides(fill = FALSE) +
-                      labs(x = "Position in read (bp)",
-                           y = "Percent (%)") +
+                      labs(x = xlab, y = ylab) +
                       facet_wrap(~Type, ncol = 1) +
                       theme_bw()
                   if (!is.null(userTheme)) acPlot <- acPlot + userTheme
@@ -448,7 +457,8 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   if (usePlotly){
                       acPlot <- acPlot + theme(legend.position = "none")
                       acPlot <- suppressMessages(
-                          plotly::ggplotly(acPlot, hoverinfo = c("x", "y", "colour"))
+                          plotly::ggplotly(acPlot, 
+                                           hoverinfo = c("x", "y", "colour"))
                       )
                       # Set the hoverinfo for bg rectangles to the vertices only,
                       # This will effectively hide them
@@ -456,7 +466,6 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                       acPlot$x$data[[2]]$hoveron <- "points"
                       acPlot$x$data[[3]]$hoveron <- "points"
                   }
-                  
               }
               acPlot
           }

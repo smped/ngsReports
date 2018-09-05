@@ -31,6 +31,8 @@ makeSidebar <- function(status, key, pwfCols){
               axis.ticks=element_blank())
     # Convert to plotly
     suppressWarnings(
-        suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill", "key")))
+        # suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill", "key")))
+        # The key is showing on the tooltip & confusing the Filename info
+        suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill")))
     )
 }

@@ -30,7 +30,8 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
 \S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = c("heatmap", "line"), labels, adapterType = "Total",
   pwfCols, warn = 5, fail = 10, cluster = FALSE,
-  dendrogram = FALSE, ...)
+  dendrogram = FALSE, ..., xlab = "Position in read (bp)",
+  ylab = "Percent (\%)")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
