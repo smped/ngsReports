@@ -24,7 +24,8 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
 \S4method{plotAdapterContent}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
 \S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, pwfCols,
-  warn = 5, fail = 10, ...)
+  warn = 5, fail = 10, ..., xlab = "Position in read (bp)",
+  ylab = "Percent (\%)")
 
 \S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = c("heatmap", "line"), labels, adapterType = "Total",
@@ -42,6 +43,10 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
+
+\item{xlab}{Label for the x-axis}
+
+\item{ylab}{Label for the y-axis}
 
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
 or \code{plotType = "line"}}

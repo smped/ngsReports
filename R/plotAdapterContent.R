@@ -32,6 +32,8 @@
 #' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
+#' @param xlab Label for the x-axis
+#' @param ylab Label for the y-axis
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
@@ -58,7 +60,7 @@
 #' guides(colour = FALSE)
 #'
 #' @import ggplot2
-#' @importFrom plotly plotly_empty
+#' @importFrom plotly plotly_empty ggplotly
 #' @importFrom dplyr vars
 #' @importFrom dplyr data_frame
 #' @importFrom dplyr funs
@@ -100,23 +102,25 @@ setMethod("plotAdapterContent", signature = "FastqcFileList",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcData",
-          function(x, usePlotly = FALSE, pwfCols, warn = 5, fail = 10, ...){
+          function(x, usePlotly = FALSE, pwfCols, warn = 5, fail = 10, 
+                   ..., xlab = "Position in read (bp)", ylab = "Percent (%)"){
               
               df <- Adapter_Content(x)
               
               if (!length(df)) {
-                  #stop("No Adapter content Module")
-                  acPlot <- emptyPlot("No Adapter Content Module Detected")
                   
+                  acPlot <- emptyPlot("No Adapter Content Module Detected")
                   if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
+                  
                   return(acPlot)
               }
               
-              if (sum(colSums(df[!colnames(df) %in% c("Filename", "Position")])) == 0) {
-                  #stop("No Adapter content were detected by FastQC")
-                  acPlot <- ngsReports:::emptyPlot("No Adapter Content in Sequences")
-                  
+              valueCols <- setdiff(colnames(df), c("Filename", "Position"))
+              if (sum(df[valueCols]) == 0) {
+                 
+                  acPlot <- emptyPlot("No Adapter Content Found in Sequences")
                   if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
+                  
                   return(acPlot)
               }
               
@@ -125,29 +129,31 @@ setMethod("plotAdapterContent", signature = "FastqcData",
               stopifnot(isValidPwf(pwfCols))
               stopifnot(is.numeric(c(warn, fail)))
               stopifnot(all(fail < 100, warn < fail,  warn > 0))
+              
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
-              allowed <- names(formals(ggplot2::theme))
+              allowed <- names(formals(theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # Change to long form and remove the _ symbols between words
-              df <- reshape2::melt(df, id.vars = c("Filename", "Position"),
-                                   value.name = "Percent", variable.name = "Type")
-              df <- dplyr::mutate(df, Type = gsub("_", " ", Type))
+              df <- tidyr::gather(df, key = "Type", value = "Percent", 
+                                  tidyselect::one_of(valueCols))   
+              df$Type <- gsub("_", " ", df$Type)
               
               # Set the positions as a factor
               df$Position <- gsub("([0-9]*)-.+", "\\1", df$Position)
               df$Position <- as.numeric(df$Position)
-              # Round the percent for nicer plotting
+              # Round the percent for nicer plotting with plotly
               df$Percent <- round(df$Percent, 2)
               
               # Add transparency to background colours & define the rectangles
               pwfCols <- setAlpha(pwfCols, 0.2)
-              x <- list(min = min(df$Position), max = max(df$Position))
+              rng <- structure(range(df$Position), names = c("min", "max"))
               rects <- tibble::tibble(xmin = 0,
-                                      xmax = max(df$Position),
+                                      xmax = rng["max"],
                                       ymin = c(0, warn, fail),
                                       ymax = c(warn, fail, 100),
                                       Status = c("PASS", "WARN", "FAIL"))
@@ -164,8 +170,8 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                   scale_fill_manual(values = getColours(pwfCols)) +
                   scale_colour_discrete() +
                   facet_wrap(~Filename, ncol = 1) +
-                  labs(x = "Position",
-                       y = "Percent (%)") +
+                  labs(x = xlab,
+                       y = ylab) +
                   guides(fill = FALSE) +
                   theme_bw() +
                   theme(legend.position = c(1, 1),
@@ -176,9 +182,17 @@ setMethod("plotAdapterContent", signature = "FastqcData",
               if (!is.null(userTheme)) acPlot <- acPlot + userTheme
               # Make interacive if required
               if (usePlotly){
-                  acPlot <- suppressMessages(
-                      plotly::subplot(plotly::plotly_empty(), acPlot, widths = c(0.14,0.86)) %>% 
-                          layout(xaxis2 = list(title = "Position in read (bp)"), yaxis2 = list(title = "Percent (%)")))
+                  acPlot <- acPlot + theme(legend.position = "none")
+                  acPlot <- suppressWarnings(
+                      suppressMessages(
+                          plotly::subplot(
+                              plotly::plotly_empty(), 
+                              acPlot, 
+                              widths = c(0.14,0.86)))
+                  )
+                  acPlot <- plotly::layout(acPlot,
+                                   xaxis2 = list(title = xlab),
+                                   yaxis2 = list(title = ylab))
                   # Set the hoverinfo for bg rectangles to the vertices only,
                   # This will effectively hide them
                   acPlot$x$data[[1]]$hoveron <- "points"
