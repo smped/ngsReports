@@ -27,9 +27,9 @@ plotBaseQualities(x, usePlotly = FALSE, ...)
   warn = 25, fail = 20, boxWidth = 0.8, ...)
 
 \S4method{plotBaseQualities}{FastqcDataList}(x, usePlotly = FALSE,
-  plotType = c("heatmap", "boxplot"), plotValue = "Mean",
-  cluster = FALSE, labels, dendrogram = FALSE, nc = 2, pwfCols,
-  warn = 25, fail = 20, ...)
+  plotType = c("heatmap", "boxplot"), plotValue = c("Mean", "Median"),
+  cluster = FALSE, labels, dendrogram = FALSE, nc = 2,
+  boxWidth = 0.8, pwfCols, warn = 25, fail = 20, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -62,7 +62,8 @@ File extensions are dropped by default.}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 
-\item{nc}{\code{numeric}. The number of columns to create in the plot layout}
+\item{nc}{\code{numeric}. The number of columns to create in the plot layout.
+Only used if drawing boxplots for multiple files in a FastqcDataList}
 }
 \value{
 A standard ggplot2 object

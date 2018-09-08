@@ -11,7 +11,8 @@
 #' \code{FastqcDataList} or path
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
-#' @param nc \code{numeric}. The number of columns to create in the plot layout
+#' @param nc \code{numeric}. The number of columns to create in the plot layout.
+#' Only used if drawing boxplots for multiple files in a FastqcDataList
 #' @param warn,fail The default values for warn and fail are 30 and 20 respectively (i.e. percentages)
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
@@ -46,8 +47,6 @@
 #' plotBaseQualities(fdl[[1]])
 #'
 #' @import ggplot2
-#' @importFrom reshape2 dcast
-#' @importFrom reshape2 melt
 #' @importFrom stats as.dendrogram
 #' @importFrom stats order.dendrogram
 #' @importFrom stats na.omit
@@ -146,11 +145,15 @@ setMethod("plotBaseQualities", signature = "FastqcData",
                   geom_segment(aes_string(x = "xmin", xend = "xmax", 
                                           y = "Median", yend = "Median"),
                                colour = "red") +
-                  geom_linerange(aes_string(x = "Base", ymin = "`10th_Percentile`", 
+                  geom_linerange(aes_string(x = "Base", 
+                                            ymin = "`10th_Percentile`", 
                                             ymax = "Lower_Quartile")) +
-                  geom_linerange(aes_string(x = "Base", ymin = "Upper_Quartile", 
+                  geom_linerange(aes_string(x = "Base", 
+                                            ymin = "Upper_Quartile", 
                                             ymax = "`90th_Percentile`")) +
-                  geom_line(aes_string(x = "Base", y = "Mean", group = "Filename"), 
+                  geom_line(aes_string(x = "Base", 
+                                       y = "Mean", 
+                                       group = "Filename"), 
                             colour = "blue") +
                   scale_fill_manual(values = getColours(pwfCols)) +
                   scale_x_discrete(expand = c(0, 0)) +
@@ -180,13 +183,14 @@ setMethod("plotBaseQualities", signature = "FastqcData",
                                                          "Lower_Quartile",
                                                          "`10th_Percentile`",
                                                          "`90th_Percentile`"))
-                  )) 
+                      )) 
                   qualPlot <- suppressMessages(
                       suppressWarnings(
                           plotly::subplot(plotly::plotly_empty(), 
                                           qualPlot, widths = c(0.15,0.85))
-                          ))
-                  qualPlot <- plotly::layout(qualPlot, yaxis2 = list(title = ylab))
+                      ))
+                  qualPlot <- plotly::layout(qualPlot, 
+                                             yaxis2 = list(title = ylab))
                   # Set the hoverinfo for bg rectangles to none,
                   # This will effectively hide them
                   qualPlot$x$data[[2]]$hoverinfo <- "none"
@@ -198,7 +202,7 @@ setMethod("plotBaseQualities", signature = "FastqcData",
                   qualPlot$x$data[[6]]$text <- gsub(
                       "xmax:.+(Median.+)xmin.+", "\\1",qualPlot$x$data[[6]]$text
                   )
-
+                  
               }
               
               qualPlot
@@ -208,17 +212,19 @@ setMethod("plotBaseQualities", signature = "FastqcData",
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcDataList",
-          function(x,  usePlotly = FALSE,  plotType = c("heatmap", "boxplot"), plotValue = "Mean",
+          function(x,  usePlotly = FALSE,  
+                   plotType = c("heatmap", "boxplot"), 
+                   plotValue = c("Mean", "Median"),
                    cluster = FALSE, labels, dendrogram = FALSE,
-                   nc = 2, pwfCols, warn = 25, fail = 20, ...){
+                   nc = 2, boxWidth = 0.8,
+                   pwfCols, warn = 25, fail = 20, ...){
               
               # Get the data
               df <- Per_base_sequence_quality(x)
+              maxQ <- max(df[["90th_Percentile"]])
               
               if (!length(df)) {
-                  #stop("No Per Base sequence quality Module")
                   qualPlot <- emptyPlot("No Per Base Sequence Quality Module Detected")
-                  
                   if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
                   return(qualPlot)
               }
@@ -228,36 +234,34 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               stopifnot(isValidPwf(pwfCols))
               
               # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
-              }
-              else{
-                  if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df) 
               
               # Get the Illumina encoding
               enc <- Basic_Statistics(x)$Encoding[1]
               enc <- gsub(".*(Illumina [0-9\\.]*)", "\\1", enc)
               
               plotType <- match.arg(plotType)
+              xlab <- "Position in read (bp)"
               
               if (plotType == "boxplot"){
+                  
+                  ylab <- paste0("Quality Scores (", enc, " encoding)")
                   
                   # Sort out the colours
                   pwfCols <- setAlpha(pwfCols, 0.2)
                   
                   # Setup the boxes & the x-axis
+                  stopifnot(is.numeric(boxWidth))
                   df$Base <- factor(df$Base, levels = unique(df$Base))
-                  df$x <- as.integer(df$Base)
-                  df$xmin <- df$x - 0.4
-                  df$xmax <- df$x + 0.4
+                  df$Position <- as.integer(df$Base)
+                  df$xmin <- df$Position - boxWidth/2
+                  df$xmax <- df$Position + boxWidth/2
                   
                   # Set the limits & rectangles
                   ylim <- c(0, max(df$`90th_Percentile`) + 1)
-                  expand_x <- round(0.015*(max(df$x) - min(df$x)), 1)
-                  rects <- tibble::tibble(xmin = min(df$x) - expand_x,
-                                          xmax = max(df$x) + expand_x,
+                  expand_x <- round(0.015*(max(df$Position) - min(df$Position)), 1)
+                  rects <- tibble::tibble(xmin = min(df$Position) - expand_x,
+                                          xmax = max(df$Position) + expand_x,
                                           ymin = c(0, fail, warn),
                                           ymax = c(fail, warn, max(ylim)),
                                           Status = c("FAIL", "WARN", "PASS"))
@@ -273,21 +277,29 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   df$Filename <- labels[df$Filename]
                   qualPlot <- ggplot(df) +
                       geom_rect(data = rects,
-                                aes_string(xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
+                                aes_string(xmin = "xmin", xmax = "xmax", 
+                                           ymin = "ymin", ymax = "ymax",
                                            fill = "Status")) +
                       geom_rect(aes_string(xmin = "xmin", xmax = "xmax",
-                                           ymin = "Lower_Quartile", ymax = "Upper_Quartile"),
+                                           ymin = "Lower_Quartile",
+                                           ymax = "Upper_Quartile"),
                                 fill ="yellow", colour = "black") +
-                      geom_segment(aes_string(x = "xmin", xend = "xmax", y = "Median", yend = "Median"),
+                      geom_segment(aes_string(x = "xmin", xend = "xmax",
+                                              y = "Median", yend = "Median"),
                                    colour = "red") +
-                      geom_linerange(aes_string(x = "x", ymin = "`10th_Percentile`", ymax = "Lower_Quartile")) +
-                      geom_linerange(aes_string(x = "x", ymin = "Upper_Quartile", ymax = "`90th_Percentile`")) +
-                      geom_line(aes_string(x = "x", y = "Mean"), colour = "blue") +
+                      geom_linerange(aes_string(x = "Base", 
+                                                ymin = "`10th_Percentile`", 
+                                                ymax = "Lower_Quartile")) +
+                      geom_linerange(aes_string(x = "Base", 
+                                                ymin = "Upper_Quartile", 
+                                                ymax = "`90th_Percentile`")) +
+                      geom_line(aes_string(x = "Base", y = "Mean",
+                                           group = "Filename"), colour = "blue") +
                       scale_fill_manual(values = getColours(pwfCols)) +
-                      scale_x_continuous(breaks = unique(df$x), labels = levels(df$Base), expand = c(0, 0)) +
+                      scale_x_discrete(expand = c(0, 0)) +
                       scale_y_continuous(limits = ylim, expand = c(0, 0)) +
-                      xlab("Position in read (bp)") +
-                      ylab(paste0("Quality Scores (", enc, " encoding)")) +
+                      xlab(xlab) +
+                      ylab(ylab) +
                       facet_wrap(~Filename, ncol = nc) +
                       guides(fill = FALSE) +
                       theme_bw() +
@@ -301,31 +313,36 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                           xlab("") +
                           theme(legend.position = "none")
                       qualPlot <- suppressMessages(
-                          plotly::ggplotly(qualPlot, hoverinfo = c("Base", "Mean", "Median",
-                                                                   "Upper_Quartile", "Lower_Quartile",
-                                                                   "`10th_Percentile`","`90th_Percentile`"))
+                          plotly::ggplotly(qualPlot, 
+                                           hoverinfo = c("Base", "Mean", "Median",
+                                                         "Upper_Quartile",
+                                                         "Lower_Quartile",
+                                                         "`10th_Percentile`",
+                                                         "`90th_Percentile`"))
                       )
                       # Set the hoverinfo for bg rectangles to the vertices only,
                       # This will effectively hide them
                       qualPlot$x$data[[1]]$hoverinfo <- "none"
                       qualPlot$x$data[[2]]$hoverinfo <- "none"
                       qualPlot$x$data[[3]]$hoverinfo <- "none"
+                      qualPlot$x$data <- lapply(qualPlot$x$data, function(x){
+                          x$text <- gsub("xmax:.+(Median.+)xmin.+", "\\1", x$text)
+                          x
+                      })
                   }
               }
               
               if (plotType == "heatmap"){
                   
-                  stopifnot(plotValue %in% c("Mean", "Median"))
+                  plotValue <- ifelse(missing(plotValue),
+                                      "Mean",
+                                      match.arg(plotValue))
+                  stopifnot(plotValue %in% names(df))
                   stopifnot(is.logical(cluster))
                   
                   # Get any arguments for dotArgs that have been set manually
                   dotArgs <- list(...)
-                  if ("size" %in% names(dotArgs)){
-                      sz <- dotArgs$size
-                  }
-                  else{
-                      sz <- 0.2
-                  }
+                  sz <- ifelse("size" %in% names(dotArgs), dotArgs$size, 0.2)
                   if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
                       i <- which(names(dotArgs) %in% c("colour", "color"))
                       lineCol <- dotArgs[[i]]
@@ -345,18 +362,18 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   df <- df[c("Filename", "Start", plotValue, "Base")]
                   
                   #split data into correct lengths and fill NA's
-                  df <- split(df, f = df$Filename) %>%
-                      lapply(function(x){
-                          Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1", x$Base)))
-                          dfFill <- data.frame(Start = seq_len(Longest_sequence))
-                          x <- dplyr::right_join(x, dfFill, by = "Start") %>%
-                              zoo::na.locf()
-                      }) %>%
-                      dplyr::bind_rows()
+                  df <- split(df, f = df$Filename) 
+                  df <- lapply(df, function(x){
+                      Longest_sequence <- max(
+                          as.integer(gsub(".*-([0-9]*)", "\\1", x$Base)))
+                      dfFill <- data.frame(Start = seq_len(Longest_sequence))
+                      x <- dplyr::right_join(x, dfFill, by = "Start") 
+                      zoo::na.locf(x)
+                      }) 
+                  df <- dplyr::bind_rows(df)
                   df$Start <- as.integer(df$Start)
-                  df <- df[!colnames(df) == c("Longest_sequence", "Base")]
-                  
-                  df <- reshape2::dcast(df, Filename ~ Start, value.var = plotValue)
+                  df <- df[c("Filename", "Start", plotValue)]
+                  df <- tidyr::spread(df, key = "Start", value = plotValue)
                   
                   #cluster names true hclust names
                   if(cluster){
@@ -369,20 +386,28 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   
                   #melt data back to long format and change filenames to fit labels
                   key <- df$Filename
-                  df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Start", value.name = "Data")
+                  df <- tidyr::gather(df, key = "Start", value = "Quality", 
+                                      -tidyselect::one_of("Filename"))
                   df$Filename <- labels[df$Filename]
                   
                   # Reorganise the data frame
-                  df[[plotValue]] <- as.numeric(df$Data)
+                  df[[plotValue]] <- as.numeric(df$Quality)
                   df$Start <- as.integer(as.character(df$Start))
                   df$Filename <- factor(df$Filename, levels = unique(df$Filename))
                   maxVal <- max(df[[plotValue]], na.rm = TRUE)
-                  phredMax <- ifelse(maxVal <= warn, 41, ceiling(maxVal + 1))
+                  phredMax <- ifelse(maxVal <= warn, 
+                                     max(maxQ, 41), 
+                                     ceiling(maxVal + 1))
                   
                   # Start the heatmap
-                  qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", fill = plotValue)) +
+                  qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", 
+                                                    fill = plotValue)) +
                       geom_tile() +
-                      ngsReports:::scale_fill_pwf(na.omit(df[[plotValue]]), pwfCols, c(0, fail, warn, phredMax), FALSE, na.value = "white") +
+                      scale_fill_pwf(vals = na.omit(df[[plotValue]]), 
+                                     pwfCols = pwfCols, 
+                                     breaks = c(0, fail, warn, phredMax), 
+                                     passLow = FALSE, 
+                                     na.value = "white") +
                       theme(panel.grid.minor = element_blank(),
                             panel.background = element_blank()) +
                       scale_x_continuous(expand = c(0,0))
@@ -390,16 +415,24 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   if (usePlotly){
                       
                       qualPlot <- qualPlot +
-                          theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+                          theme(axis.text.y = element_blank(), 
+                                axis.ticks.y = element_blank())
                       if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
                       
-                      t <- getSummary(x)
-                      t <- t[t$Category == "Per base sequence quality",]
-                      t$Filename <- labels[t$Filename]
-                      t$Filename <- factor(t$Filename, levels = levels(df$Filename))
-                      t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+                      # Get the flag status
+                      flags <- getSummary(x)
+                      flags <- subset(flags, 
+                                      Category == "Per base sequence quality")
+                      flags$Filename <- labels[flags$Filename]
+                      flags$Filename <- factor(flags$Filename, 
+                                           levels = levels(df$Filename))
+                      flags <- dplyr::right_join(flags, 
+                                                 unique(df["Filename"]),
+                                                 by = "Filename")
                       
-                      sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+                      sideBar <- makeSidebar(status = flags, 
+                                             key = key, 
+                                             pwfCols = pwfCols)
                       
                       #plot dendrogram
                       if(dendrogram && cluster){
@@ -415,19 +448,31 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                           )
                           
                           qualPlot <- suppressMessages(
-                              plotly::subplot(dendro, sideBar, qualPlot, widths = c(0.1, 0.08, 0.82), margin = 0.001, shareY = TRUE) %>%
-                                  plotly::layout(xaxis3 = list(title = "Sequencing Cycle"))
-                          )
+                              suppressWarnings(
+                                  plotly::subplot(dendro, sideBar, qualPlot, 
+                                                  widths = c(0.1, 0.08, 0.82), 
+                                                  margin = 0.001, 
+                                                  shareY = TRUE)))
+                          qualPlot <- plotly::layout(
+                              qualPlot,
+                              xaxis3 = list(title = "Sequencing Cycle")
+                              )
                       }
                       else{
                           qualPlot <- suppressMessages(
-                              plotly::subplot(plotly::plotly_empty(),
-                                              sideBar, qualPlot,
-                                              widths = c(0.1,0.08,0.82), margin = 0.001, shareY = TRUE) %>%
-                                  plotly::layout(xaxis3 = list(title = "Sequencing Cycle"),
-                                                 annotations = list(text = "Filename", showarrow = FALSE,
-                                                                    textangle = -90))
-                          )
+                              suppressWarnings(
+                                  plotly::subplot(plotly::plotly_empty(),
+                                                  sideBar, 
+                                                  qualPlot,
+                                                  widths = c(0.1,0.08,0.82), 
+                                                  margin = 0.001, 
+                                                  shareY = TRUE)))
+                          qualPlot <- plotly::layout(
+                              qualPlot,
+                              xaxis3 = list(title = "Sequencing Cycle"),
+                              annotations = list(text = "Filename", 
+                                                 showarrow = FALSE,
+                                                 textangle = -90))
                       }
                   }
                   else{
