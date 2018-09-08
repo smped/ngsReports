@@ -168,9 +168,9 @@ setMethod("plotNContent", signature = "FastqcData",
                   
                   # Set the hoverinfo for bg rectangles to the vertices only,
                   # This will effectively hide them
-                  nPlot$x$data[[1]]$hoveron <- "points"
-                  nPlot$x$data[[2]]$hoveron <- "points"
-                  nPlot$x$data[[3]]$hoveron <- "points"
+                  nPlot$x$data[[1]]$hoverinfo <- "none"
+                  nPlot$x$data[[2]]$hoverinfo <- "none"
+                  nPlot$x$data[[3]]$hoverinfo <- "none"
               }
               
               nPlot

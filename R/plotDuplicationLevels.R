@@ -167,9 +167,9 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
                           layout(xaxis2 = list(title = "Sequence Duplicaiton Levels"), yaxis2 = list(title = "Percentage (%)")))
                   
                   
-                  dupPlot$x$data[[1]]$hoveron <- "points"
-                  dupPlot$x$data[[2]]$hoveron <- "points"
-                  dupPlot$x$data[[3]]$hoveron <- "points"
+                  dupPlot$x$data[[1]]$hoverinfo <- "none"
+                  dupPlot$x$data[[2]]$hoverinfo <- "none"
+                  dupPlot$x$data[[3]]$hoverinfo <- "none"
               }
               
               dupPlot

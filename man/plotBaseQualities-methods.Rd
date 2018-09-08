@@ -24,7 +24,7 @@ plotBaseQualities(x, usePlotly = FALSE, ...)
 \S4method{plotBaseQualities}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
 \S4method{plotBaseQualities}{FastqcData}(x, usePlotly = FALSE, pwfCols,
-  warn = 25, fail = 20, ...)
+  warn = 25, fail = 20, boxWidth = 0.8, ...)
 
 \S4method{plotBaseQualities}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = c("heatmap", "boxplot"), plotValue = "Mean",
@@ -44,6 +44,8 @@ If \code{TRUE} plot will be rendered with plotly}
 values in plot}
 
 \item{warn, fail}{The default values for warn and fail are 30 and 20 respectively (i.e. percentages)}
+
+\item{boxWidth}{set the width of boxes when using a boxplot}
 
 \item{plotType}{\code{character} Can be either \code{"boxplot"} or \code{"heatmap"}}
 

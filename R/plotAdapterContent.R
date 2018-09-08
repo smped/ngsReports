@@ -194,9 +194,9 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                                        yaxis2 = list(title = ylab))
               # Set the hoverinfo for bg rectangles to the vertices only,
               # This will effectively hide them
-              acPlot$x$data[[1]]$hoveron <- "points"
-              acPlot$x$data[[2]]$hoveron <- "points"
-              acPlot$x$data[[3]]$hoveron <- "points"
+              acPlot$x$data[[1]]$hoverinfo <- "none"
+              acPlot$x$data[[2]]$hoverinfo <- "none"
+              acPlot$x$data[[3]]$hoverinfo <- "none"
             }
 
             acPlot
@@ -214,6 +214,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
             df <- Adapter_Content(x)
 
+            # Check the two conditions for an empty plot
             if (!length(df)) {
               acPlot <- emptyPlot("No Adapter Content Module Detected")
               if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
@@ -259,7 +260,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               df$Type <- adapterType
             }
             else{
-              adapterType <- match.arg(type, unique(df$Type))
+              adapterType <- match.arg(adapterType, unique(df$Type))
               df <- dplyr::filter(df, Type == adapterType)
             }
             df <- droplevels(df)
@@ -428,7 +429,8 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
               ylab <- "Percent (%)"
 
-              # Define position as an integer
+              # Define position as an integer just taking the first 
+              # value in the Position field
               df$Position <- gsub("([0-9]*)-.+", "\\1", df$Position)
               df$Position <- as.numeric(df$Position)
 
@@ -467,9 +469,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                 )
                 # Set the hoverinfo for bg rectangles to the vertices only,
                 # This will effectively hide them
-                acPlot$x$data[[1]]$hoveron <- "points"
-                acPlot$x$data[[2]]$hoveron <- "points"
-                acPlot$x$data[[3]]$hoveron <- "points"
+                acPlot$x$data[[1]]$hoverinfo <- "none"
+                acPlot$x$data[[2]]$hoverinfo <- "none"
+                acPlot$x$data[[3]]$hoverinfo <- "none"
               }
             }
             acPlot

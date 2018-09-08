@@ -25,6 +25,7 @@
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
 #' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
+#' @param boxWidth set the width of boxes when using a boxplot
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object
@@ -87,23 +88,24 @@ setMethod("plotBaseQualities", signature = "FastqcFileList",
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcData",
-          function(x, usePlotly = FALSE, pwfCols, warn = 25, fail = 20, ...){
+          function(x, usePlotly = FALSE, pwfCols, warn = 25, fail = 20,
+                   boxWidth = 0.8, ...){
               
               # Get the data
-              df <- tryCatch(Per_base_sequence_quality(x))
+              df <- Per_base_sequence_quality(x)
               
+              # Make a blank plot if no data is found
               if (!length(df)) {
-                  #stop("No Per Base sequence quality Module")
                   qualPlot <- emptyPlot("No Per Base Sequence Quality Module Detected")
-                  
                   if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
                   return(qualPlot)
               }
               
+              stopifnot(is.numeric(boxWidth))
               df$Base <- factor(df$Base, levels = unique(df$Base))
-              df$x <- as.integer(df$Base)
-              df$xmin <- df$x - 0.4
-              df$xmax <- df$x + 0.4
+              df$Position <- as.integer(df$Base)
+              df$xmin <- df$Position - boxWidth/2
+              df$xmax <- df$Position + boxWidth/2
               
               # Sort out the colours
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -119,9 +121,9 @@ setMethod("plotBaseQualities", signature = "FastqcData",
               
               # Set the limits & rectangles
               ylim <- c(0, max(df$`90th_Percentile`) + 1)
-              expand_x <- round(0.015*(max(df$x) - min(df$x)), 1)
-              rects <- tibble::tibble(xmin = min(df$x) - expand_x,
-                                      xmax = max(df$x) + expand_x,
+              expand_x <- round(0.015*(max(df$Position) - min(df$Position)), 1)
+              rects <- tibble::tibble(xmin = min(df$Position) - expand_x,
+                                      xmax = max(df$Position) + expand_x,
                                       ymin = c(0, fail, warn),
                                       ymax = c(fail, warn, max(ylim)),
                                       Status = c("FAIL", "WARN", "PASS"))
@@ -129,30 +131,39 @@ setMethod("plotBaseQualities", signature = "FastqcData",
               # Get the Illumina encoding
               enc <- Basic_Statistics(x)$Encoding[1]
               enc <- gsub(".*(Illumina [0-9\\.]*)", "\\1", enc)
+              ylab <- paste0("Quality Scores (", enc, " encoding)")
               
               # Generate the basic plot
               qualPlot <- ggplot(df) +
                   geom_rect(data = rects,
-                            aes_string(xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
+                            aes_string(xmin = "xmin", xmax = "xmax", 
+                                       ymin = "ymin", ymax = "ymax",
                                        fill = "Status")) +
                   geom_rect(aes_string(xmin = "xmin", xmax = "xmax",
-                                       ymin = "Lower_Quartile", ymax = "Upper_Quartile"),
+                                       ymin = "Lower_Quartile",
+                                       ymax = "Upper_Quartile"),
                             fill ="yellow", colour = "black") +
-                  geom_segment(aes_string(x = "xmin", xend = "xmax", y = "Median", yend = "Median"),
+                  geom_segment(aes_string(x = "xmin", xend = "xmax", 
+                                          y = "Median", yend = "Median"),
                                colour = "red") +
-                  geom_linerange(aes_string(x = "x", ymin = "`10th_Percentile`", ymax = "Lower_Quartile")) +
-                  geom_linerange(aes_string(x = "x", ymin = "Upper_Quartile", ymax = "`90th_Percentile`")) +
-                  geom_line(aes_string(x = "x", y = "Mean"), colour = "blue") +
+                  geom_linerange(aes_string(x = "Base", ymin = "`10th_Percentile`", 
+                                            ymax = "Lower_Quartile")) +
+                  geom_linerange(aes_string(x = "Base", ymin = "Upper_Quartile", 
+                                            ymax = "`90th_Percentile`")) +
+                  geom_line(aes_string(x = "Base", y = "Mean", group = "Filename"), 
+                            colour = "blue") +
                   scale_fill_manual(values = getColours(pwfCols)) +
-                  scale_x_continuous(breaks = df$x, labels = levels(df$Base), expand = c(0, 0)) +
+                  scale_x_discrete(expand = c(0, 0)) +
                   scale_y_continuous(limits = ylim, expand = c(0, 0)) +
                   xlab("Position in read (bp)") +
-                  ylab(paste0("Quality Scores (", enc, " encoding)")) +
+                  ylab(ylab) +
                   facet_wrap(~Filename, ncol = 1) +
                   guides(fill = FALSE) +
                   theme_bw() +
                   theme(panel.grid.minor = element_blank(),
-                        axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+                        axis.text.x = element_text(angle = 90, 
+                                                   hjust = 1, 
+                                                   vjust = 0.5))
               if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
               
               if(usePlotly){
@@ -160,14 +171,34 @@ setMethod("plotBaseQualities", signature = "FastqcData",
                       xlab("") +
                       theme(legend.position = "none")
                   qualPlot <- suppressMessages(
-                      plotly::ggplotly(qualPlot, hoverinfo = c("Base", "Mean", "Median",
-                                                               "Upper_Quartile", "Lower_Quartile",
-                                                               "`10th_Percentile`","`90th_Percentile`"))
-                  ) 
+                      suppressWarnings(
+                          plotly::ggplotly(qualPlot, 
+                                           hoverinfo = c("Base", 
+                                                         "Mean", 
+                                                         "Median",
+                                                         "Upper_Quartile", 
+                                                         "Lower_Quartile",
+                                                         "`10th_Percentile`",
+                                                         "`90th_Percentile`"))
+                  )) 
                   qualPlot <- suppressMessages(
-                      plotly::subplot(plotly::plotly_empty(), qualPlot, widths = c(0.15,0.85)) %>% 
-                          layout(yaxis2 = list(title = paste0("Quality Scores (", enc, " encoding)"))))
-                  
+                      suppressWarnings(
+                          plotly::subplot(plotly::plotly_empty(), 
+                                          qualPlot, widths = c(0.15,0.85))
+                          ))
+                  qualPlot <- plotly::layout(qualPlot, yaxis2 = list(title = ylab))
+                  # Set the hoverinfo for bg rectangles to none,
+                  # This will effectively hide them
+                  qualPlot$x$data[[2]]$hoverinfo <- "none"
+                  qualPlot$x$data[[3]]$hoverinfo <- "none"
+                  qualPlot$x$data[[4]]$hoverinfo <- "none"
+                  # Turn off the boxplot fill hover
+                  qualPlot$x$data[[5]]$hoverinfo <- "none"
+                  # Remove xmax & xmin from the hover info
+                  qualPlot$x$data[[6]]$text <- gsub(
+                      "xmax:.+(Median.+)xmin.+", "\\1",qualPlot$x$data[[6]]$text
+                  )
+
               }
               
               qualPlot
@@ -276,9 +307,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                       )
                       # Set the hoverinfo for bg rectangles to the vertices only,
                       # This will effectively hide them
-                      qualPlot$x$data[[1]]$hoveron <- "points"
-                      qualPlot$x$data[[2]]$hoveron <- "points"
-                      qualPlot$x$data[[3]]$hoveron <- "points"
+                      qualPlot$x$data[[1]]$hoverinfo <- "none"
+                      qualPlot$x$data[[2]]$hoverinfo <- "none"
+                      qualPlot$x$data[[3]]$hoverinfo <- "none"
                   }
               }
               
