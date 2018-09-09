@@ -85,33 +85,27 @@ setMethod("plotDuplicationLevels", signature = "FastqcFileList",
 #' @rdname plotDuplicationLevels-methods
 #' @export
 setMethod("plotDuplicationLevels", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels, pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 20, fail = 50, 
+                   lineCols = c("red", "blue"), ...){
               
               df <- Sequence_Duplication_Levels(x)
               
               if(!length(df)) {
-                  #stop("No Duplication Module")
                   dupPlot <- emptyPlot("No Duplication Levels Module Detected")
-                  
                   if(usePlotly) dupPlot <- ggplotly(dupPlot, tooltip = "")
                   return(dupPlot)
               }
               
-              df <- reshape2::melt(df, id.vars = c("Filename", "Duplication_Level"),
-                                   value.name = "Percentage", variable.name = "Type")
-              df$Duplication_Level <- factor(df$Duplication_Level, levels = unique(df$Duplication_Level))
-              df$Type <- gsub("Percentage_of_", "% ", df$Type)
+              df <- tidyr::gather(df, key = "Type", value = "Percentage", 
+                                  tidyselect::contains("Percentage"))
+              df$Duplication_Level <- factor(df$Duplication_Level, 
+                                             levels = unique(df$Duplication_Level))
+              df$Type <- stringr::str_replace(df$Type, "Percentage_of_", "% ")
               df$Type <- stringr::str_to_title(df$Type)
               df$Type <- paste(df$Type, "sequences")
               
               # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
-              }
-              else{
-                  if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df)
               df$Filename <- labels[df$Filename]
               df$x <- as.integer(df$Duplication_Level)
               df$Percentage <- round(df$Percentage, 2)
@@ -128,29 +122,40 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
               stopifnot(isValidPwf(pwfCols))
               pwfCols <- setAlpha(pwfCols, 0.2)
               
-              rects <- tibble::tibble(xmin = min(df$x) - 1,
-                                      xmax = max(df$x) + 1,
+              # Set the background rectangles
+              rects <- tibble::tibble(xmin = 0.5,
+                                      xmax =max(df$x) + 0.5,
                                       ymin = c(0, 100 - fail, 100 - warn),
                                       ymax = c(100 - fail, 100 - warn, 100),
                                       Status = c("FAIL", "WARN", "PASS"))
               
+              #Axis labels
+              xlab <- "Sequence Duplication Level"
+              ylab <- "Percentage (%)"
+              
               dupPlot <- ggplot(data = df) +
-                  geom_rect(data = rects, aes_string(xmin = "xmin", xmax = "xmax",
-                                                     ymin = "ymin", ymax = "ymax",
-                                                     fill = "Status")) +
-                  geom_line(aes_string(x = "x", y = "Percentage", colour = "Type", group = "Type")) +
+                  geom_rect(data = rects, 
+                            aes_string(xmin = "xmin", xmax = "xmax",
+                                       ymin = "ymin", ymax = "ymax",
+                                       fill = "Status")) +
+                  geom_line(aes_string(x = "x", y = "Percentage",
+                                       colour = "Type", group = "Type")) +
                   scale_fill_manual(values = getColours(pwfCols)) +
                   scale_colour_manual(values = lineCols) +
-                  scale_x_continuous(breaks = unique(df$x), labels = levels(df$Duplication_Level), expand = c(0, 0)) +
+                  scale_x_continuous(breaks = unique(df$x), 
+                                     labels = levels(df$Duplication_Level), 
+                                     expand = c(0, 0)) +
                   scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
                   facet_wrap(~Filename) +
-                  labs(x = "Sequence Duplication Level",
+                  labs(x = xlab, 
+                       y = ylab,
                        colour = c()) +
                   guides(fill = FALSE) +
                   theme_bw() +
                   theme(legend.position = c(1, 1),
                         legend.justification = c(1, 1),
-                        legend.background = element_rect(colour = "black", size = 0.2),
+                        legend.background = element_rect(colour = "black", 
+                                                         size = 0.2),
                         plot.title = element_text(hjust = 0.5))
               if (!is.null(userTheme)) dupPlot <- dupPlot + userTheme
               
@@ -159,17 +164,25 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
                   dupPlot <- dupPlot +
                       theme(legend.position = "none")
                   dupPlot <- suppressMessages(
-                      plotly::ggplotly(dupPlot, tooltip = c("colour", "Percentage"))
+                      plotly::ggplotly(dupPlot, 
+                                       tooltip = c("colour", "Percentage"))
                   )
                   
                   dupPlot <- suppressMessages(
-                      plotly::subplot(plotly::plotly_empty(), dupPlot, widths = c(0.14,0.86)) %>%
-                          layout(xaxis2 = list(title = "Sequence Duplicaiton Levels"), yaxis2 = list(title = "Percentage (%)")))
+                      suppressWarnings(
+                          plotly::subplot(plotly::plotly_empty(),
+                                          dupPlot, 
+                                          widths = c(0.14,0.86))
+                      )
+                  )
+                  dupPlot <- plotly::layout(dupPlot,
+                                            xaxis2 = list(title = xlab), 
+                                            yaxis2 = list(title = ylab))
                   
-                  
-                  dupPlot$x$data[[1]]$hoverinfo <- "none"
+                  # Make sure there are no hovers over the background rectangles
                   dupPlot$x$data[[2]]$hoverinfo <- "none"
                   dupPlot$x$data[[3]]$hoverinfo <- "none"
+                  dupPlot$x$data[[4]]$hoverinfo <- "none"
               }
               
               dupPlot
