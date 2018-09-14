@@ -399,6 +399,8 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                                       margin = 0.001,
                                       shareY = TRUE)
                     ))
+                  # Turn off the tooltip for the dendrogram
+                  acPlot$x$data[[1]]$hoverinfo <- "none"
                 }
                 else{
                   # Return the plot

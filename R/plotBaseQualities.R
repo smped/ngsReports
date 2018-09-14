@@ -457,6 +457,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                               qualPlot,
                               xaxis3 = list(title = "Sequencing Cycle")
                               )
+                          # Turn off the tooltip for the dendrogram
+                          qualPlot$x$data[[1]]$hoverinfo <- "none"
                       }
                       else{
                           qualPlot <- suppressMessages(

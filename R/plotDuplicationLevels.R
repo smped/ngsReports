@@ -200,27 +200,21 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               df <- Sequence_Duplication_Levels(x)
               
               if(!length(df)) {
-                  #stop("No Duplication Module")
                   dupPlot <- emptyPlot("No Duplication Levels Module Detected")
-                  
                   if(usePlotly) dupPlot <- ggplotly(dupPlot, tooltip = "")
                   return(dupPlot)
               }
               
+              # Select the 'pre/post' option & clean up the data
               deduplication <- match.arg(deduplication)
               type <- c(pre = "Percentage_of_total", post = "Percentage_of_deduplicated")[deduplication]
-              df <- df[c("Filename", "Duplication_Level",type)]
+              df <- df[c("Filename", "Duplication_Level", type)]
               df[[type]] <- round(df[[type]], 2)
+              # These will come in in order, but may not stay this way in the following code
               dupLevels <- unique(df$Duplication_Level)
               
               # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
-              }
-              else{
-                  if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df)
               
               # Get any theme arguments for dotArgs that have been set manually
               dotArgs <- list(...)
@@ -229,7 +223,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
-              df <- reshape2::dcast(df, Filename ~ Duplication_Level, value.var = "Percentage_of_total")
+              df <- tidyr::spread(df, key = "Duplication_Level",value = type)
               
               #cluster
               if(cluster){
@@ -241,7 +235,9 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               }
               
               key <- df$Filename
-              df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Duplication_Level", value.name = "Percentage_of_total")
+              df <- tidyr::gather(df, 
+                                  key = "Duplication_Level", 
+                                  value = "Percentage_of_total", -"Filename")
               df$Filename <- labels[df$Filename]
               df$Filename <- factor(df$Filename, levels = unique(df$Filename))
               df$Duplication_Level <- factor(df$Duplication_Level, levels = dupLevels)
@@ -252,48 +248,55 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               df <- lapply(df, function(x){
                   x$xmax <- cumsum(x[["Percentage_of_total"]])
                   x$xmax <- round(x[["xmax"]], 1) # Deal with rounding errors
-                  x$xmin <- c(0, x[["xmax"]][-16])
+                  x$xmin <- c(0, x[["xmax"]][-nrow(x)])
                   x
               })
               df <-  dplyr::bind_rows(df)
               df$ymax <- as.integer(df[["Filename"]]) + 0.5
               df$ymin <- df[["ymax"]] - 1
               
+              # Setup some more plotting parameters
+              cols <- colorRampPalette(heatCol)(length(dupLevels))
+              xlab <- "Percentage of Total"
               dupPlot <- ggplot(df, aes_string(fill = "Duplication_Level",
                                                total = "Percentage_of_total",
                                                label = "Filename")) +
                   geom_rect(aes_string(xmin = "xmin", xmax = "xmax",
                                        ymin = "ymin", ymax = "ymax",
                                        colour = "Duplication_Level")) +
-                  scale_fill_manual(values = colorRampPalette(heatCol)(length(dupLevels))) +
-                  scale_colour_manual(values = colorRampPalette(heatCol)(length(dupLevels))) +
+                  scale_fill_manual(values = cols) +
+                  scale_colour_manual(values = cols) +
                   scale_y_continuous(breaks = seq_along(levels(df$Filename)),
                                      labels = levels(df$Filename),
                                      expand = c(0, 0)) +
                   scale_x_continuous(expand = c(0, 0)) +
-                  labs(x = "Percentange of Total",
+                  labs(x = xlab,
                        fill = "Duplication\nLevel") +
                   guides(colour = FALSE) +
                   theme_bw()
               
               if (usePlotly){
                   
+                  # Remove elements for plotly
                   dupPlot <- dupPlot +
                       theme(axis.text.y = element_blank(),
                             axis.ticks.y = element_blank(),
                             legend.position = "none")
                   
-                  t <- getSummary(x)
-                  t <- t[t$Category == "Sequence Duplication Levels",]
-                  t$Filename <- factor(labels[t$Filename], levels = levels(df$Filename))
-                  t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+                  flags <- getSummary(x)
+                  flags <- dplyr::filter(flags, 
+                                         Category == "Sequence Duplication Levels")
+                  flags$Filename <- factor(labels[flags$Filename], 
+                                           levels = levels(df$Filename))
+                  flags <- dplyr::arrange(flags, Filename)
                   
                   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
                   
-                  sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+                  sideBar <- makeSidebar(status = flags, key = key, pwfCols = pwfCols)
                   
                   # Set the main plot here to test if we can specify the tooltip correctly
-                  dupPlot <- plotly::ggplotly(dupPlot, tooltip = c("fill", "total", "label"))
+                  dupPlot <- plotly::ggplotly(dupPlot, 
+                                              tooltip = c("fill", "total", "label"))
                   
                   #plot dendrogram
                   if(dendrogram && cluster){
@@ -306,25 +309,30 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                       
                       dupPlot <- suppressWarnings(
                           suppressMessages(
-                              plotly::subplot(dendro, sideBar, dupPlot, widths = c(0.1,0.08,0.82),
-                                              margin = 0.001, shareY = TRUE) %>%
-                                  plotly::layout(xaxis3 = list(title = "Percentage of Total"))
-                          ))
+                              plotly::subplot(dendro, sideBar, dupPlot, 
+                                              widths = c(0.1,0.08,0.82),
+                                              margin = 0.001, 
+                                              shareY = TRUE)))
+                      dupPlot <- plotly::layout(dupPlot, xaxis3 = list(title = xlab))
+                      # Turn off the tooltip for the dendrogram
+                      dupPlot$x$data[[1]]$hoverinfo <- "none"
                   }
                   else{
                       dupPlot <- suppressWarnings(
                           suppressMessages(
-                              plotly::subplot(plotly::plotly_empty(), sideBar, dupPlot,
-                                              widths = c(0.1,0.08,0.82), margin = 0.001, shareY = TRUE) %>%
-                                  plotly::layout(xaxis3 = list(title = "Sequence Duplication Levels"),
-                                                 annotations = list(text = "Filename", showarrow = FALSE,
-                                                                    textangle = -90))
-                          )
-                      )
+                              plotly::subplot(plotly::plotly_empty(), 
+                                              sideBar, dupPlot,
+                                              widths = c(0.1,0.08,0.82), 
+                                              margin = 0.001, 
+                                              shareY = TRUE)
+                              ))
+                      # annot <- list(text = "",
+                      #               showarrow = FALSE)
+                      dupPlot <- plotly::layout(dupPlot, 
+                                                xaxis3 = list(title = xlab))
+                                                # annotations = annot)
                   }
-                  
               }
-              
               
               dupPlot
               
