@@ -4,7 +4,7 @@
 \alias{setLabels}
 \title{Perform the checks and return the labels}
 \usage{
-setLabels(df, labels, pattern = ".(fastq|fq|bam).*")
+setLabels(df, labels, pattern = ".(fastq|fq|bam|sam|cram).*")
 }
 \arguments{
 \item{df}{A data.frame with a column titled "Filename"}
@@ -22,7 +22,7 @@ Checks for the presence of labels and returns defaults
 \details{
 Takes a named vector of labels and checks for the correct fields.
 If no vector is supplied, returns the file names missing the specified pattern,
-which defaults to removing fastq(.gz), fq(.gz) or bam.
+which defaults to removing fastq(.gz), fq(.gz), bam, sam or cram.
 }
 \examples{
 df <- data.frame(Filename = paste0("File1", "File2"), "fastq")
