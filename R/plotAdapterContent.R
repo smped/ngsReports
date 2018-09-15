@@ -248,7 +248,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               # Get the adapter type and summarise all if total is requested
               adapterType <- grep(adapterType[1], c("Total_Adapter_Content", valueCols),
                                   value = TRUE)
-              if (length(adapterType) == 0) stop("Could not determine adapter type")
+              if (length(adapterType) != 1) stop("Could not determine adapter type")
               if (adapterType == "Total_Adapter_Content") {
                   # Sum the adapters by filename& position
                   df <- dplyr::group_by(df, Filename, Position)
@@ -410,13 +410,16 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   
                   # Define position as an integer just taking the first 
                   # value in the Position field
-                  df$Position <- gsub("([0-9]*)-.+", "\\1", df$Position)
+                  df$Start <- gsub("([0-9]*)-.+", "\\1", 
+                                   as.character(df$Position))
+                  df$Start <- as.integer(df$Start)
                   df$Position <- as.numeric(df$Position)
+                  df$Type <- adapterType
                   
                   # Set the transparency & position of bg rectangles
                   pwfCols <- setAlpha(pwfCols, 0.2)
                   rects <- tibble::tibble(xmin = 0,
-                                          xmax = max(df$Position),
+                                          xmax = max(df$Start),
                                           ymin = c(0, warn, fail),
                                           ymax = c(warn, fail, 100),
                                           Status = c("PASS", "WARN", "FAIL"))
@@ -427,7 +430,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                                 aes_string(xmin = "xmin", xmax = "xmax",
                                            ymin = "ymin", ymax = "ymax",
                                            fill = "Status")) +
-                      geom_line(aes_string(x = "Position", y = "Percent",
+                      geom_line(aes_string(x = "Start", y = "Percent",
                                            colour = "Filename")) +
                       scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
                       scale_x_continuous(expand = c(0, 0)) +

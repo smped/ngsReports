@@ -215,8 +215,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
           function(x,  usePlotly = FALSE,  
                    plotType = c("heatmap", "boxplot"), 
                    plotValue = c("Mean", "Median"),
-                   cluster = FALSE, labels, dendrogram = FALSE,
-                   nc = 2, boxWidth = 0.8,
+                   cluster = FALSE, dendrogram = FALSE,
+                   labels, nc = 2, boxWidth = 0.8,
                    pwfCols, warn = 25, fail = 20, ...){
               
               # Get the data
@@ -310,7 +310,6 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   # Make interactive if required
                   if(usePlotly){
                       qualPlot <- qualPlot +
-                          xlab("") +
                           theme(legend.position = "none")
                       qualPlot <- suppressMessages(
                           plotly::ggplotly(qualPlot, 
@@ -342,23 +341,16 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   
                   # Get any arguments for dotArgs that have been set manually
                   dotArgs <- list(...)
-                  sz <- ifelse("size" %in% names(dotArgs), dotArgs$size, 0.2)
-                  if ("colour" %in% names(dotArgs) || "color" %in% names(dotArgs)){
-                      i <- which(names(dotArgs) %in% c("colour", "color"))
-                      lineCol <- dotArgs[[i]]
-                  }
-                  else{
-                      lineCol <- "grey20"
-                  }
                   allowed <- names(formals(ggplot2::theme))
                   keepArgs <- which(names(dotArgs) %in% allowed)
                   userTheme <- c()
                   if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
                   
                   # Sort out the start positions
-                  df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
+                  df$Start <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
+                  df$Start <- as.integer(df$Start)
                   
-                  # Select the Mean or Median
+                  # Select the plotValue
                   df <- df[c("Filename", "Start", plotValue, "Base")]
                   
                   #split data into correct lengths and fill NA's
@@ -371,29 +363,22 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                       zoo::na.locf(x)
                       }) 
                   df <- dplyr::bind_rows(df)
-                  df$Start <- as.integer(df$Start)
                   df <- df[c("Filename", "Start", plotValue)]
-                  df <- tidyr::spread(df, key = "Start", value = plotValue)
                   
-                  #cluster names true hclust names
-                  if(cluster){
-                      xx <- dplyr::select(df, -Filename)
-                      xx[is.na(xx)] <- 0
-                      clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
-                      row.ord <- order.dendrogram(clus)
-                      df <- df[row.ord,]
+                  # Arrange by row if clustering
+                  # Just use the default order as the key if not clustering
+                  # Always turn clustering on if dendrogram = TRUE
+                  if (dendrogram && !cluster){
+                      message("cluster will be set to TRUE when dendrogram = TRUE")
+                      cluster <- TRUE
                   }
+                  key <- names(labels)
+                  if(cluster){
+                      clusterDend <- setClusters(df, "Filename", "Start", plotValue)
+                      key <- labels(clusterDend)
+                  }
+                  df$Filename <- factor(labels[df$Filename], levels = labels[key])
                   
-                  #melt data back to long format and change filenames to fit labels
-                  key <- df$Filename
-                  df <- tidyr::gather(df, key = "Start", value = "Quality", 
-                                      -tidyselect::one_of("Filename"))
-                  df$Filename <- labels[df$Filename]
-                  
-                  # Reorganise the data frame
-                  df[[plotValue]] <- as.numeric(df$Quality)
-                  df$Start <- as.integer(as.character(df$Start))
-                  df$Filename <- factor(df$Filename, levels = unique(df$Filename))
                   maxVal <- max(df[[plotValue]], na.rm = TRUE)
                   phredMax <- ifelse(maxVal <= warn, 
                                      max(maxQ, 41), 
@@ -402,7 +387,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   # Start the heatmap
                   qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename", 
                                                     fill = plotValue)) +
-                      geom_tile() +
+                      geom_tile() + 
+                      labs(x = xlab) +
                       scale_fill_pwf(vals = na.omit(df[[plotValue]]), 
                                      pwfCols = pwfCols, 
                                      breaks = c(0, fail, warn, phredMax), 
@@ -420,24 +406,24 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                       if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
                       
                       # Get the flag status
-                      flags <- getSummary(x)
-                      flags <- subset(flags, 
+                      status <- getSummary(x)
+                      status <- subset(status, 
                                       Category == "Per base sequence quality")
-                      flags$Filename <- labels[flags$Filename]
-                      flags$Filename <- factor(flags$Filename, 
+                      status$Filename <- labels[status$Filename]
+                      status$Filename <- factor(status$Filename, 
                                            levels = levels(df$Filename))
-                      flags <- dplyr::right_join(flags, 
+                      status <- dplyr::right_join(status, 
                                                  unique(df["Filename"]),
                                                  by = "Filename")
                       
-                      sideBar <- makeSidebar(status = flags, 
+                      sideBar <- makeSidebar(status = status, 
                                              key = key, 
                                              pwfCols = pwfCols)
                       
                       #plot dendrogram
-                      if(dendrogram && cluster){
+                      if(dendrogram){
                           
-                          dx <- ggdendro::dendro_data(clus)
+                          dx <- ggdendro::dendro_data(clusterDend)
                           dendro <- ggdend(dx$segments) +
                               coord_flip() +
                               scale_y_reverse(expand = c(0, 0)) +
@@ -446,36 +432,23 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                           dendro <- suppressMessages(
                               plotly::ggplotly(dendro)
                           )
-                          
-                          qualPlot <- suppressMessages(
-                              suppressWarnings(
-                                  plotly::subplot(dendro, sideBar, qualPlot, 
-                                                  widths = c(0.1, 0.08, 0.82), 
-                                                  margin = 0.001, 
-                                                  shareY = TRUE)))
-                          qualPlot <- plotly::layout(
-                              qualPlot,
-                              xaxis3 = list(title = "Sequencing Cycle")
-                              )
-                          # Turn off the tooltip for the dendrogram
-                          qualPlot$x$data[[1]]$hoverinfo <- "none"
                       }
                       else{
-                          qualPlot <- suppressMessages(
-                              suppressWarnings(
-                                  plotly::subplot(plotly::plotly_empty(),
-                                                  sideBar, 
-                                                  qualPlot,
-                                                  widths = c(0.1,0.08,0.82), 
-                                                  margin = 0.001, 
-                                                  shareY = TRUE)))
-                          qualPlot <- plotly::layout(
-                              qualPlot,
-                              xaxis3 = list(title = "Sequencing Cycle"),
-                              annotations = list(text = "Filename", 
-                                                 showarrow = FALSE,
-                                                 textangle = -90))
+                          dendro <- plotly::plotly_empty()
                       }
+                          
+                      qualPlot <- suppressMessages(
+                          suppressWarnings(
+                              plotly::subplot(dendro, sideBar, qualPlot, 
+                                              widths = c(0.1, 0.08, 0.82), 
+                                              margin = 0.001, 
+                                              shareY = TRUE)))
+                      qualPlot <- plotly::layout(
+                          qualPlot,
+                          xaxis3 = list(title = xlab)
+                      )
+                      # Turn off the tooltip for the dendrogram
+                      qualPlot$x$data[[1]]$hoverinfo <- "none"
                   }
                   else{
                       # Add the custom themes

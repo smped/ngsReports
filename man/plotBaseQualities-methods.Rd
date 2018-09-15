@@ -28,7 +28,7 @@ plotBaseQualities(x, usePlotly = FALSE, ...)
 
 \S4method{plotBaseQualities}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = c("heatmap", "boxplot"), plotValue = c("Mean", "Median"),
-  cluster = FALSE, labels, dendrogram = FALSE, nc = 2,
+  cluster = FALSE, dendrogram = FALSE, labels, nc = 2,
   boxWidth = 0.8, pwfCols, warn = 25, fail = 20, ...)
 }
 \arguments{
@@ -54,13 +54,13 @@ values in plot}
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
-
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
+
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{nc}{\code{numeric}. The number of columns to create in the plot layout.
 Only used if drawing boxplots for multiple files in a FastqcDataList}
