@@ -223,26 +223,20 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
-              df <- tidyr::spread(df, key = "Duplication_Level",value = type)
-              
-              #cluster
-              if(cluster){
-                  xx <- df[!colnames(df) == "Filename"]
-                  xx[is.na(xx)] <- 0
-                  clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
-                  row.ord <- order.dendrogram(clus)
-                  df <- df[row.ord,]
+              if (dendrogram && !cluster){
+                  message("cluster will be set to TRUE when dendrogram = TRUE")
+                  cluster <- TRUE
               }
-              
-              key <- df$Filename
-              df <- tidyr::gather(df, 
-                                  key = "Duplication_Level", 
-                                  value = "Percentage_of_total", -"Filename")
-              df$Filename <- labels[df$Filename]
-              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+              key <- names(labels)
+              if(cluster){
+                  clusterDend <- setClusters(df, "Filename", "Duplication_Level", type)
+                  key <- labels(clusterDend)
+              }
+              # Now set everything as factors
+              df$Filename <- factor(labels[df$Filename], levels = labels[key])
               df$Duplication_Level <- factor(df$Duplication_Level, levels = dupLevels)
               
-              # This is the new plotting function, which I think looks better
+              # Setup to plot in tiles for easier plotly compatability
               df <-  dplyr::arrange_(df, "Filename", "Duplication_Level")
               df <- split(df, f = df[["Filename"]])
               df <- lapply(df, function(x){
@@ -299,42 +293,28 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                                               tooltip = c("fill", "total", "label"))
                   
                   #plot dendrogram
-                  if(dendrogram && cluster){
-                      
-                      dx <- ggdendro::dendro_data(clus)
+                  if (dendrogram) {
+                      dx <- ggdendro::dendro_data(clusterDend)
                       dendro <- ggdend(dx$segments) +
                           coord_flip() +
                           scale_y_reverse(expand = c(0, 0)) +
                           scale_x_continuous(expand = c(0, 0.5))
-                      
-                      dupPlot <- suppressWarnings(
-                          suppressMessages(
-                              plotly::subplot(dendro, sideBar, dupPlot, 
-                                              widths = c(0.1,0.08,0.82),
-                                              margin = 0.001, 
-                                              shareY = TRUE)))
-                      dupPlot <- plotly::layout(dupPlot, xaxis3 = list(title = xlab))
-                      # Turn off the tooltip for the dendrogram
-                      dupPlot$x$data[[1]]$hoverinfo <- "none"
                   }
-                  else{
-                      dupPlot <- suppressWarnings(
-                          suppressMessages(
-                              plotly::subplot(plotly::plotly_empty(), 
-                                              sideBar, dupPlot,
-                                              widths = c(0.1,0.08,0.82), 
-                                              margin = 0.001, 
-                                              shareY = TRUE)
-                              ))
-                      # annot <- list(text = "",
-                      #               showarrow = FALSE)
-                      dupPlot <- plotly::layout(dupPlot, 
-                                                xaxis3 = list(title = xlab))
-                                                # annotations = annot)
+                  else {
+                      dendro <- plotly::plotly_empty()
                   }
+                  
+                  dupPlot <- suppressWarnings(
+                      suppressMessages(
+                          plotly::subplot(dendro, sideBar, dupPlot, 
+                                          widths = c(0.1,0.08,0.82),
+                                          margin = 0.001, 
+                                          shareY = TRUE)))
+                  dupPlot <- plotly::layout(dupPlot, xaxis3 = list(title = xlab))
+                  
+                  # Turn off the tooltip for the dendrogram
+                  dupPlot$x$data[[1]]$hoverinfo <- "none"
               }
-              
               dupPlot
-              
           }
 )
