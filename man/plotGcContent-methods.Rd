@@ -43,7 +43,7 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
   theoreticalGC = TRUE, theoreticalType = "Genome",
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06, bp = 100,
   plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
-  dendrogram = TRUE, ...)
+  dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},

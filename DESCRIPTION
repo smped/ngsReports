@@ -73,6 +73,7 @@ Collate:
     'exportOverrepresented.R'
     'extract.R'
     'fileName.R'
+    'gcFromFasta.R'
     'getColours.R'
     'getFastqcData.R'
     'getSummary.R'
