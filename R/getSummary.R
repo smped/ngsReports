@@ -45,9 +45,9 @@ setMethod("getSummary", "FastqcFile",
                   uz <- unz(path,fl)
                   summaryData <- readLines(uz)
                   close(uz)
-                  if (length(summaryData) < 12) stop(
-                      "summary.txt contains incomplete data. 12 modules should be present."
-                  )
+                  # if (length(summaryData) < 12) stop(
+                  #     "summary.txt contains incomplete data. 12 modules should be present."
+                  # )
                   # Form the output
                   summaryData <- stringr::str_split_fixed(summaryData, pattern = "\t", n = 3)
                   summaryData <- tibble::as_tibble(summaryData)
@@ -59,9 +59,9 @@ setMethod("getSummary", "FastqcFile",
                   fl <- file.path(path, "summary.txt")
                   if (!file.exists(fl)) stop("'summary.txt' could not be found.")
                   summaryData <- readr::read_delim(fl, delim = "\t", col_names = FALSE)
-                  if (nrow(summaryData) < 12) stop(
-                      "summary.txt contains incomplete data. 12 modules should be present."
-                  )
+                  # if (nrow(summaryData) < 12) stop(
+                  #     "summary.txt contains incomplete data. 12 modules should be present."
+                  # )
               }
               colnames(summaryData) <- c("Status", "Category", "Filename")
               summaryData
