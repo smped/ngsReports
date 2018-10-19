@@ -30,6 +30,12 @@
 #' @aliases getSummary
 setMethod("getSummary", "FastqcFile",
           function(object){
+            modules <- c("Basic Statistics", "Per base sequence quality",
+                            "Per tile sequence quality", "Per sequence quality scores",
+                            "Per base sequence content", "Per sequence GC content",
+                            "Per base N content", "Sequence Length Distribution",
+                            "Sequence Duplication Levels", "Overrepresented sequences",
+                            "Adapter Content", "Kmer Content")
               path <- path(object)
               if (isCompressed(path, type = "zip")){
                   #Get the internal path within the zip archive
@@ -59,11 +65,11 @@ setMethod("getSummary", "FastqcFile",
                   fl <- file.path(path, "summary.txt")
                   if (!file.exists(fl)) stop("'summary.txt' could not be found.")
                   summaryData <- readr::read_delim(fl, delim = "\t", col_names = FALSE)
-                  # if (nrow(summaryData) < 12) stop(
-                  #     "summary.txt contains incomplete data. 12 modules should be present."
-                  # )
               }
               colnames(summaryData) <- c("Status", "Category", "Filename")
+              if (!any(modules %in% summaryData$Category)) stop(
+                "summary.txt contains incomplete data. No expected modules were found."
+              )
               summaryData
           })
 
