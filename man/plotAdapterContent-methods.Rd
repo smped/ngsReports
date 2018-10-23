@@ -23,8 +23,8 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
 
 \S4method{plotAdapterContent}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, pwfCols,
-  warn = 5, fail = 10, ...)
+\S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, labels,
+  pwfCols, warn = 5, fail = 10, ...)
 
 \S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = c("heatmap", "line"), labels, adapterType = "Total",
@@ -39,16 +39,16 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
+
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
 
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
 or \code{plotType = "line"}}
-
-\item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
 
 \item{adapterType}{A regular expression matching the adapter(s) to be plotted.
 To plot all adapters summed, specify \code{adapterType = "Total"}.

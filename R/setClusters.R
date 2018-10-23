@@ -15,7 +15,9 @@
 #' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)[1:4]
 #' cols <- c("Filename", "Position", "Illumina_Universal_Adapter")
 #' ac <- Adapter_Content(fileList)[cols]
-#' setClusters(ac, "Filename", "Position", "Illumina_Universal_Adapter")
+#' ngsReports:::setClusters(ac, "Filename", "Position", "Illumina_Universal_Adapter")
+#' 
+#' @importFrom stats as.formula
 #' 
 #' @keywords internal
 setClusters <- function(df, rowVal, colVal, value){

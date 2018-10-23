@@ -122,7 +122,7 @@ setMethod("plotGcContent", signature = "FastqcData",
                    species = "Hsapiens", GCobject, Fastafile, n = 1e+6, bp = 100, counts = FALSE, lineCols = c("red", "blue"),
                    ...){
               
-              df <- tryCatch(Per_sequence_GC_content(x))
+              df <- Per_sequence_GC_content(x)
               
               if(!length(df)) {
                   #stop("No GC content Module")
@@ -137,16 +137,9 @@ setMethod("plotGcContent", signature = "FastqcData",
               # Get the correct y-axis label
               ylab <- c("Frequency", "Count")[counts + 1]
               
-              # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
-                                      names = fileName(x))
-              }
-              else{
-                  if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
-              labels <- labels[df$Filename]
+              # Set the labels
+              labels <- setLabels(df, labels, ...)
+              df$Filename <- labels[df$Filename]
               
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
@@ -263,7 +256,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
               }
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df)
+              labels <- setLabels(df, labels, ...)
               
               # Always use frequencies not counts
               df <- lapply(split(df, f = df$Filename), function(x){
@@ -309,12 +302,12 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                       species <- match.arg(species, avail$Name)
                       gcTheoryDF <- getGC(GCobject, 
                                           name = species, type = theoreticalType)
-                      names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Percent"
+                      names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
                       subTitle <- paste("Theoretical Distribution based on the", 
                                         species, theoreticalType)
                   }
                   gcTheoryDF$Filename <- "Theoretical Distribution"
-                  gcTheoryDF$Percent <- round(100*gcTheoryDF$Percent,4)
+                  gcTheoryDF$Percent <- round(100*gcTheoryDF$Freq,4)
               }
               
               # Check for valid plotType arguments

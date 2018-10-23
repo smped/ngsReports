@@ -23,8 +23,8 @@ plotBaseQualities(x, usePlotly = FALSE, ...)
 
 \S4method{plotBaseQualities}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotBaseQualities}{FastqcData}(x, usePlotly = FALSE, pwfCols,
-  warn = 25, fail = 20, boxWidth = 0.8, ...)
+\S4method{plotBaseQualities}{FastqcData}(x, usePlotly = FALSE, labels,
+  pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
 
 \S4method{plotBaseQualities}{FastqcDataList}(x, usePlotly = FALSE,
   plotType = c("heatmap", "boxplot"), plotValue = c("Mean", "Median"),
@@ -39,6 +39,10 @@ plotBaseQualities(x, usePlotly = FALSE, ...)
 If \code{TRUE} plot will be rendered with plotly}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
+
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
 values in plot}
@@ -57,10 +61,6 @@ fastqc data will be clustered using hierarchical clustering}
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
-
-\item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
 
 \item{nc}{\code{numeric}. The number of columns to create in the plot layout.
 Only used if drawing boxplots for multiple files in a FastqcDataList}

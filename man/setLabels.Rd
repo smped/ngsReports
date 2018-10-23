@@ -4,7 +4,8 @@
 \alias{setLabels}
 \title{Perform the checks and return the labels}
 \usage{
-setLabels(df, labels, pattern = ".(fastq|fq|bam|sam|cram).*")
+setLabels(df, labels, pattern = ".(fastq|fq|bam|sam|cram).*",
+  col = "Filename", ...)
 }
 \arguments{
 \item{df}{A data.frame with a column titled "Filename"}
@@ -12,6 +13,10 @@ setLabels(df, labels, pattern = ".(fastq|fq|bam|sam|cram).*")
 \item{labels}{Named vector of labels for plotting}
 
 \item{pattern}{character Regular expression to remove from filenames}
+
+\item{col}{character Column to use for generating labels}
+
+\item{...}{Not used}
 }
 \value{
 Named character vector
@@ -25,7 +30,7 @@ If no vector is supplied, returns the file names missing the specified pattern,
 which defaults to removing fastq(.gz), fq(.gz), bam, sam or cram.
 }
 \examples{
-df <- data.frame(Filename = paste0("File1", "File2"), "fastq")
+df <- data.frame(Filename = paste0(c("File1", "File2"), ".fastq"), stringsAsFactors = FALSE)
 ngsReports:::setLabels(df)
 
 }

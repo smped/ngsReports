@@ -87,7 +87,8 @@ setMethod("plotBaseQualities", signature = "FastqcFileList",
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcData",
-          function(x, usePlotly = FALSE, pwfCols, warn = 25, fail = 20,
+          function(x, usePlotly = FALSE, labels, 
+                   pwfCols, warn = 25, fail = 20,
                    boxWidth = 0.8, ...){
               
               # Get the data
@@ -99,6 +100,9 @@ setMethod("plotBaseQualities", signature = "FastqcData",
                   if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
                   return(qualPlot)
               }
+              
+              labels <- setLabels(df, labels, ...)
+              df$Filename <- labels[df$Filename]
               
               stopifnot(is.numeric(boxWidth))
               df$Base <- factor(df$Base, levels = unique(df$Base))
@@ -234,7 +238,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               stopifnot(isValidPwf(pwfCols))
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df) 
+              labels <- setLabels(df, labels, ...) 
               
               # Get the Illumina encoding
               enc <- Basic_Statistics(x)$Encoding[1]

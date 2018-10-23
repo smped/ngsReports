@@ -99,7 +99,7 @@ setMethod("plotAdapterContent", signature = "FastqcFileList",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcData",
-          function(x, usePlotly = FALSE, pwfCols, warn = 5, fail = 10, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
               
               df <- Adapter_Content(x)
               
@@ -119,6 +119,10 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                   
                   return(acPlot)
               }
+              
+              # Set any labels
+              labels <- setLabels(df, labels, ...)
+              df$Filename <- labels[df$Filename]
               
               # Sort out the colours & pass/warn/fail breaks
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -237,7 +241,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               
               # Check for valid plotType & labels
               plotType <- match.arg(plotType[1], c("line", "heatmap"))
-              labels <- setLabels(df)
+              labels <- setLabels(df, labels, ...)
               
               # Change to long form 
               df <- tidyr::gather(df, key = "Type", value = "Percent",

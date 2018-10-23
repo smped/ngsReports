@@ -105,7 +105,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
               df$Type <- paste(df$Type, "sequences")
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df)
+              labels <- setLabels(df, labels)
               df$Filename <- labels[df$Filename]
               df$x <- as.integer(df$Duplication_Level)
               df$Percentage <- round(df$Percentage, 2)
@@ -214,7 +214,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               dupLevels <- unique(df$Duplication_Level)
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df)
+              labels <- setLabels(df, labels)
               
               # Get any theme arguments for dotArgs that have been set manually
               dotArgs <- list(...)
