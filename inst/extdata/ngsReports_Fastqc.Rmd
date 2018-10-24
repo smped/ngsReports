@@ -149,6 +149,10 @@ plotGcContent(fastqcData, labels = plotLabels, theoreticalGC = globals$theoretic
 plotSequenceLengthDistribution(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
+```{r plotCumulativeLengthDistribution}
+plotSequenceLengthDistribution(fastqcData, plotType = "cumulative", labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```
+
 ## Sequence Duplication Levels
 
 ```{r plotDuplicationLevels}

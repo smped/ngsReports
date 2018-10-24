@@ -8,6 +8,8 @@ globalVariables(
         "Total",
         "Category",
         "Count",
+        "Cumulative",
+        "Lower",
         "Percentage",
         "Base",
         "Start",
