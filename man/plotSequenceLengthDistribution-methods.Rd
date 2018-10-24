@@ -27,12 +27,14 @@ plotSequenceLengthDistribution(x, usePlotly = FALSE, ...)
   usePlotly = FALSE, ...)
 
 \S4method{plotSequenceLengthDistribution}{FastqcData}(x,
-  usePlotly = FALSE, labels, ..., expand.x = c(0, 0.2))
+  usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
+  expand.x = c(0, 0.2))
 
 \S4method{plotSequenceLengthDistribution}{FastqcDataList}(x,
-  usePlotly = FALSE, labels, counts = FALSE, plotType = "heatmap",
-  cluster = FALSE, dendrogram = FALSE, ..., expand.x = c(0, 0.2),
-  gridlineCol = "grey20", gridlineWidth = 0.2, heatCol = inferno(50))
+  usePlotly = FALSE, labels, counts = FALSE, plotType = c("heatmap",
+  "line", "cumulative"), cluster = FALSE, dendrogram = FALSE, ...,
+  expand.x = c(0, 0.2), gridlineCol = "grey20", gridlineWidth = 0.2,
+  heatCol = inferno(50))
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -46,12 +48,12 @@ plotSequenceLengthDistribution(x, usePlotly = FALSE, ...)
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
+\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
+\code{plotType = "line"} or \code{plotType = "cumulative"}}
+
 \item{expand.x}{Passed to \code{scale_x_discrete}}
 
 \item{counts}{\code{logical} Should distributions be shown as counts or frequencies (percentages)}
-
-\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
-or \code{plotType = "line"}}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -91,5 +93,8 @@ fdl <- getFastqcData(fileList)
 
 # Plot as a frequency plot using lines
 plotSequenceLengthDistribution(fdl)
+
+# Or plot the cumulative value
+plotSequenceLengthDistribution(fdl, plotType = "cumulative")
 
 }

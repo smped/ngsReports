@@ -15,7 +15,7 @@
 #' \code{FastqcDataList} or path
 #' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
 #' @param plotType \code{character}. Can only take the values \code{plotType = "heatmap"}
-#' or \code{plotType = "line"}
+#' \code{plotType = "line"} or \code{plotType = "cumulative"}
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
@@ -44,6 +44,9 @@
 #'
 #' # Plot as a frequency plot using lines
 #' plotSequenceLengthDistribution(fdl)
+#' 
+#' # Or plot the cumulative value
+#' plotSequenceLengthDistribution(fdl, plotType = "cumulative")
 #'
 #' @importFrom dplyr vars
 #' @importFrom plotly ggplotly
@@ -87,55 +90,43 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcFileList",
 #' @rdname plotSequenceLengthDistribution-methods
 #' @export
 setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels, ..., expand.x = c(0,0.2)){
+          function(x, usePlotly = FALSE, labels, plotType = c("line", "cumulative"),
+                   ..., expand.x = c(0,0.2)){
               
               df <- Sequence_Length_Distribution(x)
+              plotType <- match.arg(plotType)
               
               if (!length(df)) {
-                  #stop("No sequence length Module")
+
                   lenPlot <- emptyPlot("No Sequence Length Module Detected")
-                  
                   if(usePlotly) lenPlot <- ggplotly(lenPlot, tooltip = "")
                   return(lenPlot)
               }
               
-              
-              # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
-              }
-              else{
-                  if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df, labels, ...)
+              df$Filename <- labels[df$Filename]
               
               # Add zero counts for lengths either side of the included range
-              df <- dplyr::bind_rows(
-                  lapply(split(df, f = df$Filename),
-                         function(x){
-                             # Fix global environment error
-                             Lower <- NULL
-                             dplyr::bind_rows(x,
-                                              tibble::tibble(Filename = x$Filename[1],
-                                                             Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
-                                                             Upper = Lower,
-                                                             Length = as.character(Lower),
-                                                             Count = 0)
-                             )
-                         })
-              )
+              # This is only required if a single value exists
+              if (nrow(df) == 1){
+                  df <- dplyr::bind_rows(
+                      df,
+                      dplyr::mutate(df, Lower = Lower - 1, Count = 0),
+                      dplyr::mutate(df, Lower = Lower + 1, Count = 0)
+                  )
+              }
               
               df$Lower <- as.integer(df$Lower)
-              df <- reshape2::dcast(df, Filename ~ Lower, value.var = "Count")
-              df[is.na(df)] <- 0
-              df$Filename <- labels[df$Filename]
-              df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Lower", value.name = "Count")
-              df$Count <- as.numeric(df$Count)
-              
-              # Arrange in position & make the plotting column one called Length
               df <- dplyr::arrange_at(df, vars("Lower"))
+              df <- df[c("Filename", "Length", "Lower", "Count")]
+              df$Cumulative <- cumsum(df$Count)
               df$Length <- factor(df$Lower, levels = unique(df$Lower))
               
+              # Sort out some plotting parameters
+              xLab <- "Sequence Length (bp)"
+              yLab <- c(cumulative = "Cumulative Count", line = "Count")[plotType]
+              plotY <- c(cumulative = "Cumulative", line = "Count")[plotType]
+
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
               allowed <- names(formals(ggplot2::theme))
@@ -143,12 +134,15 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
-              lenPlot <- ggplot(df, aes_string("Length", "Count", colour = "Filename", group = "Filename")) +
+              lenPlot <- ggplot(df, 
+                                aes_string("Length", plotY, 
+                                           colour = "Filename", 
+                                           group = "Filename")) +
                   geom_line() +
                   facet_wrap(~Filename) +
-                  labs(y = "Count") +
+                  labs(x = xLab, y = yLab) +
                   scale_x_discrete(expand = expand.x) +
-                  labs(x = "Sequence Length") +
+                  scale_y_continuous(labels = scales::comma) +
                   theme_bw() +
                   theme(legend.position = "none")
               
@@ -156,12 +150,17 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
               
               if(usePlotly){
                   lenPlot <- suppressMessages(
-                      ggplotly(lenPlot, tooltip = c("x", "y"))
+                      plotly::ggplotly(lenPlot, tooltip = c("x", "y"))
                   )
                   
                   lenPlot <- suppressMessages(
-                      plotly::subplot(plotly::plotly_empty(), lenPlot, widths = c(0.14,0.86)) %>% 
-                          layout(xaxis2 = list(title = "Sequence Length (bp)"), yaxis2 = list(title = "Count")))
+                      suppressWarnings(
+                          plotly::subplot(plotly::plotly_empty(), lenPlot, 
+                                          widths = c(0.14,0.86))
+                  ))
+                  lenPlot <- plotly::layout(lenPlot,
+                                            xaxis2 = list(title = xLab), 
+                                            yaxis2 = list(title = yLab))
                   
               }
               
@@ -173,7 +172,8 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
 #' @rdname plotSequenceLengthDistribution-methods
 #' @export
 setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, counts = FALSE, plotType = "heatmap",
+          function(x, usePlotly = FALSE, labels, counts = FALSE, 
+                   plotType = c("heatmap", "line", "cumulative"),
                    cluster = FALSE, dendrogram = FALSE, ...,
                    expand.x = c(0,0.2), gridlineCol = "grey20",
                    gridlineWidth = 0.2, heatCol = inferno(50)){
@@ -181,26 +181,16 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
               df <- Sequence_Length_Distribution(x)
               
               if (!length(df)) {
-                  #stop("No sequence length Module")
                   lenPlot <- emptyPlot("No Sequence Length Module Detected")
-                  
                   if(usePlotly) lenPlot <- ggplotly(lenPlot, tooltip = "")
                   return(lenPlot)
               }
               
-              
               # Check for valid plotType
-              stopifnot(plotType %in% c("line", "heatmap"))
+              plotType <- match.arg(plotType)
               
               # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)),
-                                      names = fileName(x))
-              }
-              else{
-                  if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df, labels, ...)
               
               # Add zero counts for lengths either side of the included range
               df <- dplyr::bind_rows(
@@ -219,31 +209,17 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
               )
               
               df$Lower <- as.integer(df$Lower)
-              df <- reshape2::dcast(df, Filename ~ Lower, value.var = "Count")
-              df[is.na(df)] <- 0
-              
-              
-              if(cluster){
-                  xx <- dplyr::select(df, -Filename)
-                  clus <- as.dendrogram(hclust(dist(xx)))
-                  row.ord <- order.dendrogram(clus)
-                  df <- df[row.ord,]
+              df <- dplyr::arrange_at(df, vars("Filename", "Lower"))
+              df <- dplyr::group_by(df, Filename)
+              df <- dplyr::mutate(df, Cumulative = cumsum(Count))
+              if (!counts) {
+                  df <- dplyr::mutate(df, 
+                                      Cumulative = Cumulative / max(Cumulative),
+                                      Freq = Count / sum(Count))
               }
-              df$Filename <- labels[df$Filename]
-              df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Lower", value.name = "Count")
-              df$Filename <- factor(df$Filename, levels = rev(unique(df$Filename)))
-              
-              df$Count <- as.numeric(df$Count)
-              # Convert the counts to frequencies
-              df <- dplyr::bind_rows(
-                  lapply(split(df, f = df$Filename),
-                         function(x){
-                             x$Freq <- 100*x$Count / sum(x$Count)
-                             x
-                         }))
+              df <- dplyr::ungroup(df)
               
               # Arrange in position & refer to the 'Lower' column as Length
-              df <- dplyr::arrange_at(df, vars("Filename", "Lower"))
               df$Length <- factor(df$Lower, levels = unique(df$Lower))
               
               # Get any arguments for dotArgs that have been set manually
@@ -253,51 +229,84 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
-              if (plotType == "line"){
-                  if (counts){
-                      lenPlot <- ggplot(df, aes_string("Length", "Count", colour = "Filename", group = "Filename")) +
-                          geom_line() +
-                          labs(y = "Count") +
-                          theme_bw()
-                  }
-                  else{
-                      lenPlot <- ggplot(df, aes_string("Length", "Freq", colour = "Filename", group = "Filename")) +
-                          geom_line() +
-                          scale_y_continuous() +
-                          labs(y = "Percent (%)") +
-                          theme_bw()
-                  }
+              if (plotType %in% c("line", "cumulative")){
+                  
+                  # Decide whether to plot the Count or cumulative sum
+                  # and set all labels
+                  plotY <- dplyr::case_when(
+                      plotType == "cumulative" ~ "Cumulative",
+                      plotType == "line" & counts ~ "Count",
+                      plotType == "line" & !counts ~ "Freq"
+                  )
+                  yLab <- dplyr::case_when(
+                      plotType == "cumulative" & counts ~ "Cumulative Count",
+                      plotType == "cumulative" & !counts ~ "Cumulative (%)",
+                      plotType == "line" & counts ~ "Count",
+                      plotType == "line" & !counts ~ "Percent (%)"
+                  )
+                  yLabelFun <- ifelse(counts, scales::comma, scales::percent)
+                  
+                  df$Filename <- labels[df$Filename]
+                  lenPlot <- ggplot(df, aes_string("Length", plotY,
+                                                   colour = "Filename",
+                                                   group = "Filename")) +
+                      geom_line() +
+                      labs(y = yLab) +
+                      scale_y_continuous(labels = yLabelFun) +
+                      theme_bw()
+                  
               }
               
               if (plotType == "heatmap"){
                   
-                  if (counts){
-                      lenPlot <- ggplot(df, aes_string("Length", "Filename", fill = "Count")) +
-                          geom_tile(colour = gridlineCol) +
-                          scale_fill_gradientn(colours = heatCol) +
-                          scale_y_discrete(labels = labels, expand = c(0, 0))
+                  if (dendrogram && !cluster){
+                      message("cluster will be set to TRUE when dendrogram = TRUE")
+                      cluster <- TRUE
                   }
-                  else{
-                      lenPlot <- ggplot(df, aes_string(x = "Length", y ="Filename", fill = "Freq")) +
-                          geom_tile(colour = gridlineCol) +
-                          labs(fill = "Percent (%)") +
-                          scale_fill_gradientn(colours = heatCol) +
-                          scale_y_discrete(labels = labels, expand = c(0, 0))
+                  plotVal <- ifelse(counts, "Count", "Freq")
+                  fillLab <- ifelse(counts, "Count", "Percent (%)")
+                  fillLabelFun <- ifelse(counts, scales::comma, scales::percent)
+                  
+                  # Now define the order for a dendrogram if required
+                  # This only applies to a heatmap
+                  key <- names(labels)
+                  if (cluster){
+                      clusterDend <- setClusters(df = df[c("Filename", "Lower", plotVal)], 
+                                                 rowVal = "Filename", 
+                                                 colVal = "Lower", 
+                                                 value = plotVal)
+                      key <- labels(clusterDend)
                   }
+                  # Now set everything as factors
+                  df$Filename <- factor(labels[df$Filename], 
+                                        levels = labels[key])
+                  
+                  lenPlot <- ggplot(df, aes_string("Length", "Filename", 
+                                                   fill = plotVal)) +
+                      geom_tile(colour = gridlineCol) +
+                      labs(fill = fillLab) +
+                      scale_fill_gradientn(colours = heatCol, labels = fillLabelFun) +
+                      scale_y_discrete(labels = labels, expand = c(0, 0))
               }
               
               lenPlot <- lenPlot +
                   scale_x_discrete(expand = expand.x) +
                   labs(x = "Sequence Length") +
-                  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+                  theme(
+                      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+                      )
+              
               if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
               
               if(usePlotly){
-                  if(plotType == "line") {
+                  if(plotType %in% c("line", "cumulative")) {
                       lenPlot <- lenPlot +
                           theme(legend.position = "none")
                       lenPlot <- suppressMessages(
-                          ggplotly(lenPlot, tooltip = c("x", "y", "colour"))
+                          suppressWarnings(
+                              plotly::ggplotly(lenPlot, 
+                                               tooltip = c("x", "y", "colour"))
+                          )
                       )
                   }
                   else{
@@ -309,32 +318,38 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
                                 axis.text.y = element_blank(),
                                 panel.background = element_blank())
                       
-                      t <- getSummary(x)
-                      t <- t[t$Category == "Sequence Length Distribution",]
-                      t$Filename <- labels[t$Filename]
-                      t$Filename <- factor(t$Filename, levels = levels(df$Filename))
-                      t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
-                      
-                      # Set the key for extracting individual files on click
-                      key <- names(labels[match(levels(df$Filename), labels)])
-                      sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+                      status <- getSummary(x)
+                      status <- status[status$Category == "Sequence Length Distribution",]
+                      status$Filename <- labels[status$Filename]
+                      status$Filename <- factor(status$Filename, 
+                                                levels = levels(df$Filename))
+                      status <- dplyr::right_join(status, unique(df["Filename"]), 
+                                                  by = "Filename")
+                      # Draw the PWF status as a sideBar
+                      sideBar <- makeSidebar(status = status, key = key, 
+                                             pwfCols = pwfCols)
                       
                       #plot dendrogram
-                      if(dendrogram && cluster){
-                          
-                          dx <- ggdendro::dendro_data(clus)
+                      if (dendrogram){
+                          dx <- ggdendro::dendro_data(clusterDend)
                           dendro <- ggdend(dx$segments) +
                               coord_flip() +
                               scale_y_reverse(expand = c(0, 0)) +
-                              scale_x_continuous(expand = c(0,0.5))
+                              scale_x_continuous(expand = c(0, 0.5))
+                          dendro <- plotly::ggplotly(dendro, tooltip = NULL)
+                          lenPlot <- lenPlot + ylab("")
                       }
                       else{
                           dendro <- plotly::plotly_empty()
                       }
                       
                       lenPlot <- suppressMessages(
-                          plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.08, 0.82),
-                                          margin = 0.001, shareY = TRUE, titleX = TRUE)
+                          suppressWarnings(
+                              plotly::subplot(dendro, sideBar, lenPlot, 
+                                              widths = c(0.1, 0.08, 0.82),
+                                              margin = 0.001, shareY = TRUE, 
+                                              titleX = TRUE)
+                          )
                       )
                   }
                   
