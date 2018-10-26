@@ -39,7 +39,7 @@ fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
-# Return a data_frame/tibble with the raw information
+# Return a tibble/tibble with the raw information
 getSummary(fdl)
 
 }

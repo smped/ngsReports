@@ -27,4 +27,5 @@
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot/status
 - BigData shiny app (PCA?)
+- Add plots for imported log files
 

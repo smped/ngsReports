@@ -20,6 +20,7 @@
 #' getSummary(fdl)
 #'
 #' @importFrom utils unzip
+#' @import tibble
 #'
 #' @include AllGenerics.R
 #'
@@ -51,12 +52,10 @@ setMethod("getSummary", "FastqcFile",
                   uz <- unz(path,fl)
                   summaryData <- readLines(uz)
                   close(uz)
-                  # if (length(summaryData) < 12) stop(
-                  #     "summary.txt contains incomplete data. 12 modules should be present."
-                  # )
+
                   # Form the output
                   summaryData <- stringr::str_split_fixed(summaryData, pattern = "\t", n = 3)
-                  summaryData <- tibble::as_tibble(summaryData)
+                  summaryData <- as_tibble(summaryData)
               }
               else{
                   # The existence of this file will have been checked at object

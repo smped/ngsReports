@@ -25,7 +25,7 @@
 or simply a \code{character} vector of paths to fastqc files}
 }
 \value{
-A single \code{data_frame} containing all information combined from all supplied FastQC reports
+A single \code{tibble} containing all information combined from all supplied FastQC reports
 }
 \description{
 Retrieve the Basic Statistics module from one or more FastQC reports
@@ -39,7 +39,7 @@ fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
-# Return a data_frame/tibble with the raw information
+# Return a tibble/tibble with the raw information
 Basic_Statistics(fdl)
 
 }

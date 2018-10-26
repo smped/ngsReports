@@ -41,7 +41,7 @@ isCompressed <- function(path, type = "zip", verbose = FALSE){
         # Get the magic number from the files
         rw <- readBin(x, what = "raw", n = n)
         if (verbose > 1) message(rw)
-        all(rw == magicNum) && length(rw) > 0
+        sum(rw == magicNum) == n
     }, logical(1))
 
 }

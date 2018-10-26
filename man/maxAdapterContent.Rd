@@ -17,7 +17,7 @@ The output will have the percentages rounded to the specified number of digits}
 Format the values as percentages with the added \code{\%} symbol}
 }
 \value{
-A \code{data_frame} object containing the percent of reads with each adapter
+A \code{tibble} object containing the percent of reads with each adapter
 type at the final position
 }
 \description{
@@ -25,5 +25,5 @@ Get the maximum Adapter Content across one or more FASTQC reports
 }
 \details{
 This will extract the \code{Adapter_Content} from the supplied object,
-and provide a \code{data_frame} with the final value for each file
+and provide a \code{tibble} with the final value for each file
 }

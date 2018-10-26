@@ -25,7 +25,7 @@
 or simply a \code{character} vector of paths to fastqc files}
 }
 \value{
-A single \code{data_frame} containing all information combined from all supplied FastQC reports
+A single \code{tibble} containing all information combined from all supplied FastQC reports
 }
 \description{
 Retrieve the Sequence Duplication Levels module from one or more FastQC reports

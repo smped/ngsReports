@@ -15,7 +15,7 @@
 #' @include FastqcDataList.R
 #'
 #' @return A single \code{tibble} containing all information combined from all supplied FastQC reports
-#' 
+#'
 #' @examples
 #'
 #' # Get the files included with the package
@@ -28,13 +28,15 @@
 #' # Return a tibble/tibble with the raw information
 #' Adapter_Content(fdl)
 #'
+#' @import tibble
+#'
 #' @export
 #' @rdname Adapter_Content
 #' @aliases Adapter_Content
 setMethod("Adapter_Content", "FastqcDataList",
           function(object){
               df <- lapply(object@.Data, Adapter_Content)
-              nulls <- vapply(df, 
+              nulls <- vapply(df,
                               function(x){
                                   length(x) == 0
                               }, logical(1))

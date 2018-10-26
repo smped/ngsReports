@@ -10,7 +10,7 @@ importStarLogs(x)
 \item{x}{\code{character}. Vector of filenames}
 }
 \value{
-A \code{data_frame}.
+A \code{tibble}.
 Column names are broadly similar to those in the supplied files,
 but have been modified for easier handling under R naming conventions.
 

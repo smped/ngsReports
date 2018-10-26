@@ -12,7 +12,7 @@
 #' @include FastqcDataList.R
 #'
 #' @return A single \code{tibble} containing all information combined from all supplied FastQC reports
-#' 
+#'
 #' @examples
 #'
 #' # Get the files included with the package
@@ -27,11 +27,12 @@
 #'
 #' @docType methods
 #'
+#' @import tibble
 #'
 #' @export
 #' @rdname Basic_Statistics
 #' @aliases Basic_Statistics
-setMethod("Basic_Statistics", "FastqcData", 
+setMethod("Basic_Statistics", "FastqcData",
           function(object){object@Basic_Statistics})
 
 #' @export
@@ -40,7 +41,7 @@ setMethod("Basic_Statistics", "FastqcData",
 setMethod("Basic_Statistics", "FastqcDataList",
           function(object){
               df <- lapply(object@.Data, Basic_Statistics)
-              nulls <- vapply(df, 
+              nulls <- vapply(df,
                               function(x){
                                   length(x) == 0
                               }, logical(1))

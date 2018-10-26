@@ -13,7 +13,7 @@ importBowtie2Logs(x)
 \item{x}{\code{character}. Vector of paths to log files}
 }
 \value{
-A \code{data_frame}
+A \code{tibble}
 }
 \description{
 Import one or more hisat2/bowtie2 log files as a data frame.

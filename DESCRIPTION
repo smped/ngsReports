@@ -13,9 +13,10 @@ License: LGPL (>= 2)
 Encoding: UTF-8
 Depends:
   R (>= 3.5.0),
+  BiocGenerics,
   fastqcTheoreticalGC,
   ggplot2,
-  BiocGenerics
+  tibble (>= 1.3.1)
 Imports:
   Biostrings,
   checkmate,
@@ -35,7 +36,6 @@ Imports:
   ShortRead,
   stats,
   stringr,
-  tibble (>= 1.3.1),
   tidyr,
   tidyselect (>= 0.2.3),
   utils,
