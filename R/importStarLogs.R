@@ -9,7 +9,7 @@
 #'
 #' @param x \code{character}. Vector of filenames
 #'
-#' @return A \code{data_frame}.
+#' @return A \code{tibble}.
 #' Column names are broadly similar to those in the supplied files,
 #' but have been modified for easier handling under R naming conventions.
 #'

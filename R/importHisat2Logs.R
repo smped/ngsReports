@@ -4,7 +4,7 @@
 #'
 #' @param x \code{character}. Vector of paths to log files
 #'
-#' @return A \code{data_frame}
+#' @return A \code{tibble}
 #'
 #' @examples
 #' hisat2Logs <- system.file("extdata", "hisat2PE.log", package = "ngsReports")

@@ -14,7 +14,7 @@
 #' @include FastqcFileList.R
 #' @include FastqcDataList.R
 #'
-#' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
+#' @return A single \code{tibble} containing all information combined from all supplied FastQC reports
 #' 
 #' @examples
 #'
@@ -25,7 +25,7 @@
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
-#' # Return a data_frame/tibble with the raw information
+#' # Return a tibble/tibble with the raw information
 #' Adapter_Content(fdl)
 #'
 #' @export

@@ -196,7 +196,7 @@ getBasicStatistics <- function(fastqcLines){
                  "Sequences_flagged_as_poor_quality", "Sequence_length", "%GC")
     stopifnot(reqVals %in% names(vals))
     
-    # Setup the data_frame with the correct value types
+    # Setup the tibble with the correct value types
     df <- tibble::as_tibble(as.list(vals))
     df$Shortest_sequence <- gsub("(.*)-.*", "\\1", df$Sequence_length)
     df$Longest_sequence <- gsub(".*-(.*)", "\\1", df$Sequence_length)

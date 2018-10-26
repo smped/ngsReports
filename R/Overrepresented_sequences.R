@@ -8,7 +8,7 @@
 #' @include FastqcData.R
 #' @include AllGenerics.R
 #'
-#' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
+#' @return A single \code{tibble} containing all information combined from all supplied FastQC reports
 #' @examples 
 #' 
 #' # Get the files included with the package

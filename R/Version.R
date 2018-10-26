@@ -5,7 +5,7 @@
 #'
 #' @param object An object of class \code{FastqcData} or \code{FastqcDataList}
 #'
-#' @return A character vector (FastqcData), or data_frame (FastqcDataList)
+#' @return A character vector (FastqcData), or tibble (FastqcDataList)
 #' 
 #' @examples 
 #' 

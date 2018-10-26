@@ -119,7 +119,7 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               
               # make Ranges for rectangles and set alpha
               pwfCols <- setAlpha(pwfCols, alpha)
-              rects <- data_frame(ymin = 0,
+              rects <- tibble(ymin = 0,
                                   ymax = max(df$Count),
                                   xmin = c(0, fail, warn),
                                   xmax = c(fail, warn, 41),
@@ -330,7 +330,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
               if(plotType == "line"){
                   # make Ranges for rectangles and set alpha
                   pwfCols <- setAlpha(pwfCols, alpha)
-                  rects <- data_frame(ymin = 0,
+                  rects <- tibble(ymin = 0,
                                       ymax = 0,
                                       xmin = c(0, fail, warn),
                                       xmax = c(fail, warn, 41),
