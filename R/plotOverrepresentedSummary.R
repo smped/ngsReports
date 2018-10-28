@@ -87,21 +87,13 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
               df <- Overrepresented_sequences(x)
               
               if (!length(df)) {
-                  #stop("No overrepresented sequences were detected by FastQC")
                   overPlot <- emptyPlot("No Overrepresented Sequences")
-                  
                   if(usePlotly) overPlot <- ggplotly(overPlot, tooltip = "")
                   return(overPlot)
               }
               
               # Drop the suffix, or check the alternate labels
-              if(base::missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
-              }
-              else{
-                  if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               # Get any arguments for dotArgs that have been set manually
@@ -112,54 +104,65 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
               df <- dplyr::top_n(df, n, Percentage)
-              df$Status <- cut(df$Percentage, breaks = c(0, 0.1, 1, 100), labels = c("PASS", "WARN", "FAIL"))
-              df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", df$Possible_Source)
+              df$Status <- cut(df$Percentage, 
+                               breaks = c(0, 0.1, 1, 100), 
+                               labels = c("PASS", "WARN", "FAIL"))
+              df$Possible_Source <- gsub(pattern = " \\([0-9]*\\% over [0-9]*bp\\)", 
+                                         replacement = "", 
+                                         x = df$Possible_Source)
               df$Sequence <- factor(df$Sequence, levels = rev(df$Sequence))
               df$Percentage <- round(df$Percentage, 2)
               df <- droplevels(df)
+              
+              # Set plotting parameters
               ymax <- 1.05*max(df$Percentage)
+              xLab <- "Percent of Total Reads (%)"
+              yLab <- "Overrepresented Sequence"
               
               # Sort out the colours & pass/warn/fail breaks
               if (missing(pwfCols)) pwfCols <- getColours(ngsReports::pwf)
               pwfCols <- pwfCols[names(pwfCols) %in% levels(df$Status)]
               
+              add_percent <- function(x){paste0(x, "%")}
+              overPlot <- ggplot(df, 
+                                 aes_string(x = "Sequence", y = "Percentage", 
+                                            fill = "Status", 
+                                            label = "Possible_Source")) +
+                  geom_bar(stat = "identity") +
+                  labs(y = xLab, x = yLab) +
+                  scale_y_continuous(limits = c(0, ymax), 
+                                     expand = c(0,0),
+                                     labels = add_percent) +
+                  theme_bw() +
+                  coord_flip() +
+                  scale_fill_manual(values = pwfCols)
+              
+              # Only facet is using ggplot. They look bad under plotly
+              if (!usePlotly) overPlot <- overPlot + facet_grid(
+                  Possible_Source~., scales = "free_y", space = "free"
+                  )
+              
+              # Add the basic customisations
+              if (!is.null(userTheme)) overPlot <- overPlot + userTheme
+              
               if (usePlotly){
-                  overPlot <- plot_ly(df, x = ~Percentage, y = ~Sequence, type = "bar",
-                                      name = ~Possible_Source, color = I(pwfCols[as.character(df$Status)]),
-                                      hoverinfo = "text",
-                                      text = ~paste("Filename: ",
-                                                    Filename,
-                                                    "<br> Percentage: ",
-                                                    Percentage,
-                                                    "<br> Sequence: ",
-                                                    Sequence,
-                                                    "<br> Possible Source: ",
-                                                    Possible_Source,
-                                                    "<br> Status: ",
-                                                    Status)) %>%
-                      layout(title = df$Filename[1],
-                             bargap = 0.05,
-                             showlegend = FALSE)
                   
+                  # Add the customisations for plotly
+                  overPlot <- overPlot +
+                      ggtitle(df$Filename[1]) +
+                      theme(axis.ticks.y = element_blank(),
+                            axis.text.y = element_blank(),
+                            plot.title = element_text(hjust = 0.5),
+                            legend.position = "none")
+                  
+                  # Add the empty plot to align in the shiny app
                   overPlot <- suppressMessages(
-                      plotly::subplot(plotly::plotly_empty(), overPlot, widths = c(0.14,0.86)) %>%
-                          layout(xaxis2 = list(title = "Percent of Total Reads (%)"),
-                                 yaxis2 = list(title = "Overrepresented Sequence", showticklabels = FALSE)))
-                  
-              }
-              else{
-                  overPlot <- ggplot(df, aes_string(x = "Sequence", y = "Percentage", fill = "Status")) +
-                      geom_bar(stat = "identity") +
-                      ylab("Overrepresented Sequences (% of Total)") +
-                      scale_y_continuous(limits = c(0, ymax), expand = c(0,0)) +
-                      theme_bw() +
-                      coord_flip() +
-                      facet_grid(Possible_Source~., scales = "free_y", space = "free") +
-                      scale_fill_manual(values = pwfCols)
-                  
-                  # Add the basic customisations
-                  if (!is.null(userTheme)) overPlot <- overPlot + userTheme
-                  
+                      suppressWarnings(
+                          plotly::subplot(plotly::plotly_empty(), 
+                                          overPlot, 
+                                          widths = c(0.14,0.86))
+                      )
+                  )
               }
               
               overPlot
@@ -180,25 +183,15 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               df <- Overrepresented_sequences(x)
               
               if (!length(df)) {
-                  #stop("No overrepresented sequences were detected by FastQC")
                   overPlot <- emptyPlot("No Overrepresented Sequences")
-                  
                   if(usePlotly) overPlot <- ggplotly(overPlot, tooltip = "")
                   return(overPlot)
               }
               
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               
-              if (nrow(df) == 0) stop("No overrepresented sequences were detected by FastQC")
-              
               # Drop the suffix, or check the alternate labels
-              if(base::missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
-              }
-              else{
-                  if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df, labels, ...)
               
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
@@ -208,28 +201,36 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
               Possible_Source <- c() # Here to avoid a NOTE in R CMD check...
-              df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", df$Possible_Source)
+              df$Possible_Source <- gsub(pattern = " \\([0-9]*\\% over [0-9]*bp\\)", 
+                                         replacement = "", 
+                                         x = df$Possible_Source)
               df <- dplyr::group_by(df, Filename, Possible_Source)
               df <- dplyr::summarise(df, Percentage = sum(Percentage))
+              df <- dplyr::ungroup(df)
               df$Percentage <- round(df$Percentage, 2)
+              lev <- unique(dplyr::arrange(df, Percentage)$Possible_Source)
+              df$Possible_Source <- factor(df$Possible_Source, levels = lev)
               
-              df <- reshape2::dcast(df, Filename ~ Possible_Source, value.var = "Percentage")
-              
-              #cluster
-              if(cluster){
-                  xx <- df[!colnames(df) == "Filename"]
-                  xx[is.na(xx)] <- 0
-                  clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
-                  row.ord <- order.dendrogram(clus)
-                  df <- df[row.ord,]
+              if (dendrogram && !cluster){
+                  message("cluster will be set to TRUE when dendrogram = TRUE")
+                  cluster <- TRUE
               }
               
-              key <- df$Filename
-              df <- reshape2::melt(df, id.vars = "Filename", variable.name = "Possible_Source", value.name = "Percentage")
-              df$Filename <- labels[df$Filename]
+              # Now define the order for a dendrogram if required
+              key <- names(labels)
+              if (cluster){
+                  cols <- c("Filename", "Possible_Source", "Percentage")
+                  clusterDend <- setClusters(df = df[cols], 
+                                             rowVal = "Filename", 
+                                             colVal = "Possible_Source", 
+                                             value = "Percentage")
+                  key <- labels(clusterDend)
+              }
+              # Now set everything as factors
+              df$Filename <- factor(labels[df$Filename], 
+                                    levels = labels[key])
               
-              maxChar <- max(nchar(df$Filename))
-              df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+              maxChar <- max(nchar(levels(df$Filename)))
               
               # Set the axis limits. Just scale the upper limit by 1.05
               ymax <- max(dplyr::summarise(dplyr::group_by(df, Filename),
@@ -239,80 +240,80 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               stopifnot(length(expand.x) == 2, length(expand.y) == 2)
               
               # Define the palette
-              stopifnot(paletteName %in% rownames(RColorBrewer::brewer.pal.info))
-              nSource <- length(unique(df$Possible_Source))
-              pal <- RColorBrewer::brewer.pal(nSource, paletteName) %>% set_names(unique(df$Possible_Source))
+              paletteName <- match.arg(paletteName,
+                                       rownames(RColorBrewer::brewer.pal.info))
+              nMax <- RColorBrewer::brewer.pal.info[paletteName, "maxcolors"]
+              nSource <- length(levels(df$Possible_Source))
+              pal <- RColorBrewer::brewer.pal(nMax, paletteName)
+              if (nSource > nMax){
+                  pal <- colorRampPalette(pal)(nSource)
+              }
+              else {
+                  pal <- pal[seq_len(nSource)]
+              }
+              names(pal) <- levels(df$Possible_Source)
               
               # Set the axis label
               if (missing(xlab)){
                   xlab <- "Overrepresented Sequences (% of Total)"
               }
               xlab <- as.character(xlab)[[1]]
+              add_percent <- function(x){paste0(x,"%")}
               
+              overPlot <- ggplot(df, 
+                                 aes_string(x = "Filename", y = "Percentage", 
+                                            fill = "Possible_Source")) +
+                  geom_bar(stat = "identity") +
+                  labs(y = xlab,
+                       fill = "Possible Source") +
+                  scale_y_continuous(limits = c(0, ymax), expand = expand.x,
+                                     labels = add_percent) +
+                  scale_x_discrete(expand = expand.y) +
+                  scale_fill_manual(values = pal) +
+                  theme_bw() +
+                  coord_flip()
+              
+              # Add the basic customisations
+              if (!is.null(userTheme)) overPlot <- overPlot + userTheme
               
               if (usePlotly){
                   
-                  overPlot <- plot_ly(df, x = ~Percentage, y = ~Filename, type = "bar", color = ~Possible_Source,
-                                      colors = pal, hoverinfo = "text",
-                                      text = ~paste("Filename: ",
-                                                    Filename,
-                                                    "<br> Percentage: ",
-                                                    Percentage,
-                                                    "<br> Possible Source: ",
-                                                    Possible_Source)) %>%
-                      plotly::layout(xaxis = list(title = xlab),
-                                     yaxis = list(showticklabels = FALSE),
-                                     barmode = "stack",
-                                     bargap = 0.05,
-                                     showlegend = FALSE)
+                  overPlot <- overPlot +
+                      theme(legend.position = "none",
+                            axis.text.y = element_blank(),
+                            axis.ticks.y = element_blank())
                   
-                  t <- getSummary(x)
-                  t <- t[t$Category == "Overrepresented sequences",]
-                  t$Filename <- labels[t$Filename]
-                  t$Filename <- factor(t$Filename, levels = unique(df$Filename))
-                  t <- dplyr::right_join(t, unique(df["Filename"]), by = "Filename")
+                  status <- getSummary(x)
+                  status <- status[status$Category == "Overrepresented sequences",]
+                  status$Filename <- labels[status$Filename]
+                  status$Filename <- factor(status$Filename, levels = levels(df$Filename))
+                  status <- dplyr::right_join(status, 
+                                              dplyr::distinct(df, Filename), 
+                                              by = "Filename")
                   
-                  sideBar <- makeSidebar(status = t, key = key, pwfCols = pwfCols)
+                  sideBar <- makeSidebar(status = status, key = key, pwfCols = pwfCols)
                   
-                  if (cluster && dendrogram){
-                      dx <- ggdendro::dendro_data(clus)
+                  if (dendrogram){
+                      dx <- ggdendro::dendro_data(clusterDend)
                       dendro <- ggdend(dx$segments) +
                           coord_flip() +
-                          scale_y_reverse(expand = expand.x) +
-                          scale_x_continuous(expand = expand.y)
-                      
-                      overPlot <- suppressWarnings(
-                          suppressMessages(
-                              plotly::subplot(dendro, sideBar, overPlot, widths = c(0.08,0.08,0.84),
-                                              margin = 0.001)
-                          ))
+                          scale_y_reverse(expand = c(0, 0)) +
+                          scale_x_continuous(expand = c(0, 0.5))
+                      dendro <- plotly::ggplotly(dendro, tooltip = NULL)
+                      overPlot <- overPlot + ylab("")
                   }
                   else{
-                      
-                      overPlot <- suppressWarnings(
-                          suppressMessages(subplot(plotly::plotly_empty(), sideBar, overPlot, margin = 0.001,
-                                                   widths = c(0.08,0.08,0.84)) %>%
-                                               plotly::layout(annotations = list(text = "Filename", showarrow = FALSE,
-                                                                                 textangle = -90))
-                          ))
+                      dendro <- plotly::plotly_empty()
                   }
-              }
-              else{
-                  overPlot <- ggplot(df, aes_string(x = "Filename", y = "Percentage", fill = "Possible_Source")) +
-                      geom_bar(stat = "identity") +
-                      labs(y = xlab,
-                           fill = "Possible Source") +
-                      scale_y_continuous(limits = c(0, ymax), expand = expand.x) +
-                      scale_x_discrete(expand = expand.y) +
-                      scale_fill_manual(values = pal) +
-                      theme_bw() +
-                      coord_flip()
                   
-                  # Add the basic customisations
-                  if (!is.null(userTheme)) overPlot <- overPlot + userTheme
+                  overPlot <- suppressWarnings(
+                      suppressMessages(
+                          plotly::subplot(dendro, sideBar, overPlot, 
+                                  margin = 0.001,
+                                  widths = c(0.08,0.08,0.84))
+                      )
+                  )
               }
-              
               overPlot
-              
           }
 )
