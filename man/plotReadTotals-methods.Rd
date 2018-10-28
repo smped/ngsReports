@@ -12,17 +12,18 @@
 \title{Draw a barplot of read totals}
 \usage{
 plotReadTotals(x, usePlotly = FALSE, duplicated = TRUE,
-  bars = "stacked", ...)
+  bars = c("stacked", "adjacent"), ...)
 
 \S4method{plotReadTotals}{character}(x, usePlotly = FALSE,
-  duplicated = TRUE, bars = "stacked", ...)
+  duplicated = TRUE, bars = c("stacked", "adjacent"), ...)
 
 \S4method{plotReadTotals}{FastqcFileList}(x, usePlotly = FALSE,
-  duplicated = TRUE, bars = "stacked", ...)
+  duplicated = TRUE, bars = c("stacked", "adjacent"), ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(x, usePlotly = FALSE,
-  duplicated = TRUE, bars = "stacked", labels, millions, barCols,
-  expand.x = c(0, 0), expand.y = c(0, 0), ...)
+  duplicated = TRUE, bars = c("stacked", "adjacent"), labels,
+  barCols = c(rgb(0.9, 0.2, 0.2), rgb(0.2, 0.2, 0.8)), expand.x = 0.02,
+  ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -41,12 +42,9 @@ If \code{TRUE} plot will be rendered with plotly}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{millions}{\code{logical}. Use Millions of reads as the scale for the y-axis.
-Unless specified, will be set as TRUE automatically if the highest total is > 2e06.}
-
 \item{barCols}{Colours for duplicated and unique reads.}
 
-\item{expand.x, expand.y}{Vectors of length 2. Passed to `scale_*_continuous()`}
+\item{expand.x}{Multiplicative scaling for the upper limit of the x-axis}
 }
 \value{
 Returns a ggplot or plotly object
