@@ -13,7 +13,7 @@ test_that("setLabels handles missing labels correctly",{
 test_that("setLabels handles label mismatches",{
     df <- data.frame(Filename = "", stringsAsFactors = FALSE)
     labs <- "x"
-    expect_error(setLabels(df, labels = x))
+    expect_error(setLabels(df, labels = labs))
 })
 
 test_that("setLabels handles duplicated labels",{
