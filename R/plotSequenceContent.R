@@ -18,6 +18,7 @@
 #' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
+#' @param nc Specify the number of columns if plotting a FastqcDataList as line plots
 #'
 #' @return A ggplot2 object
 #'
@@ -79,6 +80,7 @@ setMethod("plotSequenceContent", signature = "FastqcData",
               
               # Get the SequenceContent
               df <- Per_base_sequence_content(x)
+              names(df)[names(df) == "Base"] <- "Position"
               
               if (!length(df)) {
                   scPlot <- emptyPlot("No Sequence Content Module Detected")
@@ -86,18 +88,18 @@ setMethod("plotSequenceContent", signature = "FastqcData",
                   return(scPlot)
               }
               
-              df$Position <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
-              df$Position <- as.integer(df$Position)
+              df$Position <- factor(df$Position, levels = unique(df$Position))
               
               # Drop the suffix, or check the alternate labels
               labels <- setLabels(df, labels, ...)
+              acgt <- c("T", "C", "A", "G")
               
               df$Filename <- labels[df$Filename]
-              df <- df[!colnames(df) == "Base"]
               df <- tidyr::gather(df, key = "Base", value = "Percent", 
-                            tidyselect::one_of(c("G", "A", "T", "C")))
-              df$Base <- factor(df$Base, levels = c("T", "C", "A", "G"))
+                            tidyselect::one_of(acgt))
+              df$Base <- factor(df$Base, levels = acgt)
               df$Percent <- round(df$Percent, 2)
+              df$x <- as.integer(df$Position)
               
               #set colours
               baseCols <- c(`T`= "red", G = "black", A = "green", C = "blue")
@@ -109,22 +111,30 @@ setMethod("plotSequenceContent", signature = "FastqcData",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
-              add_percent <- function(x){paste0(x, "%")}
               xLab <- "Position in read (bp)"
               yLab <- "Percent"
-              scPlot <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
+              scPlot <- ggplot(df, aes_string(x = "x", y = "Percent", 
+                                              label = "Position",
+                                              colour = "Base")) +
                   geom_line() +
                   facet_wrap(~Filename) +
                   scale_y_continuous(limits = c(0, 100), expand = c(0, 0),
-                                     labels = add_percent) +
-                  scale_x_continuous(expand = c(0, 0)) +
+                                     labels = addPercent) +
+                  scale_x_continuous(expand = c(0, 0),
+                                     breaks = seq_along(levels(df$Position)), 
+                                     labels = levels(df$Position)) +
+                  scale_colour_manual(values = baseCols) +
                   guides(fill = FALSE) +
                   labs(x = xLab, y = yLab) +
                   theme_bw() +
-                  scale_colour_manual(values = baseCols)
+                  theme(axis.text.x = element_text(
+                      angle = 90, vjust = 0.5, hjust = 1
+                  ))
               
               if(usePlotly){
                   
+                  scPlot <- plotly::ggplotly(scPlot,
+                                             tooltip = c("y", "label", "colour"))
                   scPlot <- suppressMessages(
                       suppressWarnings(
                           plotly::subplot(plotly::plotly_empty(), scPlot, 
@@ -146,7 +156,7 @@ setMethod("plotSequenceContent", signature = "FastqcData",
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, plotType = c("heatmap", "line"), pwfCols,
-                   cluster = FALSE, dendrogram = TRUE, ...){
+                   cluster = TRUE, dendrogram = TRUE, ..., nc = 2){
               
               # Get the SequenceContent
               df <- Per_base_sequence_content(x)
@@ -159,7 +169,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               
               df$Start <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
               df$End <- gsub("[0-9]*-([0-9]*)", "\\1", df$Base)
-              df <- dplyr::mutate_at(df, vars(Start, End), funs(as.integer))
+              df$Start <- as.integer(df$Start)
+              df$End <- as.integer(df$End)
               
               plotType <- match.arg(plotType)
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -174,12 +185,18 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
+              # Define the bases as a vector for ease later in the function
+              acgt <- c("T", "C", "A", "G")
+              # Axis labels
+              xLab <- "Position in read (bp)"
+              yLab <- ifelse(plotType == "heatmap", "Filename", "Percent (%)")
+              
               if (plotType == "heatmap"){
                   
                   # Round to 2 digits to reduce the complexity of the colour palette
-                  df <- dplyr::mutate_at(df, vars(one_of(c("A", "C", "G", "T"))),
+                  df <- dplyr::mutate_at(df, vars(one_of(acgt)),
                                                   funs(round), digits = 2)
-                  maxBase <- max(vapply(c("A", "C", "G", "T"), 
+                  maxBase <- max(vapply(acgt, 
                                         function(x){max(df[[x]])}, numeric(1)))
                   # Set the colours, using opacity for G
                   df$opacity <- 1 - df$G / maxBase
@@ -190,9 +207,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
                   df <- dplyr::right_join(df, basicStat, by = "Filename")
                   df <- df[c("Filename", "Start", "End", "colour", 
-                             "Longest_sequence", "A", "C", "G", "T")]
-                  # df$Position <- as.integer(df$Start)
-                  # df$Filename <- labels[df$Filename]
+                             "Longest_sequence", acgt)]
                   
                   if (dendrogram && !cluster){
                       message("cluster will be set to TRUE when dendrogram = TRUE")
@@ -203,7 +218,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   key <- names(labels)
                   if (cluster){
                       df_gath <- tidyr::gather(df, key = "Base", value = "Percent", 
-                                               one_of(c("A", "C", "G", "T")))
+                                               one_of(acgt))
                       df_gath$Start <- paste(df_gath$Start, df_gath$Base, sep = "_")
                       cols <- c("Filename", "Start", "Percent")
                       clusterDend <- setClusters(df = df_gath[cols], 
@@ -224,19 +239,20 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   df$ymin <- df$ymax - 1
                   df$xmax <- df$End + 0.5
                   df$xmin <- df$Start - 1
-                  df$Window <- paste(df$Start, "-", df$End, "bp")
-                  
-                  xLab <- "Position in read (bp)"
-                  yLab <- "Filename"
+                  df$Position <- ifelse(df$Start == df$End, 
+                                        paste0(df$Start, "bp"), 
+                                        paste0(df$Start, "-", df$End, "bp"))
+                  # Add percentage signs to ACGT for prettier labels
+                  df <- dplyr::mutate_at(df, vars(acgt), funs(addPercent))
                   
                   scPlot <- ggplot(df, 
-                                   aes_string(y = "y",
-                                              fill = "colour", 
+                                   aes_string(fill = "colour", 
                                               A = "A", C = "C", G = "G", `T` = "T", 
-                                              Filename = "Filename", Window = "Window")) + 
+                                              Filename = "Filename", 
+                                              Position = "Position")) + 
                       geom_rect(aes_string(xmin = "xmin", xmax = "xmax", 
                                            ymin = "ymin", ymax = "ymax"),
-                                colour = "#00000000") +
+                                linetype = 0) +
                       scale_fill_manual(values = tileCols) +
                       scale_x_continuous(expand = c(0, 0)) +
                       scale_y_continuous(expand = c(0, 0),
@@ -244,8 +260,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                                          labels = levels(df$Filename)) +
                       theme_bw() +
                       theme(legend.position = "none",
-                            panel.grid.minor = element_blank(),
-                            panel.grid.major = element_blank()) +
+                            panel.grid = element_blank()) +
                       labs(x = xLab, y = yLab)
                   
                   if (!is.null(userTheme)) scPlot <- scPlot + userTheme
@@ -254,8 +269,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                       scPlot <- scPlot +
                           theme(axis.ticks.y = element_blank(),
                                 axis.text.y = element_blank(),
-                                axis.title.y = element_blank(),
-                                panel.grid = element_blank())
+                                axis.title.y = element_blank())
                       
                       status <- getSummary(x)
                       status <- status[status$Category == "Per base sequence content",]
@@ -265,7 +279,6 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                       sideBar <- makeSidebar(status = status, key = key, 
                                              pwfCols = pwfCols)
                       
-                      #plot dendro
                       if (dendrogram){
                           dx <- ggdendro::dendro_data(clusterDend)
                           dendro <- ggdend(dx$segments) +
@@ -273,13 +286,16 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                               scale_y_reverse(expand = c(0, 0)) +
                               scale_x_continuous(expand = c(0, 0.5))
                           dendro <- plotly::ggplotly(dendro, tooltip = NULL)
-                          
                       }
                       else{
                           dendro <- plotly::plotly_empty()
                       }
 
-                      
+                      # Render using ggplotly to enable easier tooltip specification
+                      scPlot <- plotly::ggplotly(
+                          scPlot, tooltip = c(acgt, "Filename", "Position")
+                          )
+                      # Now make the complete layout
                       scPlot <- suppressWarnings(
                           suppressMessages(
                               plotly::subplot(dendro, sideBar, scPlot, 
@@ -287,42 +303,54 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                                               margin = 0.001, shareY = TRUE) 
                           )
                       )
-                      
-                      ## This needs to be copied from master...
-                      ## We have fixed it there...
-                      ## manually edit tooltip to remove colour
-                      sc <- lapply(seq_along(scPlot$x$data), function(x){
-                          scPlot$x$data[[x]]$text <<- gsub("colour:.*<br />A", "A",  scPlot$x$data[[x]]$text)
-                      })
-                      
+ 
                   }
               }
               if (plotType == "line"){
                   df$Filename <- labels[df$Filename]
                   df <- df[!colnames(df) == "Base"]
-                  df <- melt(df, id.vars = c("Filename", "Start"))
-                  colnames(df) <- c("Filename", "Position", "Base", "Percent")
-                  df$Base <- factor(df$Base, levels = c("T", "C", "A", "G"))
+                  df <- tidyr::gather(df, key = "Base", value = "Percent", 
+                                      one_of(acgt))
+                  df$Base <- factor(df$Base, levels = acgt)
+                  df$Percent <- round(df$Percent, 2)
+                  df$Position <- ifelse(df$Start == df$End,
+                                        as.character(df$Start),
+                                        paste0(df$Start, "-", df$End))
+                  posLevels <- stringr::str_sort(unique(df$Position),
+                                                 numeric = TRUE)
+                  df$Position <- factor(df$Position, 
+                                        levels = posLevels)
+                  df$x <- as.integer(df$Position)
                   
                   #set colours
                   baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
                   
-                  scPlot <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
+                  scPlot <- ggplot(df, aes_string(x = "x", 
+                                                  y = "Percent", 
+                                                  colour = "Base",
+                                                  label = "Position")) +
                       geom_line() +
-                      facet_wrap(~Filename) +
-                      scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
-                      scale_x_continuous(expand = c(0, 0)) +
-                      guides(fill = FALSE) +
-                      labs(x = "Position in read (bp)",
-                           y = "Percent (%)") +
+                      facet_wrap(~Filename, ncol = nc) +
+                      scale_y_continuous(limits = c(0, 100), expand = c(0, 0),
+                                         labels = addPercent) +
+                      scale_x_continuous(expand = c(0, 0),
+                                         breaks = seq_along(levels(df$Position)),
+                                         labels = levels(df$Position)) +
+                      scale_colour_manual(values = baseCols) +
+                      labs(x = xLab, y = yLab) +
                       theme_bw() +
-                      scale_colour_manual(values = baseCols)
+                      theme(axis.text.x = element_text(
+                          angle = 90, hjust = 1, vjust = 0.5
+                          ))
+                      
                   
                   if (!is.null(userTheme)) scPlot <- scPlot + userTheme
                   
                   if(usePlotly){
                       scPlot <- suppressMessages(
-                          ggplotly(scPlot) %>% layout(legend = list(x = 0.85, y = 1))
+                          suppressWarnings(
+                              plotly::ggplotly(scPlot, tooltip = c("y", "colour", "label"))
+                          )
                       )
                   }
               }

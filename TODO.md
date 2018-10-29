@@ -28,4 +28,5 @@
 - Add Fastq Illumina Filter plot/status
 - BigData shiny app (PCA?)
 - Add plots for imported log files
+- Make padding using `plotly_empty()` optional for plots of a `FastqcData` object
 

@@ -30,8 +30,8 @@ plotSequenceContent(x, usePlotly = FALSE, labels, ...)
   ...)
 
 \S4method{plotSequenceContent}{FastqcDataList}(x, usePlotly = FALSE,
-  labels, plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
-  dendrogram = TRUE, ...)
+  labels, plotType = c("heatmap", "line"), pwfCols, cluster = TRUE,
+  dendrogram = TRUE, ..., nc = 2)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -56,6 +56,8 @@ fastqc data will be clustered using hierarchical clustering}
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
+
+\item{nc}{Specify the number of columns if plotting a FastqcDataList as line plots}
 }
 \value{
 A ggplot2 object

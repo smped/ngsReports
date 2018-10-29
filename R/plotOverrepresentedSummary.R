@@ -123,7 +123,6 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
               if (missing(pwfCols)) pwfCols <- getColours(ngsReports::pwf)
               pwfCols <- pwfCols[names(pwfCols) %in% levels(df$Status)]
               
-              add_percent <- function(x){paste0(x, "%")}
               overPlot <- ggplot(df, 
                                  aes_string(x = "Sequence", y = "Percentage", 
                                             fill = "Status", 
@@ -132,7 +131,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
                   labs(y = xLab, x = yLab) +
                   scale_y_continuous(limits = c(0, ymax), 
                                      expand = c(0,0),
-                                     labels = add_percent) +
+                                     labels = addPercent) +
                   theme_bw() +
                   coord_flip() +
                   scale_fill_manual(values = pwfCols)
@@ -258,7 +257,6 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                   xlab <- "Overrepresented Sequences (% of Total)"
               }
               xlab <- as.character(xlab)[[1]]
-              add_percent <- function(x){paste0(x,"%")}
               
               overPlot <- ggplot(df, 
                                  aes_string(x = "Filename", y = "Percentage", 
@@ -267,7 +265,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                   labs(y = xlab,
                        fill = "Possible Source") +
                   scale_y_continuous(limits = c(0, ymax), expand = expand.x,
-                                     labels = add_percent) +
+                                     labels = addPercent) +
                   scale_x_discrete(expand = expand.y) +
                   scale_fill_manual(values = pal) +
                   theme_bw() +
