@@ -36,7 +36,8 @@
 #'
 #' @importFrom scales rescale
 #' @importFrom grDevices rgb
-#' @importFrom magrittr %>%
+#' @importFrom dplyr mutate_at vars funs
+#' @importFrom tidyselect one_of
 #' @import ggplot2
 #'
 #' @name plotSequenceContent
@@ -80,34 +81,26 @@ setMethod("plotSequenceContent", signature = "FastqcData",
               df <- Per_base_sequence_content(x)
               
               if (!length(df)) {
-                  #stop("No sequence content Module")
                   scPlot <- emptyPlot("No Sequence Content Module Detected")
-                  
                   if(usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
                   return(scPlot)
               }
               
-              
-              df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
+              df$Position <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
+              df$Position <- as.integer(df$Position)
               
               # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
-              }
-              else{
-                  if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df, labels, ...)
               
               df$Filename <- labels[df$Filename]
               df <- df[!colnames(df) == "Base"]
-              df <- reshape2::melt(df, id.vars = c("Filename", "Start"))
-              colnames(df) <- c("Filename", "Position", "Base", "Percent")
+              df <- tidyr::gather(df, key = "Base", value = "Percent", 
+                            tidyselect::one_of(c("G", "A", "T", "C")))
               df$Base <- factor(df$Base, levels = c("T", "C", "A", "G"))
               df$Percent <- round(df$Percent, 2)
               
               #set colours
-              baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
+              baseCols <- c(`T`= "red", G = "black", A = "green", C = "blue")
               
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
@@ -116,21 +109,32 @@ setMethod("plotSequenceContent", signature = "FastqcData",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
+              add_percent <- function(x){paste0(x, "%")}
+              xLab <- "Position in read (bp)"
+              yLab <- "Percent"
               scPlot <- ggplot(df, aes_string(x = "Position", y = "Percent", colour = "Base")) +
                   geom_line() +
                   facet_wrap(~Filename) +
-                  scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+                  scale_y_continuous(limits = c(0, 100), expand = c(0, 0),
+                                     labels = add_percent) +
                   scale_x_continuous(expand = c(0, 0)) +
                   guides(fill = FALSE) +
-                  labs(x = "Position in read (bp)",
-                       y = "Percent (%)") +
+                  labs(x = xLab, y = yLab) +
                   theme_bw() +
                   scale_colour_manual(values = baseCols)
+              
               if(usePlotly){
                   
                   scPlot <- suppressMessages(
-                      plotly::subplot(plotly::plotly_empty(), scPlot, widths = c(0.14,0.86)) %>% 
-                          layout(xaxis2 = list(title = "Position in read (bp)"), yaxis2 = list(title = "Percent (%)")))
+                      suppressWarnings(
+                          plotly::subplot(plotly::plotly_empty(), scPlot, 
+                                          widths = c(0.14,0.86))
+                      )
+                  )
+                  
+                  scPlot <- plotly::layout(scPlot,
+                                           xaxis2 = list(title = xLab), 
+                                           yaxis2 = list(title = yLab))
               }
               
               scPlot
@@ -148,27 +152,20 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               df <- Per_base_sequence_content(x)
               
               if (!length(df)) {
-                  #stop("No sequence content Module")
                   scPlot <- emptyPlot("No Sequence Content Module Detected")
-                  
                   if(usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
                   return(scPlot)
               }
               
-              df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
-              df$End <- as.integer(gsub("[0-9]*-([0-9]*)", "\\1", df$Base))
+              df$Start <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
+              df$End <- gsub("[0-9]*-([0-9]*)", "\\1", df$Base)
+              df <- dplyr::mutate_at(df, vars(Start, End), funs(as.integer))
               
               plotType <- match.arg(plotType)
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               
               # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
-              }
-              else{
-                  if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df, labels, ...)
               
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
@@ -179,105 +176,120 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               
               if (plotType == "heatmap"){
                   
-                  df$A <- round(df$A, 2)
-                  df$C <- round(df$C, 2)
-                  df$G <- round(df$G, 2)
-                  df[["T"]] <- round(df[["T"]], 2)
-                  maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
+                  # Round to 2 digits to reduce the complexity of the colour palette
+                  df <- dplyr::mutate_at(df, vars(one_of(c("A", "C", "G", "T"))),
+                                                  funs(round), digits = 2)
+                  maxBase <- max(vapply(c("A", "C", "G", "T"), 
+                                        function(x){max(df[[x]])}, numeric(1)))
+                  # Set the colours, using opacity for G
                   df$opacity <- 1 - df$G / maxBase
                   df$colour <- with(df, rgb(red = `T` * opacity / maxBase,
                                             green = A * opacity / maxBase,
                                             blue = C * opacity / maxBase))
                   
                   basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
-                  
                   df <- dplyr::right_join(df, basicStat, by = "Filename")
-                  df <- df[c("Filename", "Start", "End", "colour", "Longest_sequence", "A", "C", "G", "T")]
-                  df$Position <- as.integer(df$Start)
-                  df$Filename <- labels[df$Filename]
+                  df <- df[c("Filename", "Start", "End", "colour", 
+                             "Longest_sequence", "A", "C", "G", "T")]
+                  # df$Position <- as.integer(df$Start)
+                  # df$Filename <- labels[df$Filename]
                   
-                  if(cluster){
-                      mat <- reshape2::melt(df, id.vars = c("Filename", "Start"), measure.vars = c("A", "C", "G", "T"), variable.name = "Base", value.name = "Percent")
-                      
-                      mat <- reshape2::acast(mat, Filename ~ Start + Base, value.var = "Percent")
-                      mat[is.na(mat)] <- 0
-                      clus <- as.dendrogram(hclust(dist(mat), method = "ward.D2"))
-                      row.ord <- order.dendrogram(clus)
-                      df$Filename <- factor(df$Filename, levels = unique(df$Filename)[row.ord])
-                  }
-                  else{
-                      df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+                  if (dendrogram && !cluster){
+                      message("cluster will be set to TRUE when dendrogram = TRUE")
+                      cluster <- TRUE
                   }
                   
-                  key <-levels(df$Filename) 
-                  key <- names(labels[match(key, labels)])
+                  # Now define the order for a dendrogram if required
+                  key <- names(labels)
+                  if (cluster){
+                      df_gath <- tidyr::gather(df, key = "Base", value = "Percent", 
+                                               one_of(c("A", "C", "G", "T")))
+                      df_gath$Start <- paste(df_gath$Start, df_gath$Base, sep = "_")
+                      cols <- c("Filename", "Start", "Percent")
+                      clusterDend <- setClusters(df = df_gath[cols], 
+                                                 rowVal = "Filename", 
+                                                 colVal = "Start", 
+                                                 value = "Percent")
+                      key <- labels(clusterDend)
+                  }
+                  # Now set everything as factors
+                  df$Filename <- factor(labels[df$Filename], 
+                                        levels = labels[key])
+                  # Define the colours as named colours (name = colour)
                   tileCols <- unique(df$colour)
                   names(tileCols) <- unique(df$colour)
-                  
+                  # Define the tile locations
+                  df$y <- as.integer(df$Filename)
                   df$ymax <- as.integer(df$Filename) + 0.5
                   df$ymin <- df$ymax - 1
                   df$xmax <- df$End + 0.5
                   df$xmin <- df$Start - 1
                   df$Window <- paste(df$Start, "-", df$End, "bp")
                   
-                  scPlot <- ggplot(df, aes_string(fill = "colour", A = "A", C = "C", G = "G", `T` = "T", 
-                                                  Filename = "Filename", Window = "Window")) + 
-                      geom_rect(aes_string(xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax")) +
+                  xLab <- "Position in read (bp)"
+                  yLab <- "Filename"
+                  
+                  scPlot <- ggplot(df, 
+                                   aes_string(y = "y",
+                                              fill = "colour", 
+                                              A = "A", C = "C", G = "G", `T` = "T", 
+                                              Filename = "Filename", Window = "Window")) + 
+                      geom_rect(aes_string(xmin = "xmin", xmax = "xmax", 
+                                           ymin = "ymin", ymax = "ymax"),
+                                colour = "#00000000") +
                       scale_fill_manual(values = tileCols) +
                       scale_x_continuous(expand = c(0, 0)) +
-                      scale_y_discrete(expand = c(0, 0)) +
+                      scale_y_continuous(expand = c(0, 0),
+                                         breaks = seq_along(levels(df$Filename)),
+                                         labels = levels(df$Filename)) +
                       theme_bw() +
                       theme(legend.position = "none",
                             panel.grid.minor = element_blank(),
                             panel.grid.major = element_blank()) +
-                      labs(x = "Position in read (bp)",
-                           y = "Filename")
+                      labs(x = xLab, y = yLab)
                   
                   if (!is.null(userTheme)) scPlot <- scPlot + userTheme
                   
                   if (usePlotly){
                       scPlot <- scPlot +
                           theme(axis.ticks.y = element_blank(),
-                                axis.text.y = element_blank())
+                                axis.text.y = element_blank(),
+                                axis.title.y = element_blank(),
+                                panel.grid = element_blank())
                       
-                      t <- getSummary(x)
-                      t <- t[t$Category == "Per base sequence content",]
-                      t$Filename <- labels[t$Filename]
-                      t$Filename <- factor(t$Filename, levels = levels(df$Filename))
-                      sideBar <- ngsReports:::makeSidebar(status = t, key = key, pwfCols = pwfCols)
+                      status <- getSummary(x)
+                      status <- status[status$Category == "Per base sequence content",]
+                      status$Filename <- labels[status$Filename]
+                      status$Filename <- factor(status$Filename, 
+                                                levels = levels(df$Filename))
+                      sideBar <- makeSidebar(status = status, key = key, 
+                                             pwfCols = pwfCols)
                       
                       #plot dendro
-                      if (cluster && dendrogram){
-                          dx <- ggdendro::dendro_data(clus)
-                          dendro <- ngsReports:::ggdend(dx$segments) +
+                      if (dendrogram){
+                          dx <- ggdendro::dendro_data(clusterDend)
+                          dendro <- ggdend(dx$segments) +
                               coord_flip() +
                               scale_y_reverse(expand = c(0, 0)) +
-                              scale_x_continuous(expand = c(0, 0.5)) +
-                              theme(panel.background = element_blank(),
-                                    panel.grid = element_blank())
-                          
-                          
-                          
-                          scPlot <- suppressWarnings(
-                              suppressMessages(
-                                  plotly::subplot(dendro, sideBar, scPlot, widths = c(0.1,0.08,0.82),
-                                                  margin = 0.001, shareY = TRUE) 
-                              ))
-                          
-                          
-                          
+                              scale_x_continuous(expand = c(0, 0.5))
+                          dendro <- plotly::ggplotly(dendro, tooltip = NULL)
                           
                       }
                       else{
-                          # Return the plot
-                          scPlot <- suppressWarnings(
-                              suppressMessages(
-                                  plotly::subplot(plotly::plotly_empty(), sideBar, scPlot, widths = c(0.1,0.08,0.82),
-                                                  margin = 0.001, shareY = TRUE) 
-                              )
-                          )
+                          dendro <- plotly::plotly_empty()
                       }
+
                       
+                      scPlot <- suppressWarnings(
+                          suppressMessages(
+                              plotly::subplot(dendro, sideBar, scPlot, 
+                                              widths = c(0.1,0.08,0.82),
+                                              margin = 0.001, shareY = TRUE) 
+                          )
+                      )
+                      
+                      ## This needs to be copied from master...
+                      ## We have fixed it there...
                       ## manually edit tooltip to remove colour
                       sc <- lapply(seq_along(scPlot$x$data), function(x){
                           scPlot$x$data[[x]]$text <<- gsub("colour:.*<br />A", "A",  scPlot$x$data[[x]]$text)
