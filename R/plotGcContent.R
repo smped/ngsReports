@@ -435,6 +435,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                               coord_flip() +
                               scale_y_reverse(expand = c(0, 0)) +
                               scale_x_continuous(expand = c(0, 0.5))
+                          dendro <- plotly::ggplotly(dendro, tooltip = NULL)
                       }
                       else{
                           dendro <- plotly::plotly_empty()
@@ -450,8 +451,6 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                           )
                       gcPlot <- plotly::layout(gcPlot,
                                                xaxis3 = list(title = xlab))
-                      # Turn off the tooltip for the dendrogram
-                      gcPlot$x$data[[1]]$hoverinfo <- "none"
                       
                   }
               }

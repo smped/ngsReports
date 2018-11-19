@@ -432,10 +432,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                               coord_flip() +
                               scale_y_reverse(expand = c(0, 0)) +
                               scale_x_continuous(expand = c(0,0.5))
-                          
-                          dendro <- suppressMessages(
-                              plotly::ggplotly(dendro)
-                          )
+                          dendro <- plotly::ggplotly(dendro, tooltip = NULL)
                       }
                       else{
                           dendro <- plotly::plotly_empty()
@@ -451,8 +448,6 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                           qualPlot,
                           xaxis3 = list(title = xlab)
                       )
-                      # Turn off the tooltip for the dendrogram
-                      qualPlot$x$data[[1]]$hoverinfo <- "none"
                   }
                   else{
                       # Add the custom themes

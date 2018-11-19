@@ -299,6 +299,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                           coord_flip() +
                           scale_y_reverse(expand = c(0, 0)) +
                           scale_x_continuous(expand = c(0, 0.5))
+                      dendro <- plotly::ggplotly(dendro, tooltip = NULL)
                   }
                   else {
                       dendro <- plotly::plotly_empty()
@@ -311,9 +312,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                                           margin = 0.001, 
                                           shareY = TRUE)))
                   dupPlot <- plotly::layout(dupPlot, xaxis3 = list(title = xlab))
-                  
-                  # Turn off the tooltip for the dendrogram
-                  dupPlot$x$data[[1]]$hoverinfo <- "none"
+
               }
               dupPlot
           }
