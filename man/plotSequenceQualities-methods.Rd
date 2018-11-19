@@ -15,22 +15,25 @@
 \alias{plotSequenceQualities,FastqcDataList}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
-plotSequenceQualities(x, usePlotly = FALSE, ...)
+plotSequenceQualities(x, usePlotly = FALSE, counts = FALSE, ...)
 
-\S4method{plotSequenceQualities}{character}(x, usePlotly = FALSE, ...)
+\S4method{plotSequenceQualities}{character}(x, usePlotly = FALSE,
+  counts = FALSE, ...)
 
-\S4method{plotSequenceQualities}{FastqcFile}(x, usePlotly = FALSE, ...)
+\S4method{plotSequenceQualities}{FastqcFile}(x, usePlotly = FALSE,
+  counts = FALSE, ...)
 
 \S4method{plotSequenceQualities}{FastqcFileList}(x, usePlotly = FALSE,
-  ...)
+  counts = FALSE, ...)
 
 \S4method{plotSequenceQualities}{FastqcData}(x, usePlotly = FALSE,
-  counts = FALSE, warn = 30, fail = 20, pwfCols, alpha = 0.2, ...)
+  counts = FALSE, labels, warn = 30, fail = 20, pwfCols,
+  alpha = 0.2, ...)
 
 \S4method{plotSequenceQualities}{FastqcDataList}(x, usePlotly = FALSE,
-  counts = FALSE, pwfCols, labels, plotType = "heatmap",
-  dendrogram = FALSE, cluster = FALSE, lineCol = "grey20",
-  lineWidth = 0.2, alpha = 0.1, warn = 30, fail = 20, ...)
+  counts = FALSE, labels, plotType = c("heatmap", "line"),
+  dendrogram = FALSE, cluster = FALSE, warn = 30, fail = 20,
+  pwfCols, alpha = 0.1, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -39,21 +42,21 @@ plotSequenceQualities(x, usePlotly = FALSE, ...)
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
+\item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
+If \code{counts = FALSE} the frequencies will be plotted}
+
 \item{...}{Used to pass various potting parameters to theme.
 Can also be used to set size and colour for box outlines.}
 
-\item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
-If \code{counts = FALSE} the frequencies will be plotted}
+\item{labels}{An optional named factor of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
 
 \item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{alpha}{set alpha for line graph bounds}
-
-\item{labels}{An optional named factor of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
 
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
 or \code{plotType = "line"}}
