@@ -371,7 +371,8 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                                                            hjust = 1,
                                                            vjust = 0.5),
                                 axis.text.y = element_blank(),
-                                axis.ticks.y = element_blank())
+                                axis.ticks.y = element_blank(),
+                                legend.position = "none")
                       if (!is.null(userTheme)) acPlot <- acPlot + userTheme
 
                       # plot dendro
@@ -453,11 +454,19 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                           plotly::ggplotly(acPlot,
                                            hoverinfo = c("x", "y", "colour"))
                       )
+                      
                       # Set the hoverinfo for bg rectangles to the vertices only,
                       # This will effectively hide them
-                      acPlot$x$data[[1]]$hoverinfo <- "none"
-                      acPlot$x$data[[2]]$hoverinfo <- "none"
-                      acPlot$x$data[[3]]$hoverinfo <- "none"
+                      acPlot$x$data <- lapply(acPlot$x$data, function(x){
+                          # If there is a name component & it contains PASS/WARN/FAIL
+                          # set the hoverinfo to none
+                          if ("name" %in% names(x)){
+                              if (grepl("(PASS|WARN|FAIL)", x$name)){
+                                  x$hoverinfo <- "none"
+                              }
+                          }
+                          x
+                      })
                   }
               }
               acPlot
