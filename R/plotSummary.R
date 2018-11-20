@@ -47,31 +47,34 @@
 #' @name plotSummary
 #' @rdname plotSummary-methods
 #' @export
-setGeneric("plotSummary",function(x, usePlotly = FALSE, ...){standardGeneric("plotSummary")})
+setGeneric("plotSummary",
+           function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
+               standardGeneric("plotSummary")
+               })
 #' @aliases plotSummary,character
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
               if (length(x) == 1) stop("plotSummary() can only be called on two or more files.")
               x <- getFastqcData(x)
-              plotSummary(x, usePlotly,...)
+              plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
           }
 )
 #' @aliases plotSummary,FastqcFileList
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
               x <- getFastqcData(x)
-              plotSummary(x, usePlotly,...)
+              plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
           }
 )
 #' @aliases plotSummary,FastqcDataList
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = TRUE,
+          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
                    ..., gridlineWidth = 0.2, gridlineCol = "grey20"){
               
               df <- getSummary(x)
@@ -80,17 +83,13 @@ setMethod("plotSummary", signature = "FastqcDataList",
               stopifnot(isValidPwf(pwfCols))
               fillCol <- getColours(pwfCols)
               
+              # Set labels
+              labels <- setLabels(df, labels, ...)
+
+              # Set factor levels
               df$Category <- factor(df$Category, levels = unique(df$Category))
               df$Status <- factor(df$Status, levels = rev(c("PASS", "WARN", "FAIL")))
-              
-              # Drop the suffix, or check the alternate labels
-              if (missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", fileName(x)), names = fileName(x))
-              }
-              else{
-                  if (!all(fileName(x) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              df$StatusNum <- as.integer(df$Status)
               
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
@@ -99,91 +98,88 @@ setMethod("plotSummary", signature = "FastqcDataList",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
-              # Add any new labels
-              df$Filename <- labels[df$Filename]
-              df$StatusNum <- as.integer(df$Status)
-              
-              if(cluster){
-                  dfClus <- df[colnames(df) != "Status"]
-                  dfClus <- reshape2::dcast(dfClus, Filename ~ Category, value.var = "StatusNum")
-                  xx <- dfClus[!colnames(dfClus) == "Filename"]
-                  xx[is.na(xx)] <- 0
-                  clus <- as.dendrogram(hclust(dist(xx), method = "ward.D2"))
-                  row.ord <- order.dendrogram(clus)
-                  dfClus <- dfClus[row.ord,]
-                  order <- dfClus$Filename
-              }
-              else{
-                  order <- rev(unique(df$Filename))
+              # Make sure cluster is TRUE if the dendrogram is requested
+              if (dendrogram && !cluster){
+                  message("cluster will be set to TRUE when dendrogram = TRUE")
+                  cluster <- TRUE
               }
               
-              df$Filename <- factor(df$Filename, levels = order)
+              # Now define the order for a dendrogram if required
+              # This only applies to a heatmap
+              key <- names(labels)
+              if (cluster){
+                  cols <- c("Filename", "Category", "StatusNum")
+                  clusterDend <- setClusters(df = df[cols],
+                                             rowVal = "Filename",
+                                             colVal = "Category",
+                                             value = "StatusNum")
+                  key <- labels(clusterDend)
+              }
+              
+              # Set factor levels accordingly
+              df$Filename <- factor(labels[df$Filename],
+                                    levels = labels[key])
+              
+              # Create the basic plot
+              sumPlot <- ggplot(df, aes_string(x = "Category", y = "Filename", 
+                                               fill = "Status")) +
+                  geom_tile(colour = gridlineCol, size = gridlineWidth) +
+                  scale_fill_manual(values = fillCol) +
+                  labs(x = "QC Category", y = "Filename") +
+                  scale_x_discrete(expand=c(0,0)) +
+                  scale_y_discrete(expand=c(0,0)) +
+                  theme_bw() +
+                  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+              
+              # Add any parameters from dotArgs
+              if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
               
               if(usePlotly){
+                  
+                  # Set the dimensions of the plot
                   ny <- length(x)
                   nx <- length(unique(df$Category))
                   
-                  sumPlot <- ggplot(df, aes_string(x = "Category", y = "Filename", fill = "StatusNum", key = "Status")) +
-                      geom_tile(colour = gridlineCol) +
-                      geom_vline(xintercept = seq(1.5, nx), colour = gridlineCol, size = gridlineWidth) +
-                      geom_hline(yintercept = seq(1.5, ny), colour = gridlineCol, size = gridlineWidth) +
-                      scale_fill_gradientn(colours = c(fillCol["FAIL"],
-                                                       fillCol["WARN"],
-                                                       fillCol["PASS"]),
-                                           values = c(0,1)) +
-                      scale_x_discrete(expand=c(0,0)) +
-                      scale_y_discrete(expand=c(0,0)) +
-                      # labs(x="QC Category", y="Filename") +
-                      theme_bw() +
-                      theme(axis.text = element_blank(),
-                            axis.ticks = element_blank(),
-                            plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
-                            legend.position = "none")
-                  
-                  # Add any parameters from dotArgs
-                  if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-                  
-                  if (cluster && dendrogram){
-                      dx <- ggdendro::dendro_data(clus)
-                      dendro <- ngsReports:::ggdend(dx$segments) +
+                  if (dendrogram){
+                      # Remove the legend and labels for plotly
+                      sumPlot <- sumPlot + 
+                          theme(axis.text.y = element_blank(),
+                                axis.ticks = element_blank(),
+                                axis.title = element_blank(),
+                                plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
+                                legend.position = "none")
+                      # Get the dendrogram sorted out
+                      dx <- ggdendro::dendro_data(clusterDend)
+                      dendro <- ggdend(dx$segments) +
                           coord_flip() +
                           scale_y_reverse(expand = c(0, 0)) +
                           scale_x_continuous(expand = c(0, 0.5))
+                      dendro <- plotly::ggplotly(dendro, tooltip = NULL)
                       
+                      # Now layout the plotly version
                       sumPlot <- suppressWarnings(
-                          suppressMessages(ggplotly(sumPlot, tooltip = c("Category", "Filename", "Status")))
-                      )
-                      
-                      suppressWarnings(
                           suppressMessages(
-                              plotly::subplot(plotly::plotly_empty(), dendro, sumPlot, widths = c(0.04,0.08,0.88),
-                                              margin = 0.001, shareY = TRUE) %>%
-                                  plotly::layout(annotations = list(text = "Filename", showarrow = FALSE, textangle = -90),
-                                                 xaxis3 = list(title = "Category"))
-                          ))
-                  }
-                  
-                  else{
-                      suppressWarnings(
-                          suppressMessages(ggplotly(sumPlot, tooltip = c("x", "y", "key")))
+                              plotly::subplot(dendro, sumPlot, widths = c(0.1, 0.9),
+                                              margin = 0.001, shareY = TRUE)
+                          )
                       )
                   }
-              }
-              else{
+                  else{
+                      
+                      # Remove the legend and set the margin for plotly
+                      sumPlot <- sumPlot + 
+                          theme(axis.title = element_blank(),
+                                plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
+                                legend.position = "none")
+                      
+                      # Generate as a single plot
+                      sumPlot <- plotly::ggplotly(sumPlot)
+                      
+                  }
                   
-                  sumPlot <- ggplot(df, aes_string(x = "Category", y = "Filename", fill = "Status")) +
-                      geom_tile(colour = gridlineCol, size = gridlineWidth) +
-                      scale_fill_manual(values = fillCol) +
-                      labs(x="QC Category", y="Filename") +
-                      scale_x_discrete(expand=c(0,0)) +
-                      scale_y_discrete(expand=c(0,0)) +
-                      theme_bw() +
-                      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-                  
-                  # Add any parameters from dotArgs
-                  if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
-                  sumPlot
               }
+
+              sumPlot
               
           }
 )

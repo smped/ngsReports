@@ -11,14 +11,17 @@
 \alias{plotSummary,FastqcDataList}
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
-plotSummary(x, usePlotly = FALSE, ...)
+plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
+  dendrogram = FALSE, ...)
 
-\S4method{plotSummary}{character}(x, usePlotly = FALSE, ...)
+\S4method{plotSummary}{character}(x, usePlotly = FALSE, labels, pwfCols,
+  cluster = FALSE, dendrogram = FALSE, ...)
 
-\S4method{plotSummary}{FastqcFileList}(x, usePlotly = FALSE, ...)
+\S4method{plotSummary}{FastqcFileList}(x, usePlotly = FALSE, labels,
+  pwfCols, cluster = FALSE, dendrogram = FALSE, ...)
 
 \S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, cluster = FALSE, dendrogram = TRUE, ...,
+  pwfCols, cluster = FALSE, dendrogram = FALSE, ...,
   gridlineWidth = 0.2, gridlineCol = "grey20")
 }
 \arguments{
@@ -26,8 +29,6 @@ plotSummary(x, usePlotly = FALSE, ...)
 \code{FastqcDataList} or path}
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
-
-\item{...}{Used to pass various potting parameters to theme.}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
@@ -41,6 +42,8 @@ fastqc data will be clustered using hierarchical clustering}
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
+
+\item{...}{Used to pass various potting parameters to theme.}
 
 \item{gridlineWidth, gridlineCol}{Passed to geom_hline and geom_vline to determine
 width and colour of gridlines}
