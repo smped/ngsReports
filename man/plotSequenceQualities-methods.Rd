@@ -15,25 +15,28 @@
 \alias{plotSequenceQualities,FastqcDataList}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
-plotSequenceQualities(x, usePlotly = FALSE, counts = FALSE, ...)
+plotSequenceQualities(x, usePlotly = FALSE, labels, counts = FALSE,
+  pwfCols, alpha = 0.1, warn = 30, fail = 20, ...)
 
-\S4method{plotSequenceQualities}{character}(x, usePlotly = FALSE,
-  counts = FALSE, ...)
+\S4method{plotSequenceQualities}{character}(x, usePlotly = FALSE, labels,
+  counts = FALSE, pwfCols, alpha = 0.1, warn = 30, fail = 20, ...)
 
 \S4method{plotSequenceQualities}{FastqcFile}(x, usePlotly = FALSE,
-  counts = FALSE, ...)
+  labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30,
+  fail = 20, ...)
 
 \S4method{plotSequenceQualities}{FastqcFileList}(x, usePlotly = FALSE,
-  counts = FALSE, ...)
+  labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30,
+  fail = 20, ...)
 
 \S4method{plotSequenceQualities}{FastqcData}(x, usePlotly = FALSE,
-  counts = FALSE, labels, warn = 30, fail = 20, pwfCols,
-  alpha = 0.2, ...)
+  labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30,
+  fail = 20, ...)
 
 \S4method{plotSequenceQualities}{FastqcDataList}(x, usePlotly = FALSE,
-  counts = FALSE, labels, plotType = c("heatmap", "line"),
-  dendrogram = FALSE, cluster = FALSE, warn = 30, fail = 20,
-  pwfCols, alpha = 0.1, ...)
+  labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30,
+  fail = 20, plotType = c("heatmap", "line"), dendrogram = FALSE,
+  cluster = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -42,21 +45,21 @@ plotSequenceQualities(x, usePlotly = FALSE, counts = FALSE, ...)
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
-\item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
-If \code{counts = FALSE} the frequencies will be plotted}
-
-\item{...}{Used to pass various potting parameters to theme.
-Can also be used to set size and colour for box outlines.}
-
 \item{labels}{An optional named factor of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
+\item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
+If \code{counts = FALSE} the frequencies will be plotted}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
 
 \item{alpha}{set alpha for line graph bounds}
+
+\item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
+
+\item{...}{Used to pass various potting parameters to theme.
+Can also be used to set size and colour for box outlines.}
 
 \item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
 or \code{plotType = "line"}}
@@ -67,9 +70,6 @@ will be displayed.}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
-
-\item{lineWidth, lineCol}{Passed to geom_hline and geom_vline to determine
-width and colour of gridlines}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object

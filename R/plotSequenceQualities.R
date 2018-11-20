@@ -27,8 +27,6 @@
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
 #' If \code{TRUE} plot will be rendered with plotly
 #' @param alpha set alpha for line graph bounds
-#' @param lineWidth,lineCol Passed to geom_hline and geom_vline to determine
-#' width and colour of gridlines
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
 #'
@@ -58,8 +56,10 @@
 #' @name plotSequenceQualities
 #' @rdname plotSequenceQualities-methods
 #' @export
-setGeneric("plotSequenceQualities",function(x, usePlotly = FALSE, counts = FALSE,
-                                            ...){standardGeneric("plotSequenceQualities")})
+setGeneric("plotSequenceQualities",
+           function(x, usePlotly = FALSE, labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30, fail = 20, ...){
+               standardGeneric("plotSequenceQualities")
+           })
 #' @aliases plotSequenceQualities,character
 #' @rdname plotSequenceQualities-methods
 #' @export
@@ -73,7 +73,7 @@ setMethod("plotSequenceQualities", signature = "character",
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, ...){
+          function(x, ...){
               x <- getFastqcData(x)
               plotSequenceQualities(x, usePlotly,...)
           }
@@ -82,7 +82,7 @@ setMethod("plotSequenceQualities", signature = "FastqcFile",
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, ...){
               x <- getFastqcData(x)
               plotSequenceQualities(x, usePlotly, ...)
           }
@@ -91,8 +91,7 @@ setMethod("plotSequenceQualities", signature = "FastqcFileList",
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcData",
-          function(x, usePlotly = FALSE, counts = FALSE, labels,
-                   warn = 30, fail = 20, pwfCols, alpha = 0.2, ...){
+          function(x, ...){
 
               df <- Per_sequence_quality_scores(x)
 
@@ -109,6 +108,8 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               # Sort out the colours
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               stopifnot(isValidPwf(pwfCols))
+              pwfCols <- setAlpha(pwfCols, alpha)
+              stopifnot(warn > fail)
 
               # Find the minimum quality value
               minQ <- min(df$Quality)
@@ -121,7 +122,6 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
               # make Ranges for rectangles and set alpha
-              pwfCols <- setAlpha(pwfCols, alpha)
               rects <- tibble(ymin = 0,
                               ymax = max(df$Count),
                               xmin = c(0, fail, warn),
@@ -226,10 +226,10 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, counts = FALSE, labels,
+          function(x, usePlotly = FALSE, labels, counts = FALSE,
+                   pwfCols, alpha = 0.1, warn = 30, fail = 20,
                    plotType = c("heatmap", "line"),
-                   dendrogram = FALSE, cluster = FALSE,
-                   warn = 30, fail = 20, pwfCols, alpha = 0.1, ...){
+                   dendrogram = FALSE, cluster = FALSE, ...){
 
               # Read in data
               df <- Per_sequence_quality_scores(x)
@@ -244,6 +244,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
               plotType <- match.arg(plotType)
               xLab <- "Mean Sequence Quality Per Read (Phred Score)"
               plotVal <- ifelse(counts, "Count", "Frequency")
+              stopifnot(warn > fail)
 
               # Drop the suffix, or check the alternate labels
               labels <- setLabels(df, labels, ...)

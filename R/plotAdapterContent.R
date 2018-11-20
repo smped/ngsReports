@@ -61,6 +61,7 @@
 #' @import tibble
 #' @importFrom plotly plotly_empty ggplotly
 #' @importFrom stats hclust dist
+#' @importFrom zoo na.locf
 #'
 #' @name plotAdapterContent
 #' @rdname plotAdapterContent-methods
@@ -308,7 +309,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                       Longest_sequence <- max(as.integer(Longest_sequence))
                       dfFill <- data.frame(Start = seq_len(Longest_sequence))
                       x <- dplyr::right_join(x, dfFill, by = "Start")
-                      zoo::na.locf(x)
+                      na.locf(x)
                   })
                   df <- dplyr::bind_rows(df)
 
@@ -454,7 +455,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                           plotly::ggplotly(acPlot,
                                            hoverinfo = c("x", "y", "colour"))
                       )
-                      
+
                       # Set the hoverinfo for bg rectangles to the vertices only,
                       # This will effectively hide them
                       acPlot$x$data <- lapply(acPlot$x$data, function(x){
