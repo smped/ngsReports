@@ -91,35 +91,35 @@ setMethod("plotSequenceQualities", signature = "FastqcFileList",
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcData",
-          function(x, usePlotly = FALSE, counts = FALSE, labels, 
+          function(x, usePlotly = FALSE, counts = FALSE, labels,
                    warn = 30, fail = 20, pwfCols, alpha = 0.2, ...){
-              
+
               df <- Per_sequence_quality_scores(x)
-              
+
               if (!length(df)) {
                   qualPlot <- emptyPlot("No Sequence Quality Moudule Detected")
                   if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
                   return(qualPlot)
               }
-              
+
               # Set labels
               labels <- setLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
-              
+
               # Sort out the colours
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               stopifnot(isValidPwf(pwfCols))
-              
+
               # Find the minimum quality value
               minQ <- min(df$Quality)
-              
+
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-              
+
               # make Ranges for rectangles and set alpha
               pwfCols <- setAlpha(pwfCols, alpha)
               rects <- tibble(ymin = 0,
@@ -127,10 +127,10 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                               xmin = c(0, fail, warn),
                               xmax = c(fail, warn, 41),
                               Status = c("FAIL", "WARN", "PASS"))
-              
+
               xLab <- "Mean Sequence Quality Per Read (Phred Score)"
               yLab <- "Number of Sequences"
-              
+
               if (!counts){
                   Count <- NULL # To avoid NOTE messages in R CMD check
                   # Summarise to frequencies & initialise the plot
@@ -140,34 +140,34 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                   df$Frequency <- round(df$Frequency, 3)
                   df$Percent <- scales::percent(df$Frequency)
                   rects$ymax <- max(df$Frequency)
-                  
+
                   qualPlot <- ggplot(df) +
                       geom_rect(data = rects,
                                 aes_string(xmin = "xmin", xmax = "xmax",
-                                           ymin = "ymin", ymax = "ymax", 
+                                           ymin = "ymin", ymax = "ymax",
                                            fill = "Status")) +
-                      geom_line(aes_string(x = "Quality", y = "Frequency", 
+                      geom_line(aes_string(x = "Quality", y = "Frequency",
                                            colour = "Filename"))
                   yLabelFun <- scales::percent_format(accuracy = 1)
                   yLab <- "Frequency"
-                  
+
               }
               else{
                   # Initialise the plot using counts
                   qualPlot <- ggplot(df) +
                       geom_rect(data = rects,
                                 aes_string(xmin = "xmin", xmax = "xmax",
-                                           ymin = "ymin", ymax = "ymax", 
+                                           ymin = "ymin", ymax = "ymax",
                                            fill = "Status")) +
-                      geom_line(aes_string(x = "Quality", y = "Count", 
+                      geom_line(aes_string(x = "Quality", y = "Count",
                                            colour = "Filename"))
                   yLabelFun <- scales::comma
-                  
+
               }
-              
+
               qualPlot <- qualPlot +
                   scale_fill_manual(values = getColours(pwfCols))  +
-                  scale_y_continuous(limits = c(0, rects$ymax[1]), 
+                  scale_y_continuous(limits = c(0, rects$ymax[1]),
                                      expand =c(0, 0),
                                      labels = yLabelFun) +
                   scale_x_continuous(expand = c(0, 0)) +
@@ -175,13 +175,13 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                   facet_wrap(~Filename) +
                   labs(x = xLab,
                        y = yLab) +
-                  theme_bw() + 
+                  theme_bw() +
                   theme(legend.position = "none")
-              
+
               if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
-              
+
               if(usePlotly){
-                  
+
                   # Render as a plotly object
                   qualPlot <- suppressMessages(
                       suppressWarnings(
@@ -189,19 +189,19 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                                            hoverinfo = c("x", "y", "colour"))
                       )
                   )
-                  
+
                   qualPlot <- suppressMessages(
                       suppressWarnings(
-                          plotly::subplot(plotly::plotly_empty(), 
-                                          qualPlot, 
+                          plotly::subplot(plotly::plotly_empty(),
+                                          qualPlot,
                                           widths = c(0.14,0.86))
                       )
                   )
                   qualPlot <- plotly::layout(qualPlot,
-                                             xaxis2 = list(title = xLab), 
+                                             xaxis2 = list(title = xLab),
                                              yaxis2 = list(title = yLab))
-                  
-                  
+
+
                   # Set the hoverinfo for bg rectangles to the vertices only,
                   # This will effectively hide them
                   qualPlot$x$data <- lapply(qualPlot$x$data, function(x){
@@ -215,86 +215,89 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                       x
                   })
               }
-              
+
               # Draw the plot
               qualPlot
-              
+
           }
-          
+
 )
 #' @aliases plotSequenceQualities,FastqcDataList
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, counts = FALSE, labels, 
-                   plotType = c("heatmap", "line"), 
-                   dendrogram = FALSE, cluster = FALSE, 
+          function(x, usePlotly = FALSE, counts = FALSE, labels,
+                   plotType = c("heatmap", "line"),
+                   dendrogram = FALSE, cluster = FALSE,
                    warn = 30, fail = 20, pwfCols, alpha = 0.1, ...){
-              
+
               # Read in data
               df <- Per_sequence_quality_scores(x)
-              
+
               if (!length(df)) {
                   qualPlot <- emptyPlot("No Sequence Quality Moudule Detected")
                   if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
                   return(qualPlot)
               }
-              
+
               # Check for valid plotType
               plotType <- match.arg(plotType)
-              
+              xLab <- "Mean Sequence Quality Per Read (Phred Score)"
+              plotVal <- ifelse(counts, "Count", "Frequency")
+
               # Drop the suffix, or check the alternate labels
               labels <- setLabels(df, labels, ...)
-              
+
               # Sort out the colours
               if(base::missing(pwfCols)) pwfCols <- ngsReports::pwf
-              
+
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-              
+
               if(plotType == "heatmap"){
-                  
+
                   if (dendrogram && !cluster){
                       message("cluster will be set to TRUE when dendrogram = TRUE")
                       cluster <- TRUE
                   }
-                  
+
+                  yLab <- "Filename"
+                  xLim <- c(min(df$Quality) - 1, max(df$Quality) + 1)
+
                   if (!counts){
+
                       Count <- NULL # To avoid NOTE messages in R CMD check
-                      
+
                       # Summarise to frequencies & initialise the plot
                       df <- dplyr::group_by(df, Filename)
                       df <- dplyr::mutate(df, Frequency = Count / sum(Count))
                       df <- dplyr::ungroup(df)
                       df$Frequency <- round(df$Frequency, 3)
+
                   }
-                  
-                  plotVal <- ifelse(counts, "Count", "Frequency")
-                  xLab <- "Mean Sequence Quality Per Read (Phred Score)"
-                  yLab <- "Filename"
-                  xLim <- c(min(df$Quality) - 1, max(df$Quality) + 1)
-                  
+
                   # Now define the order for a dendrogram if required
                   # This only applies to a heatmap
                   key <- names(labels)
                   if (cluster){
-                      clusterDend <- setClusters(df = df[c("Filename", "Quality", plotVal)], 
-                                                 rowVal = "Filename", 
-                                                 colVal = "Quality", 
+                      cols <- c("Filename", "Quality", plotVal)
+                      clusterDend <- setClusters(df = df[cols],
+                                                 rowVal = "Filename",
+                                                 colVal = "Quality",
                                                  value = plotVal)
                       key <- labels(clusterDend)
                   }
-                  
+
                   # Now set everything as factors
-                  df$Filename <- factor(labels[df$Filename], 
+                  df$Filename <- factor(labels[df$Filename],
                                         levels = labels[key])
 
-                  qualPlot <- ggplot(df, 
-                                     aes_string(x = "Quality", y = "Filename", 
+                  qualPlot <- ggplot(df,
+                                     aes_string(x = "Quality", y = "Filename",
                                                 fill = plotVal)) +
                       geom_tile() +
                       labs(x = xLab, y = yLab) +
@@ -302,9 +305,9 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                       scale_x_continuous(limits = xLim, expand = c(0, 0)) +
                       theme(panel.grid.minor = element_blank(),
                             panel.background = element_blank())
-                  
+
                   if(usePlotly){
-                      
+
                       # Add lines and remove axis data
                       qualPlot <- qualPlot +
                           theme(axis.title.y = element_blank(),
@@ -322,14 +325,14 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                       status <- getSummary(x)
                       status <- status[status$Category == "Per sequence quality scores",]
                       status$Filename <- labels[status$Filename]
-                      status <- dplyr::mutate(status, 
+                      status <- dplyr::mutate(status,
                                               Filename = factor(Filename, levels = levels(df$Filename)))
                       status <- dplyr::right_join(status, unique(df["Filename"]),
                                                   by = "Filename")
-                      
+
                       # Make sidebar
                       sideBar <- makeSidebar(status = status, key = key, pwfCols = pwfCols)
-                      
+
                       #plot dendrogram
                       if (dendrogram){
                           dx <- ggdendro::dendro_data(clusterDend)
@@ -357,10 +360,10 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                                                                plot_bgcolor = "white"))
                   }
               }
-              
+
               if(plotType == "line"){
-                 
-                   # make Ranges for rectangles and set alpha
+
+                  # make Ranges for rectangles and set alpha
                   pwfCols <- setAlpha(pwfCols, alpha)
                   rects <- tibble(ymin = 0,
                                   ymax = max(df$Count),
@@ -369,35 +372,36 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                                   Status = c("FAIL", "WARN", "PASS"))
                   # No clustering required so just use the labels
                   df$Filename <- labels[df$Filename]
-                  
-                  yLabelFun <- ifelse(counts, 
-                                      scales::comma, 
-                                      scales::percent_format(accuracy = 1))
+
                   yLab <- ifelse(counts, "Number of Sequences", "Frequency")
+                  yLabelFun <- ifelse(counts,
+                                      scales::comma,
+                                      scales::percent_format(accuracy = 1))
                   plotVal <- ifelse(counts, "Count", "Frequency")
-                  
+
                   if (!counts){
-                      
+
                       # To avoid NOTE messages in R CMD check
-                      Count <- NULL 
-                      
+                      Count <- NULL
+
                       # Summarise to frequencies & initialise the plot
                       df <- dplyr::group_by(df, Filename)
                       df <- dplyr::mutate(df, Frequency = Count / sum(Count))
                       df <- dplyr::ungroup(df)
+                      df$Frequency <- round(df$Frequency, 4)
                       rects$ymax <- max(df$Frequency)
-                      
+
                   }
 
                   qualPlot <- ggplot(df) +
                       geom_rect(data = rects,
                                 aes_string(xmin = "xmin", xmax = "xmax",
-                                           ymin = "ymin", ymax = "ymax", 
+                                           ymin = "ymin", ymax = "ymax",
                                            fill = "Status")) +
-                      geom_line(aes_string(x = "Quality", y = plotVal, 
+                      geom_line(aes_string(x = "Quality", y = plotVal,
                                            colour = "Filename")) +
                       scale_fill_manual(values = getColours(pwfCols))  +
-                      scale_y_continuous(limits = c(0, rects$ymax[1]), 
+                      scale_y_continuous(limits = c(0, rects$ymax[1]),
                                          expand =c(0, 0),
                                          labels = yLabelFun) +
                       scale_x_continuous(expand = c(0, 0)) +
@@ -405,11 +409,11 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                       labs(x = xLab, y = yLab) +
                       guides(fill = FALSE) +
                       theme_bw()
-                  
+
                   if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
-                  
+
                   if(usePlotly){
-                      
+
                       qualPlot <- qualPlot + theme(legend.position = "none")
                       qualPlot <- suppressMessages(
                           suppressWarnings(
@@ -417,8 +421,8 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                                                hoverinfo = c("x", "y", "colour"))
                           )
                       )
-                      
-                      # Set the hoverinfo for bg rectangles to the vertices only,
+
+                      # Turn off the hoverinfo for the bg rectangles
                       # This will effectively hide them
                       qualPlot$x$data <- lapply(qualPlot$x$data, function(x){
                           # If there is a name component & it contains PASS/WARN/FAIL
@@ -431,8 +435,8 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                           x
                       })
                   }}
-              
+
               qualPlot
           }
-          
+
 )
