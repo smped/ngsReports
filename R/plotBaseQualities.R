@@ -13,19 +13,22 @@
 #' If \code{TRUE} plot will be rendered with plotly
 #' @param nc \code{numeric}. The number of columns to create in the plot layout.
 #' Only used if drawing boxplots for multiple files in a FastqcDataList
-#' @param warn,fail The default values for warn and fail are 30 and 20 respectively (i.e. percentages)
+#' @param warn,fail The default values for warn and fail are 30 and 20 respectively
+#'  (i.e. percentages)
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param plotType \code{character} Can be either \code{"boxplot"} or \code{"heatmap"}
-#' @param plotValue \code{character} Type of quality data to be presented "Mean" or "Median"
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
-#' values in plot
+#' @param plotType \code{character} Can be either \code{"boxplot"} or 
+#' \code{"heatmap"}
+#' @param plotValue \code{character} Type of quality data to be presented "Mean" 
+#' or "Median"
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, 
+#' warning, and fail values in plot
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
 #' @param boxWidth set the width of boxes when using a boxplot
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
@@ -53,40 +56,46 @@
 #' @name plotBaseQualities
 #' @rdname plotBaseQualities-methods
 #' @export
-setGeneric("plotBaseQualities",function(x, usePlotly = FALSE, ...){standardGeneric("plotBaseQualities")})
+setGeneric("plotBaseQualities",
+           function(x, usePlotly = FALSE, labels, pwfCols, warn, fail, boxWidth,
+                    ...){
+               standardGeneric("plotBaseQualities")
+               })
 #' @aliases plotBaseQualities,character
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, 
+                   boxWidth = 0.8, ...){
               x <- getFastqcData(x)
-              plotBaseQualities(x, usePlotly,...)
+              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
           }
 )
 #' @aliases plotBaseQualities,FastqcFile
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, 
+                   boxWidth = 0.8, ...){
               x <- getFastqcData(x)
-              plotBaseQualities(x, usePlotly,...)
+              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
           }
 )
 #' @aliases plotBaseQualities,FastqcFileList
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, 
+                   boxWidth = 0.8, ...){
               x <- getFastqcData(x)
-              plotBaseQualities(x, usePlotly,...)
+              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
           }
 )
 #' @aliases plotBaseQualities,FastqcData
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels,
-                   pwfCols, warn = 25, fail = 20,
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, 
                    boxWidth = 0.8, ...){
 
               # Get the data
@@ -214,12 +223,10 @@ setMethod("plotBaseQualities", signature = "FastqcData",
 #' @rdname plotBaseQualities-methods
 #' @export
 setMethod("plotBaseQualities", signature = "FastqcDataList",
-          function(x,  usePlotly = FALSE,
-                   plotType = c("heatmap", "boxplot"),
+          function(x,  usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, 
+                   boxWidth = 0.8, plotType = c("heatmap", "boxplot"),
                    plotValue = c("Mean", "Median"),
-                   cluster = FALSE, dendrogram = FALSE,
-                   labels, nc = 2, boxWidth = 0.8,
-                   pwfCols, warn = 25, fail = 20, ...){
+                   cluster = FALSE, dendrogram = FALSE, nc = 2, ...){
 
               # Get the data
               df <- Per_base_sequence_quality(x)

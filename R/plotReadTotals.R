@@ -4,11 +4,13 @@
 #'
 #' @details Draw a barplot of read totals using the standard ggplot2 syntax.
 #' Read totals will be plotted in millions as this is the most common.
-#' The raw data from \code{\link{readTotals}} can otherwise be used to manually create a plot.
+#' The raw data from \code{\link{readTotals}} can otherwise be used to manually
+#' create a plot.
 #'
-#' However, this is based on the value shown on FASTQC reports at the top of DeDuplicatedTotals plot,
-#' and is known to be inaccurate.
-#' As it still gives a good guide as to sequence diversity it is included as the default.
+#' However, this is based on the value shown on FASTQC reports at the top of 
+#' DeDuplicatedTotals plot, and is known to be inaccurate.
+#' As it still gives a good guide as to sequence diversity it is included as the
+#' default.
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
@@ -17,10 +19,12 @@
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param duplicated \code{logical}. Include deduplicated read total estimates to plot charts
-#' @param bars If \code{duplicated = TRUE}, show unique and deduplicated reads as "stacked" or "adjacent".
+#' @param duplicated \code{logical}. Include deduplicated read total estimates 
+#' to plot charts
+#' @param bars If \code{duplicated = TRUE}, show unique and deduplicated reads 
+#' as "stacked" or "adjacent".
 #' @param barCols Colours for duplicated and unique reads.
-#' @param expand.x Multiplicative scaling for the upper limit of the x-axis
+#' @param expand.x Passed to \code{expand_scale(mult = expand.x)} for the x-axis.
 #' @param ... Used to pass additional attributes to theme()
 #'
 #' @examples
@@ -47,19 +51,22 @@
 #' @name plotReadTotals
 #' @rdname plotReadTotals-methods
 #' @export
-setGeneric("plotReadTotals",function(x, usePlotly = FALSE, duplicated = TRUE, 
-                                     bars = c("stacked", "adjacent"), ...){
+setGeneric("plotReadTotals",
+           function(x, usePlotly = FALSE, labels, duplicated, bars, barCols, 
+                    expand.x, ...){
     standardGeneric("plotReadTotals")
 })
 #' @aliases plotReadTotals,character
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod("plotReadTotals", signature = "character",
-          function(x, usePlotly = FALSE, duplicated = TRUE, 
-                   bars = c("stacked", "adjacent"), ...){
+          function(x, usePlotly = FALSE, labels, duplicated = TRUE, 
+                   bars = c("stacked", "adjacent"), barCols = c("red","blue"),
+                   expand.x = c(0, 0.02), ...){
               if (length(x) > 1){
                   x <- getFastqcData(x)
-                  plotReadTotals(x, usePlotly, duplicated, bars, ...)
+                  plotReadTotals(x, usePlotly, labels, duplicated, bars, barCols,
+                                 expand.x, ...)
               }
               else{
                   stop("plotReadTotals cannot be called on a single FastqcFile")
@@ -70,20 +77,21 @@ setMethod("plotReadTotals", signature = "character",
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod("plotReadTotals", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, duplicated = TRUE, 
-                   bars = c("stacked", "adjacent"), ...){
+          function(x, usePlotly = FALSE, labels, duplicated = TRUE, 
+                   bars = c("stacked", "adjacent"), barCols = c("red","blue"), 
+                   expand.x = c(0, 0.02), ...){
               x <- getFastqcData(x)
-              plotReadTotals(x, usePlotly, duplicated, bars, ...)
+              plotReadTotals(x, usePlotly, labels, duplicated, bars, barCols,
+                             expand.x, ...)
           }
 )
 #' @aliases plotReadTotals,FastqcDataList
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod("plotReadTotals", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, duplicated = TRUE,
-                   bars = c("stacked", "adjacent"), labels,
-                   barCols = c(rgb(0.9, 0.2, 0.2), rgb(0.2, 0.2, 0.8)),
-                   expand.x = 0.02, ...){
+          function(x, usePlotly = FALSE, labels, duplicated = TRUE,
+                   bars = c("stacked", "adjacent"), barCols = c("red","blue"),
+                   expand.x = c(0, 0.02), ...){
               
               df <- readTotals(x)
               stopifnot(is.logical(duplicated))
@@ -105,8 +113,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               
               # Check the axis expansion
               stopifnot(is.numeric(expand.x))
-              xMax <- max(df$Total_Sequences)*(1 + expand.x[[1]])
-              
+              xMax <- max(df$Total_Sequences)
               xLab <- "Read Totals"
               
               if (!duplicated){
@@ -115,7 +122,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                       geom_bar(stat = "identity", fill = barCols) +
                       scale_y_continuous(labels = scales::comma,
                                          limits = c(0, xMax),
-                                         expand = c(0, 0)) +
+                                         expand = expand_scale(mult = expand.x)) +
                       labs(y = xLab) + 
                       coord_flip() +
                       theme_bw()
@@ -157,7 +164,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                       geom_bar(stat = "identity", position = position) +
                       scale_y_continuous(labels = scales::comma,
                                          limits = c(0, xMax),
-                                         expand = c(0, 0)) +
+                                         expand = expand_scale(mult = expand.x)) +
                       scale_fill_manual(values = barCols) +
                       labs(y = xLab) + 
                       coord_flip() +

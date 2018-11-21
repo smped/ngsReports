@@ -3,11 +3,13 @@
 #' @description Extract the PASS/WARN/FAIL summaries and plot them
 #'
 #' @details This uses the standard ggplot2 syntax to create a three colour plot.
-#' The output of this function can be further modified using the standard ggplot2 methods.
+#' The output of this function can be further modified using the standard 
+#' ggplot2 methods.
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours 
+#' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
@@ -15,11 +17,11 @@
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
 #' @param ... Used to pass various potting parameters to theme.
-#' @param gridlineWidth,gridlineCol Passed to geom_hline and geom_vline to determine
-#' width and colour of gridlines
+#' @param gridlineWidth,gridlineCol Passed to geom_hline and geom_vline to 
+#' determine width and colour of gridlines
 #'
 #' @return A ggplot2 object (\code{usePlotly = FALSE})
 #' or an interactive plotly object (\code{usePlotly = TRUE})
@@ -48,15 +50,18 @@
 #' @rdname plotSummary-methods
 #' @export
 setGeneric("plotSummary",
-           function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
+           function(x, usePlotly = FALSE, labels, pwfCols, cluster, dendrogram, ...){
                standardGeneric("plotSummary")
                })
 #' @aliases plotSummary,character
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "character",
-          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
-              if (length(x) == 1) stop("plotSummary() can only be called on two or more files.")
+          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, 
+                   dendrogram = FALSE, ...){
+              if (length(x) == 1) stop(
+                  "plotSummary() can only be called on two or more files."
+                  )
               x <- getFastqcData(x)
               plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
           }
@@ -65,7 +70,8 @@ setMethod("plotSummary", signature = "character",
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, 
+                   dendrogram = FALSE, ...){
               x <- getFastqcData(x)
               plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
           }
@@ -74,8 +80,9 @@ setMethod("plotSummary", signature = "FastqcFileList",
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
-                   ..., gridlineWidth = 0.2, gridlineCol = "grey20"){
+          function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, 
+                   dendrogram = FALSE, ..., 
+                   gridlineWidth = 0.2, gridlineCol = "grey20"){
               
               df <- getSummary(x)
               
@@ -139,6 +146,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
                   # Set the dimensions of the plot
                   ny <- length(x)
                   nx <- length(unique(df$Category))
+                  mar <- unit(c(0.01, 0.01, 0.01, 0.04), "npc")
                   
                   if (dendrogram){
                       # Remove the legend and labels for plotly
@@ -146,7 +154,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
                           theme(axis.text.y = element_blank(),
                                 axis.ticks = element_blank(),
                                 axis.title = element_blank(),
-                                plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
+                                plot.margin = mar,
                                 legend.position = "none")
                       # Get the dendrogram sorted out
                       dx <- ggdendro::dendro_data(clusterDend)
@@ -159,8 +167,10 @@ setMethod("plotSummary", signature = "FastqcDataList",
                       # Now layout the plotly version
                       sumPlot <- suppressWarnings(
                           suppressMessages(
-                              plotly::subplot(dendro, sumPlot, widths = c(0.1, 0.9),
-                                              margin = 0.001, shareY = TRUE)
+                              plotly::subplot(dendro, sumPlot, 
+                                              widths = c(0.1, 0.9),
+                                              margin = 0.001, 
+                                              shareY = TRUE)
                           )
                       )
                   }
@@ -169,7 +179,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
                       # Remove the legend and set the margin for plotly
                       sumPlot <- sumPlot + 
                           theme(axis.title = element_blank(),
-                                plot.margin = unit(c(0.01, 0.01, 0.01, 0.04), "npc"),
+                                plot.margin = mar,
                                 legend.position = "none")
                       
                       # Generate as a single plot

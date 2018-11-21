@@ -14,16 +14,17 @@
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
 #' @param lineWidth Passed to \code{geom_line(size = lineWidth)}
-#' @param pal The colour palette.
-#' If the vector supplied is less than n, \code{grDevices::colorRampPalette()} will be used
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
-#' values in plot
+#' @param pal The colour palette. If the vector supplied is less than n, 
+#' \code{grDevices::colorRampPalette()} will be used
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for 
+#' pass, warning, and fail values in the plot
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
-#' @param heatCol Colour palette used for the heatmap. Default is \code{inferno} from the package \code{viridris}
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
+#' @param heatCol Colour palette used for the heatmap. Default is \code{inferno}
+#' from the package \code{viridris}
 #'
 #' @return A standard ggplot2 object or an interactive plotly object
 #'
@@ -37,46 +38,48 @@
 #' fdl <- getFastqcData(fileList)
 #' plotKmers(fdl[[1]])
 #'
-#' @importFrom magrittr %>%
 #' @importFrom dplyr desc
 #' @import ggplot2
 #'
 #' @name plotKmers
 #' @rdname plotKmers-methods
 #' @export
-setGeneric("plotKmers",function(x, usePlotly = FALSE, ...){standardGeneric("plotKmers")})
+setGeneric("plotKmers",
+           function(x, usePlotly = FALSE, labels, ...){
+               standardGeneric("plotKmers")
+               })
 #' @aliases plotKmers,character
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, ...){
               x <- getFastqcData(x)
-              plotKmers(x, usePlotly,...)
+              plotKmers(x, usePlotly, labels, ...)
           }
 )
 #' @aliases plotKmers,FastqcFile
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, ...){
               x <- getFastqcData(x)
-              plotKmers(x, usePlotly,...)
+              plotKmers(x, usePlotly, labels, ...)
           }
 )
 #' @aliases plotKmers,FastqcFileList
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, ...){
               x <- getFastqcData(x)
-              plotKmers(x, usePlotly,...)
+              plotKmers(x, usePlotly, labels, ...)
           }
 )
 #' @aliases plotKmers,FastqcData
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcData",
-          function(x, usePlotly = FALSE,  n = 6, labels, ..., lineWidth = 0.5,
+          function(x, usePlotly = FALSE, labels, n = 6, ..., lineWidth = 0.5,
                    pal = c("red", "blue", "green", "black", "magenta", "yellow")){
               
               # Get the basic data frame
@@ -167,7 +170,9 @@ setMethod("plotKmers", signature = "FastqcData",
               
               # Now draw the basic plots
               kMerPlot <- ggplot(df,
-                                 aes_string(x =" Position", y = "Value", colour = "Sequence")) +
+                                 aes_string(x =" Position", 
+                                            y = "Value", 
+                                            colour = "Sequence")) +
                   geom_line(size = lineWidth) +
                   facet_wrap(~Filename) +
                   scale_x_continuous(breaks = refForX$Position,
@@ -299,9 +304,10 @@ setMethod("plotKmers", signature = "FastqcDataList",
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
               
               xLab <- "Position in Read (bp)"
-              kMerPlot <- ggplot(df, 
-                                 aes_string(x = "`Middle of Bin`", y = "Filename", 
-                                            fill = "Total", width = "Width")) +
+              kMerPlot <- ggplot(df, aes_string(x = "`Middle of Bin`", 
+                                                y = "Filename", 
+                                                fill = "Total",
+                                                width = "Width")) +
                   geom_tile() +
                   labs(x = xLab) +
                   scale_x_continuous(expand = c(0.02, 0)) +
@@ -339,7 +345,8 @@ setMethod("plotKmers", signature = "FastqcDataList",
                       suppressMessages(
                           plotly::subplot(dendro, sideBar, kMerPlot, 
                                           widths = c(0.08, 0.09,0.83),
-                                          margin = 0.001, shareY = TRUE, shareX = TRUE)
+                                          margin = 0.001, 
+                                          shareY = TRUE, shareX = TRUE)
                       ))
 
                   kMerPlot <- plotly::layout(

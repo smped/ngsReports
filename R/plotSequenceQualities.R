@@ -2,26 +2,29 @@
 #'
 #' @description Plot the Per Sequence Quality Scores for a set of FASTQC reports
 #'
-#' @details Plots the distribution of average sequence quality scores across the set of files.
-#' Values can be plotted either as counts (\code{counts = TRUE}) or as frequencies (\code{counts = FALSE}).
+#' @details Plots the distribution of average sequence quality scores across the
+#' set of files. Values can be plotted either as counts (\code{counts = TRUE}) 
+#' or as frequencies (\code{counts = FALSE}).
 #'
-#' Any faceting or scale adjustment can be performed after generation of the initial plot,
-#' using the standard methods of ggplot2 as desired.
+#' Any faceting or scale adjustment can be performed after generation of the 
+#' initial plot, using the standard methods of ggplot2 as desired.
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
-#' @param counts \code{logical}. Plot the counts from each file if \code{counts = TRUE}.
-#' If \code{counts = FALSE} the frequencies will be plotted
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param counts \code{logical}. Plot the counts from each file if 
+#' \code{counts = TRUE}, otherwise the frequencies will be plotted
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours 
+#' for PASS/WARN/FAIL
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param plotType \code{character}. Can only take the values \code{plotType = "heatmap"}
-#' or \code{plotType = "line"}
-#' @param warn,fail The default values for warn and fail are 5 and 10 respectively (i.e. precentages)
+#' @param plotType \code{character}. Can only take the values 
+#' \code{plotType = "heatmap"} or \code{plotType = "line"}
+#' @param warn,fail The default values for warn and fail are 5 and 10 
+#' respectively (i.e. percentages)
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
@@ -57,42 +60,49 @@
 #' @rdname plotSequenceQualities-methods
 #' @export
 setGeneric("plotSequenceQualities",
-           function(x, usePlotly = FALSE, labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30, fail = 20, ...){
+           function(x, usePlotly = FALSE, labels, pwfCols, counts, alpha, warn, fail, ...){
                standardGeneric("plotSequenceQualities")
            })
 #' @aliases plotSequenceQualities,character
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, 
+                   alpha = 0.1, warn = 30, fail = 20, ...){
               x <- getFastqcData(x)
-              plotSequenceQualities(x, usePlotly,...)
+              plotSequenceQualities(x, usePlotly, labels, pwfCols, counts, 
+                                    alpha, warn, fail, ...)
           }
 )
 #' @aliases plotSequenceQualities,FastqcFile
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcFile",
-          function(x, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, 
+                   alpha = 0.1, warn = 30, fail = 20, ...){
               x <- getFastqcData(x)
-              plotSequenceQualities(x, usePlotly,...)
+              plotSequenceQualities(x, usePlotly, labels, pwfCols, counts, 
+                                    alpha, warn, fail, ...)
           }
 )
 #' @aliases plotSequenceQualities,FastqcFileList
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcFileList",
-          function(x, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, 
+                   alpha = 0.1, warn = 30, fail = 20, ...){
               x <- getFastqcData(x)
-              plotSequenceQualities(x, usePlotly, ...)
+              plotSequenceQualities(x, usePlotly, labels, pwfCols, counts, 
+                                    alpha, warn, fail, ...)
           }
 )
 #' @aliases plotSequenceQualities,FastqcData
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcData",
-          function(x, ...){
-
+          function(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, 
+                   alpha = 0.1, warn = 30, fail = 20, ...){
+              
               df <- Per_sequence_quality_scores(x)
 
               if (!length(df)) {
@@ -226,8 +236,8 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
 #' @rdname plotSequenceQualities-methods
 #' @export
 setMethod("plotSequenceQualities", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, counts = FALSE,
-                   pwfCols, alpha = 0.1, warn = 30, fail = 20,
+          function(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE,
+                   alpha = 0.1, warn = 30, fail = 20,
                    plotType = c("heatmap", "line"),
                    dendrogram = FALSE, cluster = FALSE, ...){
 

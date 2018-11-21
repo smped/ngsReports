@@ -1,11 +1,13 @@
 #' @title Plot the combined Sequence_Duplication_Levels information
 #'
-#' @description Plot the Sequence_Duplication_Levels information for a set of FASTQC reports
+#' @description Plot the Sequence_Duplication_Levels information for a set of 
+#' FASTQC reports
 #'
 #' @details
-#' This extracts the Sequence_Duplication_Levels from the supplied object and generates a ggplot2 object,
-#' with a set of minimal defaults.
-#' The output of this function can be further modified using the standard ggplot2 methods.
+#' This extracts the Sequence_Duplication_Levels from the supplied object and
+#' generates a ggplot2 object, with a set of minimal defaults.
+#' The output of this function can be further modified using the standard 
+#' ggplot2 methods.
 #'
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -15,16 +17,18 @@
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
-#' values in plot
-#' @param warn,fail The default values for warn and fail are 20 and 50 respectively (i.e. percentages)
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for 
+#' pass, warning, and fail values in the plot
+#' @param warn,fail The default values for warn and fail are 20 and 50 
+#' respectively (i.e. percentages)
 #' @param lineCols Colours of the lines drawn for individual libraries
-#' @param deduplication Plot Duplication levels 'pre' or 'post' deduplication. Can only take values "pre" and "post"
+#' @param deduplication Plot Duplication levels 'pre' or 'post' deduplication. 
+#' Can only take values "pre" and "post"
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
 #' @param heatCol Colour palette used for the heatmap
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
@@ -53,32 +57,35 @@
 #' @name plotDuplicationLevels
 #' @rdname plotDuplicationLevels-methods
 #' @export
-setGeneric("plotDuplicationLevels",function(x, usePlotly = FALSE, ...){standardGeneric("plotDuplicationLevels")})
+setGeneric("plotDuplicationLevels",
+           function(x, usePlotly = FALSE, labels, pwfCols, ...){
+               standardGeneric("plotDuplicationLevels")
+               })
 #' @aliases plotDuplicationLevels,character
 #' @rdname plotDuplicationLevels-methods
 #' @export
 setMethod("plotDuplicationLevels", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, ...){
               x <- getFastqcData(x)
-              plotDuplicationLevels(x, usePlotly,...)
+              plotDuplicationLevels(x, usePlotly, labels, pwfCols, ...)
           }
 )
 #' @aliases plotDuplicationLevels,FastqcFile
 #' @rdname plotDuplicationLevels-methods
 #' @export
 setMethod("plotDuplicationLevels", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, ...){
               x <- getFastqcData(x)
-              plotDuplicationLevels(x, usePlotly,...)
+              plotDuplicationLevels(x, usePlotly, labels, pwfCols, ...)
           }
 )
 #' @aliases plotDuplicationLevels,FastqcFileList
 #' @rdname plotDuplicationLevels-methods
 #' @export
 setMethod("plotDuplicationLevels", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, ...){
               x <- getFastqcData(x)
-              plotDuplicationLevels(x, usePlotly,...)
+              plotDuplicationLevels(x, usePlotly, labels, pwfCols, ...)
           }
 )
 #' @aliases plotDuplicationLevels,FastqcData
@@ -193,9 +200,9 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
 #' @rdname plotDuplicationLevels-methods
 #' @export
 setMethod("plotDuplicationLevels", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, pwfCols,
-                   deduplication = c("pre", "post"),
-                   cluster = FALSE, dendrogram = FALSE,  heatCol = inferno(50), ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, 
+                   deduplication = c("pre", "post"), cluster = FALSE, 
+                   dendrogram = FALSE,  heatCol = inferno(50), ...){
               
               df <- Sequence_Duplication_Levels(x)
               
@@ -207,10 +214,12 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               
               # Select the 'pre/post' option & clean up the data
               deduplication <- match.arg(deduplication)
-              type <- c(pre = "Percentage_of_total", post = "Percentage_of_deduplicated")[deduplication]
+              type <- c(pre = "Percentage_of_total", 
+                        post = "Percentage_of_deduplicated")[deduplication]
               df <- df[c("Filename", "Duplication_Level", type)]
               df[[type]] <- round(df[[type]], 2)
-              # These will come in in order, but may not stay this way in the following code
+              # These will come in in order, but may not stay this way 
+              # in the following code
               dupLevels <- unique(df$Duplication_Level)
               
               # Drop the suffix, or check the alternate labels

@@ -15,26 +15,26 @@
 \alias{plotSequenceQualities,FastqcDataList}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
-plotSequenceQualities(x, usePlotly = FALSE, labels, counts = FALSE,
-  pwfCols, alpha = 0.1, warn = 30, fail = 20, ...)
+plotSequenceQualities(x, usePlotly = FALSE, labels, pwfCols, counts,
+  alpha, warn, fail, ...)
 
 \S4method{plotSequenceQualities}{character}(x, usePlotly = FALSE, labels,
-  counts = FALSE, pwfCols, alpha = 0.1, warn = 30, fail = 20, ...)
+  pwfCols, counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
 
 \S4method{plotSequenceQualities}{FastqcFile}(x, usePlotly = FALSE,
-  labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30,
+  labels, pwfCols, counts = FALSE, alpha = 0.1, warn = 30,
   fail = 20, ...)
 
 \S4method{plotSequenceQualities}{FastqcFileList}(x, usePlotly = FALSE,
-  labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30,
+  labels, pwfCols, counts = FALSE, alpha = 0.1, warn = 30,
   fail = 20, ...)
 
 \S4method{plotSequenceQualities}{FastqcData}(x, usePlotly = FALSE,
-  labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30,
+  labels, pwfCols, counts = FALSE, alpha = 0.1, warn = 30,
   fail = 20, ...)
 
 \S4method{plotSequenceQualities}{FastqcDataList}(x, usePlotly = FALSE,
-  labels, counts = FALSE, pwfCols, alpha = 0.1, warn = 30,
+  labels, pwfCols, counts = FALSE, alpha = 0.1, warn = 30,
   fail = 20, plotType = c("heatmap", "line"), dendrogram = FALSE,
   cluster = FALSE, ...)
 }
@@ -49,24 +49,26 @@ If \code{TRUE} plot will be rendered with plotly}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{counts}{\code{logical}. Plot the counts from each file if \code{counts = TRUE}.
-If \code{counts = FALSE} the frequencies will be plotted}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours 
+for PASS/WARN/FAIL}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+\item{counts}{\code{logical}. Plot the counts from each file if 
+\code{counts = TRUE}, otherwise the frequencies will be plotted}
 
 \item{alpha}{set alpha for line graph bounds}
 
-\item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
+\item{warn, fail}{The default values for warn and fail are 5 and 10 
+respectively (i.e. percentages)}
 
 \item{...}{Used to pass various potting parameters to theme.
 Can also be used to set size and colour for box outlines.}
 
-\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
-or \code{plotType = "line"}}
+\item{plotType}{\code{character}. Can only take the values 
+\code{plotType = "heatmap"} or \code{plotType = "line"}}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-will be displayed.}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+then the dendrogram will be displayed.}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -78,11 +80,12 @@ A standard ggplot2 object, or an interactive plotly object
 Plot the Per Sequence Quality Scores for a set of FASTQC reports
 }
 \details{
-Plots the distribution of average sequence quality scores across the set of files.
-Values can be plotted either as counts (\code{counts = TRUE}) or as frequencies (\code{counts = FALSE}).
+Plots the distribution of average sequence quality scores across the
+set of files. Values can be plotted either as counts (\code{counts = TRUE}) 
+or as frequencies (\code{counts = FALSE}).
 
-Any faceting or scale adjustment can be performed after generation of the initial plot,
-using the standard methods of ggplot2 as desired.
+Any faceting or scale adjustment can be performed after generation of the 
+initial plot, using the standard methods of ggplot2 as desired.
 }
 \examples{
 

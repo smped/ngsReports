@@ -3,20 +3,23 @@
 #' @description Draw an N Content Plot across one or more FASTQC reports
 #'
 #' @details
-#' This extracts the N_Content from the supplied object and generates a ggplot2 object,
-#' with a set of minimal defaults.
-#' The output of this function can be further modified using the standard ggplot2 methods.
+#' This extracts the N_Content from the supplied object and generates a ggplot2
+#' object, with a set of minimal defaults.
+#' The output of this function can be further modified using the standard 
+#' ggplot2 methods.
 #'
-#' When \code{x} is a single FastqcFile, or FastqcData object line plots will always
-#' be drawn for all Ns.
+#' When \code{x} is a single FastqcFile, or FastqcData object line plots will 
+#' always be drawn for all Ns.
 #' Otherwise, users can select line plots or heatmaps.
 #'
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
 #' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly object.
-#' @param warn,fail The default values for warn and fail are 5 and 10 respectively (i.e. precentages)
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param warn,fail The default values for warn and fail are 5 and 10 
+#' respectively (i.e. percentages)
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours 
+#' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default
@@ -24,8 +27,8 @@
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -50,40 +53,43 @@
 #' @name plotNContent
 #' @rdname plotNContent-methods
 #' @export
-setGeneric("plotNContent",function(x, usePlotly = FALSE, ...){standardGeneric("plotNContent")})
+setGeneric("plotNContent",
+           function(x, usePlotly = FALSE, labels, pwfCols, warn, fail, ...){
+               standardGeneric("plotNContent")
+               })
 #' @aliases plotNContent,character
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
               x <- getFastqcData(x)
-              plotNContent(x, usePlotly,...)
+              plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
           }
 )
 #' @aliases plotNContent,FastqcFile
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
               x <- getFastqcData(x)
-              plotNContent(x, usePlotly,...)
+              plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
           }
 )
 #' @aliases plotNContent,FastqcFileList
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
               x <- getFastqcData(x)
-              plotNContent(x, usePlotly,...)
+              plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
           }
 )
 #' @aliases plotNContent,FastqcData
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels,
-                   warn = 5, fail = 20, pwfCols, ..., lineCol = "red"){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, 
+                   ..., lineCol = "red"){
 
               # Get the NContent
               df <- Per_base_N_content(x)
@@ -138,7 +144,8 @@ setMethod("plotNContent", signature = "FastqcData",
                                        fill = "Status")) +
                   geom_line(aes_string(x = "xValue", y = "Percentage"),
                             colour = lineCol) +
-                  geom_point(aes_string(x = "xValue", y = "Percentage", group = "Base"),
+                  geom_point(aes_string(x = "xValue", y = "Percentage",
+                                        group = "Base"),
                              size = 0, colour = rgb(0, 0, 0, 0)) +
                   scale_fill_manual(values = getColours(pwfCols)) +
                   scale_x_continuous(breaks = unique(df$xValue),
@@ -149,7 +156,9 @@ setMethod("plotNContent", signature = "FastqcData",
                        y = yLab) +
                   guides(fill = FALSE) +
                   theme_bw() +
-                  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+                  theme(axis.text.x = element_text(
+                      angle = 90, hjust = 1, vjust = 0.5
+                      ))
 
               # Add the basic customisations
               if (!is.null(userTheme)) nPlot <- nPlot + userTheme
@@ -190,7 +199,7 @@ setMethod("plotNContent", signature = "FastqcData",
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, warn = 5, fail = 20, pwfCols,
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, 
                    cluster = FALSE, dendrogram = FALSE, ...){
               # Get the NContent
               df <- Per_base_N_content(x)

@@ -44,7 +44,10 @@
 #' @name plotSequenceContent
 #' @rdname plotSequenceContent-methods
 #' @export
-setGeneric("plotSequenceContent",function(x, usePlotly = FALSE, labels, ...){standardGeneric("plotSequenceContent")})
+setGeneric("plotSequenceContent",
+           function(x, usePlotly = FALSE, labels, ...){
+               standardGeneric("plotSequenceContent")
+           })
 #' @aliases plotSequenceContent,character
 #' @rdname plotSequenceContent-methods
 #' @export
@@ -96,7 +99,7 @@ setMethod("plotSequenceContent", signature = "FastqcData",
               
               df$Filename <- labels[df$Filename]
               df <- tidyr::gather(df, key = "Base", value = "Percent", 
-                            tidyselect::one_of(acgt))
+                                  tidyselect::one_of(acgt))
               df$Base <- factor(df$Base, levels = acgt)
               df$Percent <- round(df$Percent, 2)
               df$x <- as.integer(df$Position)
@@ -155,7 +158,8 @@ setMethod("plotSequenceContent", signature = "FastqcData",
 #' @rdname plotSequenceContent-methods
 #' @export
 setMethod("plotSequenceContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, plotType = c("heatmap", "line"), pwfCols,
+          function(x, usePlotly = FALSE, labels, pwfCols, 
+                   plotType = c("heatmap", "line"), 
                    cluster = TRUE, dendrogram = TRUE, ..., nc = 2){
               
               # Get the SequenceContent
@@ -195,7 +199,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   
                   # Round to 2 digits to reduce the complexity of the colour palette
                   df <- dplyr::mutate_at(df, vars(one_of(acgt)),
-                                                  funs(round), digits = 2)
+                                         funs(round), digits = 2)
                   maxBase <- max(vapply(acgt, 
                                         function(x){max(df[[x]])}, numeric(1)))
                   # Set the colours, using opacity for G
@@ -290,11 +294,11 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                       else{
                           dendro <- plotly::plotly_empty()
                       }
-
+                      
                       # Render using ggplotly to enable easier tooltip specification
                       scPlot <- plotly::ggplotly(
                           scPlot, tooltip = c(acgt, "Filename", "Position")
-                          )
+                      )
                       # Now make the complete layout
                       scPlot <- suppressWarnings(
                           suppressMessages(
@@ -303,7 +307,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                                               margin = 0.001, shareY = TRUE) 
                           )
                       )
- 
+                      
                   }
               }
               if (plotType == "line"){
@@ -341,8 +345,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                       theme_bw() +
                       theme(axis.text.x = element_text(
                           angle = 90, hjust = 1, vjust = 0.5
-                          ))
-                      
+                      ))
+                  
                   
                   if (!is.null(userTheme)) scPlot <- scPlot + userTheme
                   

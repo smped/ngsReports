@@ -70,14 +70,21 @@ setMethod("setColours", "PwfCols", function(object, PASS, WARN, FAIL, MAX){
 #' @aliases setAlpha,PwfCols-method
 setMethod("setAlpha", "PwfCols", function(object, alpha){
     stopifnot(alpha <= 255, alpha >= 0)
+    
+    # Get the alpha value in hex
     if (alpha > 1) alpha <- alpha/255 # Set to the range [0, 1]
     hexAlpha <- toupper(as.hexmode(floor(alpha*256))) # Convert to hex
     hexAlpha <- stringr::str_pad(hexAlpha, width = 2, side = "left", pad = "0")
-    setColours(object,
-               PASS = paste0(object@PASS, hexAlpha),
-               WARN = paste0(object@WARN, hexAlpha),
-               FAIL = paste0(object@FAIL, hexAlpha),
-               MAX = paste0(object@MAX, hexAlpha))
+    
+    # Get the colours without any existing alpha
+    oldCols <- getColours(object)
+    oldCols <- substr(oldCols, start = 1, stop = 7)
+    newCols <- paste0(oldCols, hexAlpha)
+    names(newCols) <- names(oldCols)
+    
+    # Now assign them to a new object
+    args <- c(Class = "PwfCols", as.list(newCols))
+    do.call(new, args)
 })
 
 

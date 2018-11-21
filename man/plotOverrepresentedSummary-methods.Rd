@@ -15,24 +15,24 @@
 \alias{plotOverrepresentedSummary,FastqcDataList}
 \title{Plot a summary of Over-represented Sequences}
 \usage{
-plotOverrepresentedSummary(x, usePlotly = FALSE, ...)
+plotOverrepresentedSummary(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotOverrepresentedSummary}{character}(x, usePlotly = FALSE,
-  ...)
+  labels, pwfCols, ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcFile}(x, usePlotly = FALSE,
-  ...)
+  labels, pwfCols, ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcFileList}(x,
-  usePlotly = FALSE, ...)
+  usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcData}(x, usePlotly = FALSE,
-  labels, n = 10, pwfCols, ...)
+  labels, pwfCols, n = 10, ...)
 
 \S4method{plotOverrepresentedSummary}{FastqcDataList}(x,
-  usePlotly = FALSE, labels, cluster = TRUE, dendrogram = TRUE,
-  pwfCols, ..., paletteName = "Set1", expand.x = c(0, 0),
-  expand.y = c(0, 0), xlab)
+  usePlotly = FALSE, labels, pwfCols, cluster = TRUE,
+  dendrogram = TRUE, ..., paletteName = "Set1", expand.x = c(0, 0),
+  expand.y = c(0, 0))
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -41,39 +41,40 @@ plotOverrepresentedSummary(x, usePlotly = FALSE, ...)
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
-
 \item{labels}{An optional named factor of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{n}{The number of sequences to plot from an individual file}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours 
+for PASS/WARN/FAIL}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+\item{...}{Used to pass additional attributes to theme() and between methods}
+
+\item{n}{The number of sequences to plot from an individual file}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-will be displayed.}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+then the dendrogram will be displayed.}
 
-\item{paletteName}{Name of the palette for colouring the possible sources of the overrepresented sequences.
-Must be a palette name from \code{RColorBrewer}}
+\item{paletteName}{Name of the palette for colouring the possible sources 
+of the overrepresented sequences. Must be a palette name from \code{RColorBrewer}}
 
 \item{expand.x, expand.y}{Vectors of length 2. Passed to `scale_*_continuous()`}
-
-\item{xlab}{Character label for the x-axis}
 }
 \value{
 A standard ggplot2 object
 }
 \description{
-Plot a summary of Over-represented Sequences for a set of FASTQC reports
+Plot a summary of Over-represented Sequences for a set of FASTQC 
+reports
 }
 \details{
 Percentages are obtained by simply summing those within a report.
-Any possible double counting by FastQC is ignored for the purposes of a simple approximation.
+Any possible double counting by FastQC is ignored for the purposes of a 
+simple approximation.
 }
 \examples{
 

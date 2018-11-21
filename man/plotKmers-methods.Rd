@@ -15,15 +15,15 @@
 \alias{plotKmers,FastqcDataList}
 \title{Plot Overrepresented Kmers}
 \usage{
-plotKmers(x, usePlotly = FALSE, ...)
+plotKmers(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{character}(x, usePlotly = FALSE, ...)
+\S4method{plotKmers}{character}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{FastqcFile}(x, usePlotly = FALSE, ...)
+\S4method{plotKmers}{FastqcFile}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{FastqcFileList}(x, usePlotly = FALSE, ...)
+\S4method{plotKmers}{FastqcFileList}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, n = 6, labels,
+\S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, labels, n = 6,
   ..., lineWidth = 0.5, pal = c("red", "blue", "green", "black",
   "magenta", "yellow"))
 
@@ -38,31 +38,32 @@ plotKmers(x, usePlotly = FALSE, ...)
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
 If \code{TRUE} plot will be rendered with plotly}
 
+\item{labels}{An optional named vector of labels for the file names.
+All filenames must be present in the names.
+File extensions are dropped by default.}
+
 \item{...}{Used to pass various potting parameters to theme.
 Can also be used to set size and colour for box outlines.}
 
 \item{n}{\code{numeric}. The number of Kmers to show.}
 
-\item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
-
 \item{lineWidth}{Passed to \code{geom_line(size = lineWidth)}}
 
-\item{pal}{The colour palette.
-If the vector supplied is less than n, \code{grDevices::colorRampPalette()} will be used}
+\item{pal}{The colour palette. If the vector supplied is less than n, 
+\code{grDevices::colorRampPalette()} will be used}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-will be displayed.}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+then the dendrogram will be displayed.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
-values in plot}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for 
+pass, warning, and fail values in the plot}
 
-\item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno} from the package \code{viridris}}
+\item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno}
+from the package \code{viridris}}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

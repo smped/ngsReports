@@ -1,9 +1,11 @@
 #' @title Plot a summary of Over-represented Sequences
 #'
-#' @description Plot a summary of Over-represented Sequences for a set of FASTQC reports
+#' @description Plot a summary of Over-represented Sequences for a set of FASTQC 
+#' reports
 #'
 #' @details Percentages are obtained by simply summing those within a report.
-#' Any possible double counting by FastQC is ignored for the purposes of a simple approximation.
+#' Any possible double counting by FastQC is ignored for the purposes of a 
+#' simple approximation.
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
 #' \code{FastqcDataList} or path
@@ -13,17 +15,17 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param n The number of sequences to plot from an individual file
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours 
+#' for PASS/WARN/FAIL
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #' @param expand.x,expand.y Vectors of length 2. Passed to `scale_*_continuous()`
-#' @param paletteName Name of the palette for colouring the possible sources of the overrepresented sequences.
-#' Must be a palette name from \code{RColorBrewer}
-#' @param xlab Character label for the x-axis
+#' @param paletteName Name of the palette for colouring the possible sources 
+#' of the overrepresented sequences. Must be a palette name from \code{RColorBrewer}
 #'
 #' @return A standard ggplot2 object
 #'
@@ -50,39 +52,42 @@
 #' @name plotOverrepresentedSummary
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
-setGeneric("plotOverrepresentedSummary",function(x, usePlotly = FALSE, ...){standardGeneric("plotOverrepresentedSummary")})
+setGeneric("plotOverrepresentedSummary",
+           function(x, usePlotly = FALSE, labels, pwfCols, ...){
+               standardGeneric("plotOverrepresentedSummary")
+               })
 #' @aliases plotOverrepresentedSummary,character
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, ...){
               x <- getFastqcData(x)
-              plotOverrepresentedSummary(x, usePlotly,...)
+              plotOverrepresentedSummary(x, usePlotly, labels, pwfCols, ...)
           }
 )
 #' @aliases plotOverrepresentedSummary,FastqcFile
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, ...){
               x <- getFastqcData(x)
-              plotOverrepresentedSummary(x, usePlotly,...)
+              plotOverrepresentedSummary(x, usePlotly, labels, pwfCols, ...)
           }
 )
 #' @aliases plotOverrepresentedSummary,FastqcFileList
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, ...){
               x <- getFastqcData(x)
-              plotOverrepresentedSummary(x, usePlotly,...)
+              plotOverrepresentedSummary(x, usePlotly, labels, pwfCols, ...)
           }
 )
 #' @aliases plotOverrepresentedSummary,FastqcData
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels, n = 10, pwfCols, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols,  n = 10, ...){
               
               df <- Overrepresented_sequences(x)
               
@@ -175,9 +180,9 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
 setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, labels, cluster = TRUE,
-                   dendrogram = TRUE, pwfCols, ..., paletteName = "Set1",
-                   expand.x = c(0, 0), expand.y = c(0.0, 0), xlab){
+          function(x, usePlotly = FALSE, labels, pwfCols, 
+                   cluster = TRUE, dendrogram = TRUE, ..., 
+                   paletteName = "Set1", expand.x = c(0, 0), expand.y = c(0, 0)){
               
               df <- Overrepresented_sequences(x)
               
@@ -253,16 +258,13 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               names(pal) <- levels(df$Possible_Source)
               
               # Set the axis label
-              if (missing(xlab)){
-                  xlab <- "Overrepresented Sequences (% of Total)"
-              }
-              xlab <- as.character(xlab)[[1]]
+              xLab <- "Overrepresented Sequences (% of Total)"
               
               overPlot <- ggplot(df, 
                                  aes_string(x = "Filename", y = "Percentage", 
                                             fill = "Possible_Source")) +
                   geom_bar(stat = "identity") +
-                  labs(y = xlab,
+                  labs(y = xLab,
                        fill = "Possible Source") +
                   scale_y_continuous(limits = c(0, ymax), expand = expand.x,
                                      labels = addPercent) +

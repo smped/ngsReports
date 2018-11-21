@@ -3,12 +3,13 @@
 #' @description Draw an Adapter Content Plot across one or more FASTQC reports
 #'
 #' @details
-#' This extracts the Adapter_Content from the supplied object and generates a ggplot2 object,
-#' with a set of minimal defaults.
-#' The output of this function can be further modified using the standard ggplot2 methods.
+#' This extracts the Adapter_Content from the supplied object and generates a 
+#' ggplot2 object, with a set of minimal defaults.
+#' The output of this function can be further modified using the standard 
+#' ggplot2 methods.
 #'
-#' When \code{x} is a single FastqcFile, or FastqcData object line plots will always
-#' be drawn for all adapters.
+#' When \code{x} is a single FastqcFile, or FastqcData object line plots will 
+#' always be drawn for all adapters.
 #' Otherwise, users can select line plots or heatmaps.
 #' When plotting more than one fastqc file, any undetected adapters will not be shown.
 #'
@@ -19,18 +20,20 @@
 #' @param adapterType A regular expression matching the adapter(s) to be plotted.
 #' To plot all adapters summed, specify \code{adapterType = "Total"}.
 #' This is the default behaviour.
-#' @param plotType \code{character}. Can only take the values \code{plotType = "heatmap"}
-#' or \code{plotType = "line"}
-#' @param warn,fail The default values for warn and fail are 5 and 10 respectively (i.e. precentages)
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL
+#' @param plotType \code{character}. Can only take the values 
+#' \code{plotType = "heatmap"} or \code{plotType = "line"}
+#' @param warn,fail The default values for warn and fail are 5 and 10 respectively 
+#' (i.e. percentages)
+#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours 
+#' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -66,34 +69,38 @@
 #' @name plotAdapterContent
 #' @rdname plotAdapterContent-methods
 #' @export
-setGeneric("plotAdapterContent",function(x, usePlotly = FALSE, ...){
+setGeneric("plotAdapterContent",
+           function(x, usePlotly = FALSE, labels, pwfCols, warn, fail, ...){
     standardGeneric("plotAdapterContent")
 })
 #' @aliases plotAdapterContent,character
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "character",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
               x <- getFastqcData(x)
-              plotAdapterContent(x, usePlotly,...)
+              plotAdapterContent(x, usePlotly, x, usePlotly, labels, duplicated, 
+                                 bars, barCols, expand.x, ...)
           }
 )
 #' @aliases plotAdapterContent,FastqcFile
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
               x <- getFastqcData(x)
-              plotAdapterContent(x, usePlotly,...)
+              plotAdapterContent(x, usePlotly, x, usePlotly, labels, duplicated, 
+                                 bars, barCols, expand.x, ...)
           }
 )
 #' @aliases plotAdapterContent,FastqcFileList
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
               x <- getFastqcData(x)
-              plotAdapterContent(x, usePlotly,...)
+              plotAdapterContent(x, usePlotly, x, usePlotly, labels, duplicated, 
+                                 bars, barCols, expand.x, ...)
           }
 )
 #' @aliases plotAdapterContent,FastqcData
@@ -160,8 +167,8 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                                       Status = c("PASS", "WARN", "FAIL"))
 
               # Create the basic plot
-              xlab <- "Position in read (bp)"
-              ylab <- "Percent (%)"
+              xLab <- "Position in read (bp)"
+              yLab <- "Percent (%)"
               acPlot <- ggplot(df) +
                   geom_rect(data = rects,
                             aes_string(xmin = "xmin", xmax = "xmax",
@@ -174,8 +181,8 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                   scale_fill_manual(values = getColours(pwfCols)) +
                   scale_colour_discrete() +
                   facet_wrap(~Filename, ncol = 1) +
-                  labs(x = xlab,
-                       y = ylab) +
+                  labs(x = xLab,
+                       y = yLab) +
                   guides(fill = FALSE) +
                   theme_bw() +
                   theme(legend.position = c(1, 1),
@@ -195,8 +202,8 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                               widths = c(0.14,0.86)))
                   )
                   acPlot <- plotly::layout(acPlot,
-                                           xaxis2 = list(title = xlab),
-                                           yaxis2 = list(title = ylab))
+                                           xaxis2 = list(title = xLab),
+                                           yaxis2 = list(title = yLab))
                   # Set the hoverinfo for bg rectangles to the vertices only,
                   # This will effectively hide them
                   acPlot$x$data[[1]]$hoverinfo <- "none"
@@ -212,9 +219,8 @@ setMethod("plotAdapterContent", signature = "FastqcData",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcDataList",
-          function(x, usePlotly = FALSE, plotType = c("heatmap", "line"), labels,
-                   adapterType = "Total",
-                   pwfCols, warn = 5, fail = 10,
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, 
+                   plotType = c("heatmap", "line"), adapterType = "Total",
                    cluster = FALSE, dendrogram = FALSE, ...){
 
               df <- Adapter_Content(x)
@@ -226,6 +232,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   return(acPlot)
               }
 
+              # Check for any columns with specific Adapters
               valueCols <- setdiff(colnames(df), c("Filename", "Position"))
               if (sum(df[valueCols]) == 0) {
                   acPlot <- emptyPlot("No Adapter Content in Sequences")
@@ -251,7 +258,8 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               df$Position <- factor(df$Position, levels = unique(df$Position))
 
               # Get the adapter type and summarise all if total is requested
-              adapterType <- grep(adapterType[1], c("Total_Adapter_Content", valueCols),
+              adapterType <- grep(adapterType[1], 
+                                  c("Total_Adapter_Content", valueCols),
                                   value = TRUE)
               if (length(adapterType) != 1) stop("Could not determine adapter type")
               if (adapterType == "Total_Adapter_Content") {
@@ -289,11 +297,11 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
               # Set the axis label for either plotType
-              xlab <- "Position in read (bp)"
+              xLab <- "Position in read (bp)"
 
               if (plotType == "heatmap"){
 
-                  ylab <- ifelse(dendrogram, "", "Filename")
+                  yLab <- ifelse(dendrogram, "", "Filename")
 
                   # Get the longest sequence
                   df$Start <- as.integer(
@@ -340,7 +348,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                                               fill = "Percent", type = "Type")) +
                       geom_tile() +
                       ggtitle(adapterType) +
-                      labs(x = xlab) +
+                      labs(x = xLab) +
                       scale_x_continuous(expand = c(0,0)) +
                       scale_y_discrete(expand = c(0, 0)) +
                       scale_fill_pwf(df$Percent, pwf, breaks = breaks,
@@ -400,11 +408,11 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                           ))
                       acPlot <- plotly::layout(acPlot,
                                                annotations = list(
-                                                   text = ylab,
+                                                   text = yLab,
                                                    textangle = -90,
                                                    showarrow = FALSE
                                                ),
-                                               xaxis3 = list(title = xlab),
+                                               xaxis3 = list(title = xLab),
                                                margin = list(b = 52))
 
                   }
@@ -412,7 +420,14 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
               if (plotType == "line") {
 
-                  ylab <- "Percent (%)"
+                  yLab <- "Percent (%)"
+                  
+                  key <- names(labels)
+                  if(cluster){
+                      clusterDend <- setClusters(df, "Filename", "Position", "Percent")
+                      key <- labels(clusterDend)
+                  }
+                  df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
                   # Define position as an integer just taking the first
                   # value in the Position field
@@ -425,11 +440,11 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   # Set the transparency & position of bg rectangles
                   pwfCols <- setAlpha(pwfCols, 0.2)
                   rects <- tibble(xmin = 0,
-                                          xmax = max(df$Start),
-                                          ymin = c(0, warn, fail),
-                                          ymax = c(warn, fail, 100),
-                                          Status = c("PASS", "WARN", "FAIL"))
-
+                                  xmax = max(df$Start),
+                                  ymin = c(0, warn, fail),
+                                  ymax = c(warn, fail, 100),
+                                  Status = c("PASS", "WARN", "FAIL"))
+                  
                   # Create the basic plot
                   acPlot <- ggplot(df) +
                       geom_rect(data = rects,
@@ -443,7 +458,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                       scale_colour_discrete(labels = labels) +
                       scale_fill_manual(values = getColours(pwfCols)) +
                       guides(fill = FALSE) +
-                      labs(x = xlab, y = ylab) +
+                      labs(x = xLab, y = yLab) +
                       facet_wrap(~Type, ncol = 1) +
                       theme_bw()
                   if (!is.null(userTheme)) acPlot <- acPlot + userTheme
