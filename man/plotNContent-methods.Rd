@@ -15,7 +15,8 @@
 \alias{plotNContent,FastqcDataList}
 \title{Draw an N Content Plot}
 \usage{
-plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn, fail, ...)
+plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
+  fail = 20, ...)
 
 \S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols,
   warn = 5, fail = 20, ...)

@@ -70,7 +70,7 @@
 #' @rdname plotAdapterContent-methods
 #' @export
 setGeneric("plotAdapterContent",
-           function(x, usePlotly = FALSE, labels, pwfCols, warn, fail, ...){
+           function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
     standardGeneric("plotAdapterContent")
 })
 #' @aliases plotAdapterContent,character
@@ -79,8 +79,8 @@ setGeneric("plotAdapterContent",
 setMethod("plotAdapterContent", signature = "character",
           function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
               x <- getFastqcData(x)
-              plotAdapterContent(x, usePlotly, x, usePlotly, labels, duplicated, 
-                                 bars, barCols, expand.x, ...)
+              plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn,
+                                 fail, ...)
           }
 )
 #' @aliases plotAdapterContent,FastqcFile
@@ -89,8 +89,8 @@ setMethod("plotAdapterContent", signature = "character",
 setMethod("plotAdapterContent", signature = "FastqcFile",
           function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
               x <- getFastqcData(x)
-              plotAdapterContent(x, usePlotly, x, usePlotly, labels, duplicated, 
-                                 bars, barCols, expand.x, ...)
+              plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn, 
+                                 fail, ...)
           }
 )
 #' @aliases plotAdapterContent,FastqcFileList
@@ -99,8 +99,8 @@ setMethod("plotAdapterContent", signature = "FastqcFile",
 setMethod("plotAdapterContent", signature = "FastqcFileList",
           function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
               x <- getFastqcData(x)
-              plotAdapterContent(x, usePlotly, x, usePlotly, labels, duplicated, 
-                                 bars, barCols, expand.x, ...)
+              plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn, 
+                                 fail, ...)
           }
 )
 #' @aliases plotAdapterContent,FastqcData

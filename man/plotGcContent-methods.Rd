@@ -15,8 +15,9 @@
 \alias{plotGcContent,FastqcDataList}
 \title{Plot the Per Sequence GC Content}
 \usage{
-plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC,
-  theoreticalType, species, GCobject, Fastafile, n, bp, ...)
+plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
+  theoreticalType = "Genome", species = "Hsapiens", GCobject,
+  Fastafile, n = 1e+06, bp = 100, ...)
 
 \S4method{plotGcContent}{character}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome",

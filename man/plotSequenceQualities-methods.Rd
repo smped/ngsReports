@@ -15,8 +15,8 @@
 \alias{plotSequenceQualities,FastqcDataList}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
-plotSequenceQualities(x, usePlotly = FALSE, labels, pwfCols, counts,
-  alpha, warn, fail, ...)
+plotSequenceQualities(x, usePlotly = FALSE, labels, pwfCols,
+  counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
 
 \S4method{plotSequenceQualities}{character}(x, usePlotly = FALSE, labels,
   pwfCols, counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)

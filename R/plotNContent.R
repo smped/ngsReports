@@ -54,7 +54,7 @@
 #' @rdname plotNContent-methods
 #' @export
 setGeneric("plotNContent",
-           function(x, usePlotly = FALSE, labels, pwfCols, warn, fail, ...){
+           function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
                standardGeneric("plotNContent")
                })
 #' @aliases plotNContent,character

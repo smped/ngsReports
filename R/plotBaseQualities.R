@@ -57,8 +57,8 @@
 #' @rdname plotBaseQualities-methods
 #' @export
 setGeneric("plotBaseQualities",
-           function(x, usePlotly = FALSE, labels, pwfCols, warn, fail, boxWidth,
-                    ...){
+           function(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
+                    boxWidth = 0.8, ...){
                standardGeneric("plotBaseQualities")
                })
 #' @aliases plotBaseQualities,character

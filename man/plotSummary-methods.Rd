@@ -11,8 +11,8 @@
 \alias{plotSummary,FastqcDataList}
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
-plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster, dendrogram,
-  ...)
+plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
+  dendrogram = FALSE, ...)
 
 \S4method{plotSummary}{character}(x, usePlotly = FALSE, labels, pwfCols,
   cluster = FALSE, dendrogram = FALSE, ...)

@@ -50,7 +50,7 @@
 #' @rdname plotSummary-methods
 #' @export
 setGeneric("plotSummary",
-           function(x, usePlotly = FALSE, labels, pwfCols, cluster, dendrogram, ...){
+           function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
                standardGeneric("plotSummary")
                })
 #' @aliases plotSummary,character

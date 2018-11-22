@@ -15,8 +15,8 @@
 \alias{plotBaseQualities,FastqcDataList}
 \title{Plot the Base Qualities for each file}
 \usage{
-plotBaseQualities(x, usePlotly = FALSE, labels, pwfCols, warn, fail,
-  boxWidth, ...)
+plotBaseQualities(x, usePlotly = FALSE, labels, pwfCols, warn = 25,
+  fail = 20, boxWidth = 0.8, ...)
 
 \S4method{plotBaseQualities}{character}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)

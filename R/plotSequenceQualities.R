@@ -60,7 +60,8 @@
 #' @rdname plotSequenceQualities-methods
 #' @export
 setGeneric("plotSequenceQualities",
-           function(x, usePlotly = FALSE, labels, pwfCols, counts, alpha, warn, fail, ...){
+           function(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, 
+                    alpha = 0.1, warn = 30, fail = 20, ...){
                standardGeneric("plotSequenceQualities")
            })
 #' @aliases plotSequenceQualities,character

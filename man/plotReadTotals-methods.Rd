@@ -11,8 +11,9 @@
 \alias{plotReadTotals,FastqcDataList}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(x, usePlotly = FALSE, labels, duplicated, bars, barCols,
-  expand.x, ...)
+plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
+  bars = c("stacked", "adjacent"), barCols = c("red", "blue"),
+  expand.x = c(0, 0.02), ...)
 
 \S4method{plotReadTotals}{character}(x, usePlotly = FALSE, labels,
   duplicated = TRUE, bars = c("stacked", "adjacent"),

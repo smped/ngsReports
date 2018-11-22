@@ -15,8 +15,8 @@
 \alias{plotAdapterContent,FastqcDataList}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn, fail,
-  ...)
+plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
+  fail = 10, ...)
 
 \S4method{plotAdapterContent}{character}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 10, ...)

@@ -80,8 +80,10 @@
 #' @rdname plotGcContent-methods
 #' @export
 setGeneric("plotGcContent",
-           function(x, usePlotly = FALSE, labels, theoreticalGC, theoreticalType,
-                    species, GCobject, Fastafile, n , bp, ...){
+           function(x, usePlotly = FALSE, labels, 
+                    theoreticalGC = TRUE, theoreticalType = "Genome",
+                    species = "Hsapiens", GCobject, Fastafile , n = 1e+6, 
+                    bp = 100, ...){
                standardGeneric("plotGcContent")
            })
 #' @aliases plotGcContent,character
@@ -90,7 +92,8 @@ setGeneric("plotGcContent",
 setMethod("plotGcContent", signature = "character",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6, bp = 100, ...){
+                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6, 
+                   bp = 100, ...){
               x <- getFastqcData(x)
               plotGcContent(x, usePlotly, labels, theoreticalGC, theoreticalType, 
                             species, GCobject, Fastafile , n , bp, ...)
@@ -102,7 +105,8 @@ setMethod("plotGcContent", signature = "character",
 setMethod("plotGcContent", signature = "FastqcFile",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6, bp = 100, ...){
+                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6,
+                   bp = 100, ...){
               x <- getFastqcData(x)
               plotGcContent(x, usePlotly, labels, theoreticalGC,
                             theoreticalType, species, GCobject, Fastafile, 
@@ -115,7 +119,8 @@ setMethod("plotGcContent", signature = "FastqcFile",
 setMethod("plotGcContent", signature = "FastqcFileList",
           function(x, usePlotly = FALSE, labels,
                    theoreticalGC = TRUE, theoreticalType = "Genome",
-                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6, bp = 100, ...){
+                   species = "Hsapiens", GCobject, Fastafile , n = 1e+6, 
+                   bp = 100, ...){
               x <- getFastqcData(x)
               plotGcContent(x, usePlotly, labels, theoreticalGC,
                             theoreticalType,species, GCobject, Fastafile,
