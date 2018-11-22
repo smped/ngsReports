@@ -25,7 +25,6 @@ Imports:
   grDevices, 
   grid,
   lubridate,
-  magrittr (>= 1.5),
   methods,
   parallel,
   plotly,

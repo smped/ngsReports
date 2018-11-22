@@ -42,16 +42,16 @@
 #' plotSummary(fdl, usePlotly = TRUE)
 #'
 #' @importFrom dplyr bind_cols
-#' @importFrom magrittr set_names
 #' @importFrom grid unit
 #'
 #' @name plotSummary
 #' @rdname plotSummary-methods
 #' @export
 setGeneric("plotSummary",
-           function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
+           function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, 
+                    dendrogram = FALSE, ...){
                standardGeneric("plotSummary")
-               })
+           })
 #' @aliases plotSummary,character
 #' @rdname plotSummary-methods
 #' @export
@@ -60,7 +60,7 @@ setMethod("plotSummary", signature = "character",
                    dendrogram = FALSE, ...){
               if (length(x) == 1) stop(
                   "plotSummary() can only be called on two or more files."
-                  )
+              )
               x <- getFastqcData(x)
               plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
           }
@@ -91,10 +91,11 @@ setMethod("plotSummary", signature = "FastqcDataList",
               
               # Set labels
               labels <- setLabels(df, labels, ...)
-
+              
               # Set factor levels
               df$Category <- factor(df$Category, levels = unique(df$Category))
-              df$Status <- factor(df$Status, levels = rev(c("PASS", "WARN", "FAIL")))
+              df$Status <- factor(df$Status,
+                                  levels = rev(c("PASS", "WARN", "FAIL")))
               df$StatusNum <- as.integer(df$Status)
               
               # Get any arguments for dotArgs that have been set manually
@@ -102,7 +103,8 @@ setMethod("plotSummary", signature = "FastqcDataList",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # Make sure cluster is TRUE if the dendrogram is requested
               if (dendrogram && !cluster){
@@ -135,7 +137,9 @@ setMethod("plotSummary", signature = "FastqcDataList",
                   scale_x_discrete(expand=c(0,0)) +
                   scale_y_discrete(expand=c(0,0)) +
                   theme_bw() +
-                  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+                  theme(axis.text.x = element_text(
+                      angle = 90, hjust = 1, vjust = 0.5
+                  ))
               
               # Add any parameters from dotArgs
               if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
@@ -187,7 +191,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
                   }
                   
               }
-
+              
               sumPlot
               
           }

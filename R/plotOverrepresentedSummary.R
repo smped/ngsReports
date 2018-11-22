@@ -42,8 +42,6 @@
 #' plotOverrepresentedSummary(fdl)
 #'
 #' @importFrom tidyr spread
-#' @importFrom plotly plot_ly
-#' @importFrom plotly add_trace
 #' @importFrom plotly layout
 #' @importFrom grDevices rgb
 #' @import ggplot2

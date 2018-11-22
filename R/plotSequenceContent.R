@@ -35,7 +35,6 @@
 #' plotSequenceContent(fdl)
 #'
 #'
-#' @importFrom scales rescale
 #' @importFrom grDevices rgb
 #' @importFrom dplyr mutate_at vars funs
 #' @importFrom tidyselect one_of
