@@ -13,6 +13,10 @@ makeSidebar(status, key, pwfCols)
 
 \item{pwfCols}{An object of class PwfCols}
 }
+\value{
+A plotly object. The sidebar for an interactive plot showing PASS/WARN/FAIL 
+status for each file.
+}
 \description{
 Shortcut for making the status sidebar
 }

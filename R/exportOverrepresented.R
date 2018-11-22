@@ -2,7 +2,8 @@
 #'
 #' @description Output overrepresented sequences to disk in fasta format.
 #'
-#' @details Fasta will contain \code{Filename}, \code{Possible Source}, \code{Percent of total reads}
+#' @details Fasta will contain \code{Filename}, \code{Possible Source}, \
+#' code{Percent of total reads}
 #'
 #' @param x Can be a \code{FastqcData} or \code{FastqcDataList}
 #' @param path Path to export the fasta file to. Reverts to a default if not supplied
@@ -10,7 +11,9 @@
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param noAdapters logical. Remove any sequences identified as possible adapters or primers by FastQC
+#' @param noAdapters logical. Remove any sequences identified as possible 
+#' adapters or primers by FastQC
+#' @param ... Used to pass any alternative patterns to remove from the end of filenames
 #'
 #' @return Exports to a fasta file, and returns the fasta information invisibly
 #'
@@ -31,25 +34,24 @@
 #' @name exportOverrepresented
 #' @rdname exportOverrepresented-methods
 #' @export
-setGeneric("exportOverrepresented",function(x, path, n, labels, noAdapters = TRUE){standardGeneric("exportOverrepresented")})
+setGeneric("exportOverrepresented",
+           function(x, path, n, labels, noAdapters = TRUE, ...){
+               standardGeneric("exportOverrepresented")
+               })
 #' @aliases exportOverrepresented,FastqcData
 #' @rdname exportOverrepresented-methods
 #' @export
 setMethod("exportOverrepresented", signature = "FastqcData",
-          function(x, path,  n = 10, labels, noAdapters = TRUE){
+          function(x, path,  n = 10, labels, noAdapters = TRUE, ...){
               
               df <- Overrepresented_sequences(x)
               
-              if(missing(labels)){
-                  labels <- structure(gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), names = unique(df$Filename))
-              }
-              else{
-                  if (!all(unique(df$Filename) %in% names(labels))) stop("All file names must be included as names in the vector of labels")
-              }
-              if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
+              labels <- setLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
-              if (missing(path)) path <- paste(unique(df$Filename), "top", n, "overrepresented.fa", sep = "_")
+              if (missing(path)) path <- paste(unique(df$Filename), 
+                                               "top", n, "overrepresented.fa", 
+                                               sep = "_")
               
               # Remove any putative adapter or primer sequences
               if (noAdapters) df <- df[!grepl("(Primer|Adapter)", df$Possible_Source),]
@@ -70,24 +72,11 @@ setMethod("exportOverrepresented", signature = "FastqcData",
 #' @rdname exportOverrepresented-methods
 #' @export
 setMethod("exportOverrepresented", signature = "FastqcDataList",
-          function(x, path,  n = 10, labels, noAdapters = TRUE){
+          function(x, path,  n = 10, labels, noAdapters = TRUE, ...){
               
               df <- Overrepresented_sequences(x)
               
-              if(missing(labels)){
-                  labels <- structure(
-                      gsub(".(fastq|fq|bam).*", "", unique(df$Filename)), 
-                      names = unique(df$Filename)
-                  )
-              }
-              else{
-                  if (!all(unique(df$Filename) %in% names(labels))) stop(
-                      "All file names must be included as names in the vector of labels"
-                  )
-              }
-              if (length(unique(labels)) != length(labels)) stop(
-                  "The labels vector cannot contain repeated values"
-              )
+              labels <- setLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               if (missing(path)) path <- paste(
@@ -99,7 +88,8 @@ setMethod("exportOverrepresented", signature = "FastqcDataList",
               
               Count <- Sequence <- c() # Declaration to avoid NOTES during R CMD check
               df <- dplyr::group_by(df, Sequence)
-              # Find the total number of sequences, the average percentage and number of files it is found in
+              # Find the total number of sequences, the average percentage 
+              # and number of files it is found in
               df <- dplyr::summarise(df, Total = sum(Count), 
                                      Percentage = mean(Percentage), nFiles = n())
               df <- dplyr::arrange(df, desc(Percentage))

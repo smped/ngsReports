@@ -52,7 +52,6 @@
 #' @import ggplot2
 #' @importFrom stats hclust dist
 #' @importFrom viridisLite inferno
-#' @importFrom magrittr %>%
 #'
 #' @name plotDuplicationLevels
 #' @rdname plotDuplicationLevels-methods

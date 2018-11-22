@@ -86,7 +86,6 @@ Collate:
     'isCompressed.R'
     'makeSidebar.R'
     'maxAdapterContent.R'
-    'methods-FastqcData.R'
     'path.R'
     'plotAdapterContent.R'
     'plotBaseQualities.R'

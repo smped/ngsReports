@@ -86,10 +86,3 @@ setMethod("setAlpha", "PwfCols", function(object, alpha){
     args <- c(Class = "PwfCols", as.list(newCols))
     do.call(new, args)
 })
-
-
-#' The default method for show
-#' @param object An object of class PwfCols
-setMethod(show, "PwfCols", function(object){
-    cat("An object of class PwfCols.\n")
-})

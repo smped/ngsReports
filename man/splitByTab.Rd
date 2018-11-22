@@ -13,6 +13,9 @@ splitByTab(x, firstRowToNames = TRUE, tab = "\\\\t")
 
 \item{tab}{character The string used torepresent the tab symbol}
 }
+\value{
+A data frame
+}
 \description{
 Split elements of a character vector by the tab separator
 }

@@ -24,3 +24,9 @@ setClass("PwfCols", slots = c(PASS = "character",
                               FAIL = "character",
                               MAX = "character"))
 setValidity("PwfCols", isValidPwf)
+
+# The default method for show. Doesn't need exporting
+setMethod("show", "PwfCols", 
+          function(object){
+              cat("An object of class PwfCols.\n")
+          })

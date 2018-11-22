@@ -42,7 +42,6 @@
 #' plotSummary(fdl, usePlotly = TRUE)
 #'
 #' @importFrom dplyr bind_cols
-#' @importFrom magrittr %>%
 #' @importFrom magrittr set_names
 #' @importFrom grid unit
 #'

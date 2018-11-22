@@ -18,6 +18,9 @@ scale_fill_pwf(vals, pwfCols, breaks = c(0, 5, 10, 100),
 
 \item{na.value}{The colour to plot for missing values}
 }
+\value{
+Returns a ggplot scale object
+}
 \description{
 Construct a scale using PwfCols
 }

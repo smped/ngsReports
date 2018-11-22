@@ -11,6 +11,9 @@
 #' @param x A character vector
 #' @param firstRowToNames logical Should the first element be used for column names
 #' @param tab character The string used torepresent the tab symbol
+#' 
+#' @return 
+#' A data frame
 #'
 #' @examples
 #' x <- c("ColA\tColB", "Value1\tValue2")
