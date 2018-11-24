@@ -114,7 +114,7 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               }
               
               # Set labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               # Sort out the colours
@@ -259,7 +259,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
               stopifnot(warn > fail)
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               
               # Sort out the colours
               if(base::missing(pwfCols)) pwfCols <- ngsReports::pwf

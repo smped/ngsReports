@@ -117,7 +117,7 @@ setMethod("plotNContent", signature = "FastqcData",
               stopifnot(isValidPwf(pwfCols))
               pwfCols <- setAlpha(pwfCols, 0.2)
 
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               df$Base <- factor(df$Base, levels = unique(df$Base))
               df$xValue <- as.integer(df$Base)
@@ -224,7 +224,7 @@ setMethod("plotNContent", signature = "FastqcDataList",
               stopifnot(isValidPwf(pwfCols))
 
               # Get the labels organised
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
 
               ## fill bins up to the max sequence length
               df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))

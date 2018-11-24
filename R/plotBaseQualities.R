@@ -108,7 +108,7 @@ setMethod("plotBaseQualities", signature = "FastqcData",
                   return(qualPlot)
               }
               
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               stopifnot(is.numeric(boxWidth))
@@ -243,7 +243,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               stopifnot(isValidPwf(pwfCols))
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               
               # Get the Illumina encoding
               enc <- Basic_Statistics(x)$Encoding[1]

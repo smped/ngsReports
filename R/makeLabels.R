@@ -16,10 +16,10 @@
 #'
 #' @examples
 #' df <- data.frame(Filename = paste0(c("File1", "File2"), ".fastq"), stringsAsFactors = FALSE)
-#' ngsReports:::setLabels(df)
+#' ngsReports:::makeLabels(df)
 #'
 #' @keywords internal
-setLabels <- function(df, labels, pattern = ".(fastq|fq|bam|sam|cram).*",
+makeLabels <- function(df, labels, pattern = ".(fastq|fq|bam|sam|cram).*",
                       col ="Filename", ...){
     stopifnot(is.data.frame(df))
     col <- match.arg(col, colnames(df))

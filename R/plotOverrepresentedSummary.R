@@ -96,7 +96,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
               }
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               # Get any arguments for dotArgs that have been set manually
@@ -193,7 +193,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)

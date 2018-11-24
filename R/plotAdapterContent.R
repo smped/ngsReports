@@ -129,7 +129,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
               }
 
               # Set any labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
 
               # Sort out the colours & pass/warn/fail breaks
@@ -249,7 +249,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
 
               # Check for valid plotType & labels
               plotType <- match.arg(plotType[1], c("line", "heatmap"))
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
 
               # Change to long form
               df <- tidyr::gather(df, key = "Type", value = "Percent",

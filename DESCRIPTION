@@ -83,6 +83,7 @@ Collate:
     'importHisat2Logs.R'
     'importStarLogs.R'
     'isCompressed.R'
+    'makeLabels.R'
     'makeSidebar.R'
     'maxAdapterContent.R'
     'path.R'
@@ -103,7 +104,6 @@ Collate:
     'runFastQC.R'
     'scale_fill_pwf.R'
     'setClusters.R'
-    'setLabels.R'
     'splitByTab.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr

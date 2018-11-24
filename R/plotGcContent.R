@@ -154,7 +154,7 @@ setMethod("plotGcContent", signature = "FastqcData",
               yLab <- c("Frequency", "Count")[counts + 1]
               
               # Set the labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               # Get any arguments for dotArgs that have been set manually
@@ -288,7 +288,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
               }
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               
               # Always use frequencies not counts
               df <- lapply(split(df, f = df$Filename), function(x){

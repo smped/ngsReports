@@ -46,7 +46,7 @@ setMethod("exportOverrepresented", signature = "FastqcData",
               
               df <- Overrepresented_sequences(x)
               
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               if (missing(path)) path <- paste(unique(df$Filename), 
@@ -76,7 +76,7 @@ setMethod("exportOverrepresented", signature = "FastqcDataList",
               
               df <- Overrepresented_sequences(x)
               
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               if (missing(path)) path <- paste(

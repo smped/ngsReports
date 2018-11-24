@@ -113,7 +113,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
                   return(lenPlot)
               }
               
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               # Add zero counts for lengths either side of the included range
@@ -200,7 +200,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
               plotType <- match.arg(plotType)
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               
               # Add zero counts for lengths either side of the included range
               df <- dplyr::bind_rows(

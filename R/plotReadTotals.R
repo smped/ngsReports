@@ -98,7 +98,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               stopifnot(is.logical(duplicated))
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               df$Filename <- factor(df$Filename, levels = unique(df$Filename))
               

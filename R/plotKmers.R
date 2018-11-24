@@ -94,7 +94,7 @@ setMethod("plotKmers", signature = "FastqcData",
               }
               
               # Set any labels. Remove the file suffix is the default              
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
               
               # Get the top kMers
@@ -239,7 +239,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
               stopifnot(isValidPwf(pwfCols))
               
               # Drop the suffix, or check the alternate labels
-              labels <- setLabels(df, labels, ...)
+              labels <- makeLabels(df, labels, ...)
               
               colnames(df) <- gsub("Max_Obs/Exp_Position", "Base", colnames(df))
               colnames(df) <- gsub("Obs/Exp_Max", "Total", colnames(df))
