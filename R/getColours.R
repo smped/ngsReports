@@ -14,6 +14,13 @@
 #' getColours will return a character vector of colours coresponding to
 #'  PASS/WARN/FAIL
 #'  
+#'  @examples 
+#'  getColours(pwf)
+#'  
+#'  # How to add transparency
+#'  pwf2 <- setAlpha(pwf, 0.1)
+#'  getColours(pwf2)
+#'  
 #' @include AllGenerics.R 
 #' @importFrom methods slotNames
 #' @name getColours

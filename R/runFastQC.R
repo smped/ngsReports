@@ -31,6 +31,7 @@
 #' @seealso \code{\link{FastqFileList}}
 #'
 #' @importFrom parallel detectCores
+#' @importFrom methods is
 #' @importClassesFrom ShortRead FastqFile FastqFileList
 #'
 #' @export
@@ -40,7 +41,7 @@ runFastQC <- function(object, outPath, exec = "/usr/local/bin/fastqc",
                       overWrite = FALSE){
     
     # Check the FastqFileList
-    stopifnot(class(object) == "FastqFileList")
+    stopifnot(is(object,"FastqFileList"))
     nm <- names(object)
     if (any(!grepl("(fastq|fastq.gz|fq|fq.gz)$", BiocGenerics::path(object)))) stop("Files can only contain the fasqt|fq suffix")
     # Make sure they are all of the same format
