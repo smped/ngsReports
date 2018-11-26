@@ -245,7 +245,7 @@ setMethod("plotNContent", signature = "FastqcDataList",
               # Now define the order for a dendrogram if required
               key <- names(labels)
               if (cluster){
-                  clusterDend <- setClusters(df = df[c("Filename", "Start", "Percentage")],
+                  clusterDend <- makeDendrogram(df = df[c("Filename", "Start", "Percentage")],
                                              rowVal = "Filename",
                                              colVal = "Start",
                                              value = "Percentage")

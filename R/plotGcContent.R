@@ -414,7 +414,7 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                   
                   key <- names(labels)
                   if (cluster){
-                      clusterDend <- setClusters(df = df, rowVal = "Filename", 
+                      clusterDend <- makeDendrogram(df = df, rowVal = "Filename", 
                                                  colVal = "GC_Content", 
                                                  value = "Percent")
                       key <- labels(clusterDend)

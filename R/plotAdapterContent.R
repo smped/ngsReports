@@ -334,7 +334,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   }
                   key <- names(labels)
                   if(cluster){
-                      clusterDend <- setClusters(df, "Filename", "Start", "Percent")
+                      clusterDend <- makeDendrogram(df, "Filename", "Start", "Percent")
                       key <- labels(clusterDend)
                   }
 
@@ -424,7 +424,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   
                   key <- names(labels)
                   if(cluster){
-                      clusterDend <- setClusters(df, "Filename", "Position", "Percent")
+                      clusterDend <- makeDendrogram(df, "Filename", "Position", "Percent")
                       key <- labels(clusterDend)
                   }
                   df$Filename <- factor(labels[df$Filename], levels = labels[key])

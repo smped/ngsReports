@@ -224,7 +224,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                                                one_of(acgt))
                       df_gath$Start <- paste(df_gath$Start, df_gath$Base, sep = "_")
                       cols <- c("Filename", "Start", "Percent")
-                      clusterDend <- setClusters(df = df_gath[cols], 
+                      clusterDend <- makeDendrogram(df = df_gath[cols], 
                                                  rowVal = "Filename", 
                                                  colVal = "Start", 
                                                  value = "Percent")

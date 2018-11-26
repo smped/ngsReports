@@ -1,4 +1,4 @@
-#' @title Set the clusters for heatmap-style plots
+#' @title Make the dedrogram for heatmap-style plots
 #' 
 #' @description Set the clusters for heatmap-style plots
 #' 
@@ -15,12 +15,12 @@
 #' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)[1:4]
 #' cols <- c("Filename", "Position", "Illumina_Universal_Adapter")
 #' ac <- Adapter_Content(fileList)[cols]
-#' ngsReports:::setClusters(ac, "Filename", "Position", "Illumina_Universal_Adapter")
+#' ngsReports:::makeDendrogram(ac, "Filename", "Position", "Illumina_Universal_Adapter")
 #' 
 #' @importFrom stats as.formula
 #' 
 #' @keywords internal
-setClusters <- function(df, rowVal, colVal, value){
+makeDendrogram <- function(df, rowVal, colVal, value){
     
     stopifnot(setequal(c(rowVal, colVal, value), names(df)))
     fm <- as.formula(paste0(rowVal, "~", colVal))

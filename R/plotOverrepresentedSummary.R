@@ -222,7 +222,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               key <- names(labels)
               if (cluster){
                   cols <- c("Filename", "Possible_Source", "Percentage")
-                  clusterDend <- setClusters(df = df[cols], 
+                  clusterDend <- makeDendrogram(df = df[cols], 
                                              rowVal = "Filename", 
                                              colVal = "Possible_Source", 
                                              value = "Percentage")

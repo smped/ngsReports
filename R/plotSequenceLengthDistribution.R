@@ -281,7 +281,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
                   # This only applies to a heatmap
                   key <- names(labels)
                   if (cluster){
-                      clusterDend <- setClusters(df = df[c("Filename", "Lower", plotVal)], 
+                      clusterDend <- makeDendrogram(df = df[c("Filename", "Lower", plotVal)], 
                                                  rowVal = "Filename", 
                                                  colVal = "Lower", 
                                                  value = plotVal)
