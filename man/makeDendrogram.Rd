@@ -2,7 +2,7 @@
 % Please edit documentation in R/makeDendrogram.R
 \name{makeDendrogram}
 \alias{makeDendrogram}
-\title{Set the clusters for heatmap-style plots}
+\title{Make the dedrogram for heatmap-style plots}
 \usage{
 makeDendrogram(df, rowVal, colVal, value)
 }

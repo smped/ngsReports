@@ -2,7 +2,7 @@
 % Please edit documentation in R/ggdend.R
 \name{ggdend}
 \alias{ggdend}
-\title{A commonly used (hidden) function for setting up dendrograms for interactive plots}
+\title{Set up dendrograms for interactive plots}
 \usage{
 ggdend(df)
 }
@@ -10,10 +10,11 @@ ggdend(df)
 \item{df}{A `data.frame` as required}
 }
 \value{
-A ggplot2 object
+A plotly object
 }
 \description{
-A commonly used (hidden) function for setting up dendrograms for interactive plots
+A commonly used (hidden) function for setting up dendrograms for 
+interactive plots
 }
 \details{
 Create plot using \code{theme_dendro}

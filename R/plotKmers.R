@@ -318,7 +318,9 @@ setMethod("plotKmers", signature = "FastqcDataList",
               
               if (usePlotly){
                   # Clear the y axis for plotly
-                  kMerPlot <- kMerPlot + theme(axis.text.y = element_blank())
+                  kMerPlot <- kMerPlot + 
+                      theme(axis.text.y = element_blank(),
+                            legend.position = "none")
                   # Get the PWF status
                   status <- getSummary(x)
                   status <- status[status$Category == "Kmer Content",]
@@ -331,11 +333,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
                   
                   if (dendrogram){
                       dx <- ggdendro::dendro_data(clusterDend)
-                      dendro <- ggdend(dx$segments) +
-                          coord_flip() +
-                          scale_y_reverse(expand = c(0, 0)) +
-                          scale_x_continuous(expand = c(0, 0.5))
-                      dendro <- plotly::ggplotly(dendro, tooltip = NULL)
+                      dendro <- ggdend(dx$segments) 
                   }
                   else{
                       dendro <- plotly::plotly_empty()

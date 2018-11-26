@@ -301,15 +301,11 @@ setMethod("plotNContent", signature = "FastqcDataList",
                   sideBar <- makeSidebar(status, key, pwfCols = pwfCols)
 
                   if (!is.null(userTheme)) nPlot <- nPlot + userTheme
-
+                  nPlot <- nPlot + ylab("")
+                  
                   if (dendrogram){
                       dx <- ggdendro::dendro_data(clusterDend)
-                      dendro <- ggdend(dx$segments) +
-                          coord_flip() +
-                          scale_y_reverse(expand = c(0, 0)) +
-                          scale_x_continuous(expand = c(0, 0.5))
-                      dendro <- plotly::ggplotly(dendro, tooltip = NULL)
-                      nPlot <- nPlot + ylab("")
+                      dendro <- ggdend(dx$segments) 
                   }
                   else{
                       dendro <- plotly::plotly_empty()
@@ -318,7 +314,8 @@ setMethod("plotNContent", signature = "FastqcDataList",
                   # Customise for plotly
                   nPlot <- nPlot +
                       theme(axis.text.y = element_blank(),
-                            axis.ticks.y = element_blank())
+                            axis.ticks.y = element_blank(),
+                            legend.position = "none")
                   nPlot <- plotly::ggplotly(nPlot,
                                             tooltip = c("y", "fill", "label"))
                   # Now make the three frame plot with option dendrogram

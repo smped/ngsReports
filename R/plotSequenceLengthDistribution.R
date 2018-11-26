@@ -325,7 +325,9 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
                       
                       lenPlot <- lenPlot  +
                           theme(axis.ticks.y = element_blank(),
+                                axis.title.y = element_blank(),
                                 axis.text.y = element_blank(),
+                                legend.position = "none",
                                 panel.background = element_blank())
                       
                       status <- getSummary(x)
@@ -342,12 +344,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
                       #plot dendrogram
                       if (dendrogram){
                           dx <- ggdendro::dendro_data(clusterDend)
-                          dendro <- ggdend(dx$segments) +
-                              coord_flip() +
-                              scale_y_reverse(expand = c(0, 0)) +
-                              scale_x_continuous(expand = c(0, 0.5))
-                          dendro <- plotly::ggplotly(dendro, tooltip = NULL)
-                          lenPlot <- lenPlot + ylab("")
+                          dendro <- ggdend(dx$segments) 
                       }
                       else{
                           dendro <- plotly::plotly_empty()

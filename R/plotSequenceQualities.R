@@ -349,12 +349,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                       #plot dendrogram
                       if (dendrogram){
                           dx <- ggdendro::dendro_data(clusterDend)
-                          dendro <- ggdend(dx$segments) +
-                              coord_flip() +
-                              scale_y_reverse(expand = c(0, 0)) +
-                              scale_x_continuous(expand = c(0, 0.5))
-                          dendro <- plotly::ggplotly(dendro, tooltip = NULL)
-                          qualPlot <- qualPlot + ylab("")
+                          dendro <- ggdend(dx$segments) 
                       }
                       else{
                           dendro <- plotly::plotly_empty()
