@@ -10,43 +10,41 @@
 \alias{runFastQC,BamFileList-method}
 \title{A wrapper for the bash shell command fastqc.}
 \usage{
-runFastQC(object, outPath, exec = "/usr/local/bin/fastqc",
-  threads = 1L, casava = FALSE, nofilter = FALSE, extract = FALSE,
+runFastQC(object, outPath, threads = 1L, casava = FALSE,
+  nofilter = FALSE, extract = FALSE, nogroup = FALSE,
+  min_length = 1, contaminants = c(), adapters = c(), kmers = 7,
+  exec)
+
+\S4method{runFastQC}{character}(object, outPath, threads = 1L,
+  casava = FALSE, nofilter = FALSE, extract = FALSE,
   nogroup = FALSE, min_length = 1, contaminants = c(),
-  adapters = c(), kmers = 7)
+  adapters = c(), kmers = 7, exec)
 
-\S4method{runFastQC}{character}(object, outPath,
-  exec = "/usr/local/bin/fastqc", threads = 1L, casava = FALSE,
-  nofilter = FALSE, extract = FALSE, nogroup = FALSE,
-  min_length = 1, contaminants = c(), adapters = c(), kmers = 7)
+\S4method{runFastQC}{FastqFile}(object, outPath, threads = 1L,
+  casava = FALSE, nofilter = FALSE, extract = FALSE,
+  nogroup = FALSE, min_length = 1, contaminants = c(),
+  adapters = c(), kmers = 7, exec)
 
-\S4method{runFastQC}{FastqFile}(object, outPath,
-  exec = "/usr/local/bin/fastqc", threads = 1L, casava = FALSE,
-  nofilter = FALSE, extract = FALSE, nogroup = FALSE,
-  min_length = 1, contaminants = c(), adapters = c(), kmers = 7)
+\S4method{runFastQC}{FastqFileList}(object, outPath, threads = 1L,
+  casava = FALSE, nofilter = FALSE, extract = FALSE,
+  nogroup = FALSE, min_length = 1, contaminants = c(),
+  adapters = c(), kmers = 7, exec)
 
-\S4method{runFastQC}{FastqFileList}(object, outPath,
-  exec = "/usr/local/bin/fastqc", threads = 1L, casava = FALSE,
-  nofilter = FALSE, extract = FALSE, nogroup = FALSE,
-  min_length = 1, contaminants = c(), adapters = c(), kmers = 7)
+\S4method{runFastQC}{BamFile}(object, outPath, threads = 1L,
+  casava = FALSE, nofilter = FALSE, extract = FALSE,
+  nogroup = FALSE, min_length = 1, contaminants = c(),
+  adapters = c(), kmers = 7, exec)
 
-\S4method{runFastQC}{BamFile}(object, outPath,
-  exec = "/usr/local/bin/fastqc", threads = 1L, casava = FALSE,
-  nofilter = FALSE, extract = FALSE, nogroup = FALSE,
-  min_length = 1, contaminants = c(), adapters = c(), kmers = 7)
-
-\S4method{runFastQC}{BamFileList}(object, outPath,
-  exec = "/usr/local/bin/fastqc", threads = 1L, casava = FALSE,
-  nofilter = FALSE, extract = FALSE, nogroup = FALSE,
-  min_length = 1, contaminants = c(), adapters = c(), kmers = 7)
+\S4method{runFastQC}{BamFileList}(object, outPath, threads = 1L,
+  casava = FALSE, nofilter = FALSE, extract = FALSE,
+  nogroup = FALSE, min_length = 1, contaminants = c(),
+  adapters = c(), kmers = 7, exec)
 }
 \arguments{
 \item{object}{A \code{\link{FastqFileList}}}
 
 \item{outPath}{The path to write the FastQC reports. Must exist as (for safety)
 it will not be created when calling this function}
-
-\item{exec}{The location of the fastqc executable.}
 
 \item{threads}{The number of threads to run in parallel}
 
@@ -70,6 +68,8 @@ The structure of the file will not be checked.
 Refer to the \code{fastqc} help page for more details}
 
 \item{kmers}{An integer between 2 and 10}
+
+\item{exec}{The location of the fastqc executable.}
 }
 \value{
 An object of class \code{FastqcFileList}
@@ -83,7 +83,7 @@ This is a simple wrapper function for controlling & running
 This can be very useful for controlling & documenting an entire pipeline from 
 within knitr to produce a simple report
 
-Only the common functinoality of FastQC is implemented,
+Only the common functionality of FastQC is implemented,
 for more fine detail pease call FastQC directly.
 }
 \examples{

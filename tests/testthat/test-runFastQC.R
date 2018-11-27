@@ -7,11 +7,11 @@ fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
 f <- FastqFile(fl)
 
 test_that("runFastqc Errors Correctly on missing executable",{
-    expect_error(runFastQC(f, tempdir(), exec = "IDONOTEXIST"))
+    expect_error(runFastQC(f, tempdir(), exec = ""))
     expect_error(runFastQC(f, tempdir(), exec = NULL))
 })
 
-test_that("runFastQC handles incorrect file types",{
+test_that("runFastQC handles incorrect file types before searching for the executable",{
     logFile <- system.file("extdata", "log.final.out", package = "ngsReports")
     expect_warning(out <- runFastQC(logFile, tempdir()))
     expect_null(out)
@@ -21,6 +21,6 @@ test_that("runFastQC handles incorrect file types",{
 exec <- Sys.which("fastqc")
 if (exec != ""){
     f <- FastqFile(fl)
-    ff <- suppressMessages(runFastQC(f, tempdir(), exec))
+    ff <- suppressMessages(runFastQC(f, tempdir(), exec = exec))
     expect_true(methods::is(ff, "FastqcFile"))
 }
