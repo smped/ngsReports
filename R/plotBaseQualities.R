@@ -407,13 +407,15 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                             panel.background = element_blank()) +
                       scale_x_continuous(expand = c(0,0))
                   
+                  # Add custom elements
+                  if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
+                  
                   if (usePlotly){
                       
                       qualPlot <- qualPlot +
                           theme(axis.text.y = element_blank(),
                                 axis.ticks.y = element_blank(),
                                 legend.position = "none")
-                      if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
                       
                       # Get the flag status
                       status <- getSummary(x)

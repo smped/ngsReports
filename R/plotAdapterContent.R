@@ -355,6 +355,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                                      na.value = "white") +
                       theme_bw() +
                       theme(plot.title = element_text(hjust = 0.5))
+                  
+                  # Add custom elements
+                  if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
 
                   if (usePlotly){
 
