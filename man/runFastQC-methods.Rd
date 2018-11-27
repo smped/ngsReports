@@ -3,6 +3,7 @@
 \docType{methods}
 \name{runFastQC}
 \alias{runFastQC}
+\alias{runFastQC,character-method}
 \alias{runFastQC,FastqFile-method}
 \alias{runFastQC,FastqFileList-method}
 \alias{runFastQC,BamFile-method}
@@ -13,6 +14,11 @@ runFastQC(object, outPath, exec = "/usr/local/bin/fastqc",
   threads = 1L, casava = FALSE, nofilter = FALSE, extract = FALSE,
   nogroup = FALSE, min_length = 1, contaminants = c(),
   adapters = c(), kmers = 7)
+
+\S4method{runFastQC}{character}(object, outPath,
+  exec = "/usr/local/bin/fastqc", threads = 1L, casava = FALSE,
+  nofilter = FALSE, extract = FALSE, nogroup = FALSE,
+  min_length = 1, contaminants = c(), adapters = c(), kmers = 7)
 
 \S4method{runFastQC}{FastqFile}(object, outPath,
   exec = "/usr/local/bin/fastqc", threads = 1L, casava = FALSE,
@@ -86,6 +92,7 @@ library(ShortRead)
 sp <- SolexaPath(system.file('extdata', package='ShortRead'))
 fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
 f <- FastqFile(fl)
+# This requires a working installation of FastQC
 fqcFile <- runFastQC(f, outPath = tempdir())
 }
 

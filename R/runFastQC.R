@@ -40,6 +40,7 @@
 #' sp <- SolexaPath(system.file('extdata', package='ShortRead'))
 #' fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
 #' f <- FastqFile(fl)
+#' # This requires a working installation of FastQC
 #' fqcFile <- runFastQC(f, outPath = tempdir())
 #' }
 #'
@@ -55,6 +56,41 @@ setGeneric("runFastQC", function(object, outPath, exec = "/usr/local/bin/fastqc"
                                  contaminants = c(), adapters = c(), kmers = 7){
     standardGeneric("runFastQC")
 })
+#' @aliases runFastQC,character-method
+#' @rdname runFastQC-methods
+#' @export
+setMethod("runFastQC", "character",
+          function(object, outPath, exec = "/usr/local/bin/fastqc",
+                   threads=1L, casava = FALSE, nofilter = FALSE, extract = FALSE,
+                   nogroup = FALSE, min_length = 1, contaminants = c(), 
+                   adapters = c(), kmers = 7){
+              
+             fq <- all(grepl("(fq|fastq|fq.gz|fastq.gz|txt)$", basename(object)))
+             bam <- all(grepl("bam$", basename(object)))
+             if (fq) {
+                 if (length(object) == 1) {
+                     object <- ShortRead::FastqFile(object)
+                 }
+                 else {
+                     object <- ShortRead::FastqFileList(object)
+                 }
+             }
+             if (bam) {
+                 if (length(object) == 1) {
+                     object <- Rsamtools::BamFile(object)
+                 }
+                 else{
+                     object <- Rsamtools::BamFileList(object)
+                 }
+             }
+             if (!bam & !fq) {
+                 warning("File format could not be identified. FastQC will not be run")
+                 return(NULL)
+             }
+             runFastQC(object, outPath, exec, threads, casava, nofilter, 
+                       extract, nogroup, min_length, contaminants = c(), 
+                       adapters, kmers)
+          })
 #' @aliases runFastQC,FastqFile-method
 #' @rdname runFastQC-methods
 #' @export
@@ -126,8 +162,10 @@ runFastQC.default <- function(object, outPath, exec, threads, casava, nofilter,
         message("Multiple output paths specified.\nOnly the first will be used.")
     }
     
-    # Check the executable exists
+    # Check the executable exists.
+    # This forces users to specify exactly which version they wish to use
     stopifnot(file.exists(exec))
+    
     # Get the version
     v <- system2(exec, "-v", stdout = TRUE)
     v <- gsub(".+0.11.(.+)", "\\1", v)
@@ -207,5 +245,7 @@ runFastQC.default <- function(object, outPath, exec, threads, casava, nofilter,
         out <- ffl[[m]]    
     }
     
+    # Close any open connections. Nope. This spits errors
+    #if (isOpen(object)) close(object)
     out
 }
