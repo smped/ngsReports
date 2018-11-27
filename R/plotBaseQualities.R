@@ -32,12 +32,10 @@
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
-#' # Load the FASTQC data as a FastqcDataList
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot for multiple libraries is a heatmap
@@ -122,7 +120,7 @@ setMethod("plotBaseQualities", signature = "FastqcData",
             # Set the limits & rectangles
             ylim <- c(0, max(df$`90th_Percentile`) + 1)
             expand_x <- round(0.015*(max(df$x) - min(df$x)), 1)
-            rects <- dplyr::data_frame(xmin = min(df$x) - expand_x,
+            rects <- tibble::tibble(xmin = min(df$x) - expand_x,
                                        xmax = max(df$x) + expand_x,
                                        ymin = c(0, fail, warn),
                                        ymax = c(fail, warn, max(ylim)),
@@ -227,7 +225,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               # Set the limits & rectangles
               ylim <- c(0, max(df$`90th_Percentile`) + 1)
               expand_x <- round(0.015*(max(df$x) - min(df$x)), 1)
-              rects <- dplyr::data_frame(xmin = min(df$x) - expand_x,
+              rects <- tibble::tibble(xmin = min(df$x) - expand_x,
                                          xmax = max(df$x) + expand_x,
                                          ymin = c(0, fail, warn),
                                          ymax = c(fail, warn, max(ylim)),
@@ -319,7 +317,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               df <- split(df, f = df$Filename) %>%
                 lapply(function(x){
                   Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1", x$Base)))
-                  dfFill <- data.frame(Start = 1:Longest_sequence)
+                  dfFill <- data.frame(Start = seq_len(Longest_sequence))
                   x <- dplyr::right_join(x, dfFill, by = "Start") %>%
                     zoo::na.locf()
                 }) %>%

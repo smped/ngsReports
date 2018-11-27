@@ -11,8 +11,8 @@
 \alias{plotReadTotals,FastqcDataList}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(x, usePlotly = FALSE, duplicated = TRUE, bars = "stacked",
-  ...)
+plotReadTotals(x, usePlotly = FALSE, duplicated = TRUE,
+  bars = "stacked", ...)
 
 \S4method{plotReadTotals}{character}(x, usePlotly = FALSE,
   duplicated = TRUE, bars = "stacked", ...)
@@ -21,7 +21,8 @@ plotReadTotals(x, usePlotly = FALSE, duplicated = TRUE, bars = "stacked",
   duplicated = TRUE, bars = "stacked", ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(x, usePlotly = FALSE,
-  duplicated = TRUE, bars = "stacked", labels, millions, barCols, ...)
+  duplicated = TRUE, bars = "stacked", labels, millions, barCols,
+  expand.x = c(0, 0), expand.y = c(0, 0), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -44,6 +45,8 @@ File extensions are dropped by default.}
 Unless specified, will be set as TRUE automatically if the highest total is > 2e06.}
 
 \item{barCols}{Colours for duplicated and unique reads.}
+
+\item{expand.x, expand.y}{Vectors of length 2. Passed to `scale_*_continuous()`}
 }
 \value{
 Returns a ggplot or plotly object
@@ -63,12 +66,10 @@ As it still gives a good guide as to sequence diversity it is included as the de
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # Plot the Read Totals showing estimated duplicates

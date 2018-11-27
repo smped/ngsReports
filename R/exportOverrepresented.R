@@ -17,12 +17,10 @@
 #' @examples
 #' \dontrun{
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
-#' # Load the FASTQC data as a FastqcDataList
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Export the top10 Overrepresented Sequences as a single fasta file
@@ -56,7 +54,7 @@ setMethod("exportOverrepresented", signature = "FastqcData",
             # Remove any putative adapter or primer sequences
             if (noAdapters) df <- df[!grepl("(Primer|Adapter)", df$Possible_Source),]
             df <- dplyr::top_n(df, n, Percentage)
-            hdr <- paste0("> ", df$Filename, " Sequence", 1:n,
+            hdr <- paste0("> ", df$Filename, " Sequence", seq_len(n),
                           " Count:", df$Count,
                           " Length:", nchar(df$Sequence))
             fasta <- paste(hdr, df$Sequence, sep="\n")
@@ -93,7 +91,7 @@ setMethod("exportOverrepresented", signature = "FastqcDataList",
             df <- dplyr::top_n(df, n, Percentage)
 
             # Create the fasta header & data structure
-            hdr <- paste0("> Sequence", 1:n,
+            hdr <- paste0("> Sequence", seq_len(n),
                           " Total:", df$Total,
                           " Length:", nchar(df$Sequence),
                           " Libraries:", df$nFiles,

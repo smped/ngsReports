@@ -5,7 +5,8 @@
 \title{Write an HTML Summary Report}
 \usage{
 writeHtmlReport(fastqcDir, template, species = "Hsapiens",
-  dataType = "Transcriptome", targetsDF, overwrite = FALSE, quiet = TRUE)
+  dataType = "Transcriptome", nOver = 30, nKmer = 30, targetsDF,
+  overwrite = FALSE, quiet = TRUE)
 }
 \arguments{
 \item{fastqcDir}{A directory containing zipped, or extracted FastQC reports}
@@ -15,6 +16,10 @@ writeHtmlReport(fastqcDir, template, species = "Hsapiens",
 \item{species}{Species/closely related species of sequenced samples}
 
 \item{dataType}{Is the data "Transcriptomic" or "Genomic" in nature?}
+
+\item{nOver}{The maximum number of Overrepresented Sequences to show}
+
+\item{nKmer}{The maximum number of Kmers to show}
 
 \item{targetsDF}{A data.frame with at least two columns named \code{Filename} and \code{Label}.
 The filenames should match the original fastq files, and the labels should be simply alternative

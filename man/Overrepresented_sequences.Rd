@@ -5,13 +5,9 @@
 \alias{Overrepresented_sequences,FastqcData-method}
 \alias{Overrepresented_sequences}
 \alias{Overrepresented_sequences,FastqcDataList-method}
-\alias{Overrepresented_sequences}
 \alias{Overrepresented_sequences,FastqcFile-method}
-\alias{Overrepresented_sequences}
 \alias{Overrepresented_sequences,FastqcFileList-method}
-\alias{Overrepresented_sequences}
 \alias{Overrepresented_sequences,character-method}
-\alias{Overrepresented_sequences}
 \title{Get the Overrepresented Sequences information}
 \usage{
 \S4method{Overrepresented_sequences}{FastqcData}(object)
@@ -33,4 +29,17 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Overrepresented Sequences module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Print the Overrepresented Sequences
+Overrepresented_sequences(fdl)
+
 }

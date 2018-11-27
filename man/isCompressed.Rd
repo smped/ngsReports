@@ -27,3 +27,11 @@ This function assumes that the first thing in a zip archive is the
 ZIP files containing a self-extracting archive may not exhibit this structure
 and will return FALSE
 }
+\examples{
+
+# Get the files included with the package
+fileDir <- system.file("extdata", package = "ngsReports")
+allFiles <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+isCompressed(allFiles)
+
+}

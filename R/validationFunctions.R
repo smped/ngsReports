@@ -32,13 +32,20 @@ isValidFastqcFile <- function(object){
 
 isValidFastqcFileList <- function(object){
   cls <- vapply(object, class, character(1))
-  if (!all(cls == "FastqcFile")) return(FALSE)
+  all(cls == "FastqcFile")
+}
+
+isValidFastqcData <- function(object){
+  # At minimum, this should contain slots for Summary, Basic_Statistics, Version & path
+  # The remainder of the modules may be missing
+  reqSlots <- c("Summary", "Basic_Statistics", "Version", "path")
+  all(reqSlots %in% slotNames(object))
 }
 
 isValidFastqcDataList <- function(object){
   # This is very rudimentary & may need more thought
   cls <- vapply(object, class, character(1))
-  if (!all(cls == "FastqcData")) return(FALSE)
+  all(cls == "FastqcData")
 }
 
 isValidPwf <- function(object){

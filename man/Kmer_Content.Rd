@@ -5,13 +5,9 @@
 \alias{Kmer_Content,FastqcData-method}
 \alias{Kmer_Content}
 \alias{Kmer_Content,FastqcDataList-method}
-\alias{Kmer_Content}
 \alias{Kmer_Content,FastqcFile-method}
-\alias{Kmer_Content}
 \alias{Kmer_Content,FastqcFileList-method}
-\alias{Kmer_Content}
 \alias{Kmer_Content,character-method}
-\alias{Kmer_Content}
 \title{Get the Kmer Content information}
 \usage{
 \S4method{Kmer_Content}{FastqcData}(object)
@@ -33,4 +29,18 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Kmer Content module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Print the Kmer_Content
+Kmer_Content(fdl)
+
+
 }

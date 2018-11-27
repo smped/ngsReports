@@ -4,11 +4,8 @@
 \name{path}
 \alias{path}
 \alias{path,FastqcFile-method}
-\alias{path}
 \alias{path,FastqcFileList-method}
-\alias{path}
 \alias{path,FastqcData-method}
-\alias{path}
 \alias{path,FastqcDataList-method}
 \title{Return the File Paths from an object}
 \usage{
@@ -24,11 +21,22 @@
 \item{object}{An object of class FastqcFile or FastqcFileList}
 }
 \value{
-A character vector of the file paths
+A character vector of the file paths to the underlying FastQC reports
 }
 \description{
 Return the File Paths from an object
 }
 \details{
 Obtains the file.path for objects of multiple classes
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+path(fdl)
+
 }

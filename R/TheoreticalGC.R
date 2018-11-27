@@ -23,7 +23,10 @@ setValidity("TheoreticalGC", isValidTheoreticalGC)
 #'
 #' @param object An object of class Theoretical GC
 #'
-#' @return A \code{data.frame} object
+#' @return A \code{tibble} object
+#' 
+#' @examples 
+#' mData(gcTheoretical)
 #'
 #' @export
 #' @name mData
@@ -42,7 +45,10 @@ setMethod("mData", "TheoreticalGC", function(object){object@mData})
 #'
 #' @param object An object of class Theoretical GC
 #'
-#' @return A \code{data.frame} object
+#' @return A \code{tibble} object
+#' 
+#' @examples 
+#' genomes(gcTheoretical)
 #'
 #' @export
 #' @name genomes
@@ -56,7 +62,7 @@ setGeneric("genomes", function(object){standardGeneric("genomes")})
 #' @aliases genomes,TheoreticalGC-method
 setMethod("genomes", "TheoreticalGC", function(object){
   gn <- object@mData$Genome
-  dplyr::select(object@mData[gn,], -dplyr::ends_with("ome"))
+  dplyr::select(object@mData[gn,], -tidyselect::ends_with("ome"))
 })
 
 #' @title List Available Transcriptomes
@@ -65,7 +71,10 @@ setMethod("genomes", "TheoreticalGC", function(object){
 #'
 #' @param object An object of class Theoretical GC
 #'
-#' @return A \code{data.frame} object
+#' @return A \code{tibble} object
+#'
+#' @examples 
+#' transcriptomes(gcTheoretical)
 #'
 #' @export
 #' @name transcriptomes
@@ -78,7 +87,7 @@ setGeneric("transcriptomes", function(object){standardGeneric("transcriptomes")}
 #' @aliases transcriptomes,TheoreticalGC-method
 setMethod("transcriptomes", "TheoreticalGC", function(object){
   tr <- object@mData$Transcriptome
-  dplyr::select(object@mData[tr,], -dplyr::ends_with("ome"))
+  dplyr::select(object@mData[tr,], -tidyselect::ends_with("ome"))
 })
 
 #' @title Get Theoretical GC content
@@ -89,7 +98,10 @@ setMethod("transcriptomes", "TheoreticalGC", function(object){
 #' @param name The Name of the species in 'Gspecies' format, e.g. Hsapiens
 #' @param type The type of GC content. Can only be either "Genome" or "Transcriptome"
 #'
-#' @return A \code{data.frame} object
+#' @return A \code{tibble} object
+#' 
+#' @examples 
+#' getGC(gcTheoretical, name = "Hsapiens", type = "Genome")
 #'
 #' @export
 #' @name getGC
@@ -103,17 +115,19 @@ setGeneric("getGC", function(object, name, type){standardGeneric("getGC")})
 setMethod("getGC", "TheoreticalGC",
           function(object, name, type){
 
-            type <- type[1]
-            stopifnot(type %in% c("Genome", "Transcriptome"))
+            type <- stringr::str_to_title(type)
+            type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
 
             if (type == "Genome"){
               col <- tryCatch(match.arg(name, colnames(object@Genome)))
-              object@Genome[c("GC_Content", col)]
+              df <- object@Genome[c("GC_Content", col)]
             }
             else{
               col <- tryCatch(match.arg(name, colnames(object@Transcriptome)))
-              object@Transcriptome[c("GC_Content", col)]
+              df <- object@Transcriptome[c("GC_Content", col)]
             }
+            
+            df
 
           })
 

@@ -5,13 +5,9 @@
 \alias{Sequence_Duplication_Levels,FastqcData-method}
 \alias{Sequence_Duplication_Levels}
 \alias{Sequence_Duplication_Levels,FastqcDataList-method}
-\alias{Sequence_Duplication_Levels}
 \alias{Sequence_Duplication_Levels,FastqcFile-method}
-\alias{Sequence_Duplication_Levels}
 \alias{Sequence_Duplication_Levels,FastqcFileList-method}
-\alias{Sequence_Duplication_Levels}
 \alias{Sequence_Duplication_Levels,character-method}
-\alias{Sequence_Duplication_Levels}
 \title{Get the Sequence Duplication Levels information}
 \usage{
 \S4method{Sequence_Duplication_Levels}{FastqcData}(object)
@@ -33,4 +29,17 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Sequence Duplication Levels module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Print the Sequence Duplication Levels
+Sequence_Duplication_Levels(fdl)
+
 }

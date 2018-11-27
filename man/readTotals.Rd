@@ -16,3 +16,16 @@ A \code{data_frame} with the columns \code{Filename} and \code{Total_Sequences}
 \description{
 Get the read totals from one or more FASTQC reports
 }
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Print the read totals
+readTotals(fdl)    
+
+}

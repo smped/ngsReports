@@ -21,13 +21,15 @@ plotDuplicationLevels(x, usePlotly = FALSE, ...)
 
 \S4method{plotDuplicationLevels}{FastqcFile}(x, usePlotly = FALSE, ...)
 
-\S4method{plotDuplicationLevels}{FastqcFileList}(x, usePlotly = FALSE, ...)
+\S4method{plotDuplicationLevels}{FastqcFileList}(x, usePlotly = FALSE,
+  ...)
 
-\S4method{plotDuplicationLevels}{FastqcData}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)
+\S4method{plotDuplicationLevels}{FastqcData}(x, usePlotly = FALSE,
+  labels, pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"),
+  ...)
 
-\S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, deduplication = c("pre", "post"), cluster = FALSE,
+\S4method{plotDuplicationLevels}{FastqcDataList}(x, usePlotly = FALSE,
+  labels, pwfCols, deduplication = c("pre", "post"), cluster = FALSE,
   dendrogram = FALSE, heatCol = inferno(50), ...)
 }
 \arguments{
@@ -75,12 +77,10 @@ The output of this function can be further modified using the standard ggplot2 m
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # Draw the default plot for a single file

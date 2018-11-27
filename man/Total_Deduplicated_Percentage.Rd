@@ -5,13 +5,9 @@
 \alias{Total_Deduplicated_Percentage,FastqcData-method}
 \alias{Total_Deduplicated_Percentage}
 \alias{Total_Deduplicated_Percentage,FastqcDataList-method}
-\alias{Total_Deduplicated_Percentage}
 \alias{Total_Deduplicated_Percentage,FastqcFile-method}
-\alias{Total_Deduplicated_Percentage}
 \alias{Total_Deduplicated_Percentage,FastqcFileList-method}
-\alias{Total_Deduplicated_Percentage}
 \alias{Total_Deduplicated_Percentage,character-method}
-\alias{Total_Deduplicated_Percentage}
 \title{Get the Total Deduplicated Percentage information}
 \usage{
 \S4method{Total_Deduplicated_Percentage}{FastqcData}(object)
@@ -33,4 +29,17 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Total Deduplicated Percentage module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Get the estimate total deduplicated percentage
+Total_Deduplicated_Percentage(fdl)
+
 }

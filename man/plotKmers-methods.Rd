@@ -23,13 +23,13 @@ plotKmers(x, usePlotly = FALSE, ...)
 
 \S4method{plotKmers}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, n = 6, labels, ...,
-  lineWidth = 0.5, pal = c("red", "blue", "green", "black", "magenta",
-  "yellow"))
+\S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, n = 6, labels,
+  ..., lineWidth = 0.5, pal = c("red", "blue", "green", "black",
+  "magenta", "yellow"))
 
 \S4method{plotKmers}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  cluster = FALSE, dendrogram = FALSE, pwfCols, heatCol = inferno(50),
-  ...)
+  cluster = FALSE, dendrogram = FALSE, pwfCols,
+  heatCol = inferno(50), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -73,12 +73,10 @@ Plot Overrepresented Kmers
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 plotKmers(fdl[[1]])
 

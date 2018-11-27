@@ -24,12 +24,10 @@
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
-#' # Load the FASTQC data as a FastqcDataList
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot
@@ -184,7 +182,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               df$A <- round(df$A, 2)
               df$C <- round(df$C, 2)
               df$G <- round(df$G, 2)
-              df$T <- round(df$T, 2)
+              df[["T"]] <- round(df[["T"]], 2)
               maxBase <- max(vapply(c("A", "C", "G", "T"), function(x){max(df[[x]])}, numeric(1)))
               df$opacity <- 1 - df$G / maxBase
               df$colour <- with(df, rgb(red = `T` * opacity / maxBase,
@@ -195,14 +193,6 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
 
               df <- dplyr::right_join(df, basicStat, by = "Filename")
               df <- df[c("Filename", "Start", "End", "colour", "Longest_sequence", "A", "C", "G", "T")]
-
-              # df <- split(df, f = df$Filename) %>%
-              #   lapply(function(x){
-              #     dfFill <- data.frame(Start = 1:x[["Longest_sequence"]][1])
-              #     x <- dplyr::right_join(x, dfFill, by = "Start") %>%
-              #       zoo::na.locf()
-              #   }) %>%
-              #   dplyr::bind_rows()
               df$Position <- as.integer(df$Start)
               df$Filename <- labels[df$Filename]
 
@@ -230,7 +220,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               df$xmin <- df$Start - 1
               df$Window <- paste(df$Start, "-", df$End, "bp")
               
-              scPlot <- ggplot(df, aes_string(fill = "colour", A = "A", C = "C", G = "G", T = "T", 
+              scPlot <- ggplot(df, aes_string(fill = "colour", A = "A", C = "C", G = "G", `T` = "T", 
                                      Filename = "Filename", Window = "Window")) + 
                 geom_rect(aes_string(xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax")) +
                 scale_fill_manual(values = tileCols) +
@@ -242,21 +232,6 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                       panel.grid.major = element_blank()) +
                 labs(x = "Position in read (bp)",
                      y = "Filename")
-              
-              
-              
-              # scPlot <- ggplot(df, aes_string(x = "Position", y = "Filename", fill = "colour",
-              #                                 A = "A", C = "C", G = "G", T = "T")) +
-              #   geom_tile() +
-              #   scale_fill_manual(values = tileCols) +
-              #   scale_x_continuous(expand = c(0, 0)) +
-              #   scale_y_discrete(expand = c(0, 0)) +
-              #   theme_bw() +
-              #   theme(legend.position = "none",
-              #         panel.grid.minor = element_blank(),
-              #         panel.grid.major = element_blank()) +
-              #   labs(x = "Position in read (bp)",
-              #        y = "Filename")
               
               if (!is.null(userTheme)) scPlot <- scPlot + userTheme
               
@@ -304,9 +279,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                 }
                 
                 ## manually edit tooltip to remove colour
-                sc <- lapply(1:length(scPlot$x$data), function(x){
+                sc <- lapply(seq_along(scPlot$x$data), function(x){
                   scPlot$x$data[[x]]$text <<- gsub("colour:.*<br />A", "A",  scPlot$x$data[[x]]$text)
-                  
                 })
                 
               }
@@ -339,10 +313,6 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   ggplotly(scPlot) %>% layout(legend = list(x = 0.85, y = 1))
                 )
               }
-              # else{
-              #   scPlot
-              # }
-              # scPlot
             }
            
             scPlot

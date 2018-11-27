@@ -9,17 +9,25 @@
 #'
 #' @return An object of class FastqcFile
 #'
+#' @examples
+#'
+#' # Get the files included with the package
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#'
+#' # Load the FASTQC data as a FastqcFileList
+#' ffl <- FastqcFileList(fileList)
+#'
 #' @include validationFunctions.R
 #'
-#' @slot ... this can either be a single character vector of paths to FASTQC files, or several instances of FastqcFile objects
+#' @rdname FastqcFileList
+#' @slot ... this can either be a single character vector of paths to FASTQC
+#' files, or several instances of FastqcFile objects
 setClass("FastqcFileList", contains="list")
 setValidity("FastqcFileList", isValidFastqcFileList)
 
-#' @title Create a new FastqcFileList Object
-#' @description Create a new FastqcFileList Object
-#' @details Create a new FastqcFileList Object from a vector of file paths
-#' @return An object of class FastqcFileList
-#' @param x Character vector specifying a valid paths to files/directories as output by FastQC
+#' @param x Character vector specifying a valid paths to files/directories as
+#' output by FastQC
 #' @importFrom methods new
 #' @export
 #' @rdname FastqcFileList

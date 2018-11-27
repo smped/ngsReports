@@ -5,13 +5,9 @@
 \alias{Per_base_sequence_content,FastqcData-method}
 \alias{Per_base_sequence_content}
 \alias{Per_base_sequence_content,FastqcDataList-method}
-\alias{Per_base_sequence_content}
 \alias{Per_base_sequence_content,FastqcFile-method}
-\alias{Per_base_sequence_content}
 \alias{Per_base_sequence_content,FastqcFileList-method}
-\alias{Per_base_sequence_content}
 \alias{Per_base_sequence_content,character-method}
-\alias{Per_base_sequence_content}
 \title{Get the Per Base Sequence Content information}
 \usage{
 \S4method{Per_base_sequence_content}{FastqcData}(object)
@@ -33,4 +29,17 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Per Base Sequence Content module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Print the Per_base_sequence_content
+Per_base_sequence_content(fdl)   
+
 }

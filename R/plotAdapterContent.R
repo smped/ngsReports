@@ -38,12 +38,10 @@
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
-#' # Load the FASTQC data as a FastqcDataList
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot
@@ -148,7 +146,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
             # Add transparency to background colours & define the rectangles
             pwfCols <- setAlpha(pwfCols, 0.2)
             x <- list(min = min(df$Position), max = max(df$Position))
-            rects <- dplyr::data_frame(xmin = 0,
+            rects <- tibble::tibble(xmin = 0,
                                        xmax = max(df$Position),
                                        ymin = c(0, warn, fail),
                                        ymax = c(warn, fail, 100),
@@ -288,7 +286,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               df <- split(df, f = df$Filename) %>%
                 lapply(function(x){
                   Longest_sequence <- max(as.integer(gsub(".*-([0-9]*)", "\\1", x$Position)))
-                  dfFill <- data.frame(Start = 1:Longest_sequence)
+                  dfFill <- data.frame(Start = seq_len(Longest_sequence))
                   x <- dplyr::right_join(x, dfFill, by = "Start") %>%
                     zoo::na.locf()
                 }) %>%
@@ -322,7 +320,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               
               if (allZero){
                 # will put the message only in the center of the plot
-                label_df <- dplyr::data_frame(
+                label_df <- tibble::tibble(
                   Filename = levels(df$Filename)[floor(mean(as.integer(df$Filename)))],
                   Start = df$Start,
                   text = "No Adapter Content Detected")

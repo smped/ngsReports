@@ -12,17 +12,19 @@ library(ngsReports)
 #  altTemplate <- file.path("path", "to", "template.Rmd")
 #  writeHtmlReport(fileDir, template = altTemplate)
 
-## ---- eval=FALSE-----------------------------------------------------------
-#  files <- list.files(fileDir, pattern = "fastqc.zip$", full.names = TRUE)
-#  fastqcShiny(files)
-
 ## --------------------------------------------------------------------------
 fileDir <- system.file("extdata", package = "ngsReports")
 files <- list.files(fileDir, pattern = "fastqc.zip$", full.names = TRUE)
 fdl <- getFastqcData(files)
 
 ## ---- results='hide'-------------------------------------------------------
-readTotals(fdl)
+reads <- readTotals(fdl)
+
+## --------------------------------------------------------------------------
+library(dplyr)
+library(pander)
+filter(reads, grepl("R1", Filename)) %>% 
+  pander(big.mark = ",")
 
 ## ----plotSummary, fig.cap="Default summary of FastQC flags.", fig.wide = TRUE----
 plotSummary(fdl)
@@ -31,10 +33,8 @@ plotSummary(fdl)
 plotReadTotals(fdl)
 
 ## --------------------------------------------------------------------------
-library(ggplot2)
-plotReadTotals(fdl, duplicated = FALSE, barCol = "grey50") + 
-  geom_hline(yintercept = 25000, linetype = 2) +
-  coord_flip() 
+plotReadTotals(fdl) +
+  geom_vline(xintercept = 25000, linetype = 2) 
 
 ## --------------------------------------------------------------------------
 plotBaseQualities(fdl)
@@ -49,7 +49,7 @@ plotBaseQualities(fdl[1:4], plotType = "boxplot")
 plotSequenceQualities(fdl)
 
 ## --------------------------------------------------------------------------
-r2 <- seq(2, 12, by = 2)
+r2 <- grepl("R2", fileName(fdl))
 plotSequenceQualities(fdl[r2], plotType = "line")
 
 ## --------------------------------------------------------------------------
@@ -90,10 +90,8 @@ plotGcContent(fdl)
 plotGcContent(fdl, theoreticalType = "Transcriptome", species = "Mmusculus")
 
 ## ----message=FALSE,warning=FALSE-------------------------------------------
-plotGcContent(fdl, Fastafile = system.file("extdata","Athaliana.TAIR10.tRNA.fasta",package="ngsReports"))
-
-## --------------------------------------------------------------------------
-plotGcContent(fdl, theoreticalGC = FALSE)
+faFile <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package="ngsReports")
+plotGcContent(fdl, Fastafile = faFile)
 
 ## --------------------------------------------------------------------------
 plotGcContent(fdl, plotType = "line",  theoreticalType = "Transcriptome")

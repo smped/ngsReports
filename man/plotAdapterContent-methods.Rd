@@ -27,8 +27,9 @@ plotAdapterContent(x, usePlotly = FALSE, ...)
   warn = 5, fail = 10, ...)
 
 \S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
-  plotType = c("heatmap", "line"), labels, adapterType = "Total", pwfCols,
-  warn = 5, fail = 10, cluster = FALSE, dendrogram = FALSE, ...)
+  plotType = c("heatmap", "line"), labels, adapterType = "Total",
+  pwfCols, warn = 5, fail = 10, cluster = FALSE,
+  dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -79,12 +80,10 @@ When plotting more than one fastqc file, any undetected adapters will not be sho
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # The default plot

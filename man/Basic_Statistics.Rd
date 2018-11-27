@@ -5,13 +5,9 @@
 \alias{Basic_Statistics,FastqcData-method}
 \alias{Basic_Statistics}
 \alias{Basic_Statistics,FastqcDataList-method}
-\alias{Basic_Statistics}
 \alias{Basic_Statistics,FastqcFile-method}
-\alias{Basic_Statistics}
 \alias{Basic_Statistics,FastqcFileList-method}
-\alias{Basic_Statistics}
 \alias{Basic_Statistics,character-method}
-\alias{Basic_Statistics}
 \title{Get the set of Basic Statistics}
 \usage{
 \S4method{Basic_Statistics}{FastqcData}(object)
@@ -33,4 +29,17 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Basic Statistics module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Return a data_frame/tibble with the raw information
+Basic_Statistics(fdl)
+
 }

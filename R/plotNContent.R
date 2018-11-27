@@ -33,12 +33,10 @@
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
-#' # Load the FASTQC data as a FastqcDataList
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot
@@ -125,7 +123,7 @@ setMethod("plotNContent", signature = "FastqcData",
             df$xValue <- as.integer(df$Base)
             
             # Setup the BG colours
-            rects <- dplyr::data_frame(xmin = 0,
+            rects <- tibble::tibble(xmin = 0,
                                        xmax = max(df$xValue),
                                        ymin = c(0, warn, fail),
                                        ymax = c(warn, fail, 100),
@@ -225,7 +223,7 @@ setMethod("plotNContent", signature = "FastqcDataList",
             df <- split(df, f = df$Filename) %>%
               lapply(function(x){
                 Longest_sequence <- max(x$Start)
-                dfFill <- data.frame(Start = 1:Longest_sequence)
+                dfFill <- data.frame(Start = seq_len(Longest_sequence))
                 x <- dplyr::right_join(x, dfFill, by = "Start") %>%
                   zoo::na.locf()
               }) %>%

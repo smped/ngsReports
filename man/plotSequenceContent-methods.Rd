@@ -17,17 +17,20 @@
 \usage{
 plotSequenceContent(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSequenceContent}{character}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotSequenceContent}{FastqcFile}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotSequenceContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotSequenceContent}{character}(x, usePlotly = FALSE, labels,
   ...)
 
-\S4method{plotSequenceContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSequenceContent}{FastqcFile}(x, usePlotly = FALSE, labels,
+  ...)
 
-\S4method{plotSequenceContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
+\S4method{plotSequenceContent}{FastqcFileList}(x, usePlotly = FALSE,
+  labels, ...)
+
+\S4method{plotSequenceContent}{FastqcData}(x, usePlotly = FALSE, labels,
+  ...)
+
+\S4method{plotSequenceContent}{FastqcDataList}(x, usePlotly = FALSE,
+  labels, plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
   dendrogram = TRUE, ...)
 }
 \arguments{
@@ -64,12 +67,10 @@ Informative plot where per base sequence content (%A, %T, %G, %C),
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # The default plot

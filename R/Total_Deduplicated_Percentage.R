@@ -5,10 +5,22 @@
 #' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData}, \code{fastqcDataList},
 #' or simply a \code{character} vector of paths to fastqc files
 #'
-#' @include AllClasses.R
+#' @include FastqcData.R
 #' @include AllGenerics.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
+#'
+#'@examples 
+#' 
+#' # Get the files included with the package
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#'
+#' # Load the FASTQC data as a FastqcDataList object
+#' fdl <- getFastqcData(fileList)
+#' 
+#' # Get the estimate total deduplicated percentage
+#' Total_Deduplicated_Percentage(fdl)
 #'
 #' @docType methods
 #'
@@ -18,7 +30,7 @@
 #' @aliases Total_Deduplicated_Percentage
 setMethod("Total_Deduplicated_Percentage", "FastqcData",
           function(object){
-            dplyr::data_frame(Filename = fileName(object),
+            tibble::tibble(Filename = fileName(object),
                               Total = object@Total_Deduplicated_Percentage)
           })
 

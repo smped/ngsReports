@@ -5,10 +5,22 @@
 #' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData}, \code{fastqcDataList},
 #' or simply a \code{character} vector of paths to fastqc files
 #'
-#' @include AllClasses.R
+#' @include FastqcData.R
 #' @include AllGenerics.R
 #'
 #' @return A single \code{data_frame} containing all information combined from all supplied FastQC reports
+#'
+#' @examples 
+#' 
+#' # Get the files included with the package
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#'
+#' # Load the FASTQC data as a FastqcDataList object
+#' fdl <- getFastqcData(fileList)
+#' 
+#' # Print the Per_sequence_GC_content
+#' Per_sequence_GC_content(fdl)   
 #'
 #' @docType methods
 #'
@@ -21,7 +33,7 @@ setMethod("Per_sequence_GC_content", "FastqcData",
             df <- object@Per_sequence_GC_content
             if(length(df)){
             df$Filename<- fileName(object)
-            dplyr::select(df, Filename, dplyr::everything())
+            dplyr::select(df, "Filename", tidyselect::everything())
             }
             else NULL
           })

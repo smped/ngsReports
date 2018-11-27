@@ -30,12 +30,10 @@
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
-#' # Load the FASTQC data as a FastqcDataList
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #' plotKmers(fdl[[1]])
 #'
@@ -108,7 +106,7 @@ setMethod("plotKmers", signature = "FastqcData",
             allK <- unique(df$Sequence)
             n <- tryCatch(as.integer(n))
             n <- min(length(allK), n)
-            topK <- unique(df$Sequence[o])[1:n]
+            topK <- unique(df$Sequence[o])[seq_len(n)]
             # Tidy up the data
             df <- dplyr::filter(df, Sequence %in% topK)
             colnames(df) <- gsub("Max_Obs/Exp_Position", "Base", colnames(df))
@@ -123,7 +121,7 @@ setMethod("plotKmers", signature = "FastqcData",
             # The most complete will be Per_base_sequence_quality
             # These values can then be incorporated in the final df for accurate plotting & labelling
             refForX <- unique(Per_base_sequence_quality(x)$Base)
-            refForX <- dplyr::data_frame(Base = as.character(refForX),
+            refForX <- tibble::tibble(Base = as.character(refForX),
                                          Position = gsub("([0-9]*)-[0-9]*", "\\1", Base))
             refForX$Position <- as.integer(refForX$Position)
 
@@ -162,7 +160,7 @@ setMethod("plotKmers", signature = "FastqcData",
             if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
             # And the colours
-            if (n < length(pal)) pal <- pal[1:n]
+            if (n < length(pal)) pal <- pal[seq_len(n)]
             if (n > length(pal)) pal <- grDevices::colorRampPalette(pal)(n)
 
             # Now draw the basic plots
@@ -242,7 +240,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
 
             # Setup the x-axis
             refForX <- unique(Per_base_sequence_quality(x)$Base)
-            refForX <- dplyr::data_frame(Base = as.character(refForX),
+            refForX <- tibble::tibble(Base = as.character(refForX),
                                          Position = gsub("([0-9]*)-[0-9]*", "\\1", Base))
             refForX$Position <- as.integer(refForX$Position)
 

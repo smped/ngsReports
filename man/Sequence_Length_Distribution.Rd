@@ -5,13 +5,9 @@
 \alias{Sequence_Length_Distribution,FastqcData-method}
 \alias{Sequence_Length_Distribution}
 \alias{Sequence_Length_Distribution,FastqcDataList-method}
-\alias{Sequence_Length_Distribution}
 \alias{Sequence_Length_Distribution,FastqcFile-method}
-\alias{Sequence_Length_Distribution}
 \alias{Sequence_Length_Distribution,FastqcFileList-method}
-\alias{Sequence_Length_Distribution}
 \alias{Sequence_Length_Distribution,character-method}
-\alias{Sequence_Length_Distribution}
 \title{Get the Sequence Length Distribution information}
 \usage{
 \S4method{Sequence_Length_Distribution}{FastqcData}(object)
@@ -33,4 +29,17 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Sequence Length Distribution module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Print the Sequence Length Distribution
+Sequence_Length_Distribution(fdl)
+
 }

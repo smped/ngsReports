@@ -22,17 +22,16 @@
 #' @param duplicated \code{logical}. Include deduplicated read total estimates to plot charts
 #' @param bars If \code{duplicated = TRUE}, show unique and deduplicated reads as "stacked" or "adjacent".
 #' @param barCols Colours for duplicated and unique reads.
+#' @param expand.x,expand.y Vectors of length 2. Passed to `scale_*_continuous()`
 #' @param ... Used to pass additional attributes to theme()
 #'
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
-#' # Load the FASTQC data as a FastqcDataList
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Plot the Read Totals showing estimated duplicates
@@ -79,7 +78,7 @@ setMethod("plotReadTotals", signature = "FastqcFileList",
 #' @export
 setMethod("plotReadTotals", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, duplicated = TRUE, bars = "stacked",
-                   labels, millions, barCols, ...){
+                   labels, millions, barCols, expand.x = c(0, 0), expand.y = c(0, 0), ...){
 
             df <- readTotals(x)
 
@@ -104,7 +103,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
             if (length(unique(labels)) != length(labels)) stop("The labels vector cannot contain repeated values")
             df$Filename <- labels[df$Filename]
             df$Filename <- factor(df$Filename, levels = unique(df$Filename))
-            
+
             # Get any arguments for dotArgs that have been set manually
             dotArgs <- list(...)
             allowed <- names(formals(ggplot2::theme))
@@ -122,36 +121,38 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
             else{
               stopifnot(length(barCols) == (duplicated + 1))
             }
-            
-            
-            maxChar <- max(nchar(levels(df$Filename)))
-            
+
+            # Check the axis expansion
+            stopifnot(is.numeric(expand.x), is.numeric(expand.y))
+            stopifnot(length(expand.x) == 2, length(expand.y) == 2)
+
             #set left margin
+            maxChar <- max(nchar(levels(df$Filename)))
             if(maxChar < 10) l <- 80
             if(maxChar >= 10 & maxChar < 15) l <- 110
             if(maxChar >= 15 & maxChar < 20) l <- 130
-            if(maxChar >= 20)  l<- 150
-            
-                if (!duplicated){
+            if(maxChar >= 20)  l <- 150
+
+            if (!duplicated){
               df$xmin <- 0
               df$ymax <- as.integer(df[["Filename"]]) + 0.4
               df$ymin <- df[["ymax"]] - 0.9
-              
-                rtPlot <- ggplot(df, aes_string(total = "Total_Sequences")) + 
-                geom_rect(aes_string(xmin = "xmin", xmax = "Total_Sequences", 
-                                     ymin = "ymin", ymax = "ymax"), fill = barCols[1]) + 
+
+              rtPlot <- ggplot(df, aes_string(total = "Total_Sequences")) +
+                geom_rect(aes_string(xmin = "xmin", xmax = "Total_Sequences",
+                                     ymin = "ymin", ymax = "ymax"), fill = barCols[1]) +
                 scale_y_continuous(breaks = seq_along(levels(df$Filename)),
                                    labels = levels(df$Filename),
-                                   expand = c(0, 0)) +
-                scale_x_continuous(expand = c(0, 0)) +
+                                   expand = expand.y) +
+                scale_x_continuous(expand = expand.x) +
                 labs(x = xlab) +
                 guides(colour = FALSE) +
-                theme_bw() 
-              
+                theme_bw()
+
               if (!is.null(userTheme)) rtPlot <- rtPlot + userTheme
 
               if(usePlotly){
-                
+
                 rtPlot <- suppressMessages(
                   plotly::ggplotly(rtPlot) %>%
                     layout(xaxis = list(title = "Percentage of Total Reads"),
@@ -170,107 +171,100 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               deDup$Filename <- labels[deDup$Filename]
               deDup$Filename <- factor(deDup$Filename, levels = unique(deDup$Filename))
               colnames(deDup)[which(colnames(deDup) == "Total")] <- "Percentage"
-              
-            
+
+
               joinedDf <- dplyr::left_join(deDup, df, by = "Filename")
-              
-              
-              
 
               if (bars == "adjacent"){
 
-                
+
                 #Setup the df for plotting
                 joinedDf$Deduplicated <- round(joinedDf$Percentage*joinedDf$Total_Sequences/100, 0)
                 if (!millions) joinedDf$Deduplicated <- as.integer(round(joinedDf$Deduplicated, 0))
-    
-                colnames(joinedDf)[which(colnames(joinedDf) == "Total_Sequences")] <- "Total"
-                
+
+                colnames(joinedDf) <- gsub("Total_Sequences", "Total",colnames(joinedDf))
                 joinedDf <- joinedDf[colnames(joinedDf) != "Percentage"]
-                
+
                 joinedDfL <- reshape2::melt(joinedDf, id.vars = "Filename", variable.name = "Type", value.name = c("Total"))
-                
+
                 offsetList <- list(c(0.5, 0.1), c(0.1, -0.4))
                 joinedDfL <- split(joinedDfL, joinedDfL$Type)
-                
-                
-                joinedDf <- lapply(1:2, function(x){
-                  
+
+                joinedDf <- lapply(c(1,2), function(x){
+
                   df <- joinedDfL[[x]]
                   df$ymin <- as.integer(joinedDf[["Filename"]]) - offsetList[[x]][1]
                   df$ymax <- as.integer(joinedDf[["Filename"]]) - offsetList[[x]][2]
                   df
-                }) %>% dplyr::bind_rows()
-                
+                })
+                joinedDf <- dplyr::bind_rows(joinedDf)
                 joinedDf$xmin <- 0
-                
                 joinedDf$Type <- factor(joinedDf$Type)
-               
-                
-                rtPlot <- ggplot(joinedDf, aes_string(Total = "Total", fill = "Type")) + 
-                  geom_rect(aes_string(xmin = "xmin", xmax = "Total", 
+
+                rtPlot <- ggplot(joinedDf, aes_string(Total = "Total", fill = "Type")) +
+                  geom_rect(aes_string(xmin = "xmin", xmax = "Total",
                                        ymin = "ymin", ymax = "ymax")) +
                   scale_fill_manual(values = barCols) +
                   scale_y_continuous(breaks = seq_along(levels(df$Filename)),
                                      labels = levels(df$Filename),
-                                     expand = c(0, 0)) +
-                  scale_x_continuous(expand = c(0, 0)) +
+                                     expand = expand.y) +
+                  scale_x_continuous(expand = expand.x) +
                   labs(x = xlab) +
                   guides(colour = FALSE) +
-                  theme_bw() 
-                
+                  theme_bw()
+
                 #### need to set colours
-                
+
               }
               if (bars == "stacked"){
 
                 #Setup the df for plotting
                 joinedDf$Unique <- round(joinedDf$Percentage*joinedDf$Total_Sequences/100, 0)
-                
-                
+
+
                 if (!millions) joinedDf$Unique <- as.integer(round(joinedDf$Unique, 0))
                 joinedDf$Duplicated <- joinedDf$Total_Sequences - joinedDf$Unique
                 joinedDf <- joinedDf[c("Filename", "Unique", "Duplicated")]
                 joinedDf$ymax <- as.integer(joinedDf[["Filename"]]) + 0.4
                 joinedDf$ymin <- joinedDf[["ymax"]] - 0.9
-                
+
                 joinedDf <- reshape2::melt(joinedDf, id.vars = c("Filename", "ymin", "ymax"), variable.name = "Type", value.name = "Total")
                 joinedDf$Type = factor(joinedDf$Type, levels = c("Duplicated", "Unique"))
-                
+
                 joinedDf <- split(joinedDf, joinedDf$Filename)
 
                 joinedDf <- lapply(joinedDf, function(x){
-                  
+
                   t <- c(1,2)
                   dN <- which(x$Type == "Duplicated")
                   uN <- which(x$Type == "Unique")
-                  
+
                   t[uN] <- 0
                   t[dN] <- x$Total[uN]
-                  
-                 max <- c(1,2)
-                 
-                 max[uN] <- x$Total[uN]
-                 max[dN] <- x$Total[uN] + x$Total[dN]
-                  
+
+                  max <- c(1,2)
+
+                  max[uN] <- x$Total[uN]
+                  max[dN] <- x$Total[uN] + x$Total[dN]
+
                   x$xmin <- t
-                  
+
                   x$xmax <- max
                   x
                 })
-                
+
                 joinedDf <- bind_rows(joinedDf)
-                
-                
-                
-                rtPlot <- ggplot(joinedDf, aes_string(Total = "Total", fill = "Type")) + 
-                  geom_rect(aes_string(xmin = "xmin", xmax = "xmax", 
+
+
+
+                rtPlot <- ggplot(joinedDf, aes_string(Total = "Total", fill = "Type", label = "Filename")) +
+                  geom_rect(aes_string(xmin = "xmin", xmax = "xmax",
                                        ymin = "ymin", ymax = "ymax")) +
                   scale_fill_manual(values = barCols) +
                   scale_y_continuous(breaks = seq_along(levels(df$Filename)),
                                      labels = levels(df$Filename),
-                                     expand = c(0, 0)) +
-                  scale_x_continuous(expand = c(0, 0)) +
+                                     expand = expand.y) +
+                  scale_x_continuous(expand = expand.x) +
                   labs(x = xlab) +
                   guides(colour = FALSE) + theme_bw()
               }
@@ -279,13 +273,13 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               if (!is.null(userTheme)) rtPlot <- rtPlot + userTheme
 
               if (usePlotly){
-                
+
                 rtPlot <- suppressMessages(
-                  ggplotly(rtPlot) %>%
-                    layout(xaxis = list(title = "Percentage of Total Reads"),
+                  ggplotly(rtPlot, tooltip = c("Total", "fill", "label")) %>%
+                    plotly::layout(xaxis = list(title = xlab),
                            margin=list(l=l, b = 50))
                 )
-                
+
               }
 
             }

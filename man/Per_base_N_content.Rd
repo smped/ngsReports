@@ -5,13 +5,9 @@
 \alias{Per_base_N_content,FastqcData-method}
 \alias{Per_base_N_content}
 \alias{Per_base_N_content,FastqcDataList-method}
-\alias{Per_base_N_content}
 \alias{Per_base_N_content,FastqcFile-method}
-\alias{Per_base_N_content}
 \alias{Per_base_N_content,FastqcFileList-method}
-\alias{Per_base_N_content}
 \alias{Per_base_N_content,character-method}
-\alias{Per_base_N_content}
 \title{Get the Per Base N Content information}
 \usage{
 \S4method{Per_base_N_content}{FastqcData}(object)
@@ -33,4 +29,17 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Per Base N Content module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Print any N Content
+Per_base_N_content(fdl)
+
 }

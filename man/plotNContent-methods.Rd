@@ -23,12 +23,12 @@ plotNContent(x, usePlotly = FALSE, ...)
 
 \S4method{plotNContent}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels, warn = 5,
-  fail = 20, pwfCols, ..., lineCol = "red")
+\S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels,
+  warn = 5, fail = 20, pwfCols, ..., lineCol = "red")
 
 \S4method{plotNContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  warn = 5, fail = 20, pwfCols, cluster = FALSE, dendrogram = FALSE,
-  ...)
+  warn = 5, fail = 20, pwfCols, cluster = FALSE,
+  dendrogram = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -73,12 +73,10 @@ Otherwise, users can select line plots or heatmaps.
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # The default plot

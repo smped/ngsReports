@@ -17,17 +17,17 @@
 \usage{
 plotSequenceLengthDistribution(x, usePlotly = FALSE, ...)
 
-\S4method{plotSequenceLengthDistribution}{character}(x, usePlotly = FALSE,
-  ...)
+\S4method{plotSequenceLengthDistribution}{character}(x,
+  usePlotly = FALSE, ...)
 
-\S4method{plotSequenceLengthDistribution}{FastqcFile}(x, usePlotly = FALSE,
-  ...)
+\S4method{plotSequenceLengthDistribution}{FastqcFile}(x,
+  usePlotly = FALSE, ...)
 
 \S4method{plotSequenceLengthDistribution}{FastqcFileList}(x,
   usePlotly = FALSE, ...)
 
-\S4method{plotSequenceLengthDistribution}{FastqcData}(x, usePlotly = FALSE,
-  labels, ..., expand.x = c(0, 0.2))
+\S4method{plotSequenceLengthDistribution}{FastqcData}(x,
+  usePlotly = FALSE, labels, ..., expand.x = c(0, 0.2))
 
 \S4method{plotSequenceLengthDistribution}{FastqcDataList}(x,
   usePlotly = FALSE, labels, counts = FALSE, plotType = "heatmap",
@@ -83,12 +83,10 @@ An alternative interactive plot is available by setting the argument \code{usePl
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # Plot as a frequency plot using lines

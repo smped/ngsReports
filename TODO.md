@@ -1,20 +1,19 @@
 # Immediate Issues
 
+- Tests on all hidden functions
+- Get build time down
+- Resolve all issues from `R CMD BiocCheck`
+
 ## Chris
 - **Test on outlier FastQC reports (1 sequence etc)**
-
-
-## Hien
-
+- Start commenting all functions better so Steve can understand them
+- fix passing fdl to shiny app 
+- Start developing Shiny app as it's own package
 
 ## Steve
 
-
-- Validation Functions for `fastqcData` and `fastqcDataLists` objects
 - Build unit tests for classes and methods
-- Finish Vignette
-    - Add summary tables
-
+- Fix `scale_fill_pwf()`
 
 
 # Important But Not Pressing

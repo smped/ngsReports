@@ -16,6 +16,13 @@
 #'
 #' @return
 #' A \code{logical} vector
+#' 
+#' @examples
+#'
+#' # Get the files included with the package
+#' fileDir <- system.file("extdata", package = "ngsReports")
+#' allFiles <- list.files(fileDir, pattern = "zip$", full.names = TRUE)
+#' isCompressed(allFiles)
 #'
 #' @export
 isCompressed <- function(path, type = "zip"){

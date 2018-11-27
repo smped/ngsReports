@@ -4,11 +4,8 @@
 \name{fileName}
 \alias{fileName}
 \alias{fileName,FastqcFile-method}
-\alias{fileName}
 \alias{fileName,FastqcFileList-method}
-\alias{fileName}
 \alias{fileName,FastqcData-method}
-\alias{fileName}
 \alias{fileName,FastqcDataList-method}
 \title{Return the File Names from an Object}
 \usage{
@@ -24,8 +21,26 @@
 \item{object}{An object of class FastqcFile, FastqcFileList, FastqcData or FastqcDataList}
 }
 \value{
-Returns the filenames, without the preceding directories, i.e. basename
+Returns the filenames, without the preceding directories, i.e. basename.
+For a FastqcFile/FastqcFileList these will be the underlying FastQC files.
+For a FastqcData/FastqcDataList, these will correspond to the fastq files 
+about which the FastQC report was written.
 }
 \description{
 The File Names from an object
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Form a FastqcFileList
+ffl <- FastqcFileList(fileList)
+fileName(ffl)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+fileName(fdl)
+
 }

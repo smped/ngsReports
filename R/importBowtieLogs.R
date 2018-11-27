@@ -74,10 +74,10 @@ importBowtieLogs <- function(x){
   })
   df$Filename <- basename(x)
   df <- dplyr::select(df,
-                      Filename,
-                      dplyr::contains("Reads"),
-                      dplyr::contains("Time"),
-                      dplyr::everything())
+                      "Filename",
+                      tidyselect::contains("Reads"),
+                      tidyselect::contains("Time"),
+                      tidyselect::everything())
 
   tibble::as_tibble(df)
 }

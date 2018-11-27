@@ -5,13 +5,9 @@
 \alias{Per_sequence_quality_scores,FastqcData-method}
 \alias{Per_sequence_quality_scores}
 \alias{Per_sequence_quality_scores,FastqcDataList-method}
-\alias{Per_sequence_quality_scores}
 \alias{Per_sequence_quality_scores,FastqcFile-method}
-\alias{Per_sequence_quality_scores}
 \alias{Per_sequence_quality_scores,FastqcFileList-method}
-\alias{Per_sequence_quality_scores}
 \alias{Per_sequence_quality_scores,character-method}
-\alias{Per_sequence_quality_scores}
 \title{Get the Per Sequence Quality Scores information}
 \usage{
 \S4method{Per_sequence_quality_scores}{FastqcData}(object)
@@ -33,4 +29,17 @@ A single \code{data_frame} containing all information combined from all supplied
 }
 \description{
 Retrieve the Per Sequence Quality Scores module from one or more FastQC reports
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Print the Per_sequence_quality_scores
+Per_sequence_quality_scores(fdl)   
+
 }

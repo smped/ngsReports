@@ -17,9 +17,9 @@ plotSummary(x, usePlotly = FALSE, ...)
 
 \S4method{plotSummary}{FastqcFileList}(x, usePlotly = FALSE, ...)
 
-\S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels, pwfCols,
-  cluster = FALSE, dendrogram = TRUE, ..., gridlineWidth = 0.2,
-  gridlineCol = "grey20")
+\S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels,
+  pwfCols, cluster = FALSE, dendrogram = TRUE, ...,
+  gridlineWidth = 0.2, gridlineCol = "grey20")
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -59,12 +59,10 @@ The output of this function can be further modified using the standard ggplot2 m
 \examples{
 
 # Get the files included with the package
-barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-fileList <- system.file("extdata", fileList, package = "ngsReports")
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
-# Load the FASTQC data as a FastqcDataList
+# Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
 # Check the overall PASS/WARN/FAIL status

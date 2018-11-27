@@ -36,12 +36,10 @@
 #' @examples
 #'
 #' # Get the files included with the package
-#' barcodes <- c("ATTG", "CCGC", "CCGT", "GACC", "TTAT", "TTGG")
-#' suffix <- c("R1_fastqc.zip", "R2_fastqc.zip")
-#' fileList <- paste(rep(barcodes, each = 2), rep(suffix, times = 5), sep = "_")
-#' fileList <- system.file("extdata", fileList, package = "ngsReports")
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
-#' # Load the FASTQC data as a FastqcDataList
+#' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Plot as a frequency plot using lines
@@ -118,7 +116,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData",
                        # Fix global environment error
                        Lower <- NULL
                        dplyr::bind_rows(x,
-                                        dplyr::data_frame(Filename = x$Filename[1],
+                                        tibble::tibble(Filename = x$Filename[1],
                                                           Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
                                                           Upper = Lower,
                                                           Length = as.character(Lower),
@@ -211,7 +209,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
                        # Fix global environment error
                        Lower <- NULL
                        dplyr::bind_rows(x,
-                                        dplyr::data_frame(Filename = x$Filename[1],
+                                        tibble::tibble(Filename = x$Filename[1],
                                                           Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
                                                           Upper = Lower,
                                                           Length = as.character(Lower),
@@ -304,14 +302,12 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
               }
               else{
 
+                pwfCols <- ngsReports::pwf
+                
                 lenPlot <- lenPlot  +
                   theme(axis.ticks.y = element_blank(),
-                        axis.text.y = element_blank())
-
-                pwfCols <- ngsReports::pwf
-
-                lenPlot <- lenPlot +
-                  theme(panel.background = element_blank())
+                        axis.text.y = element_blank(),
+                        panel.background = element_blank())
 
                 t <- getSummary(x)
                 t <- t[t$Category == "Sequence Length Distribution",]
@@ -338,7 +334,7 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcDataList",
 
                 lenPlot <- suppressMessages(
                   plotly::subplot(dendro, sideBar, lenPlot, widths = c(0.1, 0.08, 0.82),
-                                  margin = 0.001, shareY = TRUE)
+                                  margin = 0.001, shareY = TRUE, titleX = TRUE)
                 )
               }
 

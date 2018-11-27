@@ -24,16 +24,16 @@ importDuplicationMetrics <- function(x){
     vals <- stringr::str_split(l[chk + 2], "\t")[[1]]
     stopifnot(length(cols) == length(vals))
     names(vals) <- cols
-    df <- dplyr::as_data_frame(as.list(vals))
+    df <- tibble::as_tibble(as.list(vals))
     # Find the name of the input bam/sam file
     libName <- grep("picard.sam.markduplicates.MarkDuplicates.+INPUT=", l, value = TRUE)[1]
     libName <- gsub(".+INPUT=\\[(.+)\\] OUTPUT.+", "\\1", libName)
     df$LIBRARY <- basename(libName)
     # Get the HISTOGRAM module
     hstart <- grep("## HISTOGRAM\tjava.lang.Double", l) + 1
-    h <- stringr::str_split_fixed(l[hstart + 1:100], "\t", n = 2)
+    h <- stringr::str_split_fixed(l[hstart + seq_len(100)], "\t", n = 2)
     colnames(h) <- stringr::str_split_fixed(l[hstart], "\t", 2)
-    h <- dplyr::as_data_frame(h)
+    h <- tibble::as_tibble(h)
     h$BIN <- as.integer(h$BIN)
     h$VALUE <- as.numeric(h$VALUE)
     h$LIBRARY <- basename(libName)
@@ -45,6 +45,6 @@ importDuplicationMetrics <- function(x){
   df[intCols] <- lapply(df[intCols], as.integer)
   df$PERCENT_DUPLICATION <- as.numeric(df$PERCENT_DUPLICATION)
   histogram <- dplyr::bind_rows(lapply(data, function(x){x$histogram}))
-  histogram <- dplyr::select(histogram, dplyr::one_of("LIBRARY"), dplyr::everything())
+  histogram <- dplyr::select(histogram, tidyselect::one_of("LIBRARY"), tidyselect::everything())
   list(metrics = df, histogram = histogram)
 }

@@ -7,6 +7,18 @@
 #' @return A \code{tibble} will be returned when supplying a \code{FastqcFile} object,
 #' whilst a list of tibbles will be returned when supplying a \code{FastqcFileList} object
 #'
+#' @examples
+#'
+#' # Get the files included with the package
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#'
+#' # Load the FASTQC data as a FastqcDataList object
+#' fdl <- getFastqcData(fileList)
+#'
+#' # Return a data_frame/tibble with the raw information
+#' getSummary(fdl)
+#'
 #' @importFrom utils unzip
 #'
 #' @include AllGenerics.R
