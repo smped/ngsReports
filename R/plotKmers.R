@@ -333,7 +333,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
                   
                   if (dendrogram){
                       dx <- ggdendro::dendro_data(clusterDend)
-                      dendro <- ggdend(dx$segments) 
+                      dendro <- renderDendro(dx$segments) 
                   }
                   else{
                       dendro <- plotly::plotly_empty()

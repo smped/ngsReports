@@ -15,7 +15,8 @@
 #'
 #' @keywords internal
 #'
-ggdend <- function(df) {
+renderDendro<- function(df) {
+    # Based on the example ggdend
     dendro <- ggplot() +
         geom_segment(data = df, aes_string("x","y", xend = "xend", yend = "yend")) +
         coord_flip() +

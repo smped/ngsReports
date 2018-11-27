@@ -162,7 +162,7 @@ setMethod("plotSummary", signature = "FastqcDataList",
                       
                       # Get the dendrogram sorted out
                       dx <- ggdendro::dendro_data(clusterDend)
-                      dendro <- ggdend(dx$segments) 
+                      dendro <- renderDendro(dx$segments) 
                       
                       # Now layout the plotly version
                       sumPlot <- suppressWarnings(
