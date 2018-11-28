@@ -33,13 +33,6 @@ the range 0 to 255.}
 \value{
 getColours will return a character vector of colours coresponding to
  PASS/WARN/FAIL
- 
- @examples 
- getColours(pwf)
- 
- # How to add transparency
- pwf2 <- setAlpha(pwf, 0.1)
- getColours(pwf2)
 
 setColours will return an object of class PwfCols
 
@@ -53,4 +46,12 @@ Use \code{getColours} to obtain the colours in an object of class PwfCols.
 
 These can be modified using the functions \code{setColours} and 
 \code{setAlpha}
+}
+\examples{
+getColours(pwf)
+ 
+# How to add transparency
+pwf2 <- setAlpha(pwf, 0.1)
+getColours(pwf2)
+ 
 }

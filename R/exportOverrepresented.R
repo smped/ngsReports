@@ -2,23 +2,25 @@
 #'
 #' @description Output overrepresented sequences to disk in fasta format.
 #'
-#' @details Fasta will contain \code{Filename}, \code{Possible Source}, \
-#' code{Percent of total reads}
+#' @details Fasta will contain \code{Filename}, \code{Possible Source}, 
+#' \code{Percent of total reads}
 #'
 #' @param x Can be a \code{FastqcData} or \code{FastqcDataList}
-#' @param path Path to export the fasta file to. Reverts to a default if not supplied
+#' @param path Path to export the fasta file to. Reverts to a default if not 
+#' supplied
 #' @param n The number of sequences to output
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param noAdapters logical. Remove any sequences identified as possible 
 #' adapters or primers by FastQC
-#' @param ... Used to pass any alternative patterns to remove from the end of filenames
+#' @param ... Used to pass any alternative patterns to remove from the end of 
+#' filenames
 #'
 #' @return Exports to a fasta file, and returns the fasta information invisibly
 #'
 #' @examples
-#' \dontrun{
+#' 
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
 #' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
@@ -27,9 +29,9 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Export the top10 Overrepresented Sequences as a single fasta file
-#' exportOverrepresented(fdl, path = "top10.fa")
+#' faOut <- file.path(tempdir(), "top10.fa")
+#' exportOverrepresented(fdl, path = faOut)
 #'
-#' }
 #'
 #' @name exportOverrepresented
 #' @rdname exportOverrepresented-methods

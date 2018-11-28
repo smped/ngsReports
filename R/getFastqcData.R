@@ -1,6 +1,7 @@
 #' Get all data from FastQC files
 #'
-#' @description Read the information from the \code{fastqc_data.txt} files in each FastqcFile
+#' @description Read the information from the \code{fastqc_data.txt} files in 
+#' each FastqcFile
 #'
 #' @param object Can be a FastqcFile or FastqcFileList, or paths to files
 #'
@@ -36,7 +37,8 @@ setMethod("getFastqcData", "FastqcFile",
               if (comp){
                   
                   # Get the internal path within the zip archive
-                  fl <- file.path( gsub(".zip$", "", fileName(object)), "fastqc_data.txt")
+                  fl <- file.path(gsub(".zip$", "", fileName(object)), 
+                                   "fastqc_data.txt")
                   
                   # Check the required file exists within the file
                   allFiles <- unzip(path, list = TRUE)$Name
@@ -50,10 +52,13 @@ setMethod("getFastqcData", "FastqcFile",
               }
               else{
                   
-                  # The existence of this file will have been checked at instantiation
-                  # of the FastqcFile. Check in case it has been deleted post-instantiation
+                  # The existence of this file will have been checked at 
+                  # instantiation of the FastqcFile. Check in case it has been 
+                  # deleted post-instantiation
                   fl <- file.path(path, "fastqc_data.txt")
-                  if (!file.exists(fl)) stop("'fastqc_data.txt' could not be found.")
+                  if (!file.exists(fl)) stop(
+                      "'fastqc_data.txt' could not be found."
+                      )
                   fastqcLines <- readLines(fl)
                   
               }
@@ -80,14 +85,22 @@ setMethod("getFastqcData", "FastqcFile",
               modules <- gsub(" ", "_", modules) # Add underscores
               
               # Define the standard modules
-              reqModules <- c("Basic_Statistics", "Per_base_sequence_quality",
-                              "Per_tile_sequence_quality", "Per_sequence_quality_scores",
-                              "Per_base_sequence_content", "Per_sequence_GC_content",
-                              "Per_base_N_content", "Sequence_Length_Distribution",
-                              "Sequence_Duplication_Levels", "Overrepresented_sequences",
-                              "Adapter_Content", "Kmer_Content")
+              reqModules <- c("Basic_Statistics", 
+                              "Per_base_sequence_quality",
+                              "Per_tile_sequence_quality", 
+                              "Per_sequence_quality_scores",
+                              "Per_base_sequence_content", 
+                              "Per_sequence_GC_content",
+                              "Per_base_N_content", 
+                              "Sequence_Length_Distribution",
+                              "Sequence_Duplication_Levels", 
+                              "Overrepresented_sequences",
+                              "Adapter_Content", 
+                              "Kmer_Content")
               # Check that at least one of the standard modules is present
-              if (!any(modules %in% reqModules)) stop("None of the standard modules were able to be found in the data.")
+              if (!any(modules %in% reqModules)) stop(
+                  "None of the standard modules were able to be found in the data."
+                  )
               
               # Split the data based on the '>>' pattern, which will indicate the
               # beginning of a new module
@@ -104,10 +117,10 @@ setMethod("getFastqcData", "FastqcFile",
               
               # Define the output to have the same structure as fastqcData, except
               # with an additional slot to account for the Sequence Duplication
-              # Levels output
-              # Initialise an empty list based on the standard modules after checking
-              # for the Total_Deduplicated Percentage
-              allModules <- unique(c(reqModules, modules, "Total_Deduplicated_Percentage"))
+              # Levels output. Initialise an empty list based on the standard 
+              # modules after checking for the Total_Deduplicated Percentage.
+              allModules <- c(reqModules, modules, "Total_Deduplicated_Percentage")
+              allModules <- unique(allModules)
               out <- vector("list", length(allModules))
               names(out) <- allModules
               
@@ -143,12 +156,14 @@ setMethod("getFastqcData", "FastqcFile",
           })
 
 #' @name getFastqcData
-#' @aliases getFastqcData,NULL-method
+#' @aliases getFastqcData,NULL-method  
 #' @rdname getFastqcData-methods
 #' @export
 setMethod("getFastqcData", "NULL",
           function(object){
-              if(is.null(object))stop("No files have been provided, please read in files")
+              if(is.null(object)) stop(
+                  "No files have been provided, please read in files"
+                  )
           })
 
 #' @name getFastqcData
@@ -364,16 +379,21 @@ getSeqDuplicationLevels <- function(fastqcLines){
     hasTotDeDup <- grepl("Total Deduplicated Percentage", x)
     Total_Deduplicated_Percentage <- NA_real_
     if (any(hasTotDeDup)){
-        Total_Deduplicated_Percentage <- as.numeric(gsub(".+\\t(.*)", "\\1", x[hasTotDeDup]))
+        Total_Deduplicated_Percentage <- gsub(".+\\t(.*)", "\\1", x[hasTotDeDup])
+        Total_Deduplicated_Percentage <- as.numeric(Total_Deduplicated_Percentage)
     }
-    if (length(Total_Deduplicated_Percentage) > 1) stop("Too many elements matched Total_Deduplicated_Percentage")
+    if (length(Total_Deduplicated_Percentage) > 1) stop(
+        "Too many elements matched Total_Deduplicated_Percentage"
+        )
     
     # Remove the Total value entry from the original object
     df <- splitByTab(x[!hasTotDeDup])
     names(df) <- gsub(" ", "_", names(df))
     
     # Check for the required values
-    reqVals <- c("Duplication_Level", "Percentage_of_deduplicated", "Percentage_of_total")
+    reqVals <- c("Duplication_Level", 
+                 "Percentage_of_deduplicated", 
+                 "Percentage_of_total")
     stopifnot(reqVals %in% names(df))
     
     # Convert percentages to numeric
@@ -437,7 +457,11 @@ getKmerContent <- function(fastqcLines){
     names(df) <- gsub(" ", "_", names(df))
     
     # Check for the required values
-    reqVals <- c("Sequence", "Count", "PValue", "Obs/Exp_Max", "Max_Obs/Exp_Position")
+    reqVals <- c("Sequence", 
+                 "Count", 
+                 "PValue", 
+                 "Obs/Exp_Max", 
+                 "Max_Obs/Exp_Position")
     stopifnot(reqVals %in% names(df))
     
     df$Count <- as.integer(df$Count)

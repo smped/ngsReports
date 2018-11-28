@@ -1,11 +1,13 @@
 #' Get the summary information from Fastqc Files
 #'
-#' @description Read the information from the \code{summary.txt} files in each FastqcFile
+#' @description Read the information from the \code{summary.txt} files in each 
+#' FastqcFile
 #'
 #' @param object Can be a FastqcFile or FastqcFileList
 #'
-#' @return A \code{tibble} will be returned when supplying a \code{FastqcFile} object,
-#' whilst a list of tibbles will be returned when supplying a \code{FastqcFileList} object
+#' @return A \code{tibble} will be returned when supplying a \code{FastqcFile} 
+#' object, whilst a list of tibbles will be returned when supplying a 
+#' \code{FastqcFileList} object
 #'
 #' @examples
 #'
@@ -31,16 +33,24 @@
 #' @aliases getSummary
 setMethod("getSummary", "FastqcFile",
           function(object){
-            modules <- c("Basic Statistics", "Per base sequence quality",
-                            "Per tile sequence quality", "Per sequence quality scores",
-                            "Per base sequence content", "Per sequence GC content",
-                            "Per base N content", "Sequence Length Distribution",
-                            "Sequence Duplication Levels", "Overrepresented sequences",
-                            "Adapter Content", "Kmer Content")
+              modules <- c("Basic Statistics", 
+                           "Per base sequence quality",
+                           "Per tile sequence quality", 
+                           "Per sequence quality scores",
+                           "Per base sequence content", 
+                           "Per sequence GC content",
+                           "Per base N content", 
+                           "Sequence Length Distribution",
+                           "Sequence Duplication Levels", 
+                           "Overrepresented sequences",
+                           "Adapter Content", 
+                           "Kmer Content")
               path <- path(object)
               if (isCompressed(path, type = "zip")){
                   #Get the internal path within the zip archive
-                  if (!file.exists(path)) stop("The zip archive can not be found.")
+                  if (!file.exists(path)) stop(
+                      "The zip archive can not be found."
+                      )
                   fl <- file.path( gsub(".zip$", "", fileName(object)),
                                    "summary.txt")
                   # Check the required file exists
@@ -52,9 +62,11 @@ setMethod("getSummary", "FastqcFile",
                   uz <- unz(path,fl)
                   summaryData <- readLines(uz)
                   close(uz)
-
+                  
                   # Form the output
-                  summaryData <- stringr::str_split_fixed(summaryData, pattern = "\t", n = 3)
+                  summaryData <- stringr::str_split_fixed(string = summaryData, 
+                                                          pattern = "\t", 
+                                                          n = 3)
                   summaryData <- as_tibble(summaryData)
               }
               else{
@@ -63,11 +75,13 @@ setMethod("getSummary", "FastqcFile",
                   # Check in case it has been deleted post-instantiation though
                   fl <- file.path(path, "summary.txt")
                   if (!file.exists(fl)) stop("'summary.txt' could not be found.")
-                  summaryData <- readr::read_delim(fl, delim = "\t", col_names = FALSE)
+                  summaryData <- readr::read_delim(file = fl, 
+                                                   delim = "\t", 
+                                                   col_names = FALSE)
               }
               colnames(summaryData) <- c("Status", "Category", "Filename")
               if (!any(modules %in% summaryData$Category)) stop(
-                "summary.txt contains incomplete data. No expected modules were found."
+                  "summary.txt contains incomplete data. No expected modules were found."
               )
               summaryData
           })

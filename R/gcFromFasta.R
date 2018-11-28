@@ -1,6 +1,7 @@
 #' @title Calculate GC content from a fasta file
 #' 
-#' @description Calculate GC content from a set of DNA sequences provided by a fasta file
+#' @description Calculate GC content from a set of DNA sequences provided by a 
+#' fasta file
 #' 
 #' @details Used to obtain theoretical GC content for a given genome/transcriptome
 #' 
@@ -14,11 +15,17 @@
 #' 
 #' @keywords internal
 gcFromFasta <- function(Fastafile, n=1e+6, bp=100){
+    # Load in the reference sequences
+    stopifnot(file.exists(Fastafile))
     ref <- readDNAStringSet(filepath = Fastafile)
-    file.gc = "gc.txt"
+    # Define a temporary export file for generateDistn
+    file.gc <- file.path(tempdir(), "gc.txt")
     fastqcTheoreticalGC::generateDistn(ref, file = file.gc, n = n, bp = bp)
-    gc <- data.frame(read.table(file.gc, header = FALSE, stringsAsFactors = FALSE))
+    # Load in the results & delete the tempfile
+    gc <- read.table(file.gc, header = FALSE, stringsAsFactors = FALSE)
+    gc <- data.frame(gc)
     file.remove(file.gc)
+    # Format the output
     colnames(gc) <- c("GC_Content","Freq")
     gc$Freq <- gc$Freq/sum(gc$Freq)
     gc

@@ -17,7 +17,8 @@ gcFromFasta(Fastafile, n = 1e+06, bp = 100)
 A data.frame with the GC percentage and the exected frequency
 }
 \description{
-Calculate GC content from a set of DNA sequences provided by a fasta file
+Calculate GC content from a set of DNA sequences provided by a 
+fasta file
 }
 \details{
 Used to obtain theoretical GC content for a given genome/transcriptome

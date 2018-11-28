@@ -25,14 +25,16 @@
 or simply a \code{character} vector of paths to fastqc files.}
 }
 \value{
-A single \code{tibble} containing all information combined from all supplied FastQC reports
+A single \code{tibble} containing all information combined from all
+supplied FastQC reports
 }
 \description{
 Retrieve the Adapter Content module from one or more FastQC reports
 }
 \details{
-It is currently assumed that all FastQC reports contain information about the same adapters.
-If this was varied during the preparation of the reports, this function will probably fail.
+It is currently assumed that all FastQC reports contain information 
+about the same adapters. If this was varied during the preparation of the 
+reports, this function will fail.
 }
 \examples{
 

@@ -13,7 +13,8 @@ The FastqcData Object Class
 \section{Slots}{
 
 \describe{
-\item{\code{...}}{this can either be a single character vector of paths to FASTQC files, or several instances of FastqcFile objects}
+\item{\code{...}}{this can either be a single character vector of paths to FASTQC 
+files, or several instances of FastqcFile objects}
 }}
 
 \examples{

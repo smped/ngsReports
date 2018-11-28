@@ -12,8 +12,8 @@
 #' @param asPercent \code{logical}.
 #' Format the values as percentages with the added \code{\%} symbol
 #'
-#' @return A \code{tibble} object containing the percent of reads with each adapter
-#' type at the final position
+#' @return A \code{tibble} object containing the percent of reads with each 
+#' adapter type at the final position
 #'
 #'
 #' @export

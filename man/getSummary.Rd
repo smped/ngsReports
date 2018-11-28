@@ -24,11 +24,13 @@
 \item{object}{Can be a FastqcFile or FastqcFileList}
 }
 \value{
-A \code{tibble} will be returned when supplying a \code{FastqcFile} object,
-whilst a list of tibbles will be returned when supplying a \code{FastqcFileList} object
+A \code{tibble} will be returned when supplying a \code{FastqcFile} 
+object, whilst a list of tibbles will be returned when supplying a 
+\code{FastqcFileList} object
 }
 \description{
-Read the information from the \code{summary.txt} files in each FastqcFile
+Read the information from the \code{summary.txt} files in each 
+FastqcFile
 }
 \examples{
 

@@ -17,8 +17,8 @@ The output will have the percentages rounded to the specified number of digits}
 Format the values as percentages with the added \code{\%} symbol}
 }
 \value{
-A \code{tibble} object containing the percent of reads with each adapter
-type at the final position
+A \code{tibble} object containing the percent of reads with each 
+adapter type at the final position
 }
 \description{
 Get the maximum Adapter Content across one or more FASTQC reports

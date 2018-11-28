@@ -3,7 +3,8 @@
 #' @description The FastqcFile Object Class
 #'
 #' @details The is an object which refers to a fastqc output file.
-#' Only the path is stored, however the file is checked for the correct structure on formation of the object.
+#' Only the path is stored, however the file is checked for the correct 
+#' structure on formation of the object.
 #' Files can be zipped (*_fastqc.zip) or extracted directories
 #'
 #'
@@ -27,7 +28,8 @@
 setClass("FastqcFile", slots = c(path = "character"))
 setValidity("FastqcFile", isValidFastqcFile)
 
-#' @param x Character vector (1) specifying a valid path to a file/directory as output by FastQC
+#' @param x Character vector (1) specifying a valid path to a file/directory as 
+#' output by FastQC
 #' @importFrom methods new
 #' @export
 #' @rdname FastqcFile

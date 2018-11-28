@@ -55,7 +55,8 @@ writeHtmlReport <- function(fastqcDir, template, species = "Hsapiens",
                       x = colnames(targetsDF) )
         if (all(chk)) {
             message("Exporting targets.csv")
-            readr::write_csv(targetsDF, file.path(fastqcDir, "targets.csv"), append = FALSE)
+            readr::write_csv(targetsDF, file.path(fastqcDir, "targets.csv"), 
+                             append = FALSE)
         }
         else{
             message("Invalid targetsDF. No file will be exported.")

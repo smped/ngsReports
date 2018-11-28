@@ -12,6 +12,7 @@
 
 - Check additional import functions
 - Fix `scale_fill_pwf()`
+- `maxAdapterContent()` as an S4 method
 
 
 # Important But Not Pressing
