@@ -11,7 +11,6 @@
 ## Steve
 
 - Check additional import functions
-- Rewrite runFastQC as an S4 method
 - Fix `scale_fill_pwf()`
 
 
