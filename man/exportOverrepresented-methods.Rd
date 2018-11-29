@@ -9,7 +9,7 @@
 \alias{exportOverrepresented,FastqcDataList}
 \title{Write fasta of Over-Represented sequences.}
 \usage{
-exportOverrepresented(x, path, n, labels, noAdapters = TRUE, ...)
+exportOverrepresented(x, path, n = 10, labels, noAdapters = TRUE, ...)
 
 \S4method{exportOverrepresented}{FastqcData}(x, path, n = 10, labels,
   noAdapters = TRUE, ...)

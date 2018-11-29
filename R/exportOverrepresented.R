@@ -37,7 +37,7 @@
 #' @rdname exportOverrepresented-methods
 #' @export
 setGeneric("exportOverrepresented",
-           function(x, path, n, labels, noAdapters = TRUE, ...){
+           function(x, path, n = 10, labels, noAdapters = TRUE, ...){
                standardGeneric("exportOverrepresented")
                })
 #' @aliases exportOverrepresented,FastqcData
