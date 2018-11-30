@@ -1,13 +1,15 @@
-#' Get the Adapter Content information
+#' @title Get the Adapter Content information
 #'
-#' @description Retrieve the Adapter Content module from one or more FastQC reports
+#' @description Retrieve the Adapter Content module from one or more FastQC 
+#' reports
 #'
 #' @details It is currently assumed that all FastQC reports contain information 
 #' about the same adapters. If this was varied during the preparation of the 
 #' reports, this function will fail.
 #'
-#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData}, \code{fastqcDataList},
-#' or simply a \code{character} vector of paths to fastqc files.
+#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+#' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} 
+#' vector of paths to fastqc files.
 #'
 #' @include FastqcData.R
 #' @include AllGenerics.R

@@ -62,7 +62,8 @@ setMethod("plotSummary", signature = "character",
                   "plotSummary() can only be called on two or more files."
               )
               x <- getFastqcData(x)
-              plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
+              plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram,
+                          ...)
           }
 )
 #' @aliases plotSummary,FastqcFileList
@@ -72,7 +73,8 @@ setMethod("plotSummary", signature = "FastqcFileList",
           function(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, 
                    dendrogram = FALSE, ...){
               x <- getFastqcData(x)
-              plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
+              plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram,
+                          ...)
           }
 )
 #' @aliases plotSummary,FastqcDataList

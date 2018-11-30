@@ -30,7 +30,8 @@ A single \code{tibble} containing all information combined from all
 supplied FastQC reports
 }
 \description{
-Retrieve the Basic Statistics module from one or more FastQC reports
+Retrieve the Basic Statistics module from one or more FastQC 
+reports
 }
 \examples{
 

@@ -1,4 +1,4 @@
-#' Check to see if a file is compressed
+#' @title Check to see if a file is compressed
 #'
 #' @description Check to see if a file, or vector of files is compressed
 #'

@@ -11,7 +11,8 @@
 #' When \code{x} is a single FastqcFile, or FastqcData object line plots will 
 #' always be drawn for all adapters.
 #' Otherwise, users can select line plots or heatmaps.
-#' When plotting more than one fastqc file, any undetected adapters will not be shown.
+#' When plotting more than one fastqc file, any undetected adapters will not be 
+#' shown.
 #'
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
@@ -22,8 +23,8 @@
 #' This is the default behaviour.
 #' @param plotType \code{character}. Can only take the values 
 #' \code{plotType = "heatmap"} or \code{plotType = "line"}
-#' @param warn,fail The default values for warn and fail are 5 and 10 respectively 
-#' (i.e. percentages)
+#' @param warn,fail The default values for warn and fail are 5 and 10 
+#' respectively (i.e. percentages)
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours 
 #' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
@@ -70,14 +71,16 @@
 #' @rdname plotAdapterContent-methods
 #' @export
 setGeneric("plotAdapterContent",
-           function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
-    standardGeneric("plotAdapterContent")
-})
+           function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, 
+                    ...){
+               standardGeneric("plotAdapterContent")
+           })
 #' @aliases plotAdapterContent,character
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "character",
-          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10,
+                   ...){
               x <- getFastqcData(x)
               plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn,
                                  fail, ...)
@@ -87,7 +90,8 @@ setMethod("plotAdapterContent", signature = "character",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcFile",
-          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, 
+                   ...){
               x <- getFastqcData(x)
               plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn, 
                                  fail, ...)
@@ -97,7 +101,8 @@ setMethod("plotAdapterContent", signature = "FastqcFile",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcFileList",
-          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, 
+                   ...){
               x <- getFastqcData(x)
               plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn, 
                                  fail, ...)
@@ -107,37 +112,38 @@ setMethod("plotAdapterContent", signature = "FastqcFileList",
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcData",
-          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
-
+          function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, 
+                   ...){
+              
               df <- Adapter_Content(x)
-
+              
               if (!length(df)) {
-
+                  
                   acPlot <- emptyPlot("No Adapter Content Module Detected")
                   if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
-
+                  
                   return(acPlot)
               }
-
+              
               valueCols <- setdiff(colnames(df), c("Filename", "Position"))
               if (sum(df[valueCols]) == 0) {
-
+                  
                   acPlot <- emptyPlot("No Adapter Content Found in Sequences")
                   if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
-
+                  
                   return(acPlot)
               }
-
+              
               # Set any labels
               labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
-
+              
               # Sort out the colours & pass/warn/fail breaks
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               stopifnot(isValidPwf(pwfCols))
               stopifnot(is.numeric(c(warn, fail)))
               stopifnot(all(fail < 100, warn < fail,  warn > 0))
-
+              
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
               allowed <- names(formals(theme))
@@ -145,27 +151,27 @@ setMethod("plotAdapterContent", signature = "FastqcData",
               userTheme <- c()
               if (length(keepArgs) > 0) userTheme <- do.call(theme,
                                                              dotArgs[keepArgs])
-
+              
               # Change to long form and remove the _ symbols between words
               df <- tidyr::gather(df, key = "Type", value = "Percent",
                                   tidyselect::one_of(valueCols))
               df$Type <- gsub("_", " ", df$Type)
-
+              
               # Set the positions as a factor
               df$Position <- gsub("([0-9]*)-.+", "\\1", df$Position)
               df$Position <- as.numeric(df$Position)
               # Round the percent for nicer plotting with plotly
               df$Percent <- round(df$Percent, 2)
-
+              
               # Add transparency to background colours & define the rectangles
               pwfCols <- setAlpha(pwfCols, 0.2)
               rng <- structure(range(df$Position), names = c("min", "max"))
               rects <- tibble(xmin = 0,
-                                      xmax = rng["max"],
-                                      ymin = c(0, warn, fail),
-                                      ymax = c(warn, fail, 100),
-                                      Status = c("PASS", "WARN", "FAIL"))
-
+                              xmax = rng["max"],
+                              ymin = c(0, warn, fail),
+                              ymax = c(warn, fail, 100),
+                              Status = c("PASS", "WARN", "FAIL"))
+              
               # Create the basic plot
               xLab <- "Position in read (bp)"
               yLab <- "Percent (%)"
@@ -188,7 +194,7 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                   theme(legend.position = c(1, 1),
                         legend.justification = c(1, 1),
                         legend.title = element_blank())
-
+              
               # Add the basic customisations
               if (!is.null(userTheme)) acPlot <- acPlot + userTheme
               # Make interacive if required
@@ -210,9 +216,9 @@ setMethod("plotAdapterContent", signature = "FastqcData",
                   acPlot$x$data[[2]]$hoverinfo <- "none"
                   acPlot$x$data[[3]]$hoverinfo <- "none"
               }
-
+              
               acPlot
-
+              
           }
 )
 #' @aliases plotAdapterContent,FastqcDataList
@@ -222,16 +228,16 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
           function(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, 
                    plotType = c("heatmap", "line"), adapterType = "Total",
                    cluster = FALSE, dendrogram = FALSE, ...){
-
+              
               df <- Adapter_Content(x)
-
+              
               # Check the two conditions for an empty plot
               if (!length(df)) {
                   acPlot <- emptyPlot("No Adapter Content Module Detected")
                   if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
                   return(acPlot)
               }
-
+              
               # Check for any columns with specific Adapters
               valueCols <- setdiff(colnames(df), c("Filename", "Position"))
               if (sum(df[valueCols]) == 0) {
@@ -239,29 +245,31 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   if(usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
                   return(acPlot)
               }
-
+              
               # Sort out the colours & pass/warn/fail breaks
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               stopifnot(isValidPwf(pwfCols))
               stopifnot(is.numeric(c(warn, fail)))
               stopifnot(all(fail < 100, warn < fail,  warn > 0))
               breaks <- c(0, warn, fail, 100)
-
+              
               # Check for valid plotType & labels
               plotType <- match.arg(plotType[1], c("line", "heatmap"))
               labels <- makeLabels(df, labels, ...)
-
+              
               # Change to long form
               df <- tidyr::gather(df, key = "Type", value = "Percent",
                                   tidyselect::one_of(valueCols))
               # Set the position as a factor
               df$Position <- factor(df$Position, levels = unique(df$Position))
-
+              
               # Get the adapter type and summarise all if total is requested
               adapterType <- grep(adapterType[1], 
                                   c("Total_Adapter_Content", valueCols),
                                   value = TRUE)
-              if (length(adapterType) != 1) stop("Could not determine adapter type")
+              if (length(adapterType) != 1) stop(
+                  "Could not determine adapter type"
+              )
               if (adapterType == "Total_Adapter_Content") {
                   # Sum the adapters by filename& position
                   df <- dplyr::group_by(df, Filename, Position)
@@ -274,41 +282,42 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
               else{
                   df <- dplyr::filter(df, Type == adapterType)
               }
-
+              
               # Remove the underscores from the adapterType for prettier output
               adapterType <- gsub("_", " ", adapterType)
-
+              
               # If no adapter content is found, output a simple message
               if (max(df$Percent) == 0){
                   msg <- paste("No", adapterType, "found")
                   return(emptyPlot(msg))
               }
-
+              
               # Now just keep the three required columns
               df <- df[c("Filename", "Position", "Percent")]
               df <- droplevels(df)
               df$Percent <- round(df$Percent, 4)
-
+              
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
+              
               # Set the axis label for either plotType
               xLab <- "Position in read (bp)"
-
+              
               if (plotType == "heatmap"){
-
+                  
                   yLab <- ifelse(dendrogram, "", "Filename")
-
+                  
                   # Get the longest sequence
                   df$Start <- as.integer(
                       gsub("([0-9]*)-[0-9]*", "\\1", as.character(df$Position))
                   )
                   df <- df[c("Filename", "Start", "Percent", "Position")]
-
+                  
                   # Adjust the data for files with varying read lengths
                   # This will fill NA values with the previous values
                   df <- lapply(split(df, f = df$Filename), function(x){
@@ -320,32 +329,38 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                       na.locf(x)
                   })
                   df <- dplyr::bind_rows(df)
-
+                  
                   # Use the start position for plotting instead of Position
                   plotCols <- c("Filename", "Start", "Percent")
                   df <- df[plotCols]
-
+                  
                   # Arrange by row if clustering
                   # Just use the default order as the key if not clustering
                   # Always turn clustering on if dendrogram = TRUE
                   if (dendrogram && !cluster){
-                      message("cluster will be set to TRUE when dendrogram = TRUE")
+                      message(
+                          "cluster will be set to TRUE when dendrogram = TRUE"
+                      )
                       cluster <- TRUE
                   }
                   key <- names(labels)
                   if(cluster){
-                      clusterDend <- makeDendrogram(df, "Filename", "Start", "Percent")
+                      clusterDend <- makeDendrogram(df, "Filename", "Start", 
+                                                    "Percent")
                       key <- labels(clusterDend)
                   }
-
+                  
                   # Set the factor levels for the y-axis
-                  df$Filename <- factor(labels[df$Filename], levels = labels[key])
+                  df$Filename <- factor(labels[df$Filename], 
+                                        levels = labels[key])
                   df$Type <- adapterType
-
+                  
                   # Make the heatmap
                   acPlot <- ggplot(df,
-                                   aes_string(x = "Start", y = "Filename",
-                                              fill = "Percent", type = "Type")) +
+                                   aes_string(x = "Start", 
+                                              y = "Filename",
+                                              fill = "Percent", 
+                                              type = "Type")) +
                       geom_tile() +
                       ggtitle(adapterType) +
                       labs(x = xLab) +
@@ -358,9 +373,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   
                   # Add custom elements
                   if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
-
+                  
                   if (usePlotly){
-
+                      
                       # Reset the PWF status using current values
                       # This needs to be recalculated when using Total AC
                       status <- dplyr::summarise_at(
@@ -368,13 +383,14 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                           dplyr::vars("Percent"),
                           dplyr::funs(Percent = max),
                           na.rm = TRUE)
-                      status$Status <- cut(status$Percent, breaks = breaks,
+                      status$Status <- cut(status$Percent, 
+                                           breaks = breaks,
                                            include.lowest = TRUE,
                                            labels = c("PASS", "WARN", "FAIL"))
-
+                      
                       # Form the sideBar for each adapter
                       sideBar <- makeSidebar(status, key, pwfCols = pwfCols)
-
+                      
                       # Customise for plotly
                       acPlot <- acPlot +
                           ggtitle(NULL) +
@@ -386,7 +402,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                                 axis.ticks.y = element_blank(),
                                 legend.position = "none")
                       if (!is.null(userTheme)) acPlot <- acPlot + userTheme
-
+                      
                       # plot dendro
                       if (dendrogram){
                           dx <- ggdendro::dendro_data(clusterDend)
@@ -395,7 +411,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                       else {
                           dendro <- plotly::plotly_empty()
                       }
-
+                      
                       acPlot <- suppressWarnings(
                           suppressMessages(
                               plotly::subplot(dendro,
@@ -413,21 +429,23 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                                                ),
                                                xaxis3 = list(title = xLab),
                                                margin = list(b = 52))
-
+                      
                   }
               }
-
+              
               if (plotType == "line") {
-
+                  
                   yLab <- "Percent (%)"
                   
                   key <- names(labels)
                   if(cluster){
-                      clusterDend <- makeDendrogram(df, "Filename", "Position", "Percent")
+                      clusterDend <- makeDendrogram(df, "Filename", "Position",
+                                                    "Percent")
                       key <- labels(clusterDend)
                   }
-                  df$Filename <- factor(labels[df$Filename], levels = labels[key])
-
+                  df$Filename <- factor(labels[df$Filename], 
+                                        levels = labels[key])
+                  
                   # Define position as an integer just taking the first
                   # value in the Position field
                   df$Start <- gsub("([0-9]*)-.+", "\\1",
@@ -435,7 +453,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                   df$Start <- as.integer(df$Start)
                   df$Position <- as.numeric(df$Position)
                   df$Type <- adapterType
-
+                  
                   # Set the transparency & position of bg rectangles
                   pwfCols <- setAlpha(pwfCols, 0.2)
                   rects <- tibble(xmin = 0,
@@ -461,7 +479,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                       facet_wrap(~Type, ncol = 1) +
                       theme_bw()
                   if (!is.null(userTheme)) acPlot <- acPlot + userTheme
-
+                  
                   # And draw the plot
                   if (usePlotly){
                       acPlot <- acPlot + theme(legend.position = "none")
@@ -469,12 +487,12 @@ setMethod("plotAdapterContent", signature = "FastqcDataList",
                           plotly::ggplotly(acPlot,
                                            hoverinfo = c("x", "y", "colour"))
                       )
-
+                      
                       # Set the hoverinfo for bg rectangles to the vertices only,
                       # This will effectively hide them
                       acPlot$x$data <- lapply(acPlot$x$data, function(x){
-                          # If there is a name component & it contains PASS/WARN/FAIL
-                          # set the hoverinfo to none
+                          # If there is a name component & it contains 
+                          # PASS/WARN/FAIL set the hoverinfo to none
                           if ("name" %in% names(x)){
                               if (grepl("(PASS|WARN|FAIL)", x$name)){
                                   x$hoverinfo <- "none"

@@ -9,7 +9,8 @@ splitByTab(x, firstRowToNames = TRUE, tab = "\\\\t")
 \arguments{
 \item{x}{A character vector}
 
-\item{firstRowToNames}{logical Should the first element be used for column names}
+\item{firstRowToNames}{logical Should the first element be used for column 
+names}
 
 \item{tab}{character The string used torepresent the tab symbol}
 }

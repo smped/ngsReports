@@ -95,8 +95,9 @@ setMethod("plotGcContent", signature = "character",
                    species = "Hsapiens", GCobject, Fastafile , n = 1e+6, 
                    bp = 100, ...){
               x <- getFastqcData(x)
-              plotGcContent(x, usePlotly, labels, theoreticalGC, theoreticalType, 
-                            species, GCobject, Fastafile , n , bp, ...)
+              plotGcContent(x, usePlotly, labels, theoreticalGC,
+                            theoreticalType, species, GCobject, Fastafile, 
+                            n, bp, ...)
           }
 )
 #' @aliases plotGcContent,FastqcFile
@@ -162,25 +163,29 @@ setMethod("plotGcContent", signature = "FastqcData",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # Tidy up the GC content variables
-              if(missing(GCobject)){
+              if (missing(GCobject)) {
                   GCobject <- ngsReports::gcTheoretical
               }
               
-              if (theoreticalGC){
-                  if (!missing(Fastafile)){
+              if (theoreticalGC) {
+                  if (!missing(Fastafile)) {
                       gcTheoryDF <- gcFromFasta(Fastafile,n,bp)
                       subTitle <- paste("Theoretical Distribution based on file", 
                                         Fastafile)
                   }
                   else{
-                      gcFun <- tryCatch(match.arg(tolower(theoreticalType), 
-                                                  c("genomes","transcriptomes")))
+                      gcFun <- tryCatch(
+                          match.arg(tolower(theoreticalType), 
+                                    c("genomes","transcriptomes"))
+                          )
                       avail <- do.call(gcFun, list(object = GCobject))
                       stopifnot(species %in% avail$Name)
-                      gcTheoryDF <- getGC(GCobject, name = species, type = theoreticalType)
+                      gcTheoryDF <- getGC(GCobject, name = species, 
+                                          type = theoreticalType)
                       names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
                       subTitle <- paste("Theoretical Distribution based on the", 
                                         species, theoreticalType)
@@ -196,7 +201,7 @@ setMethod("plotGcContent", signature = "FastqcData",
               
               xLab <- "GC Content (%)"
               
-              if (!counts){
+              if (!counts) {
                   # If using frequencies
                   # Summarise to frequencies & initialise the plot
                   df$Freq <- df$Count / sum(df$Count)
@@ -228,7 +233,8 @@ setMethod("plotGcContent", signature = "FastqcData",
               
               gcPlot <- gcPlot +
                   scale_colour_manual(values = lineCols) +
-                  scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
+                  scale_x_continuous(breaks = seq(0, 100, by = 10), 
+                                     expand = c(0.02, 0)) +
                   labs(x = xLab,
                        y = yLab,
                        colour = c()) +
@@ -237,20 +243,22 @@ setMethod("plotGcContent", signature = "FastqcData",
                   theme_bw() +
                   theme(legend.position = c(1, 1),
                         legend.justification = c(1, 1),
-                        legend.background = element_rect(colour = "grey20", size = 0.2),
+                        legend.background = element_rect(colour = "grey20", 
+                                                         size = 0.2),
                         plot.title = element_text(hjust = 0.5),
                         plot.subtitle = element_text(hjust = 0.5))
               if (!is.null(userTheme)) gcPlot <- gcPlot + userTheme
               
-              if(usePlotly){
+              if (usePlotly) {
                   value <- c("Freq", "Count")[counts + 1]
+                  ttip <- c("GC_Content", value, "Type")
                   gcPlot <- gcPlot +
                       ggtitle(label = labels, subtitle = c())
                   gcPlot <- suppressWarnings(
                       suppressMessages(
-                          # Try using subplot with plotly_empty to align with the heatmap in the app
-                          plotly::ggplotly(gcPlot, 
-                                           tooltip = c("GC_Content", value, "Type"))
+                          # Try using subplot with plotly_empty to align with
+                          # the heatmap in the app
+                          plotly::ggplotly(gcPlot, tooltip = ttip)
                       )
                   )
                   gcPlot <- plotly::layout(gcPlot, legend = list(x = 0.622, 
@@ -310,7 +318,8 @@ setMethod("plotGcContent", signature = "FastqcDataList",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # Initialise objects then fill if required
               gcTheoryDF <- c()
@@ -350,17 +359,20 @@ setMethod("plotGcContent", signature = "FastqcDataList",
               if (plotType == "line"){
                   df$Filename <- labels[df$Filename]
                   # Setup a palette with black as the first colour.
-                  # Use the paired palette for easier visualisation of paired data
+                  # Use the paired palette for easier visualisation of paired 
+                  # data
                   n <- length(x)
                   lineCols <- RColorBrewer::brewer.pal(min(12, n), "Paired")
                   lineCols <- colorRampPalette(lineCols)(n)
                   lineCols <- c("#000000", lineCols)
                   
                   df <- dplyr::bind_rows(gcTheoryDF, df)
-                  df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+                  df$Filename <- factor(df$Filename, 
+                                        levels = unique(df$Filename))
                   df$Percent <- round(df$Percent, 2)
                   
-                  gcPlot <- ggplot(df, aes_string(x = "GC_Content", y = "Percent", 
+                  gcPlot <- ggplot(df, aes_string(x = "GC_Content", 
+                                                  y = "Percent", 
                                                   colour = "Filename")) +
                       geom_line(size = lineWidth) +
                       scale_x_continuous(breaks = seq(0, 100, by = 10), 
@@ -408,15 +420,18 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                   }
                   
                   if (dendrogram && !cluster){
-                      message("cluster will be set to TRUE when dendrogram = TRUE")
+                      message(
+                          "cluster will be set to TRUE when dendrogram = TRUE"
+                          )
                       cluster <- TRUE
                   }
                   
                   key <- names(labels)
                   if (cluster){
-                      clusterDend <- makeDendrogram(df = df, rowVal = "Filename", 
-                                                 colVal = "GC_Content", 
-                                                 value = "Percent")
+                      clusterDend <- makeDendrogram(df = df, 
+                                                    rowVal = "Filename", 
+                                                    colVal = "GC_Content", 
+                                                    value = "Percent")
                       key <- labels(clusterDend)
                   }
                   # Now set everything as factors
@@ -449,7 +464,8 @@ setMethod("plotGcContent", signature = "FastqcDataList",
                                 legend.position = "none")
                       
                       status <- getSummary(x)
-                      status <- status[status$Category == "Per sequence GC content",]
+                      status <- subset(status, 
+                                       Category == "Per sequence GC content")
                       status$Filename <- factor(labels[status$Filename], 
                                                 levels = levels(df$Filename))
                       status <- dplyr::right_join(status, 

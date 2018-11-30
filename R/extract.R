@@ -31,25 +31,26 @@
 #' fdl[[1]]
 #'
 #' @name [
-#' @aliases [,FastqcFileList,ANY,missing-method [,FastqcFileList,ANY,missing,ANY-method
+#' @aliases [,FastqcFileList,ANY,missing,ANY-method
 #' @rdname extract-methods
 #' @export
 setMethod("[", signature = c(x = "FastqcFileList", i = "ANY", j = "missing"),
           function(x, i, j, ..., drop){
               if (is.numeric(i) && max(i) > length(x)) stop(
                   "Error: subscript out of bounds"
-                  )
+              )
               if (is.logical(i) && length(i) != length(x)) stop(
                   "Invalid vector length for subsetting"
-                  )
+              )
               FastqcFileList(x@.Data[i])}
 )
 
 #' @name [
-#' @aliases [,FastqcFileList,character,missing-method [,FastqcFileList,character,missing,ANY-method
+#' @aliases [,FastqcFileList,character,missing,ANY-method
 #' @rdname extract-methods
 #' @export
-setMethod("[", signature = c(x = "FastqcFileList", i = "character", j = "missing"),
+setMethod("[", 
+          signature = c(x = "FastqcFileList", i = "character", j = "missing"),
           function(x, i, j, ..., drop){
               sub <- match(i, fileName(x))
               if (any(is.na(sub))) {
@@ -60,10 +61,11 @@ setMethod("[", signature = c(x = "FastqcFileList", i = "character", j = "missing
 )
 
 #' @name [
-#' @aliases [,FastqcDataList,ANY,missing-method [,FastqcDataList,ANY,missing,ANY-method
+#' @aliases [,FastqcDataList,ANY,missing,ANY-method
 #' @rdname extract-methods
 #' @export
-setMethod("[", signature = c(x = "FastqcDataList", i = "ANY", j = "missing"),
+setMethod("[", 
+          signature = c(x = "FastqcDataList", i = "ANY", j = "missing"),
           function(x, i, j, ..., drop = TRUE){
               new("FastqcDataList", x@.Data[i])
           })
@@ -73,7 +75,8 @@ setMethod("[", signature = c(x = "FastqcDataList", i = "ANY", j = "missing"),
 #' @aliases [[,FastqcFileList,character,missing-method
 #' @rdname extract-methods
 #' @export
-setMethod("[[", signature = c(x = "FastqcFileList", i = "character", j = "missing"),
+setMethod("[[", 
+          signature = c(x = "FastqcFileList", i = "character", j = "missing"),
           function(x, i, j, ...){
               sub <- match(i, fileName(x))
               if (any(is.na(sub))) {

@@ -11,16 +11,19 @@ An object of class TheoreticalGC
 Contains Theoretical GC content for a selection of species
 }
 \details{
-Estimates are able to be retained for genomic and transcriptomic sequences
-Values are stored as frequencies
+Estimates are able to be retained for genomic and transcriptomic 
+sequences. Values are stored as frequencies.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{Genome}}{A \code{data.frame} containing theoretical GC content for genomic sequences}
+\item{\code{Genome}}{A \code{data.frame} containing theoretical GC content for 
+genomic sequences}
 
-\item{\code{Transcriptome}}{A \code{data.frame} containing theoretical GC content for transcriptomic sequences}
+\item{\code{Transcriptome}}{A \code{data.frame} containing theoretical GC content for 
+transcriptomic sequences}
 
-\item{\code{mData}}{A \code{data.frame} containing metadata about all species in the object}
+\item{\code{mData}}{A \code{data.frame} containing metadata about all species in the 
+object}
 }}
 

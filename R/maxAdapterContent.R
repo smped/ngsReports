@@ -1,42 +1,47 @@
 #' @title Get the maximum Adapter Content
 #'
-#' @description Get the maximum Adapter Content across one or more FASTQC reports
+#' @description Get the maximum Adapter Content across one or more FASTQC 
+#' reports
 #'
-#' @details This will extract the \code{Adapter_Content} from the supplied object,
-#' and provide a \code{tibble} with the final value for each file
+#' @details This will extract the \code{Adapter_Content} from the supplied 
+#' object, and provide a \code{tibble} with the final value for each file
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-#' \code{FastqcDataList} or path
-#' @param digits \code{numeric}.
-#' The output will have the percentages rounded to the specified number of digits
+#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+#' \code{FastqcData}, \code{FastqcDataList} or path
 #' @param asPercent \code{logical}.
 #' Format the values as percentages with the added \code{\%} symbol
 #'
 #' @return A \code{tibble} object containing the percent of reads with each 
 #' adapter type at the final position
+#' 
+#' @examples 
+#' # Get the files included with the package 
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#' 
+#' # Load the FASTQC data as a FastqcDataList object
+#' fdl <- getFastqcData(fileList)
+#' 
+#' # Get the maxAdapterContent
+#' maxAdapterContent(fdl)
 #'
 #'
 #' @export
-maxAdapterContent <- function(x, digits = 2, asPercent = TRUE){
+maxAdapterContent <- function(x, asPercent = TRUE){
     
-    stopifnot(is.numeric(digits) && is.logical(asPercent))
+    stopifnot(is.logical(asPercent))
     
     # Get the AdapterContent
     ac <- tryCatch(Adapter_Content(x))
     
     # Perform the summary
-    ac <- reshape2::melt(ac, id.vars = c("Filename", "Position"),
-                         variable.name = "Type")
+    adapters <- setdiff(colnames(ac), c("Filename", "Position"))
+    ac <- tidyr::gather(ac, "Type", "value", tidyselect::one_of(adapters))
     ac <- dplyr::group_by(ac, Filename, Type)
     ac <- dplyr::summarise_at(ac, dplyr::vars("value"), dplyr::funs("max"))
     
-    # Format the output
-    digits <- floor(digits)[1] # Silently ignore any additional values
-    ac$value <- round(ac$value, digits)
-    
-    if (asPercent) ac$value <- scales::percent(0.01*ac$value)
-    
-    ac <- reshape2::dcast(ac, Filename~Type, value.var = "value")
-    tibble::as_tibble(ac)
+    # Format & return the output
+    if (asPercent) ac$value <- scales::percent_format(0.01, 1)(ac$value)
+    tidyr::spread(ac, "Type", "value")
     
 }

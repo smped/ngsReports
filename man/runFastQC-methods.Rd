@@ -43,8 +43,8 @@ runFastQC(object, outPath, threads = 1L, casava = FALSE,
 \arguments{
 \item{object}{A \code{\link{FastqFileList}}}
 
-\item{outPath}{The path to write the FastQC reports. Must exist as (for safety)
-it will not be created when calling this function}
+\item{outPath}{The path to write the FastQC reports. Must exist as (for 
+safety) it will not be created when calling this function}
 
 \item{threads}{The number of threads to run in parallel}
 
@@ -56,8 +56,8 @@ it will not be created when calling this function}
 
 \item{nogroup}{logical. Sets the grouping of bases for reads longer than 50bp}
 
-\item{min_length}{integer. Sets an artificial lower limit on the length of the 
-sequence to be shown in the report.}
+\item{min_length}{integer. Sets an artificial lower limit on the length of 
+the sequence to be shown in the report.}
 
 \item{contaminants}{Path to an alternate file with contaminants.
 The structure of the file will not be checked.

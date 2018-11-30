@@ -21,14 +21,17 @@
 \S4method{Per_sequence_quality_scores}{character}(object)
 }
 \arguments{
-\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData}, \code{fastqcDataList},
-or simply a \code{character} vector of paths to fastqc files}
+\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+\code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
+of paths to fastqc files}
 }
 \value{
-A single \code{tibble} containing all information combined from all supplied FastQC reports
+A single \code{tibble} containing all information combined from all 
+supplied FastQC reports
 }
 \description{
-Retrieve the Per Sequence Quality Scores module from one or more FastQC reports
+Retrieve the Per Sequence Quality Scores module from one or more
+FastQC reports
 }
 \examples{
 

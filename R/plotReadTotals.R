@@ -107,7 +107,8 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # Get the colours for the barplot
               barCols <- tryCatch(barCols[seq_len(duplicated + 1)])
@@ -119,11 +120,14 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
               
               if (!duplicated){
 
-                  rtPlot <- ggplot(df, aes_string("Filename", "Total_Sequences")) +
+                  rtPlot <- ggplot(df, 
+                                   aes_string("Filename", "Total_Sequences")) +
                       geom_bar(stat = "identity", fill = barCols) +
-                      scale_y_continuous(labels = scales::comma,
-                                         limits = c(0, xMax),
-                                         expand = expand_scale(mult = expand.x)) +
+                      scale_y_continuous(
+                          labels = scales::comma,
+                          limits = c(0, xMax),
+                          expand = expand_scale(mult = expand.x)
+                          ) +
                       labs(y = xLab) + 
                       coord_flip() +
                       theme_bw()
@@ -141,17 +145,19 @@ setMethod("plotReadTotals", signature = "FastqcDataList",
                   # Add the information to a joined data.frame
                   deDup <- Total_Deduplicated_Percentage(x)
                   deDup$Filename <- labels[deDup$Filename]
-                  deDup$Filename <- factor(deDup$Filename, levels = levels(df$Filename))
+                  deDup$Filename <- factor(deDup$Filename, 
+                                           levels = levels(df$Filename))
                   deDup <- dplyr::rename(deDup, Percentage = Total)
                   df <- dplyr::left_join(deDup, df, by = "Filename")
                   
                   #Setup the df for plotting
+                  types <- c("Unique", "Duplicated")
                   df$Unique <- df$Percentage*df$Total_Sequences/100
                   df$Unique <- round(df$Unique, 0)
                   df$Duplicated <- df$Total_Sequences - df$Unique
-                  df <- df[c("Filename", "Unique", "Duplicated")]
+                  df <- df[c("Filename", types)]
                   df <- tidyr::gather(df, key = "Type", value = "Total",
-                                      tidyselect::one_of(c("Unique", "Duplicated")))
+                                      tidyselect::one_of(types))
                   
                   position <- c(adjacent = "dodge",
                                 stacked = "stack")[bars]

@@ -9,16 +9,19 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
-#' @param plotType \code{character}. Type of plot to generate. Must be "line" or "heatmap"
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+#' @param plotType \code{character}. Type of plot to generate. Must be "line" or
+#'  "heatmap"
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for 
+#' pass, warning, and fail
 #' values in plot
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-#' will be displayed.
+#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+#' then the dendrogram will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
-#' @param nc Specify the number of columns if plotting a FastqcDataList as line plots
+#' @param nc Specify the number of columns if plotting a FastqcDataList as line 
+#' plots
 #'
 #' @return A ggplot2 object
 #'
@@ -104,14 +107,16 @@ setMethod("plotSequenceContent", signature = "FastqcData",
               df$x <- as.integer(df$Position)
               
               #set colours
-              baseCols <- c(`T`= "red", G = "black", A = "green", C = "blue")
+              baseCols <- c(`T` = "red", G = "black", 
+                            A = "green", C = "blue")
               
               # Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               xLab <- "Position in read (bp)"
               yLab <- "Percent"
@@ -133,7 +138,7 @@ setMethod("plotSequenceContent", signature = "FastqcData",
                       angle = 90, vjust = 0.5, hjust = 1
                   ))
               
-              if(usePlotly){
+              if (usePlotly) {
                   
                   scPlot <- plotly::ggplotly(scPlot,
                                              tooltip = c("y", "label", "colour"))
@@ -166,7 +171,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               
               if (!length(df)) {
                   scPlot <- emptyPlot("No Sequence Content Module Detected")
-                  if(usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
+                  if (usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
                   return(scPlot)
               }
               
@@ -186,7 +191,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # Define the bases as a vector for ease later in the function
               acgt <- c("T", "C", "A", "G")
@@ -194,9 +200,10 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
               xLab <- "Position in read (bp)"
               yLab <- ifelse(plotType == "heatmap", "Filename", "Percent (%)")
               
-              if (plotType == "heatmap"){
+              if (plotType == "heatmap") {
                   
-                  # Round to 2 digits to reduce the complexity of the colour palette
+                  # Round to 2 digits to reduce the complexity of the colour 
+                  # palette
                   df <- dplyr::mutate_at(df, vars(one_of(acgt)),
                                          funs(round), digits = 2)
                   maxBase <- max(vapply(acgt, 
@@ -207,27 +214,33 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                                             green = A * opacity / maxBase,
                                             blue = C * opacity / maxBase))
                   
-                  basicStat <- Basic_Statistics(x)[c("Filename", "Longest_sequence")]
+                  basicStat <- Basic_Statistics(x)
+                  basicStat <- basicStat[c("Filename", "Longest_sequence")]
                   df <- dplyr::right_join(df, basicStat, by = "Filename")
                   df <- df[c("Filename", "Start", "End", "colour", 
                              "Longest_sequence", acgt)]
                   
-                  if (dendrogram && !cluster){
-                      message("cluster will be set to TRUE when dendrogram = TRUE")
+                  if (dendrogram && !cluster) {
+                      message(
+                          "cluster will be set to TRUE when dendrogram = TRUE"
+                      )
                       cluster <- TRUE
                   }
                   
                   # Now define the order for a dendrogram if required
                   key <- names(labels)
-                  if (cluster){
-                      df_gath <- tidyr::gather(df, key = "Base", value = "Percent", 
+                  if (cluster) {
+                      df_gath <- tidyr::gather(df, 
+                                               key = "Base", 
+                                               value = "Percent", 
                                                one_of(acgt))
-                      df_gath$Start <- paste(df_gath$Start, df_gath$Base, sep = "_")
+                      df_gath$Start <- paste(df_gath$Start, df_gath$Base, 
+                                             sep = "_")
                       cols <- c("Filename", "Start", "Percent")
                       clusterDend <- makeDendrogram(df = df_gath[cols], 
-                                                 rowVal = "Filename", 
-                                                 colVal = "Start", 
-                                                 value = "Percent")
+                                                    rowVal = "Filename", 
+                                                    colVal = "Start", 
+                                                    value = "Percent")
                       key <- labels(clusterDend)
                   }
                   # Now set everything as factors
@@ -250,7 +263,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   
                   scPlot <- ggplot(df, 
                                    aes_string(fill = "colour", 
-                                              A = "A", C = "C", G = "G", `T` = "T", 
+                                              A = "A", C = "C", 
+                                              G = "G", `T` = "T", 
                                               Filename = "Filename", 
                                               Position = "Position")) + 
                       geom_rect(aes_string(xmin = "xmin", xmax = "xmax", 
@@ -268,21 +282,22 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   
                   if (!is.null(userTheme)) scPlot <- scPlot + userTheme
                   
-                  if (usePlotly){
+                  if (usePlotly) {
                       scPlot <- scPlot +
                           theme(axis.ticks.y = element_blank(),
                                 axis.text.y = element_blank(),
                                 axis.title.y = element_blank())
                       
                       status <- getSummary(x)
-                      status <- status[status$Category == "Per base sequence content",]
+                      status <- subset(status,
+                                       Category == "Per base sequence content")
                       status$Filename <- labels[status$Filename]
                       status$Filename <- factor(status$Filename, 
                                                 levels = levels(df$Filename))
                       sideBar <- makeSidebar(status = status, key = key, 
                                              pwfCols = pwfCols)
                       
-                      if (dendrogram){
+                      if (dendrogram) {
                           dx <- ggdendro::dendro_data(clusterDend)
                           dendro <- renderDendro(dx$segments) 
                       }
@@ -290,7 +305,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                           dendro <- plotly::plotly_empty()
                       }
                       
-                      # Render using ggplotly to enable easier tooltip specification
+                      # Render using ggplotly to enable easier tooltip 
+                      # specification
                       scPlot <- plotly::ggplotly(
                           scPlot, tooltip = c(acgt, "Filename", "Position")
                       )
@@ -305,7 +321,7 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                       
                   }
               }
-              if (plotType == "line"){
+              if (plotType == "line") {
                   df$Filename <- labels[df$Filename]
                   df <- df[!colnames(df) == "Base"]
                   df <- tidyr::gather(df, key = "Base", value = "Percent", 
@@ -322,7 +338,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   df$x <- as.integer(df$Position)
                   
                   #set colours
-                  baseCols <- c(`T`="red", G = "black", A = "green", C = "blue")
+                  baseCols <- c(`T` = "red", G = "black", 
+                                A = "green", C = "blue")
                   
                   scPlot <- ggplot(df, aes_string(x = "x", 
                                                   y = "Percent", 
@@ -345,10 +362,11 @@ setMethod("plotSequenceContent", signature = "FastqcDataList",
                   
                   if (!is.null(userTheme)) scPlot <- scPlot + userTheme
                   
-                  if(usePlotly){
+                  if (usePlotly) {
+                      ttip <- c("y", "colour", "label")
                       scPlot <- suppressMessages(
                           suppressWarnings(
-                              plotly::ggplotly(scPlot, tooltip = c("y", "colour", "label"))
+                              plotly::ggplotly(scPlot, tooltip = ttip)
                           )
                       )
                   }

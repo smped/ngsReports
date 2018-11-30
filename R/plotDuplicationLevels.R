@@ -59,7 +59,7 @@
 setGeneric("plotDuplicationLevels",
            function(x, usePlotly = FALSE, labels, pwfCols, ...){
                standardGeneric("plotDuplicationLevels")
-               })
+           })
 #' @aliases plotDuplicationLevels,character
 #' @rdname plotDuplicationLevels-methods
 #' @export
@@ -121,7 +121,8 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # Sort out the colours
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -130,7 +131,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
               
               # Set the background rectangles
               rects <- tibble::tibble(xmin = 0.5,
-                                      xmax =max(df$x) + 0.5,
+                                      xmax = max(df$x) + 0.5,
                                       ymin = c(0, 100 - fail, 100 - warn),
                                       ymax = c(100 - fail, 100 - warn, 100),
                                       Status = c("FAIL", "WARN", "PASS"))
@@ -165,7 +166,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcData",
                         plot.title = element_text(hjust = 0.5))
               if (!is.null(userTheme)) dupPlot <- dupPlot + userTheme
               
-              if (usePlotly){
+              if (usePlotly) {
                   
                   dupPlot <- dupPlot +
                       theme(legend.position = "none")
@@ -205,9 +206,9 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               
               df <- Sequence_Duplication_Levels(x)
               
-              if(!length(df)) {
+              if (!length(df)) {
                   dupPlot <- emptyPlot("No Duplication Levels Module Detected")
-                  if(usePlotly) dupPlot <- ggplotly(dupPlot, tooltip = "")
+                  if (usePlotly) dupPlot <- ggplotly(dupPlot, tooltip = "")
                   return(dupPlot)
               }
               
@@ -229,20 +230,23 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
-              if (dendrogram && !cluster){
+              if (dendrogram && !cluster) {
                   message("cluster will be set to TRUE when dendrogram = TRUE")
                   cluster <- TRUE
               }
               key <- names(labels)
-              if(cluster){
-                  clusterDend <- makeDendrogram(df, "Filename", "Duplication_Level", type)
+              if (cluster) {
+                  clusterDend <- makeDendrogram(df, "Filename",
+                                                "Duplication_Level", type)
                   key <- labels(clusterDend)
               }
               # Now set everything as factors
               df$Filename <- factor(labels[df$Filename], levels = labels[key])
-              df$Duplication_Level <- factor(df$Duplication_Level, levels = dupLevels)
+              df$Duplication_Level <- factor(df$Duplication_Level, 
+                                             levels = dupLevels)
               
               # Setup to plot in tiles for easier plotly compatability
               df <-  dplyr::arrange_(df, "Filename", "Duplication_Level")
@@ -277,7 +281,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                   guides(colour = FALSE) +
                   theme_bw()
               
-              if (usePlotly){
+              if (usePlotly) {
                   
                   # Remove elements for plotly
                   dupPlot <- dupPlot +
@@ -286,17 +290,19 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                             legend.position = "none")
                   
                   flags <- getSummary(x)
-                  flags <- dplyr::filter(flags, 
-                                         Category == "Sequence Duplication Levels")
+                  flags <- subset(flags, 
+                                  Category == "Sequence Duplication Levels")
                   flags$Filename <- factor(labels[flags$Filename], 
                                            levels = levels(df$Filename))
                   flags <- dplyr::arrange(flags, Filename)
                   
                   if (missing(pwfCols)) pwfCols <- ngsReports::pwf
                   
-                  sideBar <- makeSidebar(status = flags, key = key, pwfCols = pwfCols)
+                  sideBar <- makeSidebar(status = flags, key = key, 
+                                         pwfCols = pwfCols)
                   
-                  # Set the main plot here to test if we can specify the tooltip correctly
+                  # Set the main plot here to test if we can specify the 
+                  # tooltip correctly
                   dupPlot <- plotly::ggplotly(dupPlot, 
                                               tooltip = c("fill", "total", "label"))
                   
@@ -315,8 +321,9 @@ setMethod("plotDuplicationLevels", signature = "FastqcDataList",
                                           widths = c(0.1,0.08,0.82),
                                           margin = 0.001, 
                                           shareY = TRUE)))
-                  dupPlot <- plotly::layout(dupPlot, xaxis3 = list(title = xlab))
-
+                  dupPlot <- plotly::layout(dupPlot, 
+                                            xaxis3 = list(title = xlab))
+                  
               }
               dupPlot
           }

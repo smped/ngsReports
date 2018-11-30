@@ -45,19 +45,22 @@ File extensions are dropped by default.}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for 
+pass, warning, and fail
 values in plot}
 
-\item{plotType}{\code{character}. Type of plot to generate. Must be "line" or "heatmap"}
+\item{plotType}{\code{character}. Type of plot to generate. Must be "line" or
+"heatmap"}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-will be displayed.}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+then the dendrogram will be displayed.}
 
-\item{nc}{Specify the number of columns if plotting a FastqcDataList as line plots}
+\item{nc}{Specify the number of columns if plotting a FastqcDataList as line 
+plots}
 }
 \value{
 A ggplot2 object

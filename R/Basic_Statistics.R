@@ -1,6 +1,7 @@
 #' @title Get the set of Basic Statistics
 #'
-#' @description Retrieve the Basic Statistics module from one or more FastQC reports
+#' @description Retrieve the Basic Statistics module from one or more FastQC 
+#' reports
 #'
 #' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, 
 #' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector

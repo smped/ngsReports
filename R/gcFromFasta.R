@@ -3,9 +3,11 @@
 #' @description Calculate GC content from a set of DNA sequences provided by a 
 #' fasta file
 #' 
-#' @details Used to obtain theoretical GC content for a given genome/transcriptome
+#' @details Used to obtain theoretical GC content for a given 
+#' genome/transcriptome
 #' 
-#' @param Fastafile A fasta file containing a genome or transcriptome of interest
+#' @param Fastafile A fasta file containing a genome or transcriptome of 
+#' interest
 #' @param n the number of fragments to simulate
 #' @param bp the fragment length used in estimation
 #' 

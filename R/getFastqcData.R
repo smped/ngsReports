@@ -38,7 +38,7 @@ setMethod("getFastqcData", "FastqcFile",
                   
                   # Get the internal path within the zip archive
                   fl <- file.path(gsub(".zip$", "", fileName(object)), 
-                                   "fastqc_data.txt")
+                                  "fastqc_data.txt")
                   
                   # Check the required file exists within the file
                   allFiles <- unzip(path, list = TRUE)$Name
@@ -58,7 +58,7 @@ setMethod("getFastqcData", "FastqcFile",
                   fl <- file.path(path, "fastqc_data.txt")
                   if (!file.exists(fl)) stop(
                       "'fastqc_data.txt' could not be found."
-                      )
+                  )
                   fastqcLines <- readLines(fl)
                   
               }
@@ -100,7 +100,7 @@ setMethod("getFastqcData", "FastqcFile",
               # Check that at least one of the standard modules is present
               if (!any(modules %in% reqModules)) stop(
                   "None of the standard modules were able to be found in the data."
-                  )
+              )
               
               # Split the data based on the '>>' pattern, which will indicate the
               # beginning of a new module
@@ -119,7 +119,8 @@ setMethod("getFastqcData", "FastqcFile",
               # with an additional slot to account for the Sequence Duplication
               # Levels output. Initialise an empty list based on the standard 
               # modules after checking for the Total_Deduplicated Percentage.
-              allModules <- c(reqModules, modules, "Total_Deduplicated_Percentage")
+              allModules <- c(reqModules, modules, 
+                              "Total_Deduplicated_Percentage")
               allModules <- unique(allModules)
               out <- vector("list", length(allModules))
               names(out) <- allModules
@@ -163,7 +164,7 @@ setMethod("getFastqcData", "NULL",
           function(object){
               if(is.null(object)) stop(
                   "No files have been provided, please read in files"
-                  )
+              )
           })
 
 #' @name getFastqcData
@@ -220,7 +221,8 @@ getBasicStatistics <- function(fastqcLines){
     df[intVals] <-lapply(df[intVals], as.integer)
     dplyr::select(df,
                   "Filename", "Total_Sequences",
-                  tidyselect::contains("quality"), tidyselect::ends_with("sequence"),
+                  tidyselect::contains("quality"), 
+                  tidyselect::ends_with("sequence"),
                   tidyselect::one_of("%GC", "File_type", "Encoding"))
     
 }
@@ -384,7 +386,7 @@ getSeqDuplicationLevels <- function(fastqcLines){
     }
     if (length(Total_Deduplicated_Percentage) > 1) stop(
         "Too many elements matched Total_Deduplicated_Percentage"
-        )
+    )
     
     # Remove the Total value entry from the original object
     df <- splitByTab(x[!hasTotDeDup])

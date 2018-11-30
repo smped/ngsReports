@@ -2,8 +2,8 @@
 #'
 #' @description Plot the Base Qualities for each file as separate plots
 #'
-#' @details This replicates the \code{Per base sequence quality} plots from FASTQC,
-#' using facets to plce them all in a single ggplot2 object.
+#' @details This replicates the \code{Per base sequence quality} plots from 
+#' FASTQC, using facets to plce them all in a single ggplot2 object.
 #'
 #' For large datasets, subsetting by R1 or R2 reads may be helpful
 #'
@@ -13,8 +13,8 @@
 #' If \code{TRUE} plot will be rendered with plotly
 #' @param nc \code{numeric}. The number of columns to create in the plot layout.
 #' Only used if drawing boxplots for multiple files in a FastqcDataList
-#' @param warn,fail The default values for warn and fail are 30 and 20 respectively
-#'  (i.e. percentages)
+#' @param warn,fail The default values for warn and fail are 30 and 20 
+#' respectively (i.e. percentages)
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
@@ -22,8 +22,8 @@
 #' \code{"heatmap"}
 #' @param plotValue \code{character} Type of quality data to be presented "Mean" 
 #' or "Median"
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for pass, 
-#' warning, and fail values in plot
+#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for 
+#' pass, warning, and fail values in plot
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
@@ -68,7 +68,8 @@ setMethod("plotBaseQualities", signature = "character",
           function(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, 
                    boxWidth = 0.8, ...){
               x <- getFastqcData(x)
-              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
+              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, 
+                                boxWidth, ...)
           }
 )
 #' @aliases plotBaseQualities,FastqcFile
@@ -78,7 +79,8 @@ setMethod("plotBaseQualities", signature = "FastqcFile",
           function(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, 
                    boxWidth = 0.8, ...){
               x <- getFastqcData(x)
-              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
+              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, 
+                                boxWidth, ...)
           }
 )
 #' @aliases plotBaseQualities,FastqcFileList
@@ -88,7 +90,8 @@ setMethod("plotBaseQualities", signature = "FastqcFileList",
           function(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, 
                    boxWidth = 0.8, ...){
               x <- getFastqcData(x)
-              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
+              plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, 
+                                boxWidth, ...)
           }
 )
 #' @aliases plotBaseQualities,FastqcData
@@ -103,7 +106,9 @@ setMethod("plotBaseQualities", signature = "FastqcData",
               
               # Make a blank plot if no data is found
               if (!length(df)) {
-                  qualPlot <- emptyPlot("No Per Base Sequence Quality Module Detected")
+                  qualPlot <- emptyPlot(
+                      "No Per Base Sequence Quality Module Detected"
+                      )
                   if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
                   return(qualPlot)
               }
@@ -127,7 +132,8 @@ setMethod("plotBaseQualities", signature = "FastqcData",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # Set the limits & rectangles
               ylim <- c(0, max(df$`90th_Percentile`) + 1)
@@ -233,7 +239,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
               maxQ <- max(df[["90th_Percentile"]])
               
               if (!length(df)) {
-                  qualPlot <- emptyPlot("No Per Base Sequence Quality Module Detected")
+                  qualPlot <- emptyPlot(
+                      "No Per Base Sequence Quality Module Detected"
+                      )
                   if(usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
                   return(qualPlot)
               }
@@ -268,19 +276,23 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   
                   # Set the limits & rectangles
                   ylim <- c(0, max(df$`90th_Percentile`) + 1)
-                  expand_x <- round(0.015*(max(df$Position) - min(df$Position)), 1)
+                  expand_x <- round(0.015*(max(df$Position) - min(df$Position)), 
+                                    1)
                   rects <- tibble::tibble(xmin = min(df$Position) - expand_x,
                                           xmax = max(df$Position) + expand_x,
                                           ymin = c(0, fail, warn),
                                           ymax = c(fail, warn, max(ylim)),
                                           Status = c("FAIL", "WARN", "PASS"))
                   
-                  # Get any theme arguments for dotArgs that have been set manually
+                  # Get any theme arguments for dotArgs that have been set 
+                  # manually
                   dotArgs <- list(...)
                   allowed <- names(formals(ggplot2::theme))
                   keepArgs <- which(names(dotArgs) %in% allowed)
                   userTheme <- c()
-                  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+                  if (length(keepArgs) > 0) userTheme <- do.call(
+                      theme, dotArgs[keepArgs]
+                      )
                   
                   # Generate the basic plot
                   df$Filename <- labels[df$Filename]
@@ -313,7 +325,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                       guides(fill = FALSE) +
                       theme_bw() +
                       theme(panel.grid.minor = element_blank(),
-                            axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+                            axis.text.x = element_text(angle = 90, 
+                                                       hjust = 1, 
+                                                       vjust = 0.5))
                   if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
                   
                   # Make interactive if required
@@ -322,7 +336,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                           theme(legend.position = "none")
                       qualPlot <- suppressMessages(
                           plotly::ggplotly(qualPlot,
-                                           hoverinfo = c("Base", "Mean", "Median",
+                                           hoverinfo = c("Base", "Mean", 
+                                                         "Median",
                                                          "Upper_Quartile",
                                                          "Lower_Quartile",
                                                          "`10th_Percentile`",
@@ -334,7 +349,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                       qualPlot$x$data[[2]]$hoverinfo <- "none"
                       qualPlot$x$data[[3]]$hoverinfo <- "none"
                       qualPlot$x$data <- lapply(qualPlot$x$data, function(x){
-                          x$text <- gsub("xmax:.+(Median.+)xmin.+", "\\1", x$text)
+                          x$text <- gsub("xmax:.+(Median.+)xmin.+", "\\1", 
+                                         x$text)
                           x
                       })
                   }
@@ -353,7 +369,9 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   allowed <- names(formals(ggplot2::theme))
                   keepArgs <- which(names(dotArgs) %in% allowed)
                   userTheme <- c()
-                  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+                  if (length(keepArgs) > 0) userTheme <- do.call(
+                      theme, dotArgs[keepArgs]
+                      )
                   
                   # Sort out the start positions
                   df$Start <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
@@ -378,15 +396,19 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                   # Just use the default order as the key if not clustering
                   # Always turn clustering on if dendrogram = TRUE
                   if (dendrogram && !cluster){
-                      message("cluster will be set to TRUE when dendrogram = TRUE")
+                      message(
+                          "cluster will be set to TRUE when dendrogram = TRUE"
+                          )
                       cluster <- TRUE
                   }
                   key <- names(labels)
                   if(cluster){
-                      clusterDend <- makeDendrogram(df, "Filename", "Start", plotValue)
+                      clusterDend <- makeDendrogram(df, "Filename", "Start", 
+                                                    plotValue)
                       key <- labels(clusterDend)
                   }
-                  df$Filename <- factor(labels[df$Filename], levels = labels[key])
+                  df$Filename <- factor(labels[df$Filename], 
+                                        levels = labels[key])
                   
                   maxVal <- max(df[[plotValue]], na.rm = TRUE)
                   phredMax <- ifelse(maxVal <= warn,
@@ -394,7 +416,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList",
                                      ceiling(maxVal + 1))
                   
                   # Start the heatmap
-                  qualPlot <- ggplot(df, aes_string(x = "Start", y = "Filename",
+                  qualPlot <- ggplot(df, aes_string(x = "Start", 
+                                                    y = "Filename",
                                                     fill = plotValue)) +
                       geom_tile() +
                       labs(x = xlab) +

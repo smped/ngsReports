@@ -46,16 +46,16 @@ setMethod("getSummary", "FastqcFile",
                            "Adapter Content", 
                            "Kmer Content")
               path <- path(object)
-              if (isCompressed(path, type = "zip")){
+              if (isCompressed(path, type = "zip")) {
                   #Get the internal path within the zip archive
                   if (!file.exists(path)) stop(
                       "The zip archive can not be found."
-                      )
+                  )
                   fl <- file.path( gsub(".zip$", "", fileName(object)),
                                    "summary.txt")
                   # Check the required file exists
                   allFiles <- unzip(path, list = TRUE)$Name
-                  if(!fl %in% allFiles) stop(
+                  if (!fl %in% allFiles) stop(
                       "summary.txt is missing from the zip archive"
                   )
                   # Open the connection & read all lines
@@ -100,7 +100,7 @@ setMethod("getSummary", "FastqcFileList",
 #' @aliases getSummary
 setMethod("getSummary", "character",
           function(object){
-              if(length(object) ==1) {
+              if (length(object) == 1) {
                   tryCatch(object <- FastqcFile(object))
               }
               else{

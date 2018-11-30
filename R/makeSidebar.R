@@ -33,10 +33,10 @@ makeSidebar <- function(status, key, pwfCols){
         scale_x_continuous(expand = c(0, 0)) +
         theme(panel.grid.minor = element_blank(),
               panel.background = element_blank(),
-              legend.position="none",
-              axis.title=element_blank(),
-              axis.text=element_blank(),
-              axis.ticks=element_blank())
+              legend.position = "none",
+              axis.title = element_blank(),
+              axis.text = element_blank(),
+              axis.ticks = element_blank())
     
     # Convert to plotly
     suppressWarnings(

@@ -5,10 +5,10 @@
 #' @param object An object of class FastqcFile, FastqcFileList, FastqcData or 
 #' FastqcDataList
 #'
-#' @return Returns the filenames, without the preceding directories, i.e. basename.
-#' For a FastqcFile/FastqcFileList these will be the underlying FastQC files.
-#' For a FastqcData/FastqcDataList, these will correspond to the fastq files 
-#' about which the FastQC report was written.
+#' @return Returns the filenames, without the preceding directories, i.e. 
+#' basename. For a FastqcFile/FastqcFileList these will be the underlying 
+#' FastQC files. For a FastqcData/FastqcDataList, these will correspond to the
+#' fastq files about which the FastQC report was written.
 #' 
 #' @examples 
 #' 

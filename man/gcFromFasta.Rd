@@ -7,7 +7,8 @@
 gcFromFasta(Fastafile, n = 1e+06, bp = 100)
 }
 \arguments{
-\item{Fastafile}{A fasta file containing a genome or transcriptome of interest}
+\item{Fastafile}{A fasta file containing a genome or transcriptome of 
+interest}
 
 \item{n}{the number of fragments to simulate}
 
@@ -21,7 +22,8 @@ Calculate GC content from a set of DNA sequences provided by a
 fasta file
 }
 \details{
-Used to obtain theoretical GC content for a given genome/transcriptome
+Used to obtain theoretical GC content for a given 
+genome/transcriptome
 }
 \author{
 Hien To <totuhien@gmail.com>

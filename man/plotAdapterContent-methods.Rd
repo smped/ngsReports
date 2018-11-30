@@ -48,8 +48,8 @@ File extensions are dropped by default.}
 \item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours 
 for PASS/WARN/FAIL}
 
-\item{warn, fail}{The default values for warn and fail are 5 and 10 respectively 
-(i.e. percentages)}
+\item{warn, fail}{The default values for warn and fail are 5 and 10 
+respectively (i.e. percentages)}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 
@@ -82,7 +82,8 @@ ggplot2 methods.
 When \code{x} is a single FastqcFile, or FastqcData object line plots will 
 always be drawn for all adapters.
 Otherwise, users can select line plots or heatmaps.
-When plotting more than one fastqc file, any undetected adapters will not be shown.
+When plotting more than one fastqc file, any undetected adapters will not be 
+shown.
 }
 \examples{
 

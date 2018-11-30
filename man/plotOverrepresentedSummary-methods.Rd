@@ -60,7 +60,8 @@ if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
 \item{paletteName}{Name of the palette for colouring the possible sources 
-of the overrepresented sequences. Must be a palette name from \code{RColorBrewer}}
+of the overrepresented sequences. Must be a palette name from 
+\code{RColorBrewer}}
 
 \item{expand.x, expand.y}{Vectors of length 2. Passed to `scale_*_continuous()`}
 }

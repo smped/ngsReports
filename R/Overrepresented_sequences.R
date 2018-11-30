@@ -30,12 +30,12 @@
 setMethod("Overrepresented_sequences", "FastqcData",
           function(object){
               df <- object@Overrepresented_sequences
-              if(length(df)){ # Check there is data in the module
+              if (length(df)) {# Check there is data in the module
                   # Add a Filename column if there is any data
                   df$Filename <- fileName(object)
                   dplyr::select(df, "Filename", tidyselect::everything())
               }
-              else { # Otherwise return the blank data.frame
+              else {# Otherwise return the blank data.frame
                   df
               }
           })

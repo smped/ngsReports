@@ -25,7 +25,8 @@
 #' @param ... Used to pass additional attributes to theme() and between methods
 #' @param expand.x,expand.y Vectors of length 2. Passed to `scale_*_continuous()`
 #' @param paletteName Name of the palette for colouring the possible sources 
-#' of the overrepresented sequences. Must be a palette name from \code{RColorBrewer}
+#' of the overrepresented sequences. Must be a palette name from 
+#' \code{RColorBrewer}
 #'
 #' @return A standard ggplot2 object
 #'
@@ -53,7 +54,7 @@
 setGeneric("plotOverrepresentedSummary",
            function(x, usePlotly = FALSE, labels, pwfCols, ...){
                standardGeneric("plotOverrepresentedSummary")
-               })
+           })
 #' @aliases plotOverrepresentedSummary,character
 #' @rdname plotOverrepresentedSummary-methods
 #' @export
@@ -104,15 +105,15 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               df <- dplyr::top_n(df, n, Percentage)
               df$Status <- cut(df$Percentage, 
                                breaks = c(0, 0.1, 1, 100), 
                                labels = c("PASS", "WARN", "FAIL"))
-              df$Possible_Source <- gsub(pattern = " \\([0-9]*\\% over [0-9]*bp\\)", 
-                                         replacement = "", 
-                                         x = df$Possible_Source)
+              df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)",  "", 
+                                         df$Possible_Source)
               df$Sequence <- factor(df$Sequence, levels = rev(df$Sequence))
               df$Percentage <- round(df$Percentage, 2)
               df <- droplevels(df)
@@ -142,7 +143,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
               # Only facet is using ggplot. They look bad under plotly
               if (!usePlotly) overPlot <- overPlot + facet_grid(
                   Possible_Source~., scales = "free_y", space = "free"
-                  )
+              )
               
               # Add the basic customisations
               if (!is.null(userTheme)) overPlot <- overPlot + userTheme
@@ -169,8 +170,10 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData",
               
               overPlot
               
-              # Add functionality to export a FASTA file of the sequences to the shiny app?
-              # This will obviously work best under plotly as the names will be silly otherwise
+              # Add functionality to export a FASTA file of the sequences to the
+              # shiny app?
+              # This will obviously work best under plotly as the names will be 
+              # silly otherwise
               
           }
 )
@@ -200,12 +203,12 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               Possible_Source <- c() # Here to avoid a NOTE in R CMD check...
-              df$Possible_Source <- gsub(pattern = " \\([0-9]*\\% over [0-9]*bp\\)", 
-                                         replacement = "", 
-                                         x = df$Possible_Source)
+              df$Possible_Source <- gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", 
+                                         df$Possible_Source)
               df <- dplyr::group_by(df, Filename, Possible_Source)
               df <- dplyr::summarise(df, Percentage = sum(Percentage))
               df <- dplyr::ungroup(df)
@@ -223,9 +226,9 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               if (cluster){
                   cols <- c("Filename", "Possible_Source", "Percentage")
                   clusterDend <- makeDendrogram(df = df[cols], 
-                                             rowVal = "Filename", 
-                                             colVal = "Possible_Source", 
-                                             value = "Percentage")
+                                                rowVal = "Filename", 
+                                                colVal = "Possible_Source", 
+                                                value = "Percentage")
                   key <- labels(clusterDend)
               }
               # Now set everything as factors
@@ -259,7 +262,8 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
               xLab <- "Overrepresented Sequences (% of Total)"
               
               overPlot <- ggplot(df, 
-                                 aes_string(x = "Filename", y = "Percentage", 
+                                 aes_string(x = "Filename", 
+                                            y = "Percentage", 
                                             fill = "Possible_Source")) +
                   geom_bar(stat = "identity") +
                   labs(y = xLab,
@@ -283,14 +287,16 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                             axis.ticks.y = element_blank())
                   
                   status <- getSummary(x)
-                  status <- status[status$Category == "Overrepresented sequences",]
+                  status <- subset(status, 
+                                   Category == "Overrepresented sequences")
                   status$Filename <- labels[status$Filename]
-                  status$Filename <- factor(status$Filename, levels = levels(df$Filename))
+                  status$Filename <- factor(status$Filename, 
+                                            levels = levels(df$Filename))
                   status <- dplyr::right_join(status, 
                                               dplyr::distinct(df, Filename), 
                                               by = "Filename")
                   
-                  sideBar <- makeSidebar(status = status, key = key, pwfCols = pwfCols)
+                  sideBar <- makeSidebar(status, key, pwfCols)
                   
                   if (dendrogram){
                       dx <- ggdendro::dendro_data(clusterDend)
@@ -303,8 +309,8 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList",
                   overPlot <- suppressWarnings(
                       suppressMessages(
                           plotly::subplot(dendro, sideBar, overPlot, 
-                                  margin = 0.001,
-                                  widths = c(0.08,0.08,0.84))
+                                          margin = 0.001,
+                                          widths = c(0.08,0.08,0.84))
                       )
                   )
               }

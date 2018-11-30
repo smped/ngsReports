@@ -5,7 +5,8 @@
 #' @details The is an object which refers to a list of fastqc output files.
 #' Only the paths are stored, however the files are checked for the correct 
 #' structure on formation of the object.
-#' Files can be any combination of zipped (*_fastqc.zip) or extracted directories
+#' Files can be any combination of zipped (*_fastqc.zip) or extracted 
+#' directories
 #'
 #'
 #' @return An object of class FastqcFile
@@ -52,9 +53,11 @@ setMethod("FastqcFileList", "list",
           function(x)
           {
               cls <- vapply(x, class, character(1))
-              if (any(!cls %in% "FastqcFile")) stop(
-                  "Method can only be applied to\nFastqcFile objects as a generic list."
-                  )
+              if (any(!cls %in% "FastqcFile")) {
+                  msg <- paste0("Method can only be applied to\n", 
+                                "FastqcFile objects as a generic list.")
+                  stop(msg)
+              }
               new("FastqcFileList", x)
           })
 

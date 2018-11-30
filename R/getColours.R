@@ -57,9 +57,9 @@ setMethod("setColours", "PwfCols", function(object, PASS, WARN, FAIL, MAX){
     if (!missing(MAX)) new@MAX <- MAX
     
     if (!isValidPwf(new)) {
-        warning(
-            "Invalid specifications for an object of class PwfCols.\nThe object was not overwritten"
-        )
+        wn <- paste("Invalid specifications for an object of class PwfCols.", 
+                    "The object was not overwritten", sep = "\n")
+        warning(wn)
         return(object)
     }
     

@@ -46,11 +46,11 @@ If \code{TRUE} plot will be rendered with plotly}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, 
-warning, and fail values in plot}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for 
+pass, warning, and fail values in plot}
 
-\item{warn, fail}{The default values for warn and fail are 30 and 20 respectively
-(i.e. percentages)}
+\item{warn, fail}{The default values for warn and fail are 30 and 20 
+respectively (i.e. percentages)}
 
 \item{boxWidth}{set the width of boxes when using a boxplot}
 
@@ -79,8 +79,8 @@ A standard ggplot2 object
 Plot the Base Qualities for each file as separate plots
 }
 \details{
-This replicates the \code{Per base sequence quality} plots from FASTQC,
-using facets to plce them all in a single ggplot2 object.
+This replicates the \code{Per base sequence quality} plots from 
+FASTQC, using facets to plce them all in a single ggplot2 object.
 
 For large datasets, subsetting by R1 or R2 reads may be helpful
 }

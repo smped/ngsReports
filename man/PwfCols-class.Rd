@@ -26,7 +26,7 @@ Defaults to rgb(0.9, 0.9, 0.2)}
 \item{\code{FAIL}}{A vector of length 1, defining the colour for FAIL in rgb format. 
 Defaults to rgb(0.8, 0.2, 0.2)}
 
-\item{\code{MAX}}{A vector of length 1, defining the colour for an extreme FAIL or NA in rgb format.
-Defaults to rgb(1, 1, 1)}
+\item{\code{MAX}}{A vector of length 1, defining the colour for an extreme FAIL or 
+NA in rgb format. Defaults to rgb(1, 1, 1)}
 }}
 

@@ -2,16 +2,19 @@
 #'
 #' @description Contains Theoretical GC content for a selection of species
 #'
-#' @details Estimates are able to be retained for genomic and transcriptomic sequences
-#' Values are stored as frequencies
+#' @details Estimates are able to be retained for genomic and transcriptomic 
+#' sequences. Values are stored as frequencies.
 #'
 #' @return An object of class TheoreticalGC
 #'
 #' @include validationFunctions.R
 #'
-#' @slot Genome A \code{data.frame} containing theoretical GC content for genomic sequences
-#' @slot Transcriptome A \code{data.frame} containing theoretical GC content for transcriptomic sequences
-#' @slot mData A \code{data.frame} containing metadata about all species in the object
+#' @slot Genome A \code{data.frame} containing theoretical GC content for 
+#' genomic sequences
+#' @slot Transcriptome A \code{data.frame} containing theoretical GC content for 
+#' transcriptomic sequences
+#' @slot mData A \code{data.frame} containing metadata about all species in the 
+#' object
 setClass("TheoreticalGC", slots=c(Genome = "data.frame",
                                   Transcriptome = "data.frame",
                                   mData = "data.frame"))
@@ -79,7 +82,9 @@ setMethod("genomes", "TheoreticalGC", function(object){
 #' @export
 #' @name transcriptomes
 #' @rdname transcriptomes
-setGeneric("transcriptomes", function(object){standardGeneric("transcriptomes")})
+setGeneric("transcriptomes", function(object){
+    standardGeneric("transcriptomes")
+    })
 
 #' @importFrom methods slot
 #' @export
@@ -96,7 +101,8 @@ setMethod("transcriptomes", "TheoreticalGC", function(object){
 #'
 #' @param object An object of class Theoretical GC
 #' @param name The Name of the species in 'Gspecies' format, e.g. Hsapiens
-#' @param type The type of GC content. Can only be either "Genome" or "Transcriptome"
+#' @param type The type of GC content. Can only be either "Genome" or 
+#' "Transcriptome"
 #'
 #' @return A \code{tibble} object
 #' 
@@ -118,12 +124,12 @@ setMethod("getGC", "TheoreticalGC",
               type <- stringr::str_to_title(type)
               type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
               
-              if (type == "Genome"){
-                  col <- tryCatch(match.arg(name, colnames(object@Genome)))
+              if (type == "Genome") {
+                  col <- match.arg(name, colnames(object@Genome))
                   df <- object@Genome[c("GC_Content", col)]
               }
               else{
-                  col <- tryCatch(match.arg(name, colnames(object@Transcriptome)))
+                  col <- match.arg(name, colnames(object@Transcriptome))
                   df <- object@Transcriptome[c("GC_Content", col)]
               }
               

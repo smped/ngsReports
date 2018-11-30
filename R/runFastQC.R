@@ -11,16 +11,16 @@
 #' for more fine detail pease call FastQC directly.
 #'
 #' @param object A \code{\link{FastqFileList}}
-#' @param outPath The path to write the FastQC reports. Must exist as (for safety)
-#' it will not be created when calling this function
+#' @param outPath The path to write the FastQC reports. Must exist as (for 
+#' safety) it will not be created when calling this function
 #' @param exec The location of the fastqc executable.
 #' @param threads The number of threads to run in parallel
 #' @param casava logical. Sets the \code{--casava} flag
 #' @param nofilter logical. Sets the \code{--nofilter} flag
 #' @param extract logical. Extract the zip files on completion of the report
 #' @param nogroup logical. Sets the grouping of bases for reads longer than 50bp
-#' @param min_length integer. Sets an artificial lower limit on the length of the 
-#' sequence to be shown in the report.  
+#' @param min_length integer. Sets an artificial lower limit on the length of 
+#' the sequence to be shown in the report.  
 #' @param contaminants Path to an alternate file with contaminants.
 #' The structure of the file will not be checked.
 #' Refer to the \code{fastqc} help page for more details
@@ -67,31 +67,34 @@ setMethod("runFastQC", "character",
                    contaminants = c(), adapters = c(), kmers = 7,
                    exec){
               
-             fq <- all(grepl("(fq|fastq|fq.gz|fastq.gz|txt)$", basename(object)))
-             bam <- all(grepl("bam$", basename(object)))
-             if (fq) {
-                 if (length(object) == 1) {
-                     object <- ShortRead::FastqFile(object)
-                 }
-                 else {
-                     object <- ShortRead::FastqFileList(object)
-                 }
-             }
-             if (bam) {
-                 if (length(object) == 1) {
-                     object <- Rsamtools::BamFile(object)
-                 }
-                 else{
-                     object <- Rsamtools::BamFileList(object)
-                 }
-             }
-             if (!bam & !fq) {
-                 warning("File format could not be identified. FastQC will not be run")
-                 return(NULL)
-             }
-             runFastQC(object, outPath, threads, casava, nofilter, 
-                       extract, nogroup, min_length, contaminants = c(), 
-                       adapters, kmers, exec)
+              fq <- all(grepl("(fq|fastq|fq.gz|fastq.gz|txt)$", 
+                              basename(object)))
+              bam <- all(grepl("bam$", basename(object)))
+              if (fq) {
+                  if (length(object) == 1) {
+                      object <- ShortRead::FastqFile(object)
+                  }
+                  else {
+                      object <- ShortRead::FastqFileList(object)
+                  }
+              }
+              if (bam) {
+                  if (length(object) == 1) {
+                      object <- Rsamtools::BamFile(object)
+                  }
+                  else{
+                      object <- Rsamtools::BamFileList(object)
+                  }
+              }
+              if (!bam & !fq) {
+                  warning(
+                      "File format could not be identified. FastQC will not be run"
+                  )
+                  return(NULL)
+              }
+              runFastQC(object, outPath, threads, casava, nofilter, 
+                        extract, nogroup, min_length, contaminants = c(), 
+                        adapters, kmers, exec)
           })
 #' @aliases runFastQC,FastqFile-method
 #' @rdname runFastQC-methods
@@ -104,7 +107,7 @@ setMethod("runFastQC", "FastqFile",
                    exec){
               
               runFastQC.default(object, outPath, threads, casava, nofilter, 
-                                extract, nogroup, min_length, contaminants = c(), 
+                                extract, nogroup, min_length, contaminants, 
                                 adapters, kmers, exec, fileType = "FastqFile") 
           }
 )
@@ -117,10 +120,11 @@ setMethod("runFastQC", "FastqFileList",
                    nogroup = FALSE, min_length = 1, 
                    contaminants = c(), adapters = c(), kmers = 7,
                    exec){
-        
+              
               runFastQC.default(object, outPath, threads, casava, nofilter, 
-                                extract, nogroup, min_length, contaminants = c(), 
-                                adapters, kmers, exec, fileType = "FastqFileList")      
+                                extract, nogroup, min_length, contaminants, 
+                                adapters, kmers, exec, 
+                                fileType = "FastqFileList")      
               
           }
 )
@@ -135,7 +139,7 @@ setMethod("runFastQC", "BamFile",
                    exec){
               
               runFastQC.default(object, outPath, threads, casava, nofilter, 
-                                extract, nogroup, min_length, contaminants = c(), 
+                                extract, nogroup, min_length, contaminants, 
                                 adapters, kmers, exec, fileType = "BamFile") 
           }
 )
@@ -150,7 +154,7 @@ setMethod("runFastQC", "BamFileList",
                    exec){
               
               runFastQC.default(object, outPath, threads, casava, nofilter, 
-                                extract, nogroup, min_length, contaminants = c(), 
+                                extract, nogroup, min_length, contaminants, 
                                 adapters, kmers, exec, fileType = "BamFileList") 
           }
 )
@@ -163,14 +167,16 @@ runFastQC.default <- function(object, outPath, threads, casava, nofilter,
     
     # Check the output path exists
     stopifnot(file.exists(outPath))
-    if (length(outPath) > 1){
+    if (length(outPath) > 1) {
         outPath <- outPath[1]
-        message("Multiple output paths specified.\nOnly the first will be used.")
+        message(
+            "Multiple output paths specified.\nOnly the first will be used."
+        )
     }
     
     # Check the executable exists.
     if (missing(exec)) exec <- Sys.which("fastqc")
-    if (file.exists(exec)){
+    if (file.exists(exec)) {
         message("Found FastQC executable: ", exec)
     }
     else {
@@ -180,7 +186,7 @@ runFastQC.default <- function(object, outPath, threads, casava, nofilter,
     # Get the version
     v <- system2(exec, "-v", stdout = TRUE)
     v <- gsub(".+0.11.(.+)", "\\1", v)
-    if (as.integer(v) > 5){
+    if (as.integer(v) > 5) {
         min_length <- paste("--min_length", min_length)
     }
     else{
@@ -193,7 +199,7 @@ runFastQC.default <- function(object, outPath, threads, casava, nofilter,
     if (maxCores < threads) message("Too many threads. Resetting to", maxCores)
     threads <- paste("-t", min(threads, maxCores))
     stopifnot(is.logical(casava), is.logical(nogroup))
-    if (casava){
+    if (casava) {
         casava <- ifelse(nofilter, "--casava --nofilter", "--casava")
     }
     else {
@@ -201,7 +207,9 @@ runFastQC.default <- function(object, outPath, threads, casava, nofilter,
     }
     extract <- dplyr::if_else(extract, "--extract", "--noextract")
     if (nogroup) {
-        message("Setting the option '--nogroup' may cause FastQC to become unstable")
+        message(
+            "Setting the option '--nogroup' may cause FastQC to become unstable"
+        )
         nogroup <- "--nogroup"
     }
     else{
@@ -242,7 +250,9 @@ runFastQC.default <- function(object, outPath, threads, casava, nofilter,
         # Now return the files that have been run in the same order
         m <- pmatch(gsub("(.+)\\..+", "\\1", names(object)), fileName(ffl))
         if (anyNA(m)) {
-            warning("NA values indicate Fastqc files may be missing for one or more samples")
+            warning(
+                "NA values indicate Fastqc files may be missing for one or more samples"
+            )
             m <- m[!is.na(m)]
         }
         out <- ffl[m]    
@@ -256,7 +266,5 @@ runFastQC.default <- function(object, outPath, threads, casava, nofilter,
         out <- ffl[[m]]    
     }
     
-    # Close any open connections. Nope. This spits errors
-    #if (isOpen(object)) close(object)
     out
 }

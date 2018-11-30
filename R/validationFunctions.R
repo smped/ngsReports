@@ -36,8 +36,8 @@ isValidFastqcFileList <- function(object){
 }
 
 isValidFastqcData <- function(object){
-    # At minimum, this should contain slots for Summary, Basic_Statistics, Version & path
-    # The remainder of the modules may be missing
+    # At minimum, this should contain slots for Summary, Basic_Statistics, 
+    # Version & path. The remainder of the modules may be missing
     reqSlots <- c("Summary", "Basic_Statistics", "Version", "path")
     all(reqSlots %in% slotNames(object))
 }
@@ -72,15 +72,25 @@ isValidTheoreticalGC <- function(object){
     if (!is.logical(tr)) return(FALSE)
     
     # Check Genome & Transcriptomes called as TRUE match the metadata exactly
-    if (!all(object@mData$Name[gn] %in% colnames(object@Genome))) return(FALSE)
-    if (!all(colnames(object@Genome)[-1] %in% object@mData$Name[gn])) return(FALSE)
-    if (!all(object@mData$Name[tr] %in% colnames(object@Transcriptome))) FALSE
-    if (!all(colnames(object@Transcriptome)[-1] %in% object@mData$Name[tr])) FALSE
+    if (
+        !all(object@mData$Name[gn] %in% colnames(object@Genome))
+        ) return(FALSE)
+    if (
+        !all(colnames(object@Genome)[-1] %in% object@mData$Name[gn])
+        ) return(FALSE)
+    if (
+        !all(object@mData$Name[tr] %in% colnames(object@Transcriptome))
+        ) return(FALSE)
+    if (
+        !all(colnames(object@Transcriptome)[-1] %in% object@mData$Name[tr])
+        ) return(FALSE)
     
     # Check all content is given as a frequency
-    gFreqs <- vapply(object@Genome[-1], function(x){sum(x > 1 | x < 0)}, integer(1))
+    gFreqs <- vapply(object@Genome[-1], function(x){sum(x > 1 | x < 0)}, 
+                     integer(1))
     if (any(gFreqs != 0)) return(FALSE)
-    tFreqs <- vapply(object@Transcriptome[-1], function(x){sum(x > 1 | x < 0)}, integer(1))
+    tFreqs <- vapply(object@Transcriptome[-1], function(x){sum(x > 1 | x < 0)}, 
+                     integer(1))
     if (any(tFreqs != 0)) return(FALSE)
     
     TRUE

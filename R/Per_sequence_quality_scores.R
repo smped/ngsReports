@@ -1,14 +1,17 @@
 #' @title Get the Per Sequence Quality Scores information
 #'
-#' @description Retrieve the Per Sequence Quality Scores module from one or more FastQC reports
+#' @description Retrieve the Per Sequence Quality Scores module from one or more
+#' FastQC reports
 #'
-#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData}, \code{fastqcDataList},
-#' or simply a \code{character} vector of paths to fastqc files
+#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+#' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
+#' of paths to fastqc files
 #'
 #' @include FastqcData.R
 #' @include AllGenerics.R
 #'
-#' @return A single \code{tibble} containing all information combined from all supplied FastQC reports
+#' @return A single \code{tibble} containing all information combined from all 
+#' supplied FastQC reports
 #'
 #' @examples 
 #' 
@@ -30,12 +33,12 @@
 setMethod("Per_sequence_quality_scores", "FastqcData",
           function(object){
               df <- object@Per_sequence_quality_scores
-              if(length(df)){ # Check there is data in the module
+              if (length(df)) { # Check there is data in the module
                   # Add a Filename column if there is any data
                   df$Filename <- fileName(object)
                   dplyr::select(df, "Filename", tidyselect::everything())
               }
-              else { # Otherwise return the blank data.frame
+              else {# Otherwise return the blank data.frame
                   df
               }
           })
@@ -51,8 +54,9 @@ setMethod("Per_sequence_quality_scores", "FastqcDataList",
                                   length(x) == 0
                               }, logical(1))
               if (sum(nulls) > 0) message(
-                  sprintf("The Per_sequence_quality_scores module was missing from:\n%s",
-                          paste(path(object)[nulls], sep = "\n"))
+                  sprintf(
+                      "The Per_sequence_quality_scores module was missing from:\n%s",
+                      paste(path(object)[nulls], sep = "\n"))
               )
               dplyr::bind_rows(df)
           })

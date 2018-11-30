@@ -131,7 +131,8 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
               # make Ranges for rectangles and set alpha
               rects <- tibble(ymin = 0,
@@ -217,8 +218,8 @@ setMethod("plotSequenceQualities", signature = "FastqcData",
                   # Set the hoverinfo for bg rectangles to the vertices only,
                   # This will effectively hide them
                   qualPlot$x$data <- lapply(qualPlot$x$data, function(x){
-                      # If there is a name component & it contains PASS/WARN/FAIL
-                      # set the hoverinfo to none
+                      # If there is a name component & it contains 
+                      # PASS/WARN/FAIL set the hoverinfo to none
                       if ("name" %in% names(x)){
                           if (grepl("(PASS|WARN|FAIL)", x$name)){
                               x$hoverinfo <- "none"
@@ -269,19 +270,22 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
               userTheme <- c()
-              if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+              if (length(keepArgs) > 0) userTheme <- do.call(theme, 
+                                                             dotArgs[keepArgs])
               
-              if(plotType == "heatmap"){
+              if (plotType == "heatmap") {
                   
-                  if (dendrogram && !cluster){
-                      message("cluster will be set to TRUE when dendrogram = TRUE")
+                  if (dendrogram && !cluster) {
+                      message(
+                          "cluster will be set to TRUE when dendrogram = TRUE"
+                          )
                       cluster <- TRUE
                   }
                   
                   yLab <- "Filename"
                   xLim <- c(min(df$Quality) - 1, max(df$Quality) + 1)
                   
-                  if (!counts){
+                  if (!counts) {
                       
                       Count <- NULL # To avoid NOTE messages in R CMD check
                       
@@ -296,7 +300,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                   # Now define the order for a dendrogram if required
                   # This only applies to a heatmap
                   key <- names(labels)
-                  if (cluster){
+                  if (cluster) {
                       cols <- c("Filename", "Quality", plotVal)
                       clusterDend <- makeDendrogram(df = df[cols],
                                                  rowVal = "Filename",
@@ -310,7 +314,8 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                                         levels = labels[key])
                   
                   qualPlot <- ggplot(df,
-                                     aes_string(x = "Quality", y = "Filename",
+                                     aes_string(x = "Quality", 
+                                                y = "Filename",
                                                 fill = plotVal)) +
                       geom_tile() +
                       labs(x = xLab, y = yLab) +
@@ -336,15 +341,17 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                       )
                       # Get PWF status
                       status <- getSummary(x)
-                      status <- status[status$Category == "Per sequence quality scores",]
+                      status <- subset(status,
+                                       Category == "Per sequence quality scores")
                       status$Filename <- labels[status$Filename]
-                      status <- dplyr::mutate(status,
-                                              Filename = factor(Filename, levels = levels(df$Filename)))
-                      status <- dplyr::right_join(status, unique(df["Filename"]),
+                      status$Filename  <- factor(status$Filename, 
+                                                 levels = levels(df$Filename))
+                      status <- dplyr::right_join(status, 
+                                                  unique(df["Filename"]),
                                                   by = "Filename")
                       
                       # Make sidebar
-                      sideBar <- makeSidebar(status = status, key = key, pwfCols = pwfCols)
+                      sideBar <- makeSidebar(status, key, pwfCols)
                       
                       #plot dendrogram
                       if (dendrogram){
@@ -364,12 +371,14 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                           )
                       )
                       qualPlot <- plotly::layout(qualPlot,
-                                                 xaxis3 = list(title = xLab,
-                                                               plot_bgcolor = "white"))
+                                                 xaxis3 = list(
+                                                     title = xLab,
+                                                     plot_bgcolor = "white")
+                                                 )
                   }
               }
               
-              if(plotType == "line"){
+              if (plotType == "line") {
                   
                   # make Ranges for rectangles and set alpha
                   pwfCols <- setAlpha(pwfCols, alpha)
@@ -387,7 +396,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                                       scales::percent_format(accuracy = 1))
                   plotVal <- ifelse(counts, "Count", "Frequency")
                   
-                  if (!counts){
+                  if (!counts) {
                       
                       # To avoid NOTE messages in R CMD check
                       Count <- NULL
@@ -410,7 +419,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                                            colour = "Filename")) +
                       scale_fill_manual(values = getColours(pwfCols))  +
                       scale_y_continuous(limits = c(0, rects$ymax[1]),
-                                         expand =c(0, 0),
+                                         expand = c(0, 0),
                                          labels = yLabelFun) +
                       scale_x_continuous(expand = c(0, 0)) +
                       scale_colour_discrete() +
@@ -420,7 +429,7 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                   
                   if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
                   
-                  if(usePlotly){
+                  if (usePlotly) {
                       
                       qualPlot <- qualPlot + theme(legend.position = "none")
                       qualPlot <- suppressMessages(
@@ -433,10 +442,10 @@ setMethod("plotSequenceQualities", signature = "FastqcDataList",
                       # Turn off the hoverinfo for the bg rectangles
                       # This will effectively hide them
                       qualPlot$x$data <- lapply(qualPlot$x$data, function(x){
-                          # If there is a name component & it contains PASS/WARN/FAIL
-                          # set the hoverinfo to none
-                          if ("name" %in% names(x)){
-                              if (grepl("(PASS|WARN|FAIL)", x$name)){
+                          # If there is a name component & it contains 
+                          # PASS/WARN/FAIL set the hoverinfo to none
+                          if ("name" %in% names(x)) {
+                              if (grepl("(PASS|WARN|FAIL)", x$name)) {
                                   x$hoverinfo <- "none"
                               }
                           }

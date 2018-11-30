@@ -3,11 +3,8 @@
 \docType{methods}
 \name{[}
 \alias{[}
-\alias{[,FastqcFileList,ANY,missing-method}
 \alias{[,FastqcFileList,ANY,missing,ANY-method}
-\alias{[,FastqcFileList,character,missing-method}
 \alias{[,FastqcFileList,character,missing,ANY-method}
-\alias{[,FastqcDataList,ANY,missing-method}
 \alias{[,FastqcDataList,ANY,missing,ANY-method}
 \alias{[[}
 \alias{[[,FastqcFileList,character,missing-method}
