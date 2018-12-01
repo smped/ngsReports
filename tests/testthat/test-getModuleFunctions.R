@@ -28,8 +28,8 @@ names(fqcLines) <- vapply(fqcLines, function(x){
 fqcLines <- lapply(fqcLines, function(x){x[-1]})
 # Now all the tests can be run
 
-test_that("Check getBasicStatistics() is correct",{
-  bs <- getBasicStatistics(fqcLines)
+test_that("Check .getBasicStatistics() is correct",{
+  bs <- .getBasicStatistics(fqcLines)
   expect_true(
     setequal(names(bs),
              c("Filename", "Total_Sequences", "Sequences_flagged_as_poor_quality",
@@ -42,8 +42,8 @@ test_that("Check getBasicStatistics() is correct",{
   expect_equal(nrow(bs), 1)
 })
 
-test_that("Check getPerBaseSeqQuals() is correct",{
-  sq <- getPerBaseSeqQuals(fqcLines)
+test_that("Check .getPerBaseSeqQuals() is correct",{
+  sq <- .getPerBaseSeqQuals(fqcLines)
   expect_true(
     setequal(
       names(sq),
@@ -57,8 +57,8 @@ test_that("Check getPerBaseSeqQuals() is correct",{
   expect_equal(nrow(sq), 47)
 })
 
-test_that("Check getPerTileSeqQuals() is correct",{
-  sq <- getPerTileSeqQuals(fqcLines)
+test_that("Check .getPerTileSeqQuals() is correct",{
+  sq <- .getPerTileSeqQuals(fqcLines)
   expect_true(
     setequal(
       names(sq), c("Tile", "Base", "Mean")
@@ -70,8 +70,8 @@ test_that("Check getPerTileSeqQuals() is correct",{
   expect_equal(nrow(sq), 4512)
 })
 
-test_that("Check getPerSeqQualScores() is correct",{
-  sq <- getPerSeqQualScores(fqcLines)
+test_that("Check .getPerSeqQualScores() is correct",{
+  sq <- .getPerSeqQualScores(fqcLines)
   expect_true(
     setequal(names(sq), c("Quality","Count"))
     )
@@ -81,8 +81,8 @@ test_that("Check getPerSeqQualScores() is correct",{
   expect_equal(nrow(sq), 39)
 })
 
-test_that("Check getPerBaseSeqCont() is correct",{
-  sc <- getPerBaseSeqCont(fqcLines)
+test_that("Check .getPerBaseSeqCont() is correct",{
+  sc <- .getPerBaseSeqCont(fqcLines)
   expect_true(
     setequal(names(sc), c("Base", "G", "A", "T", "C"))
   )
@@ -92,8 +92,8 @@ test_that("Check getPerBaseSeqCont() is correct",{
   expect_equal(nrow(sc), 47)
 })
 
-test_that("Check getPerSeqGcCont() is correct",{
-  gc <- getPerSeqGcCont(fqcLines)
+test_that("Check .getPerSeqGcCont() is correct",{
+  gc <- .getPerSeqGcCont(fqcLines)
   expect_true(
     setequal(names(gc), c("GC_Content", "Count"))
   )
@@ -103,8 +103,8 @@ test_that("Check getPerSeqGcCont() is correct",{
   expect_equal(nrow(gc), 101)
 })
 
-test_that("Check getSeqLengthDist() is correct",{
-  df <- getSeqLengthDist(fqcLines)
+test_that("Check .getSeqLengthDist() is correct",{
+  df <- .getSeqLengthDist(fqcLines)
   expect_true(
     setequal(names(df), c("Length", "Lower", "Upper", "Count"))
   )
@@ -114,8 +114,8 @@ test_that("Check getSeqLengthDist() is correct",{
   expect_equal(nrow(df), 1)
 })
 
-test_that("Check getSeqDuplicationLevels() provides correct output",{
-  res <- getSeqDuplicationLevels(fqcLines)
+test_that("Check .getSeqDuplicationLevels() provides correct output",{
+  res <- .getSeqDuplicationLevels(fqcLines)
   expect_true(
     setequal(names(res),
              c("Total_Deduplicated_Percentage", "Sequence_Duplication_Levels"))
@@ -141,8 +141,8 @@ test_that("Check getSeqDuplicationLevels() provides correct output",{
 
 })
 
-test_that("Check getOverrepSeq() is correct",{
-  df <- getOverrepSeq(fqcLines)
+test_that("Check .getOverrepSeq() is correct",{
+  df <- .getOverrepSeq(fqcLines)
   expect_true(
     setequal(names(df), c("Sequence", "Count", "Percentage", "Possible_Source"))
   )
@@ -155,8 +155,8 @@ test_that("Check getOverrepSeq() is correct",{
 })
 
 
-test_that("Check getAdapterCont() is correct",{
-  df <- getAdapterCont(fqcLines)
+test_that("Check .getAdapterCont() is correct",{
+  df <- .getAdapterCont(fqcLines)
   nAdapTypes <- ncol(df) - 1
   expect_equal(names(df)[1], "Position")
   expect_gt(ncol(df), 1)
@@ -169,8 +169,8 @@ test_that("Check getAdapterCont() is correct",{
   expect_equal(nrow(df), 72)
 })
 
-test_that("Check getKmerCont() is correct",{
-  df <- getKmerCont(fqcLines)
+test_that("Check .getKmerCont() is correct",{
+  df <- .getKmerCont(fqcLines)
   expect_true(
     setequal(names(df),
              c("Sequence", "Count", "PValue", "Obs/Exp_Max",
