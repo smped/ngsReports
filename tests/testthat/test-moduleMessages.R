@@ -1,7 +1,11 @@
 context("Test that messages appear when modules are missing from some files")
 
-f <- c(system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports"),
-       system.file("extdata/errorTestingFiles/moduleNamesNoData.zip", package = "ngsReports")
+f <- c(
+    system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports"),
+    system.file(
+        "extdata/errorTestingFiles/moduleNamesNoData.zip",
+        package = "ngsReports"
+    )
 )
 fdl <- getFastqcData(f)
 
@@ -20,3 +24,4 @@ test_that("All modules give correct messages",{
   expect_message(Sequence_Length_Distribution(fdl))
 })
 
+closeAllConnections()

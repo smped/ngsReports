@@ -8,4 +8,4 @@ test_that("Example file is loaded correctly", {
   expect_equal(nrow(df), 12)
 })
 
-
+closeAllConnections()

@@ -12,7 +12,7 @@ isCompressed(path, type = "zip", verbose = FALSE)
 \item{type}{The type of compression to check for.
 Currently only ZIP/GZIP files have been implemented.}
 
-\item{verbose}{logical/integer Determine the level of output to show as 
+\item{verbose}{logical/integer Determine the level of output to show as
 messages}
 }
 \value{
@@ -23,7 +23,7 @@ Check to see if a file, or vector of files is compressed
 }
 \details{
 Reads the first four bytes from the local file header.
-If the file is a .ZIP file, this should match the magic number 
+If the file is a .ZIP file, this should match the magic number
 \code{PK\003\004}.
 
 This function assumes that the first thing in a zip archive is the

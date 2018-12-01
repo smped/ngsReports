@@ -26,7 +26,7 @@
 #' @export
 #' @rdname FastqcFile
 setClass("FastqcFile", slots = c(path = "character"))
-setValidity("FastqcFile", isValidFastqcFile)
+setValidity("FastqcFile", .isValidFastqcFile)
 
 #' @param x Character vector (1) specifying a valid path to a file/directory as
 #' output by FastQC

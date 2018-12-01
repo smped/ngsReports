@@ -22,26 +22,26 @@
 #' @name path
 #' @aliases path,FastqcFile-method
 #' @export
-setMethod("path", "FastqcFile", 
-          function(object){object@path})
+setMethod("path", "FastqcFile", function(object){object@path})
 
 #' @importMethodsFrom BiocGenerics path
 #' @name path
 #' @aliases path,FastqcFileList-method
 #' @export
-setMethod("path", "FastqcFileList", 
-          function(object){vapply(object, path, character(1))})
+setMethod("path", "FastqcFileList", function(object){
+    vapply(object, path, character(1))
+})
 
 #' @importMethodsFrom BiocGenerics path
 #' @name path
 #' @aliases path,FastqcData-method
 #' @export
-setMethod("path", "FastqcData", 
-          function(object){object@path})
+setMethod("path", "FastqcData", function(object){object@path})
 
 #' @importMethodsFrom BiocGenerics path
 #' @name path
 #' @aliases path,FastqcDataList-method
 #' @export
-setMethod("path", "FastqcDataList", 
-          function(object){vapply(object@.Data, path, character(1))})
+setMethod("path", "FastqcDataList", function(object){
+    vapply(object@.Data, path, character(1))
+})

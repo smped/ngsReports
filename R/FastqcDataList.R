@@ -19,7 +19,7 @@
 #' @slot ... this can either be a single character vector of paths to FASTQC
 #' files, or several instances of FastqcFile objects
 setClass("FastqcDataList", contains = "list")
-setValidity("FastqcDataList", isValidFastqcDataList)
+setValidity("FastqcDataList", .isValidFastqcDataList)
 
 ## The show method doesn't need exporting
 setMethod(

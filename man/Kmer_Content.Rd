@@ -44,5 +44,4 @@ fdl <- getFastqcData(fileList)
 # Print the Kmer_Content
 Kmer_Content(fdl)
 
-
 }

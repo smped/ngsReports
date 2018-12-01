@@ -25,5 +25,6 @@ fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
+fdl
 
 }

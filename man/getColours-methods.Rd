@@ -27,7 +27,7 @@
 
 \item{MAX}{The colour denoting the limit of values in rgb format}
 
-\item{alpha}{Numeric(1). Ranges from 0 to 1 by default, but can also be on 
+\item{alpha}{Numeric(1). Ranges from 0 to 1 by default, but can also be on
 the range 0 to 255.}
 }
 \value{
@@ -44,14 +44,14 @@ Get and modify colours from objects of class PwfCols
 \details{
 Use \code{getColours} to obtain the colours in an object of class PwfCols.
 
-These can be modified using the functions \code{setColours} and 
+These can be modified using the functions \code{setColours} and
 \code{setAlpha}
 }
 \examples{
 getColours(pwf)
- 
+
 # How to add transparency
 pwf2 <- setAlpha(pwf, 0.1)
 getColours(pwf2)
- 
+
 }

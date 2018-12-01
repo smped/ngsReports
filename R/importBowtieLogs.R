@@ -29,7 +29,7 @@ importBowtieLogs <- function(x){
     names(data) <- basename(x)
     
     ## Define a quick check
-    isValidBowtieLog <- function(x){
+    .isValidBowtieLog <- function(x){
         nLines <- length(x)
         if (!any(grepl("Time loading forward index", x))) return(FALSE)
         if (!any(grepl("Time loading mirror index:", x))) return(FALSE)
@@ -41,7 +41,7 @@ importBowtieLogs <- function(x){
         if (!any(grepl("Overall time:", x))) return(FALSE)
         TRUE
     }
-    validLogs <- vapply(data, isValidBowtieLog, logical(1))
+    validLogs <- vapply(data, .isValidBowtieLog, logical(1))
     if (any(!validLogs)) {
         stop(paste("Incorrect file structure for:", names(validLogs)[!validLogs], collapse = "\n"))
     }

@@ -1,8 +1,8 @@
-context("Check runFastQC.default()")
+context("Check .fastqc()")
 
-# Load a Fastq File
+## Load a Fastq File
 library(ShortRead)
-sp <- SolexaPath(system.file('extdata', package='ShortRead'))
+sp <- SolexaPath(system.file('extdata', package = 'ShortRead'))
 fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
 f <- FastqFile(fl)
 
@@ -16,10 +16,13 @@ test_that("runFastQC handles incorrect file types before searching for the execu
     expect_error(out <- runFastQC(logFile, tempdir()))
 })
 
-# Check the function runs if the executable exists
+## Check the function runs if the executable exists
 exec <- Sys.which("fastqc")
 if (exec != "") {
     f <- FastqFile(fl)
     ff <- suppressMessages(runFastQC(f, tempdir(), exec = exec))
     expect_true(methods::is(ff, "FastqcFile"))
 }
+
+## This ensures that any stray connections formed during testing are closed
+closeAllConnections()

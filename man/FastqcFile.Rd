@@ -12,7 +12,7 @@ FastqcFile(x)
 \S4method{FastqcFile}{character}(x)
 }
 \arguments{
-\item{x}{Character vector (1) specifying a valid path to a file/directory as 
+\item{x}{Character vector (1) specifying a valid path to a file/directory as
 output by FastQC}
 }
 \value{
@@ -23,7 +23,7 @@ The FastqcFile Object Class
 }
 \details{
 The is an object which refers to a fastqc output file.
-Only the path is stored, however the file is checked for the correct 
+Only the path is stored, however the file is checked for the correct
 structure on formation of the object.
 Files can be zipped (*_fastqc.zip) or extracted directories
 }

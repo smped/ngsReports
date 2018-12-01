@@ -147,7 +147,7 @@ setMethod(
         out[dupMods] <- Sequence_Duplication_Levels[dupMods]
 
         ##Get the summary
-        Summary <- .getSummary(object)
+        Summary <- getSummary(object)
 
         args <- c(
             list(Class = "FastqcData",
@@ -216,28 +216,42 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    x <- splitByTab(fqcLines[[mod]])
+    x <- .splitByTab(fqcLines[[mod]])
     stopifnot(setequal(names(x), c("Measure", "Value")))
     vals <- x[["Value"]]
     names(vals) <- gsub(" ", "_", x[["Measure"]])
 
     ## Check for the required values
-    reqVals <- c("Filename", "File_type", "Encoding", "Total_Sequences",
-                 "Sequences_flagged_as_poor_quality", "Sequence_length", "%GC")
+    reqVals <- c(
+        "Filename",
+        "File_type",
+        "Encoding",
+        "Total_Sequences",
+        "Sequences_flagged_as_poor_quality",
+        "Sequence_length",
+        "%GC"
+    )
     stopifnot(reqVals %in% names(vals))
 
     ## Setup the tibble with the correct value types
     df <- tibble::as_tibble(as.list(vals))
     df$Shortest_sequence <- gsub("(.*)-.*", "\\1", df$Sequence_length)
     df$Longest_sequence <- gsub(".*-(.*)", "\\1", df$Sequence_length)
-    intVals <- c("Shortest_sequence", "Longest_sequence", "Total_Sequences",
-                 "Sequences_flagged_as_poor_quality")
+    intVals <- c(
+        "Shortest_sequence",
+        "Longest_sequence",
+        "Total_Sequences",
+        "Sequences_flagged_as_poor_quality"
+    )
     df[intVals] <- lapply(df[intVals], as.integer)
-    dplyr::select(df,
-                  "Filename", "Total_Sequences",
-                  tidyselect::contains("quality"),
-                  tidyselect::ends_with("sequence"),
-                  tidyselect::one_of("%GC", "File_type", "Encoding"))
+    dplyr::select(
+        df,
+        "Filename",
+        "Total_Sequences",
+        tidyselect::contains("quality"),
+        tidyselect::ends_with("sequence"),
+        tidyselect::one_of("%GC", "File_type", "Encoding")
+    )
 
 }
 
@@ -248,12 +262,19 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
     names(df) <- gsub(" ", "_", names(df))
 
     ## Check for the required values
-    reqVals <- c("Base", "Mean", "Median", "Lower_Quartile", "Upper_Quartile",
-                 "10th_Percentile", "90th_Percentile")
+    reqVals <- c(
+        "Base",
+        "Mean",
+        "Median",
+        "Lower_Quartile",
+        "Upper_Quartile",
+        "10th_Percentile",
+        "90th_Percentile"
+    )
     stopifnot(reqVals %in% names(df))
 
     ## Change to numeric where appropriate
@@ -269,7 +290,7 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
 
     ## Check for the required values
     reqVals <- c("Tile", "Base", "Mean")
@@ -287,7 +308,7 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
 
     ## Check for the required values
     reqVals <- c("Quality", "Count")
@@ -304,7 +325,7 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
 
     ## Check for the required values
     reqVals <- c("Base", "G", "A", "T", "C")
@@ -323,7 +344,7 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
     names(df) <- gsub(" ", "_", names(df))
 
     ## Check for the required values
@@ -343,7 +364,7 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
 
     ## Check for the required values
     reqVals <- c("Base", "N-Count")
@@ -361,7 +382,7 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
 
     ## Check for the required values
     reqVals <- c("Length", "Count")
@@ -382,12 +403,20 @@ setMethod(
     ## Return NULL if the module is missing
     mod <- "Sequence_Duplication_Levels"
     if (!mod %in% names(fqcLines)) {
-        return(list(Total_Deduplicated_Percentage = NA_real_,
-                    Sequence_Duplication_Levels = data.frame(NULL)))
+        return(
+            list(
+                Total_Deduplicated_Percentage = NA_real_,
+                Sequence_Duplication_Levels = data.frame(NULL)
+            )
+        )
     }
     if (length(fqcLines[[mod]]) == 0) {
-        return(list(Total_Deduplicated_Percentage = NA_real_,
-                    Sequence_Duplication_Levels = data.frame(NULL)))
+        return(
+            list(
+                Total_Deduplicated_Percentage = NA_real_,
+                Sequence_Duplication_Levels = data.frame(NULL)
+            )
+        )
     }
     x <- fqcLines[[mod]]
 
@@ -395,19 +424,20 @@ setMethod(
     hasTotDeDup <- grepl("Total Deduplicated Percentage", x)
     Total_Deduplicated_Percentage <- NA_real_
     if (any(hasTotDeDup)) {
-        Total_Deduplicated_Percentage <- gsub(".+\\t(.*)",
-                                              "\\1",
-                                              x[hasTotDeDup])
-        Total_Deduplicated_Percentage <- as.numeric(
-            Total_Deduplicated_Percentage
+        Total_Deduplicated_Percentage <- gsub(
+            ".+\\t(.*)",
+            "\\1",
+            x[hasTotDeDup]
         )
+        Total_Deduplicated_Percentage <-
+            as.numeric(Total_Deduplicated_Percentage)
     }
     if (length(Total_Deduplicated_Percentage) > 1) stop(
         "Too many elements matched Total_Deduplicated_Percentage"
     )
 
     ## Remove the Total value entry from the original object
-    df <- splitByTab(x[!hasTotDeDup])
+    df <- .splitByTab(x[!hasTotDeDup])
     names(df) <- gsub(" ", "_", names(df))
 
     ## Check for the required values
@@ -420,8 +450,10 @@ setMethod(
     df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
 
     ## Return a list with both values
-    list(Total_Deduplicated_Percentage = Total_Deduplicated_Percentage,
-         Sequence_Duplication_Levels = tibble::as_tibble(df))
+    list(
+        Total_Deduplicated_Percentage = Total_Deduplicated_Percentage,
+        Sequence_Duplication_Levels = tibble::as_tibble(df)
+    )
 
 }
 
@@ -432,7 +464,7 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
     names(df) <- gsub(" ", "_", names(df))
 
     ## Check for the required values
@@ -452,7 +484,7 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
     names(df) <- gsub(" ", "_", names(df))
 
     ## Check for the required values
@@ -473,15 +505,17 @@ setMethod(
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
 
-    df <- splitByTab(fqcLines[[mod]])
+    df <- .splitByTab(fqcLines[[mod]])
     names(df) <- gsub(" ", "_", names(df))
 
     ## Check for the required values
-    reqVals <- c("Sequence",
-                 "Count",
-                 "PValue",
-                 "Obs/Exp_Max",
-                 "Max_Obs/Exp_Position")
+    reqVals <- c(
+        "Sequence",
+        "Count",
+        "PValue",
+        "Obs/Exp_Max",
+        "Max_Obs/Exp_Position"
+    )
     stopifnot(reqVals %in% names(df))
 
     df$Count <- as.integer(df$Count)
@@ -491,4 +525,3 @@ setMethod(
     tibble::as_tibble(df)
 
 }
-

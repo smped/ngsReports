@@ -15,11 +15,13 @@
 #'
 #' @keywords internal
 #'
-renderDendro <- function(df) {
+.renderDendro <- function(df) {
     ## Based on the example ggdend
     dendro <- ggplot() +
-        geom_segment(data = df, aes_string("x","y",
-                                           xend = "xend", yend = "yend")) +
+        geom_segment(
+            data = df,
+            aes_string("x","y", xend = "xend", yend = "yend")
+        ) +
         coord_flip() +
         scale_y_reverse(expand = c(0, 0)) +
         scale_x_continuous(expand = c(0, 0.5)) +

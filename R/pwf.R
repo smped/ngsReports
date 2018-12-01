@@ -16,8 +16,10 @@
 #' pie(rep(1,4), labels = names(pwf), col = getColours(pwf))
 #'
 #' @export
-pwf <- new("PwfCols",
-           PASS = rgb(0, 0.8,0),
-           WARN = rgb(0.9, 0.9, 0.2),
-           FAIL = rgb(0.8, 0.2, 0.2),
-           MAX = rgb(1, 1, 1))
+pwf <- new(
+    "PwfCols",
+    PASS = rgb(0, 0.8,0),
+    WARN = rgb(0.9, 0.9, 0.2),
+    FAIL = rgb(0.8, 0.2, 0.2),
+    MAX = rgb(1, 1, 1)
+)

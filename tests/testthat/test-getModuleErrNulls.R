@@ -195,3 +195,4 @@ test_that("Completely empty fastqc file errors",{
   expect_error(.getSummary(fqcFile))
 })
 
+closeAllConnections()

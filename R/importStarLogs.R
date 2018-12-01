@@ -27,14 +27,14 @@ importStarLogs <- function(x){
     ln <- lapply(x, readLines)
     
     ## Define a quick check
-    isValidStarLog <- function(x){
+    .isValidStarLog <- function(x){
         if (!grepl("Started job on", x[1])) return(FALSE)
         if (!any(grepl("UNIQUE READS:", x))) return(FALSE)
         if (!any(grepl("MULTI-MAPPING READS:", x))) return(FALSE)
         if (!any(grepl("UNMAPPED READS:", x))) return(FALSE)
         TRUE
     }
-    validLogs <- vapply(ln, isValidStarLog, logical(1))
+    validLogs <- vapply(ln, .isValidStarLog, logical(1))
     if (any(!validLogs)) {
         stop(paste("Incorrect file structure for:", names(validLogs)[!validLogs], collapse = "\n"))
     }

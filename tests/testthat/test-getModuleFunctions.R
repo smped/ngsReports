@@ -185,3 +185,5 @@ test_that("Check .getKmerCont() is correct",{
   )
   expect_equal(nrow(df), 20)
 })
+
+closeAllConnections()

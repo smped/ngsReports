@@ -26,7 +26,7 @@
 #' @slot ... this can either be a single character vector of paths to FASTQC
 #' files, or several instances of FastqcFile objects
 setClass("FastqcFileList", contains = "list")
-setValidity("FastqcFileList", isValidFastqcFileList)
+setValidity("FastqcFileList", .isValidFastqcFileList)
 
 #' @param x Character vector specifying a valid paths to files/directories as
 #' output by FastQC

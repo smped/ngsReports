@@ -41,7 +41,7 @@ setClass(
         path = "character"
     )
 )
-setValidity("FastqcData", isValidFastqcData)
+setValidity("FastqcData", .isValidFastqcData)
 
 ## The show method doesn't need exporting
 setMethod(

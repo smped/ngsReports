@@ -19,3 +19,5 @@ test_that("TRUE statement from a gz file using zip",{
   fl <- system.file("extdata", "errorTestingFiles", "hello.txt.gz", package = "ngsReports")
   expect_true(isCompressed(fl, type = "gz"))
 })
+
+closeAllConnections()

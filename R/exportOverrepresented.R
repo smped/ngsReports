@@ -51,7 +51,7 @@ setMethod(
 
         df <- Overrepresented_sequences(x)
 
-        labels <- makeLabels(df, labels, ...)
+        labels <- .makeLabels(df, labels, ...)
         df$Filename <- labels[df$Filename]
 
         if (missing(path))
@@ -87,7 +87,7 @@ setMethod(
     function(x, path,  n = 10, labels, noAdapters = TRUE, ...){
 
         df <- Overrepresented_sequences(x)
-        labels <- makeLabels(df, labels, ...)
+        labels <- .makeLabels(df, labels, ...)
         df$Filename <- labels[df$Filename]
 
         if (missing(path)) path <- paste(

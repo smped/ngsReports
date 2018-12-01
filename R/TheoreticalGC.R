@@ -15,10 +15,12 @@
 #' for transcriptomic sequences
 #' @slot mData A \code{data.frame} containing metadata about all species in the
 #' object
-setClass("TheoreticalGC", slots=c(Genome = "data.frame",
-                                  Transcriptome = "data.frame",
-                                  mData = "data.frame"))
-setValidity("TheoreticalGC", isValidTheoreticalGC)
+setClass("TheoreticalGC",  slots = c(
+    Genome = "data.frame",
+    Transcriptome = "data.frame",
+    mData = "data.frame")
+)
+setValidity("TheoreticalGC", .isValidTheoreticalGC)
 
 #' @title Extract Metadata for TheoreticalGC objects
 #'
@@ -84,7 +86,8 @@ setMethod("genomes", "TheoreticalGC", function(object){
 #' @rdname transcriptomes
 setGeneric("transcriptomes", function(object){
     standardGeneric("transcriptomes")
-    })
+}
+)
 
 #' @importFrom methods slot
 #' @export
@@ -118,24 +121,23 @@ setGeneric("getGC", function(object, name, type){standardGeneric("getGC")})
 #' @export
 #' @rdname getGC
 #' @aliases getGC,TheoreticalGC-method
-setMethod("getGC", "TheoreticalGC",
-          function(object, name, type){
+setMethod("getGC", "TheoreticalGC", function(object, name, type){
 
-              type <- stringr::str_to_title(type)
-              type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
+    type <- stringr::str_to_title(type)
+    type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
 
-              if (type == "Genome") {
-                  col <- match.arg(name, colnames(object@Genome))
-                  df <- object@Genome[c("GC_Content", col)]
-              }
-              else{
-                  col <- match.arg(name, colnames(object@Transcriptome))
-                  df <- object@Transcriptome[c("GC_Content", col)]
-              }
+    if (type == "Genome") {
+        col <- match.arg(name, colnames(object@Genome))
+        df <- object@Genome[c("GC_Content", col)]
+    }
+    if (type == "Transcriptome") {
+        col <- match.arg(name, colnames(object@Transcriptome))
+        df <- object@Transcriptome[c("GC_Content", col)]
+    }
 
-              df
+    df
 
-          })
+})
 
 
 setMethod("show", "TheoreticalGC", function(object){

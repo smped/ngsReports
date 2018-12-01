@@ -43,3 +43,14 @@ This will take a user supplied template, or the file supplied with the
 package and create an HTML summary of all standard FASTQC plots for all
 files in the supplied directory.
 }
+\examples{
+\dontrun{
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names= TRUE)
+# Copy these files to tempdir() to avoid overwriting
+# any files in the package directory
+file.copy(fileList, tempdir())
+writeHtmlReport(tempdir())
+}
+
+}

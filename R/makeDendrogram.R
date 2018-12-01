@@ -1,6 +1,6 @@
-#' @title Make the dedrogram for heatmap-style plots
+#' @title Make the dendrogram for heatmap-style plots
 #'
-#' @description Set the clusters for heatmap-style plots
+#' @description Set the clusters for heatmap-style interactive plots
 #'
 #' @param df The data frame to be clustered
 #' @param rowVal The rows to be clustered
@@ -15,7 +15,7 @@
 #' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #' cols <- c("Filename", "Position", "Illumina_Universal_Adapter")
 #' ac <- Adapter_Content(fileList)[cols]
-#' ngsReports:::makeDendrogram(df = ac,
+#' ngsReports:::.makeDendrogram(df = ac,
 #'                             rowVal = "Filename",
 #'                             colVal = "Position",
 #'                             value = "Illumina_Universal_Adapter")
@@ -23,7 +23,7 @@
 #' @importFrom stats as.formula
 #'
 #' @keywords internal
-makeDendrogram <- function(df, rowVal, colVal, value){
+.makeDendrogram <- function(df, rowVal, colVal, value){
 
     stopifnot(setequal(c(rowVal, colVal, value), names(df)))
     fm <- as.formula(paste0(rowVal, "~", colVal))

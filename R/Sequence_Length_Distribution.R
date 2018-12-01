@@ -31,62 +31,52 @@
 #' @export
 #' @rdname Sequence_Length_Distribution
 #' @aliases Sequence_Length_Distribution
-setMethod("Sequence_Length_Distribution", "FastqcData",
-          function(object){
-              df <- object@Sequence_Length_Distribution
-              if(length(df)){ # Check there is data in the module
-                  ## Add a Filename column if there is any data
-                  df$Filename <- fileName(object)
-                  dplyr::select(df, "Filename", tidyselect::everything())
-              }
-              else { # Otherwise return the blank data.frame
-                  df
-              }
-          })
-
+setMethod("Sequence_Length_Distribution", "FastqcData", function(object){
+    df <- object@Sequence_Length_Distribution
+    if (length(df)) { # Check there is data in the module
+        ## Add a Filename column if there is any data
+        df$Filename <- fileName(object)
+        dplyr::select(df, "Filename", tidyselect::everything())
+    }
+    else {
+        ## Otherwise return the blank data.frame
+        df
+    }
+})
 #' @export
 #' @rdname Sequence_Length_Distribution
 #' @aliases Sequence_Length_Distribution
-setMethod("Sequence_Length_Distribution", "FastqcDataList",
-          function(object){
-              df <- lapply(object@.Data, Sequence_Length_Distribution)
-              nulls <- vapply(df,
-                              function(x){
-                                  length(x) == 0
-                              }, logical(1))
-              if (sum(nulls) > 0) {
-                  msg <- sprintf(
-                      "Sequence_Length_Distribution module missing from:\n%s",
-                      paste(path(object)[nulls], sep = "\n")
-                  )
-                  message(msg)
-              }
-              dplyr::bind_rows(df)
-          })
-
+setMethod("Sequence_Length_Distribution", "FastqcDataList", function(object){
+    df <- lapply(object@.Data, Sequence_Length_Distribution)
+    # Find any for which no data was returned
+    nulls <- vapply(df, function(x){length(x) == 0}, logical(1))
+    if (sum(nulls) > 0) {
+        msg <- sprintf(
+            "Sequence_Length_Distribution module missing from:\n%s",
+            paste(path(object)[nulls], sep = "\n")
+        )
+        message(msg)
+    }
+    dplyr::bind_rows(df)
+})
 #' @export
 #' @rdname Sequence_Length_Distribution
 #' @aliases Sequence_Length_Distribution
-setMethod("Sequence_Length_Distribution", "FastqcFile",
-          function(object){
-              object <- getFastqcData(object)
-              Sequence_Length_Distribution(object)
-          })
-
+setMethod("Sequence_Length_Distribution", "FastqcFile", function(object){
+    object <- getFastqcData(object)
+    Sequence_Length_Distribution(object)
+})
 #' @export
 #' @rdname Sequence_Length_Distribution
 #' @aliases Sequence_Length_Distribution
-setMethod("Sequence_Length_Distribution", "FastqcFileList",
-          function(object){
-              object <- getFastqcData(object)
-              Sequence_Length_Distribution(object)
-          })
-
+setMethod("Sequence_Length_Distribution", "FastqcFileList", function(object){
+    object <- getFastqcData(object)
+    Sequence_Length_Distribution(object)
+})
 #' @export
 #' @rdname Sequence_Length_Distribution
 #' @aliases Sequence_Length_Distribution
-setMethod("Sequence_Length_Distribution", "character",
-          function(object){
-              object <- getFastqcData(object)
-              Sequence_Length_Distribution(object)
-          })
+setMethod("Sequence_Length_Distribution", "character", function(object){
+    object <- getFastqcData(object)
+    Sequence_Length_Distribution(object)
+})
