@@ -21,12 +21,12 @@
 \S4method{Per_sequence_quality_scores}{character}(object)
 }
 \arguments{
-\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList},
 \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
 of paths to fastqc files}
 }
 \value{
-A single \code{tibble} containing all information combined from all 
+A single \code{tibble} containing all information combined from all
 supplied FastQC reports
 }
 \description{
@@ -43,6 +43,6 @@ fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 fdl <- getFastqcData(fileList)
 
 # Print the Per_sequence_quality_scores
-Per_sequence_quality_scores(fdl)   
+Per_sequence_quality_scores(fdl)
 
 }

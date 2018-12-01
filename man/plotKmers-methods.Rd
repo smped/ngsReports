@@ -32,11 +32,11 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   heatCol = inferno(50), ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or file path}
 
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using
+ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
@@ -49,17 +49,17 @@ Can also be used to set size and colour for box outlines.}
 
 \item{lineWidth}{Passed to \code{geom_line(size = lineWidth)}}
 
-\item{pal}{The colour palette. If the vector supplied is less than n, 
+\item{pal}{The colour palette. If the vector supplied is less than n,
 \code{grDevices::colorRampPalette()} will be used}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for 
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
 pass, warning, and fail values in the plot}
 
 \item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno}

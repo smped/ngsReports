@@ -12,6 +12,7 @@
 #'
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
+#' fdl
 #'
 #' @include validationFunctions.R
 #'
@@ -20,9 +21,12 @@
 setClass("FastqcDataList", contains = "list")
 setValidity("FastqcDataList", isValidFastqcDataList)
 
-# The show method doesn't need exporting
-setMethod("show", "FastqcDataList",
-          function(object){
-              l <- length(object)
-              cat("FastqcDataList for", l, "files.\n")
-          })
+## The show method doesn't need exporting
+setMethod(
+    "show",
+    "FastqcDataList",
+    function(object){
+        l <- length(object)
+        cat("FastqcDataList for", l, "files.\n")
+    }
+)

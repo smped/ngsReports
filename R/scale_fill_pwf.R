@@ -25,29 +25,29 @@
 scale_fill_pwf <- function(vals, pwfCols, breaks = c(0, 5, 10, 100), 
                            passLow = TRUE, na.value = "white"){
     
-    # passLow defines whether pass is the low score or the high score
-    # organise the colours based on this
+    ## passLow defines whether pass is the low score or the high score
+    ## organise the colours based on this
     o <- seq(1, 4)
     if (!passLow) o <- rev(o)
     gradCols <- getColours(pwfCols)[o] # Get the default gradient colours
     
-    # Find which of the pwf bins are present
+    ## Find which of the pwf bins are present
     bins <- cut(vals, breaks = breaks, include.lowest = TRUE)
     bins <- range(as.integer(bins))
     bins <- unique(bins)
-    # Create an even sequence between the min & max of the range
+    ## Create an even sequence between the min & max of the range
     n <- seq(breaks[min(bins)], breaks[max(bins) + 1], length.out = 101)
     n <- cut(n, breaks = breaks)
     n <- split(n, n)
-    # Now create a colour vector between the extreme points
+    ## Now create a colour vector between the extreme points
     cols <- lapply(bins, function(x){
         l <- length(n[[x]]) + 1
         colorRampPalette(gradCols[c(x,x + 1)])(l)[-l]
     })
     cols <- as.character(c(unlist(cols), gradCols[max(bins) + 1]))
-    # Remove any breaks outside of the range
+    ## Remove any breaks outside of the range
     breaks <- breaks[seq(min(bins), max(bins) + 1)]
-    # Return the scale object
+    ## Return the scale object
     scale_fill_gradientn(colours = cols, 
                          breaks = breaks, 
                          limits = range(breaks), 

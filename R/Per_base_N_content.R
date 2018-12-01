@@ -1,30 +1,30 @@
 #' @title Get the Per Base N Content information
 #'
-#' @description Retrieve the Per Base N Content module from one or more FastQC 
+#' @description Retrieve the Per Base N Content module from one or more FastQC
 #' reports
 #'
-#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, 
-#' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector 
-#' of paths to fastqc files
+#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' \code{FastqcData}, \code{fastqcDataList}, or \code{character} vector
+#' of file paths
 #'
 #' @include FastqcData.R
 #' @include AllGenerics.R
 #'
-#' @return A single \code{tibble} containing all information combined from all 
+#' @return A single \code{tibble} containing all information combined from all
 #' supplied FastQC reports
 #'
-#' @examples 
-#' 
+#' @examples
+#'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
 #' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
-#' 
+#'
 #' # Print any N Content
 #' Per_base_N_content(fdl)
-#' 
+#'
 #' @docType methods
 #'
 #' @export
@@ -34,7 +34,7 @@ setMethod("Per_base_N_content", "FastqcData",
           function(object){
               df <- object@Per_base_N_content
               if(length(df)){ # Check there is data in the module
-                  # Add a Filename column if there is any data
+                  ## Add a Filename column if there is any data
                   df$Filename <- fileName(object)
                   dplyr::select(df, "Filename", tidyselect::everything())
               }
@@ -49,7 +49,7 @@ setMethod("Per_base_N_content", "FastqcData",
 setMethod("Per_base_N_content", "FastqcDataList",
           function(object){
               df <- lapply(object@.Data, Per_base_N_content)
-              nulls <- vapply(df, 
+              nulls <- vapply(df,
                               function(x){
                                   length(x) == 0
                               }, logical(1))

@@ -34,13 +34,13 @@ isCompressed <- function(path, type = "zip", verbose = FALSE){
     type <- match.arg(type, c("zip", "gzip"))
     if (verbose > 0) message(sprintf("Checking %i file(s) for %s compression",
                                      length(path), type))
-    # This is the length of the magic number for each compression type
+    ## This is the length of the magic number for each compression type
     n <- c(zip = 4L, gzip = 3L)[type]
     magicNum <- list(zip = c(80, 75, 3, 4),
                      gzip = c(31, 139, 8))[[type]]
     
     vapply(path, function(x){
-        # Get the magic number from the files
+        ## Get the magic number from the files
         rw <- readBin(x, what = "raw", n = n)
         if (verbose > 1) message(rw)
         sum(rw == magicNum) == n

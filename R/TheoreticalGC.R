@@ -2,18 +2,18 @@
 #'
 #' @description Contains Theoretical GC content for a selection of species
 #'
-#' @details Estimates are able to be retained for genomic and transcriptomic 
+#' @details Estimates are able to be retained for genomic and transcriptomic
 #' sequences. Values are stored as frequencies.
 #'
 #' @return An object of class TheoreticalGC
 #'
 #' @include validationFunctions.R
 #'
-#' @slot Genome A \code{data.frame} containing theoretical GC content for 
+#' @slot Genome A \code{data.frame} containing theoretical GC content for
 #' genomic sequences
-#' @slot Transcriptome A \code{data.frame} containing theoretical GC content for 
-#' transcriptomic sequences
-#' @slot mData A \code{data.frame} containing metadata about all species in the 
+#' @slot Transcriptome A \code{data.frame} containing theoretical GC content
+#' for transcriptomic sequences
+#' @slot mData A \code{data.frame} containing metadata about all species in the
 #' object
 setClass("TheoreticalGC", slots=c(Genome = "data.frame",
                                   Transcriptome = "data.frame",
@@ -27,8 +27,8 @@ setValidity("TheoreticalGC", isValidTheoreticalGC)
 #' @param object An object of class Theoretical GC
 #'
 #' @return A \code{tibble} object
-#' 
-#' @examples 
+#'
+#' @examples
 #' mData(gcTheoretical)
 #'
 #' @export
@@ -49,8 +49,8 @@ setMethod("mData", "TheoreticalGC", function(object){object@mData})
 #' @param object An object of class Theoretical GC
 #'
 #' @return A \code{tibble} object
-#' 
-#' @examples 
+#'
+#' @examples
 #' genomes(gcTheoretical)
 #'
 #' @export
@@ -76,7 +76,7 @@ setMethod("genomes", "TheoreticalGC", function(object){
 #'
 #' @return A \code{tibble} object
 #'
-#' @examples 
+#' @examples
 #' transcriptomes(gcTheoretical)
 #'
 #' @export
@@ -101,12 +101,12 @@ setMethod("transcriptomes", "TheoreticalGC", function(object){
 #'
 #' @param object An object of class Theoretical GC
 #' @param name The Name of the species in 'Gspecies' format, e.g. Hsapiens
-#' @param type The type of GC content. Can only be either "Genome" or 
+#' @param type The type of GC content. Can only be either "Genome" or
 #' "Transcriptome"
 #'
 #' @return A \code{tibble} object
-#' 
-#' @examples 
+#'
+#' @examples
 #' getGC(gcTheoretical, name = "Hsapiens", type = "Genome")
 #'
 #' @export
@@ -120,10 +120,10 @@ setGeneric("getGC", function(object, name, type){standardGeneric("getGC")})
 #' @aliases getGC,TheoreticalGC-method
 setMethod("getGC", "TheoreticalGC",
           function(object, name, type){
-              
+
               type <- stringr::str_to_title(type)
               type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
-              
+
               if (type == "Genome") {
                   col <- match.arg(name, colnames(object@Genome))
                   df <- object@Genome[c("GC_Content", col)]
@@ -132,9 +132,9 @@ setMethod("getGC", "TheoreticalGC",
                   col <- match.arg(name, colnames(object@Transcriptome))
                   df <- object@Transcriptome[c("GC_Content", col)]
               }
-              
+
               df
-              
+
           })
 
 

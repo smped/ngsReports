@@ -1,6 +1,6 @@
-context("Check structure of emptyPlot()")
+context("Check structure of .emptyPlot()")
 
-p <- ngsReports:::emptyPlot("test")
+p <- ngsReports:::.emptyPlot("test")
 
 test_that("plot can be printed", {
     expect_error(print(p), NA)

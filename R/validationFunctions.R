@@ -10,11 +10,11 @@ isValidFastqcFile <- function(object){
     
     comp <- isCompressed(path, type = "zip") # This includes a file.exists step
     if (comp){
-        # List the files
+        ## List the files
         subFiles <- basename(unzip(path, list = TRUE)$Name)
     }
     else{
-        # Check the file is a directory
+        ## Check the file is a directory
         chk <- checkmate::testDirectoryExists(path)
         if (!chk){
             warning("The supplied file is not a directory")
@@ -26,7 +26,7 @@ isValidFastqcFile <- function(object){
         warning("The required files are missing from the supplied path/file")
         return(FALSE)
     }
-    # If it checks out up to here, we're good to go
+    ## If it checks out up to here, we're good to go
     TRUE
 }
 
@@ -36,14 +36,14 @@ isValidFastqcFileList <- function(object){
 }
 
 isValidFastqcData <- function(object){
-    # At minimum, this should contain slots for Summary, Basic_Statistics, 
-    # Version & path. The remainder of the modules may be missing
+    ## At minimum, this should contain slots for Summary, Basic_Statistics, 
+    ## Version & path. The remainder of the modules may be missing
     reqSlots <- c("Summary", "Basic_Statistics", "Version", "path")
     all(reqSlots %in% slotNames(object))
 }
 
 isValidFastqcDataList <- function(object){
-    # This is very rudimentary & may need more thought
+    ## This is very rudimentary & may need more thought
     cls <- vapply(object, class, character(1))
     all(cls == "FastqcData")
 }
@@ -63,7 +63,7 @@ isValidPwf <- function(object){
 #' @importFrom methods slot
 isValidTheoreticalGC <- function(object){
     
-    # Check the colnames of the metaData
+    ## Check the colnames of the metaData
     reqCols <- c("Name", "Genome", "Transcriptome")
     if (!all(reqCols %in% colnames(object@mData))) return(FALSE)
     gn <- object@mData$Genome
@@ -71,7 +71,7 @@ isValidTheoreticalGC <- function(object){
     tr <- object@mData$Transcriptome
     if (!is.logical(tr)) return(FALSE)
     
-    # Check Genome & Transcriptomes called as TRUE match the metadata exactly
+    ## Check Genome & Transcriptomes called as TRUE match the metadata exactly
     if (
         !all(object@mData$Name[gn] %in% colnames(object@Genome))
         ) return(FALSE)
@@ -85,7 +85,7 @@ isValidTheoreticalGC <- function(object){
         !all(colnames(object@Transcriptome)[-1] %in% object@mData$Name[tr])
         ) return(FALSE)
     
-    # Check all content is given as a frequency
+    ## Check all content is given as a frequency
     gFreqs <- vapply(object@Genome[-1], function(x){sum(x > 1 | x < 0)}, 
                      integer(1))
     if (any(gFreqs != 0)) return(FALSE)

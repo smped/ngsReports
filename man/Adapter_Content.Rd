@@ -21,8 +21,8 @@
 \S4method{Adapter_Content}{character}(object)
 }
 \arguments{
-\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList}, 
-\code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} 
+\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{fastqcDataList}, or simply a \code{character}
 vector of paths to fastqc files.}
 }
 \value{
@@ -30,12 +30,12 @@ A single \code{tibble} containing all information combined from all
 supplied FastQC reports
 }
 \description{
-Retrieve the Adapter Content module from one or more FastQC 
+Retrieve the Adapter Content module from one or more FastQC
 reports
 }
 \details{
-It is currently assumed that all FastQC reports contain information 
-about the same adapters. If this was varied during the preparation of the 
+It is currently assumed that all FastQC reports contain information
+about the same adapters. If this was varied during the preparation of the
 reports, this function will fail.
 }
 \examples{

@@ -21,16 +21,16 @@
 \S4method{Sequence_Length_Distribution}{character}(object)
 }
 \arguments{
-\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList},
 \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
 of paths to fastqc files}
 }
 \value{
-A single \code{tibble} containing all information combined from all 
+A single \code{tibble} containing all information combined from all
 supplied FastQC reports
 }
 \description{
-Retrieve the Sequence Length Distribution module from one or 
+Retrieve the Sequence Length Distribution module from one or
 more FastQC reports
 }
 \examples{

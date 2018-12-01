@@ -1,27 +1,27 @@
 #' @title Get the Total Deduplicated Percentage information
 #'
-#' @description Retrieve the Total Deduplicated Percentage module from one or 
+#' @description Retrieve the Total Deduplicated Percentage module from one or
 #' more FastQC reports
 #'
-#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, 
-#' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector 
-#' of paths to fastqc files
+#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character}
+#' vector of paths to fastqc files
 #'
 #' @include FastqcData.R
 #' @include AllGenerics.R
 #'
-#' @return A single \code{tibble} containing all information combined from all 
+#' @return A single \code{tibble} containing all information combined from all
 #' supplied FastQC reports
 #'
-#'@examples 
-#' 
+#'@examples
+#'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
 #' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
-#' 
+#'
 #' # Get the estimate total deduplicated percentage
 #' Total_Deduplicated_Percentage(fdl)
 #'

@@ -36,37 +36,37 @@ plotBaseQualities(x, usePlotly = FALSE, labels, pwfCols, warn = 25,
   cluster = FALSE, dendrogram = FALSE, nc = 2, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or path}
 
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using
+ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for 
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
 pass, warning, and fail values in plot}
 
-\item{warn, fail}{The default values for warn and fail are 30 and 20 
+\item{warn, fail}{The default values for warn and fail are 30 and 20
 respectively (i.e. percentages)}
 
 \item{boxWidth}{set the width of boxes when using a boxplot}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 
-\item{plotType}{\code{character} Can be either \code{"boxplot"} or 
+\item{plotType}{\code{character} Can be either \code{"boxplot"} or
 \code{"heatmap"}}
 
-\item{plotValue}{\code{character} Type of quality data to be presented "Mean" 
-or "Median"}
+\item{plotValue}{\code{character} Type of data to be presented. Can be
+"Mean" or "Median"}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
 \item{nc}{\code{numeric}. The number of columns to create in the plot layout.
@@ -79,7 +79,7 @@ A standard ggplot2 object
 Plot the Base Qualities for each file as separate plots
 }
 \details{
-This replicates the \code{Per base sequence quality} plots from 
+This replicates the \code{Per base sequence quality} plots from
 FASTQC, using facets to plce them all in a single ggplot2 object.
 
 For large datasets, subsetting by R1 or R2 reads may be helpful

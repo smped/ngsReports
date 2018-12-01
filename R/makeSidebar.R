@@ -18,12 +18,12 @@
 makeSidebar <- function(status, key, pwfCols){
     stopifnot(isValidPwf(pwfCols))
     nx <- length(status$Filename)
-    # make sure status is in right order so key can apply
-    # This only works because the factor levels of the 'Filename' column
-    # correspond to the order of the key as determined earlier the plotting
-    # functions. This step is essentially redundant
+    ## make sure status is in right order so key can apply
+    ## This only works because the factor levels of the 'Filename' column
+    ## correspond to the order of the key as determined earlier the plotting
+    ## functions. This step is essentially redundant
     status <- status[order(status$Filename),]
-    # Make the basic plot
+    ## Make the basic plot
     sideBar <- ggplot(status, 
                       aes_string(x = "1", y = "Filename", key = "key")) +
         geom_tile(aes_string(fill = "Status")) +
@@ -38,7 +38,7 @@ makeSidebar <- function(status, key, pwfCols){
               axis.text = element_blank(),
               axis.ticks = element_blank())
     
-    # Convert to plotly
+    ## Convert to plotly
     suppressWarnings(
         suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill")))
     )

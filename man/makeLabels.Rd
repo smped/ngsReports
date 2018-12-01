@@ -26,11 +26,13 @@ Checks for the presence of labels and returns defaults
 }
 \details{
 Takes a named vector of labels and checks for the correct fields.
-If no vector is supplied, returns the file names missing the specified pattern,
-which defaults to removing fastq(.gz), fq(.gz), bam, sam or cram.
+If no vector is supplied, returns the file names missing the specified
+pattern, which defaults to removing the suffixes fastq(.gz), fq(.gz),
+bam, sam or cram.
 }
 \examples{
-df <- data.frame(Filename = paste0(c("File1", "File2"), ".fastq"), stringsAsFactors = FALSE)
+f <- paste0(c("File1", "File2"), ".fastq")
+df <- data.frame(Filename = f, stringsAsFactors = FALSE)
 ngsReports:::makeLabels(df)
 
 }

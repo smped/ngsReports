@@ -24,10 +24,13 @@ Set the clusters for heatmap-style plots
 \examples{
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)[1:4]
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 cols <- c("Filename", "Position", "Illumina_Universal_Adapter")
 ac <- Adapter_Content(fileList)[cols]
-ngsReports:::makeDendrogram(ac, "Filename", "Position", "Illumina_Universal_Adapter")
+ngsReports:::makeDendrogram(df = ac,
+                            rowVal = "Filename",
+                            colVal = "Position",
+                            value = "Illumina_Universal_Adapter")
 
 }
 \keyword{internal}

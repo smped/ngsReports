@@ -37,8 +37,8 @@ plotSequenceLengthDistribution(x, usePlotly = FALSE, labels, ...)
   heatCol = inferno(50))
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 or plotly object.}
 
@@ -48,24 +48,24 @@ File extensions are dropped by default.}
 
 \item{...}{Used to pass additional attributes to theme()}
 
-\item{plotType}{\code{character}. Can only take the values 
-\code{plotType = "heatmap"} \code{plotType = "line"} or 
+\item{plotType}{\code{character}. Can only take the values
+\code{plotType = "heatmap"} \code{plotType = "line"} or
 \code{plotType = "cumulative"}}
 
 \item{expand.x}{Passed to \code{scale_x_discrete}}
 
-\item{counts}{\code{logical} Should distributions be shown as counts or 
+\item{counts}{\code{logical} Should distributions be shown as counts or
 frequencies (percentages)}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{dendrogram}{\code{logical} redundant if \code{cluster} and 
-\code{usePlotly} are \code{FALSE}. If both \code{cluster} and 
+\item{dendrogram}{\code{logical} redundant if \code{cluster} and
+\code{usePlotly} are \code{FALSE}. If both \code{cluster} and
 \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
 
-\item{gridlineWidth, gridlineCol}{Passed to \code{geom_hline} and 
+\item{gridlineWidth, gridlineCol}{Passed to \code{geom_hline} and
 \code{geom_vline} to determine width and colour of gridlines}
 
 \item{heatCol}{The colour scheme for the heatmap}
@@ -74,19 +74,19 @@ will be displayed.}
 A standard ggplot2 object, or an interactive plotly object
 }
 \description{
-Plot the Sequence Length Distribution across one or more FASTQC 
+Plot the Sequence Length Distribution across one or more FASTQC
 reports
 }
 \details{
-This extracts the Sequence Length Distribution from the supplied object and 
+This extracts the Sequence Length Distribution from the supplied object and
 generates a ggplot2 object, with a set of minimal defaults.
-The output of this function can be further modified using the standard 
+The output of this function can be further modified using the standard
 ggplot2 methods.
-For example, preset axis limits can also be overwritten easily by adding a 
-call to \code{scale_y_continuous} after the call to 
+For example, preset axis limits can also be overwritten easily by adding a
+call to \code{scale_y_continuous} after the call to
 \code{plotSequenceLengthDistribution}.
 
-An alternative interactive plot is available by setting the argument 
+An alternative interactive plot is available by setting the argument
 \code{usePlotly = TRUE}.
 }
 \examples{

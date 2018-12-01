@@ -31,16 +31,16 @@ maxAdapterContent <- function(x, asPercent = TRUE){
     
     stopifnot(is.logical(asPercent))
     
-    # Get the AdapterContent
+    ## Get the AdapterContent
     ac <- tryCatch(Adapter_Content(x))
     
-    # Perform the summary
+    ## Perform the summary
     adapters <- setdiff(colnames(ac), c("Filename", "Position"))
     ac <- tidyr::gather(ac, "Type", "value", tidyselect::one_of(adapters))
     ac <- dplyr::group_by(ac, Filename, Type)
     ac <- dplyr::summarise_at(ac, dplyr::vars("value"), dplyr::funs("max"))
     
-    # Format & return the output
+    ## Format & return the output
     if (asPercent) ac$value <- scales::percent_format(0.01, 1)(ac$value)
     tidyr::spread(ac, "Type", "value")
     

@@ -3,14 +3,14 @@
 #' @description Plot Overrepresented Kmers
 #'
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-#' \code{FastqcDataList} or path
+#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param n \code{numeric}. The number of Kmers to show.
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param usePlotly \code{logical} Default \code{FALSE} will render using ggplot.
-#' If \code{TRUE} plot will be rendered with plotly
+#' @param usePlotly \code{logical} Default \code{FALSE} will render using
+#' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
 #' @param lineWidth Passed to \code{geom_line(size = lineWidth)}
@@ -80,31 +80,32 @@ setMethod("plotKmers", signature = "FastqcFileList",
 #' @export
 setMethod("plotKmers", signature = "FastqcData",
           function(x, usePlotly = FALSE, labels, n = 6, ..., lineWidth = 0.5,
-                   pal = c("red", "blue", "green", "black", "magenta", "yellow")){
+                   pal = c("red", "blue", "green", "black", "magenta", "yellow")
+                   ){
 
-              # Get the basic data frame
+              ## Get the basic data frame
               df <- Kmer_Content(x)
 
               if (!length(df)) {
-                  #stop("No Overrep kmers")
-                  kMerPlot <- emptyPlot("No Adapter Content Module Detected")
+                  ##stop("No Overrep kmers")
+                  kMerPlot <- .emptyPlot("No Adapter Content Module Detected")
 
                   if (usePlotly) kMerPlot <- ggplotly(kMerPlot, tooltip = "")
                   return(kMerPlot)
               }
 
-              # Set any labels. Remove the file suffix is the default
+              ## Set any labels. Remove the file suffix is the default
               labels <- makeLabels(df, labels, ...)
               df$Filename <- labels[df$Filename]
 
-              # Get the top kMers
+              ## Get the top kMers
               o <- order(df$PValue, 1/df$Count)
               allK <- unique(df$Sequence)
               n <- tryCatch(as.integer(n))
               n <- min(length(allK), n)
               topK <- unique(df$Sequence[o])[seq_len(n)]
 
-              # Tidy up the data
+              ## Tidy up the data
               df <- dplyr::filter(df, Sequence %in% topK)
               colnames(df) <- gsub("Max_Obs/Exp_Position", "Base", colnames(df))
               colnames(df) <- gsub("Obs/Exp_Max", "Value", colnames(df))
@@ -112,51 +113,53 @@ setMethod("plotKmers", signature = "FastqcData",
               df$Position <- as.integer(df$Position)
               df <- df[c("Filename", "Sequence", "Value", "Position")]
 
-              # Set the x-axis for plotting
-              # As there will be significant gaps in this data,
-              # the bins used need to be obtained from another slot.
-              # The most complete will be Per_base_sequence_quality
-              # These values can then be incorporated in the final df
-              # for accurate plotting & labelling
+              ## Set the x-axis for plotting
+              ## As there will be significant gaps in this data,
+              ## the bins used need to be obtained from another slot.
+              ## The most complete will be Per_base_sequence_quality
+              ## These values can then be incorporated in the final df
+              ## for accurate plotting & labelling
               refForX <- unique(Per_base_sequence_quality(x)$Base)
               refForX <- tibble::tibble(Base = as.character(refForX),
                                         Position = gsub("([0-9]*)-[0-9]*",
                                                         "\\1", Base))
               refForX$Position <- as.integer(refForX$Position)
 
-              # In order to get a line plot, zero values need to be added to the
-              # missing positions. The above reference scale for X will be used
-              # to label the missing values
-              # Include all files to ensure all appear in the final plot
+              ## In order to get a line plot, zero values need to be added to the
+              ## missing positions. The above reference scale for X will be used
+              ## to label the missing values
+              ## Include all files to ensure all appear in the final plot
               zeros <- expand.grid(list(Filename = df$Filename,
                                         Sequence = topK,
                                         Value = 0,
                                         Position = refForX$Position),
                                    stringsAsFactors = FALSE)
 
-              # After the bind_rows, duplicate values will exist at some
-              # positions. Spuriously introduced zeros need to be removed
+              ## After the bind_rows, duplicate values will exist at some
+              ## positions. Spuriously introduced zeros need to be removed
               df <- dplyr::bind_rows(df, zeros)
-              df <- dplyr::arrange(df, Filename, Sequence, Position, desc(Value))
+              df <- dplyr::arrange(df,
+                                   Filename, Sequence, Position, desc(Value))
               df <- dplyr::distinct(df, Filename, Sequence, Position,
                                     .keep_all = TRUE)
               df <- dplyr::left_join(df, refForX, by = "Position")
 
-              # Set the Sequence as a factor based on the first position it appears
-              # This way the colours will appear in order in the guide as well
-              # as the plot
+              ## Set the Sequence as a factor based on the first position it
+              ## appears. This way the colours will appear in order in the guide
+              ## as well as the plot
               getKLevels <- function(x){
                   x <- subset(x, Value > 0) # Non zero counts
-                  x <- dplyr::arrange(x, Position, Sequence) # In order of position
+                  ## Arrange in order of position
+                  x <- dplyr::arrange(x, Position, Sequence)
                   unique(x$Sequence)
               }
               kMerLevels <- getKLevels(df)
               df$Sequence <- factor(df$Sequence, levels = kMerLevels)
               df <- droplevels(df)
 
-              # Set the plotting params
+              ## Set the plotting params
               yMax <- max(df$Value)*1.05
-              # Get any arguments for dotArgs that have been set manually
+              ## Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
@@ -164,7 +167,7 @@ setMethod("plotKmers", signature = "FastqcData",
               if (length(keepArgs) > 0) userTheme <- do.call(theme,
                                                              dotArgs[keepArgs])
 
-              # And the colours
+              ## And the colours
               if (n < length(pal)) {
                   pal <- pal[seq_len(n)]
               }
@@ -172,7 +175,7 @@ setMethod("plotKmers", signature = "FastqcData",
                   pal <- grDevices::colorRampPalette(pal)(n)
               }
 
-              # Now draw the basic plots
+              ## Now draw the basic plots
               kMerPlot <- ggplot(df,
                                  aes_string(x =" Position",
                                             y = "Value",
@@ -189,9 +192,9 @@ setMethod("plotKmers", signature = "FastqcData",
                        y = expression(paste(log[2], " Obs/Exp")),
                        colour = c())
 
-              # Check for binned x-axis values to decied whether to rotate
-              # x-axis labels. This should be clear if there are more than
-              # 2 characters in the plotted labels
+              ## Check for binned x-axis values to decied whether to rotate
+              ## x-axis labels. This should be clear if there are more than
+              ## 2 characters in the plotted labels
               binned <- any(grepl("-", df$Base))
               if (binned) {
                   kMerPlot <- kMerPlot +
@@ -231,18 +234,18 @@ setMethod("plotKmers", signature = "FastqcDataList",
               df <- Kmer_Content(x)
 
               if (!length(df)) {
-                  #stop("No Overrep kmers")
-                  kMerPlot <- emptyPlot("No Overrepresented Kmers Detected")
+                  ##stop("No Overrep kmers")
+                  kMerPlot <- .emptyPlot("No Overrepresented Kmers Detected")
 
                   if(usePlotly) kMerPlot <- ggplotly(kMerPlot, tooltip = "")
                   return(kMerPlot)
               }
 
-              # Sort out the colours
+              ## Sort out the colours
               if (missing(pwfCols)) pwfCols <- ngsReports::pwf
               stopifnot(isValidPwf(pwfCols))
 
-              # Drop the suffix, or check the alternate labels
+              ## Drop the suffix, or check the alternate labels
               labels <- makeLabels(df, labels, ...)
 
               colnames(df) <- gsub("Max_Obs/Exp_Position", "Base", colnames(df))
@@ -250,12 +253,12 @@ setMethod("plotKmers", signature = "FastqcDataList",
               df$Position <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
               df$Position <- as.integer(df$Position)
 
-              # Now simply add the kmers at each position. Not superinformative.
+              ## Now simply add the kmers at each position. Not superinformative.
               df <- dplyr::group_by(df, Filename, Position)
               df <- dplyr::summarise(df, Total = sum(Count))
               df <- dplyr::ungroup(df)
 
-              # Setup the x-axis
+              ## Setup the x-axis
               refForX <- unique(Per_base_sequence_quality(x)$Base)
               refForX <- tibble::tibble(
                   Base = as.character(refForX),
@@ -263,12 +266,12 @@ setMethod("plotKmers", signature = "FastqcDataList",
               )
               refForX$Position <- as.integer(refForX$Position)
 
-              # Setup a grid of NAs for positions where no Kmer is detected
+              ## Setup a grid of NAs for positions where no Kmer is detected
               nas <- expand.grid(list(Filename = unique(df$Filename),
                                       Total = NA,
                                       Position = unique(refForX$Position)),
                                  stringsAsFactors = FALSE)
-              # Now remove any spurious NA values
+              ## Now remove any spurious NA values
               df <- dplyr::bind_rows(df, nas)
               df <- dplyr::arrange(df, Filename, Position, desc(Total))
               df <- dplyr::distinct(df, Filename, Position, .keep_all = TRUE)
@@ -278,7 +281,7 @@ setMethod("plotKmers", signature = "FastqcDataList",
                   cluster <- TRUE
               }
 
-              # Now define the order for a dendrogram if required
+              ## Now define the order for a dendrogram if required
               key <- names(labels)
               if (cluster){
                   clusterDend <- makeDendrogram(df = df, rowVal = "Filename",
@@ -286,21 +289,21 @@ setMethod("plotKmers", signature = "FastqcDataList",
                                                 value = "Total")
                   key <- labels(clusterDend)
               }
-              # Now set everything as factors
+              ## Now set everything as factors
               df$Filename <- factor(labels[df$Filename],
                                     levels = labels[key])
 
-              # join x axis ticks and df
+              ## join x axis ticks and df
               df <- dplyr::left_join(df, refForX, by = "Position")
 
-              # Set up for geom_tile
+              ## Set up for geom_tile
               df$End <- gsub("[0-9]*-([0-9]*)", "\\1", df$Base)
               df$End <- as.integer(df$End)
               df$`Middle of Bin` <- (df$Position + df$End) / 2
               df$Width <- df$End - df$Position
               df$Width[df$Width == 0] <- 1
 
-              # Get any arguments for dotArgs that have been set manually
+              ## Get any arguments for dotArgs that have been set manually
               dotArgs <- list(...)
               allowed <- names(formals(ggplot2::theme))
               keepArgs <- which(names(dotArgs) %in% allowed)
@@ -322,11 +325,11 @@ setMethod("plotKmers", signature = "FastqcDataList",
               if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
 
               if (usePlotly){
-                  # Clear the y axis for plotly
+                  ## Clear the y axis for plotly
                   kMerPlot <- kMerPlot +
                       theme(axis.text.y = element_blank(),
                             legend.position = "none")
-                  # Get the PWF status
+                  ## Get the PWF status
                   status <- getSummary(x)
                   status <- status[status$Category == "Kmer Content",]
                   status$Filename <- labels[status$Filename]

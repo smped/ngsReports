@@ -26,7 +26,7 @@ importStarLogs <- function(x){
     stopifnot(file.exists(x))
     ln <- lapply(x, readLines)
     
-    # Define a quick check
+    ## Define a quick check
     isValidStarLog <- function(x){
         if (!grepl("Started job on", x[1])) return(FALSE)
         if (!any(grepl("UNIQUE READS:", x))) return(FALSE)
@@ -48,12 +48,12 @@ importStarLogs <- function(x){
         x[,1] <- stringr::str_replace_all(x[,1], "%", "percent")
         x[,1] <- stringr::str_to_title(x[,1])
         x[,1] <- stringr::str_replace_all(x[,1], "( |-)", "_") # Replace whitespace & '-' with underscores
-        # Clean up the values & return a data.frame
+        ## Clean up the values & return a data.frame
         x[,2] <- stringr::str_replace_all(x[,2], "%", "")
         x <- structure(as.list(x[,2]), names = x[,1])
         as.data.frame(x, stringsAsFactors = FALSE)
     })
-    #Merge all files into a single df
+    ##Merge all files into a single df
     df <- dplyr::bind_rows(ln)
     timeCols <- grepl("On$", names(df))
     df[timeCols] <- lapply(df[timeCols], lubridate::parse_date_time, orders = "b! d! HMS")
@@ -63,7 +63,7 @@ importStarLogs <- function(x){
     names(df) <- gsub("^(Number_Of_Splices_[ACGT])([acgt])\\.([AGCT])([acgt])$",
                       "\\1\\U\\2/\\3\\U\\4",
                       names(df), perl = TRUE)
-    # Add the filename & additional columns
+    ## Add the filename & additional columns
     df$Filename <- basename(x)
     df$Mapping_Duration <- with(df, Finished_On - Started_Mapping_On)
     df$Total_Mapped_Percent <- with(df, 100*(Uniquely_Mapped_Reads_Number + Number_Of_Reads_Mapped_To_Multiple_Loci) / Number_Of_Input_Reads)

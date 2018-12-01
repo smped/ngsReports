@@ -13,8 +13,8 @@ renderDendro(df)
 A plotly object
 }
 \description{
-A commonly used (hidden) function for setting up dendrograms for 
-interactive plots
+A commonly used (hidden) function for setting up dendrograms
+for interactive plots
 }
 \details{
 Create plot using \code{theme_dendro}

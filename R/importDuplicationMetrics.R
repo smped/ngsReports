@@ -19,17 +19,17 @@ importDuplicationMetrics <- function(x){
         l <- readLines(fl)
         chk <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", l)
         stopifnot(length(chk) == 1)
-        # Obtain the single line df
+        ## Obtain the single line df
         cols <- stringr::str_split(l[chk + 1], "\t")[[1]]
         vals <- stringr::str_split(l[chk + 2], "\t")[[1]]
         stopifnot(length(cols) == length(vals))
         names(vals) <- cols
         df <- tibble::as_tibble(as.list(vals))
-        # Find the name of the input bam/sam file
+        ## Find the name of the input bam/sam file
         libName <- grep("picard.sam.markduplicates.MarkDuplicates.+INPUT=", l, value = TRUE)[1]
         libName <- gsub(".+INPUT=\\[(.+)\\] OUTPUT.+", "\\1", libName)
         df$LIBRARY <- basename(libName)
-        # Get the HISTOGRAM module
+        ## Get the HISTOGRAM module
         hstart <- grep("## HISTOGRAM\tjava.lang.Double", l) + 1
         h <- stringr::str_split_fixed(l[hstart + seq_len(100)], "\t", n = 2)
         colnames(h) <- stringr::str_split_fixed(l[hstart], "\t", 2)

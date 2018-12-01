@@ -43,7 +43,7 @@ runFastQC(object, outPath, threads = 1L, casava = FALSE,
 \arguments{
 \item{object}{A \code{\link{FastqFileList}}}
 
-\item{outPath}{The path to write the FastQC reports. Must exist as (for 
+\item{outPath}{The path to write the FastQC reports. Must exist as (for
 safety) it will not be created when calling this function}
 
 \item{threads}{The number of threads to run in parallel}
@@ -56,7 +56,7 @@ safety) it will not be created when calling this function}
 
 \item{nogroup}{logical. Sets the grouping of bases for reads longer than 50bp}
 
-\item{min_length}{integer. Sets an artificial lower limit on the length of 
+\item{min_length}{integer. Sets an artificial lower limit on the length of
 the sequence to be shown in the report.}
 
 \item{contaminants}{Path to an alternate file with contaminants.
@@ -78,10 +78,10 @@ An object of class \code{FastqcFileList}
 Takes a FastqFileList
 }
 \details{
-This is a simple wrapper function for controlling & running 
+This is a simple wrapper function for controlling & running
 \code{fastqc} from within R.
-This can be very useful for controlling & documenting an entire pipeline from 
-within knitr to produce a simple report
+This can be very useful for controlling & documenting an entire pipeline
+from within knitr to produce a simple report
 
 Only the common functionality of FastQC is implemented,
 for more fine detail pease call FastQC directly.

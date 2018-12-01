@@ -21,12 +21,12 @@
 \S4method{Kmer_Content}{character}(object)
 }
 \arguments{
-\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList}, 
-\code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector 
-of paths to fastqc files}
+\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{fastqcDataList}, or a \code{character} vector
+of file paths}
 }
 \value{
-A single \code{tibble} containing all information combined from all 
+A single \code{tibble} containing all information combined from all
 supplied FastQC reports
 }
 \description{

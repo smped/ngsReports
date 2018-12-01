@@ -15,7 +15,7 @@ getGC(object, name, type)
 
 \item{name}{The Name of the species in 'Gspecies' format, e.g. Hsapiens}
 
-\item{type}{The type of GC content. Can only be either "Genome" or 
+\item{type}{The type of GC content. Can only be either "Genome" or
 "Transcriptome"}
 }
 \value{

@@ -35,19 +35,20 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or path}
 
-\item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly object.}
+\item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
+object.}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours 
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
 for PASS/WARN/FAIL}
 
-\item{warn, fail}{The default values for warn and fail are 5 and 10 
+\item{warn, fail}{The default values for warn and fail are 5 and 10
 respectively (i.e. percentages)}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
@@ -58,7 +59,7 @@ respectively (i.e. percentages)}
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 }
 \value{
@@ -70,10 +71,10 @@ Draw an N Content Plot across one or more FASTQC reports
 \details{
 This extracts the N_Content from the supplied object and generates a ggplot2
 object, with a set of minimal defaults.
-The output of this function can be further modified using the standard 
+The output of this function can be further modified using the standard
 ggplot2 methods.
 
-When \code{x} is a single FastqcFile, or FastqcData object line plots will 
+When \code{x} is a single FastqcFile, or FastqcData object line plots will
 always be drawn for all Ns.
 Otherwise, users can select line plots or heatmaps.
 }

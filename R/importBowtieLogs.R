@@ -24,11 +24,11 @@ importBowtieLogs <- function(x){
     x <- unique(x) # Remove any  duplicates
     stopifnot(file.exists(x)) # Check they all exist
     
-    # Load the data
+    ## Load the data
     data <- suppressWarnings(lapply(x, readLines))
     names(data) <- basename(x)
     
-    # Define a quick check
+    ## Define a quick check
     isValidBowtieLog <- function(x){
         nLines <- length(x)
         if (!any(grepl("Time loading forward index", x))) return(FALSE)
@@ -59,11 +59,11 @@ importBowtieLogs <- function(x){
     })
     df <- dplyr::bind_rows(df)
     
-    # Some colnames may have a flag from the original bowtie code
-    # This will replace that after the conversion steps above
+    ## Some colnames may have a flag from the original bowtie code
+    ## This will replace that after the conversion steps above
     names(df) <- gsub("__(.)", "_-\\L\\1", names(df), perl = TRUE)
     
-    # Reformat the columns
+    ## Reformat the columns
     timeCols <- grepl("(Time|Full_Index_Search)", names(df))
     df[!timeCols] <- suppressWarnings(lapply(df[!timeCols], as.integer))
     df[timeCols] <- lapply(df[timeCols], function(x){

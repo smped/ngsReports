@@ -4,13 +4,16 @@
 #'
 #' @details Create plot using \code{theme_void} and only with the supplied text
 #'
-#' @return A ggplot2 object 
+#' @return A ggplot2 object
+#'
+#' @examples
+#' ngsReports:::.emptyPlot("This is an empty plot")
 #'
 #' @import ggplot2
 #'
 #' @keywords internal
 #'
-emptyPlot <- function(x){
+.emptyPlot <- function(x){
     ggplot() +
         geom_text(aes(x = 0.5, y = 0.8, label = x)) +
         theme_void() +

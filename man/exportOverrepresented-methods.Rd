@@ -20,7 +20,7 @@ exportOverrepresented(x, path, n = 10, labels, noAdapters = TRUE, ...)
 \arguments{
 \item{x}{Can be a \code{FastqcData} or \code{FastqcDataList}}
 
-\item{path}{Path to export the fasta file to. Reverts to a default if not 
+\item{path}{Path to export the fasta file to. Reverts to a default if not
 supplied}
 
 \item{n}{The number of sequences to output}
@@ -29,10 +29,10 @@ supplied}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{noAdapters}{logical. Remove any sequences identified as possible 
+\item{noAdapters}{logical. Remove any sequences identified as possible
 adapters or primers by FastQC}
 
-\item{...}{Used to pass any alternative patterns to remove from the end of 
+\item{...}{Used to pass any alternative patterns to remove from the end of
 filenames}
 }
 \value{
@@ -42,7 +42,7 @@ Exports to a fasta file, and returns the fasta information invisibly
 Output overrepresented sequences to disk in fasta format.
 }
 \details{
-Fasta will contain \code{Filename}, \code{Possible Source}, 
+Fasta will contain \code{Filename}, \code{Possible Source},
 \code{Percent of total reads}
 }
 \examples{

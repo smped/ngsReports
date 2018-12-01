@@ -2,25 +2,25 @@
 #'
 #' @description Retrieve the Kmer Content module from one or more FastQC reports
 #'
-#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, 
-#' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector 
-#' of paths to fastqc files
+#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' \code{FastqcData}, \code{fastqcDataList}, or a \code{character} vector
+#' of file paths
 #'
 #' @include FastqcData.R
 #' @include AllGenerics.R
 #'
-#' @return A single \code{tibble} containing all information combined from all 
+#' @return A single \code{tibble} containing all information combined from all
 #' supplied FastQC reports
 #'
-#' @examples 
-#' 
+#' @examples
+#'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
 #' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
-#' 
+#'
 #' # Print the Kmer_Content
 #' Kmer_Content(fdl)
 #'
@@ -35,7 +35,7 @@ setMethod("Kmer_Content", "FastqcData",
           function(object){
               df <- dplyr::mutate(object@Kmer_Content)
               if(length(df)){ # Check there is data in the module
-                  # Add a Filename column if there is any data
+                  ## Add a Filename column if there is any data
                   df$Filename <- fileName(object)
                   dplyr::select(df, "Filename", tidyselect::everything())
               }
@@ -51,7 +51,7 @@ setMethod("Kmer_Content", "FastqcData",
 setMethod("Kmer_Content", "FastqcDataList",
           function(object){
               df <- lapply(object@.Data, Kmer_Content)
-              nulls <- vapply(df, 
+              nulls <- vapply(df,
                               function(x){
                                   length(x) == 0
                               }, logical(1))

@@ -35,17 +35,17 @@ plotOverrepresentedSummary(x, usePlotly = FALSE, labels, pwfCols, ...)
   expand.y = c(0, 0))
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or file path}
 
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using
+ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named factor of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours 
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
 for PASS/WARN/FAIL}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
@@ -56,25 +56,26 @@ for PASS/WARN/FAIL}
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
-\item{paletteName}{Name of the palette for colouring the possible sources 
-of the overrepresented sequences. Must be a palette name from 
+\item{paletteName}{Name of the palette for colouring the possible sources
+of the overrepresented sequences. Must be a palette name from
 \code{RColorBrewer}}
 
-\item{expand.x, expand.y}{Vectors of length 2. Passed to `scale_*_continuous()`}
+\item{expand.x, expand.y}{Vectors of length 2. Passed to
+\code{scale_*_continuous()}}
 }
 \value{
 A standard ggplot2 object
 }
 \description{
-Plot a summary of Over-represented Sequences for a set of FASTQC 
-reports
+Plot a summary of Over-represented Sequences for a set of
+FASTQC reports
 }
 \details{
 Percentages are obtained by simply summing those within a report.
-Any possible double counting by FastQC is ignored for the purposes of a 
+Any possible double counting by FastQC is ignored for the purposes of a
 simple approximation.
 }
 \examples{

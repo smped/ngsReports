@@ -26,7 +26,7 @@ getFastqcData(object)
 An object of \code{FastqcData} or a \code{FastqcDataList}
 }
 \description{
-Read the information from the \code{fastqc_data.txt} files in 
+Read the information from the \code{fastqc_data.txt} files in
 each FastqcFile
 }
 \examples{

@@ -1,9 +1,9 @@
 #' @title Get the set of Basic Statistics
 #'
-#' @description Retrieve the Basic Statistics module from one or more FastQC 
+#' @description Retrieve the Basic Statistics module from one or more FastQC
 #' reports
 #'
-#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList},
 #' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
 #' of paths to fastqc files
 #'
@@ -13,7 +13,7 @@
 #' @include FastqcFileList.R
 #' @include FastqcDataList.R
 #'
-#' @return A single \code{tibble} containing all information combined from all 
+#' @return A single \code{tibble} containing all information combined from all
 #' supplied FastQC reports
 #'
 #' @examples
@@ -35,49 +35,64 @@
 #' @export
 #' @rdname Basic_Statistics
 #' @aliases Basic_Statistics
-setMethod("Basic_Statistics", "FastqcData",
-          function(object){object@Basic_Statistics})
+setMethod(
+    "Basic_Statistics",
+    "FastqcData",
+    function(object){object@Basic_Statistics}
+)
 
 #' @export
 #' @rdname Basic_Statistics
 #' @aliases Basic_Statistics
-setMethod("Basic_Statistics", "FastqcDataList",
-          function(object){
-              df <- lapply(object@.Data, Basic_Statistics)
-              nulls <- vapply(df,
-                              function(x){
-                                  length(x) == 0
-                              }, logical(1))
-              if (sum(nulls) > 0) message(
-                  sprintf("The Basic_Statistics module was missing from:\n%s",
-                          paste(path(object)[nulls], sep = "\n"))
-              )
-              dplyr::bind_rows(df)
-          })
+setMethod(
+    "Basic_Statistics",
+    "FastqcDataList",
+    function(object){
+        df <- lapply(object@.Data, Basic_Statistics)
+        nulls <- vapply(df,
+                        function(x){
+                            length(x) == 0
+                        }, logical(1))
+        if (sum(nulls) > 0) message(
+            sprintf("The Basic_Statistics module was missing from:\n%s",
+                    paste(path(object)[nulls], sep = "\n"))
+        )
+        dplyr::bind_rows(df)
+    }
+)
 
 #' @export
 #' @rdname Basic_Statistics
 #' @aliases Basic_Statistics
-setMethod("Basic_Statistics", "FastqcFile",
-          function(object){
-              object <- getFastqcData(object)
-              Basic_Statistics(object)
-          })
+setMethod(
+    "Basic_Statistics",
+    "FastqcFile",
+    function(object){
+        object <- getFastqcData(object)
+        Basic_Statistics(object)
+    }
+)
 
 #' @export
 #' @rdname Basic_Statistics
 #' @aliases Basic_Statistics
-setMethod("Basic_Statistics", "FastqcFileList",
-          function(object){
-              object <- getFastqcData(object)
-              Basic_Statistics(object)
-          })
+setMethod(
+    "Basic_Statistics",
+    "FastqcFileList",
+    function(object){
+        object <- getFastqcData(object)
+        Basic_Statistics(object)
+    }
+)
 
 #' @export
 #' @rdname Basic_Statistics
 #' @aliases Basic_Statistics
-setMethod("Basic_Statistics", "character",
-          function(object){
-              object <- getFastqcData(object)
-              Basic_Statistics(object)
-          })
+setMethod(
+    "Basic_Statistics",
+    "character",
+    function(object){
+        object <- getFastqcData(object)
+        Basic_Statistics(object)
+    }
+)

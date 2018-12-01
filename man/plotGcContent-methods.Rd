@@ -46,57 +46,57 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or file path}
 
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using
+ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{theoreticalGC}{\code{logical} default is \code{FALSE} to give the true 
-GC content, set to \code{TRUE} to normalize values of GC_Content by the 
+\item{theoreticalGC}{\code{logical} default is \code{FALSE} to give the true
+GC content, set to \code{TRUE} to normalize values of GC_Content by the
 theoretical values using \code{\link{gcTheoretical}}. \code{species} must be
 specified.}
 
-\item{theoreticalType}{\code{character} Select type of data to normalize GC 
+\item{theoreticalType}{\code{character} Select type of data to normalize GC
 content against. Accepts either "Genome" (default) or "Transcriptome".}
 
-\item{species}{\code{character} if \code{gcTheory} is \code{TRUE} its must be 
-accompanied by a species. Species currently supported can be obtained using 
+\item{species}{\code{character} if \code{gcTheory} is \code{TRUE} it must be
+accompanied by a species. Species currently supported can be obtained using
 \code{mData(gcTheoretical)}}
 
 \item{GCobject}{an object of class GCTheoretical.
 Defaults to the gcTheoretical object supplied witht= the package}
 
-\item{Fastafile}{a fasta file contains DNA sequences to generate theoretical 
+\item{Fastafile}{a fasta file contains DNA sequences to generate theoretical
 GC content}
 
-\item{n}{number of simulated reads to generate theoretical GC content from 
+\item{n}{number of simulated reads to generate theoretical GC content from
 \code{Fastafile}}
 
-\item{bp}{simulated read length to generate theoretical GC content from 
+\item{bp}{simulated read length to generate theoretical GC content from
 \code{Fastafile}}
 
 \item{...}{Used to pass various potting parameters to theme.}
 
-\item{counts}{\code{logical}. Plot the counts from each file if 
+\item{counts}{\code{logical}. Plot the counts from each file if
 \code{counts = TRUE}. Otherwise frequencies will be plotted.}
 
 \item{lineCols}{Colors for observed and theoretical GC lines in single plots}
 
 \item{plotType}{Takes values "line" or "heatmap"}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for 
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
 pass, warning, and fail values in plot}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} 
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram  will be displayed.}
 }
 \value{
@@ -107,10 +107,10 @@ Plot the Per Sequence GC Content for a set of FASTQC files
 }
 \details{
 Makes plots for GC_Content.
-When applied to a single FastqcFile or FastqcData object a simple line plot 
+When applied to a single FastqcFile or FastqcData object a simple line plot
 will be drawn, with Theoretical GC content overlaid if desired
 
-For a FastqcFileList, or FastqcDataList either a line plot or heatmap can be 
+For a FastqcFileList, or FastqcDataList either a line plot or heatmap can be
 drawn
 }
 \examples{
@@ -128,8 +128,10 @@ plotGcContent(fdl)
 # Plot a single FastqcData object
 plotGcContent(fdl[[1]])
 
-# Plot GC content with theoretical GC content generated from a given fasta file
-faFile <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package="ngsReports")
+# Plot GC content with theoretical GC content generated from a given
+# fasta file
+f <- "Athaliana.TAIR10.tRNA.fasta"
+faFile <- system.file("extdata", f, package="ngsReports")
 plotGcContent(fdl, Fastafile = faFile)
 
 }
