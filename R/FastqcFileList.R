@@ -57,8 +57,10 @@ setMethod(
     function(x) {
         cls <- vapply(x, class, character(1))
         if (any(!cls %in% "FastqcFile")) {
-            msg <- paste0("Method can only be applied to\n",
-                          "FastqcFile objects as a generic list.")
+            msg <-  paste0(
+                "Method can only be applied to\n",
+                "FastqcFile objects as a generic list."
+            )
             stop(msg)
         }
         new("FastqcFileList", x)

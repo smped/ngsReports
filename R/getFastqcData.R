@@ -26,186 +26,163 @@ setGeneric("getFastqcData", function(object){standardGeneric("getFastqcData")})
 #' @aliases getFastqcData,FastqcFile-method
 #' @rdname getFastqcData-methods
 #' @export
-setMethod(
-    "getFastqcData",
-    "FastqcFile",
-    function(object){
+setMethod("getFastqcData", "FastqcFile", function(object){
 
-        ## Setup the path to the file & use tryCatch to ensure it exists
-        ## when testing to see if it is compressed
-        path <- path(object)
-        comp <- tryCatch(isCompressed(path, type = "zip"))
+    ## Setup the path to the file & use tryCatch to ensure it exists
+    ## when testing to see if it is compressed
+    path <- path(object)
+    comp <- tryCatch(isCompressed(path, type = "zip"))
 
-        if (comp) {
+    if (comp) {
 
-            ## Get the internal path within the zip archive
-            fl <- file.path(gsub(".zip$", "", fileName(object)),
-                            "fastqc_data.txt")
+        ## Get the internal path within the zip archive
+        fl <- file.path(gsub(".zip$", "", fileName(object)), "fastqc_data.txt")
 
-            ## Check the required file exists within the file
-            allFiles <- unzip(path, list = TRUE)$Name
-            stopifnot(fl %in% allFiles)
+        ## Check the required file exists within the file
+        allFiles <- unzip(path, list = TRUE)$Name
+        stopifnot(fl %in% allFiles)
 
-            ## # Open the connection & read the 12 lines
-            uz <- unz(path, fl)
-            fqcLines <- readLines(uz)
-            close(uz)
+        ## # Open the connection & read the 12 lines
+        uz <- unz(path, fl)
+        fqcLines <- readLines(uz)
+        close(uz)
 
-        }
-        else{
+    }
+    else{
 
-            ## The existence of this file will have been checked at
-            ## instantiation of the FastqcFile. Check in case it has been
-            ## deleted post-instantiation
-            fl <- file.path(path, "fastqc_data.txt")
-            if (!file.exists(fl)) stop(
-                "'fastqc_data.txt' could not be found."
-            )
-            fqcLines <- readLines(fl)
+        ## The existence of this file will have been checked at
+        ## instantiation of the FastqcFile. Check in case it has been
+        ## deleted post-instantiation
+        fl <- file.path(path, "fastqc_data.txt")
+        if (!file.exists(fl)) stop("'fastqc_data.txt' could not be found.")
+        fqcLines <- readLines(fl)
 
-        }
+    }
 
-        ## Modified from Repitools::readFastQC
-        ## Remove any '#' symbols
-        fqcLines <- gsub("#", "", fqcLines)
-        ## Remove any lines which specify '>>END_MODULE'
-        fqcLines <- fqcLines[!grepl(">>END_MODULE", fqcLines)]
+    ## Modified from Repitools::readFastQC
+    ## Remove any '#' symbols
+    fqcLines <- gsub("#", "", fqcLines)
+    ## Remove any lines which specify '>>END_MODULE'
+    fqcLines <- fqcLines[!grepl(">>END_MODULE", fqcLines)]
 
-        ## The FastQC version NUMBER
-        vers <- NA_character_ # Default to missing
-        if (grepl("[Ff][Aa][Ss][Tt][Qq][Cc]\\t", fqcLines[1])) {
-            vers <- gsub("[Ff][Aa][Ss][Tt][Qq][Cc]\\t(.+)", "\\1", fqcLines[1])
-            ## Remove the version line for easier module identification
-            fqcLines <- fqcLines[-1]
-        }
+    ## The FastQC version NUMBER
+    vers <- NA_character_ # Default to missing
+    if (grepl("[Ff][Aa][Ss][Tt][Qq][Cc]\\t", fqcLines[1])) {
+        vers <- gsub("[Ff][Aa][Ss][Tt][Qq][Cc]\\t(.+)", "\\1", fqcLines[1])
+        ## Remove the version line for easier module identification
+        fqcLines <- fqcLines[-1]
+    }
 
-        ## Setup the module names
-        modules <- grep("^>>", fqcLines, value = TRUE)
-        ## Extract the text after the '>>' & before the tab
-        modules <- gsub("^>>(.+)\\t.+", "\\1", modules)
-        modules <- gsub(" ", "_", modules) # Add underscores
+    ## Setup the module names
+    modules <- grep("^>>", fqcLines, value = TRUE)
+    ## Extract the text after the '>>' & before the tab
+    modules <- gsub("^>>(.+)\\t.+", "\\1", modules)
+    modules <- gsub(" ", "_", modules) # Add underscores
 
-        ## Define the standard modules
-        reqModules <- c(
-            "Basic_Statistics",
-            "Per_base_sequence_quality",
-            "Per_tile_sequence_quality",
-            "Per_sequence_quality_scores",
-            "Per_base_sequence_content",
-            "Per_sequence_GC_content",
-            "Per_base_N_content",
-            "Sequence_Length_Distribution",
-            "Sequence_Duplication_Levels",
-            "Overrepresented_sequences",
-            "Adapter_Content",
-            "Kmer_Content"
-        )
-        ## Check that at least one of the standard modules is present
-        if (!any(modules %in% reqModules)) stop(
-            "None of the standard modules were found in the data."
-        )
+    ## Define the standard modules
+    reqModules <- c(
+        "Basic_Statistics",
+        "Per_base_sequence_quality",
+        "Per_tile_sequence_quality",
+        "Per_sequence_quality_scores",
+        "Per_base_sequence_content",
+        "Per_sequence_GC_content",
+        "Per_base_N_content",
+        "Sequence_Length_Distribution",
+        "Sequence_Duplication_Levels",
+        "Overrepresented_sequences",
+        "Adapter_Content",
+        "Kmer_Content"
+    )
+    ## Check that at least one of the standard modules is present
+    if (!any(modules %in% reqModules))
+        stop("None of the standard modules were found in the data.")
 
-        ## Split the data based on the '>>' pattern, which indicates the
-        ## beginning of a new module
-        fqcLines <- split(fqcLines, cumsum(grepl("^>>", fqcLines)))
+    ## Split the data based on the '>>' pattern, which indicates the
+    ## beginning of a new module
+    fqcLines <- split(fqcLines, cumsum(grepl("^>>", fqcLines)))
 
-        ## Assign the module names
-        names(fqcLines) <- vapply(fqcLines, function(x){
-            ## Get the first line before the tab separator
-            nm <- gsub(">>(.+)\\t.+", "\\1", x[[1]])
-            ## Replace the space with underscore
-            gsub(" ", "_", nm)
-        }, character(1))
-        ## Remove the name from each module's data
-        fqcLines <- lapply(fqcLines, function(x){x[-1]})
+    ## Assign the module names
+    names(fqcLines) <- vapply(fqcLines, function(x){
+        ## Get the first line before the tab separator
+        nm <- gsub(">>(.+)\\t.+", "\\1", x[[1]])
+        ## Replace the space with underscore
+        gsub(" ", "_", nm)
+    }, character(1))
+    ## Remove the name from each module's data
+    fqcLines <- lapply(fqcLines, function(x){x[-1]})
 
-        ## Define the output to have the same structure as fastqcData,
-        ## with an additional slot to account for the Sequence Duplication
-        ## Levels output. Initialise an empty list based on the standard
-        ## modules after checking for the Total_Deduplicated Percentage.
-        allModules <- c(reqModules, modules, "Total_Deduplicated_Percentage")
-        allModules <- unique(allModules)
-        out <- vector("list", length(allModules))
-        names(out) <- allModules
+    ## Define the output to have the same structure as fastqcData,
+    ## with an additional slot to account for the Sequence Duplication
+    ## Levels output. Initialise an empty list based on the standard
+    ## modules after checking for the Total_Deduplicated Percentage.
+    allModules <- c(reqModules, modules, "Total_Deduplicated_Percentage")
+    allModules <- unique(allModules)
+    out <- vector("list", length(allModules))
+    names(out) <- allModules
 
-        ## Get the Modules
-        out[["Basic_Statistics"]] <- .getBasicStatistics(fqcLines)
-        out[["Per_base_sequence_quality"]] <- .getPerBaseSeqQuals(fqcLines)
-        out[["Per_tile_sequence_quality"]] <- .getPerTileSeqQuals(fqcLines)
-        out[["Per_sequence_quality_scores"]] <- .getPerSeqQualScores(fqcLines)
-        out[["Per_base_sequence_content"]] <- .getPerBaseSeqCont(fqcLines)
-        out[["Per_sequence_GC_content"]] <- .getPerSeqGcCont(fqcLines)
-        out[["Per_base_N_content"]] <-  .getPerBaseNCont(fqcLines)
-        out[["Sequence_Length_Distribution"]] <- .getSeqLengthDist(fqcLines)
-        out[["Overrepresented_sequences"]] <- .getOverrepSeq(fqcLines)
-        out[["Adapter_Content"]] <- .getAdapterCont(fqcLines)
-        out[["Kmer_Content"]] <- .getKmerCont(fqcLines)
+    ## Get the Modules
+    out[["Basic_Statistics"]] <- .getBasicStatistics(fqcLines)
+    out[["Per_base_sequence_quality"]] <- .getPerBaseSeqQuals(fqcLines)
+    out[["Per_tile_sequence_quality"]] <- .getPerTileSeqQuals(fqcLines)
+    out[["Per_sequence_quality_scores"]] <- .getPerSeqQualScores(fqcLines)
+    out[["Per_base_sequence_content"]] <- .getPerBaseSeqCont(fqcLines)
+    out[["Per_sequence_GC_content"]] <- .getPerSeqGcCont(fqcLines)
+    out[["Per_base_N_content"]] <-  .getPerBaseNCont(fqcLines)
+    out[["Sequence_Length_Distribution"]] <- .getSeqLengthDist(fqcLines)
+    out[["Overrepresented_sequences"]] <- .getOverrepSeq(fqcLines)
+    out[["Adapter_Content"]] <- .getAdapterCont(fqcLines)
+    out[["Kmer_Content"]] <- .getKmerCont(fqcLines)
 
-        ## Get the Sequence Duplication Levels
-        Sequence_Duplication_Levels <- .getSeqDuplicationLevels(fqcLines)
-        dupMods <- names(Sequence_Duplication_Levels)
-        out[dupMods] <- Sequence_Duplication_Levels[dupMods]
+    ## Get the Sequence Duplication Levels
+    Sequence_Duplication_Levels <- .getSeqDuplicationLevels(fqcLines)
+    dupMods <- names(Sequence_Duplication_Levels)
+    out[dupMods] <- Sequence_Duplication_Levels[dupMods]
 
-        ##Get the summary
-        Summary <- getSummary(object)
+    ##Get the summary
+    Summary <- getSummary(object)
 
-        args <- c(
-            list(Class = "FastqcData",
-                 path = path(object),
-                 Version = vers,
-                 Summary = Summary),
-            out
-        )
+    args <- c(
+        list(
+            Class = "FastqcData",
+            path = path(object),
+            Version = vers,
+            Summary = Summary),
+        out
+    )
 
-        do.call("new", args)
+    do.call("new", args)
 
-    })
+})
 
 #' @name getFastqcData
 #' @aliases getFastqcData,NULL-method
 #' @rdname getFastqcData-methods
 #' @export
-setMethod(
-    "getFastqcData",
-    "NULL",
-    function(object){
-        if (is.null(object)) stop(
-            "No files have been provided, please read in files"
-        )
-    }
+setMethod("getFastqcData", "NULL", function(object){
+    if (is.null(object)) stop("No files have been provided.")
+}
 )
-
 #' @name getFastqcData
 #' @aliases getFastqcData,character-method
 #' @rdname getFastqcData-methods
 #' @export
-setMethod(
-    "getFastqcData",
-    "character",
-    function(object){
-        if (length(object) == 1) {
-            object <- FastqcFile(object)
-        }
-        else{
-            object <- FastqcFileList(object)
-        }
-        getFastqcData(object)
-    }
+setMethod("getFastqcData", "character", function(object){
+    x <- FastqcFileList(object)
+    n <- length(x)
+    if (n == 1) x[[1]]
+    getFastqcData(x)
+}
 )
-
 #' @name getFastqcData
 #' @aliases getFastqcData,FastqcFileList-method
 #' @rdname getFastqcData-methods
 #' @export
-setMethod(
-    "getFastqcData",
-    "FastqcFileList",
-    function(object){
-        fqc <- lapply(object@.Data, getFastqcData)
-        new("FastqcDataList", fqc)
-    }
+setMethod("getFastqcData", "FastqcFileList", function(object){
+    fqc <- lapply(object@.Data, getFastqcData)
+    new("FastqcDataList", fqc)
+}
 )
-
 # Define a series of quick functions for arranging the data
 # after splitting the input from readLines()
 # These are all tested using testthat to ensure they're working correctly
@@ -402,48 +379,42 @@ setMethod(
 
     ## Return NULL if the module is missing
     mod <- "Sequence_Duplication_Levels"
-    if (!mod %in% names(fqcLines)) {
-        return(
-            list(
-                Total_Deduplicated_Percentage = NA_real_,
-                Sequence_Duplication_Levels = data.frame(NULL)
-            )
-        )
-    }
-    if (length(fqcLines[[mod]]) == 0) {
-        return(
-            list(
-                Total_Deduplicated_Percentage = NA_real_,
-                Sequence_Duplication_Levels = data.frame(NULL)
-            )
-        )
-    }
+    if (!mod %in% names(fqcLines))
+        return(list(
+            Total_Deduplicated_Percentage = NA_real_,
+            Sequence_Duplication_Levels = data.frame(NULL)
+        ))
+
+    if (length(fqcLines[[mod]]) == 0)
+        return(list(
+            Total_Deduplicated_Percentage = NA_real_,
+            Sequence_Duplication_Levels = data.frame(NULL)
+        ))
+
     x <- fqcLines[[mod]]
 
     ## Check for the presence of the Total Deduplicate Percentage value
     hasTotDeDup <- grepl("Total Deduplicated Percentage", x)
     Total_Deduplicated_Percentage <- NA_real_
     if (any(hasTotDeDup)) {
-        Total_Deduplicated_Percentage <- gsub(
-            ".+\\t(.*)",
-            "\\1",
-            x[hasTotDeDup]
-        )
+        Total_Deduplicated_Percentage <-
+            gsub(".+\\t(.*)", "\\1", x[hasTotDeDup])
         Total_Deduplicated_Percentage <-
             as.numeric(Total_Deduplicated_Percentage)
     }
-    if (length(Total_Deduplicated_Percentage) > 1) stop(
-        "Too many elements matched Total_Deduplicated_Percentage"
-    )
+    if (length(Total_Deduplicated_Percentage) > 1)
+        stop("Too many elements matched Total_Deduplicated_Percentage")
 
     ## Remove the Total value entry from the original object
     df <- .splitByTab(x[!hasTotDeDup])
     names(df) <- gsub(" ", "_", names(df))
 
     ## Check for the required values
-    reqVals <- c("Duplication_Level",
-                 "Percentage_of_deduplicated",
-                 "Percentage_of_total")
+    reqVals <- c(
+        "Duplication_Level",
+        "Percentage_of_deduplicated",
+        "Percentage_of_total"
+    )
     stopifnot(reqVals %in% names(df))
 
     ## Convert percentages to numeric
@@ -509,13 +480,8 @@ setMethod(
     names(df) <- gsub(" ", "_", names(df))
 
     ## Check for the required values
-    reqVals <- c(
-        "Sequence",
-        "Count",
-        "PValue",
-        "Obs/Exp_Max",
-        "Max_Obs/Exp_Position"
-    )
+    reqVals <-
+        c("Sequence", "Count", "PValue", "Obs/Exp_Max", "Max_Obs/Exp_Position")
     stopifnot(reqVals %in% names(df))
 
     df$Count <- as.integer(df$Count)
