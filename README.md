@@ -17,6 +17,10 @@ devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = F
 library(ngsReports)
 ```
 
+## ShinyApp
+
+A Graphical User Interface (Shiny App) has been developed for interactive inspection of many FastQC reports. The ngsReports shiny app can be instelled from [here]a{https://github.com/UofABioinformaticsHub/ngsReports-shinyApp}.
+
 # Vignette
 
 The vignette for usage is [here](https://uofabioinformaticshub.github.io/ngsReports/vignettes/ngsReportsIntroduction)
