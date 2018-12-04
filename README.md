@@ -19,7 +19,7 @@ library(ngsReports)
 
 ## ShinyApp
 
-A Graphical User Interface (Shiny App) has been developed for interactive inspection of many FastQC reports. The ngsReports shiny app can be instelled from [here]a{https://github.com/UofABioinformaticsHub/ngsReports-shinyApp}.
+A Graphical User Interface (Shiny App) has been developed for interactive inspection of many FastQC reports. The ngsReports shiny app can be installed [here]{https://github.com/UofABioinformaticsHub/ngsReports-shinyApp}.
 
 # Vignette
 
