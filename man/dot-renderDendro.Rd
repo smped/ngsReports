@@ -14,7 +14,7 @@ A plotly object
 }
 \description{
 A commonly used (hidden) function for setting up dendrograms
-for interactive plots
+for interactive plots. based on code found at https://plot.ly/ggplot2/ggdendro-dendrograms/
 }
 \details{
 Create plot using \code{theme_dendro}
