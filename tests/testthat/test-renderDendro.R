@@ -1,4 +1,4 @@
-context("Check structure of the sideBar")
+context("Check structure of the dendrogram")
 
 # This will give the correct structure as a stand alone process
 packageDir <- system.file("extdata", package = "ngsReports")
@@ -29,8 +29,8 @@ test_that("A plot can be drawn",{
 
 test_that("Plot is as expected",{
   # This has was found as the first two digits of the md5sum from
-  ## digest::digest(dendro, "md5")
-  expect_known_hash(dendro$x$data, 34)
+  # digest::digest(dendro$x$data, "md5")
+  expect_known_hash(dendro$x$data, "c7")
 })
 
 closeAllConnections()
