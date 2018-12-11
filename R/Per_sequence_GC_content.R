@@ -51,7 +51,7 @@ setMethod("Per_sequence_GC_content", "FastqcDataList", function(object){
     nulls <- vapply(df, function(x){length(x) == 0}, logical(1))
     if (sum(nulls) > 0) message(
         sprintf(
-            "Per_sequence_GC_content module missing from:\n%s",
+            "Per_sequence_GC_content module missing from %s\n",
             paste(path(object)[nulls], sep = "\n")
         )
     )

@@ -1,5 +1,5 @@
 ## --------------------------------------------------------------------------
-knitr::opts_chunk$set(message = FALSE,warning = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 ## --------------------------------------------------------------------------
 library(ngsReports)

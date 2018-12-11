@@ -48,7 +48,7 @@ setMethod("Overrepresented_sequences", "FastqcDataList", function(object){
     if (sum(nulls) > 0)
         message(
             sprintf(
-                "The Overrepresented_sequences module was empty in:\n%s",
+                "The Overrepresented_sequences module was empty in %s\n",
                 paste(path(object)[nulls], sep = "\n")
             )
         )

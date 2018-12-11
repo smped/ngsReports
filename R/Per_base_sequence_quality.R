@@ -52,7 +52,7 @@ setMethod("Per_base_sequence_quality", "FastqcDataList", function(object){
     nulls <- vapply(df, function(x){length(x) == 0}, logical(1))
     if (sum(nulls) > 0) message(
         sprintf(
-            "Per_base_sequence_quality module missing from:\n%s",
+            "Per_base_sequence_quality module missing from %s\n",
             paste(path(object)[nulls], sep = "\n"))
     )
     dplyr::bind_rows(df)

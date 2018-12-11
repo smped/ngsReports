@@ -53,7 +53,7 @@ setMethod("Sequence_Duplication_Levels", "FastqcDataList", function(object){
     if (sum(nulls) > 0)
         message(
             sprintf(
-                "Sequence_Duplication_Levels module missing from:\n%s",
+                "Sequence_Duplication_Levels module missing from %s\n",
                 paste(path(object)[nulls], sep = "\n"))
         )
     dplyr::bind_rows(df)

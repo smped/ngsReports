@@ -52,7 +52,7 @@ setMethod("Sequence_Length_Distribution", "FastqcDataList", function(object){
     nulls <- vapply(df, function(x){length(x) == 0}, logical(1))
     if (sum(nulls) > 0) {
         msg <- sprintf(
-            "Sequence_Length_Distribution module missing from:\n%s",
+            "Sequence_Length_Distribution module missing from %s\n",
             paste(path(object)[nulls], sep = "\n")
         )
         message(msg)

@@ -50,7 +50,7 @@ setMethod("Per_base_N_content", "FastqcDataList", function(object){
     nulls <- vapply(df,function(x){length(x) == 0}, logical(1))
     if (sum(nulls) > 0) message(
         sprintf(
-            "The Per_base_N_content module was empty in:\n%s",
+            "The Per_base_N_content module was empty in %s\n",
             paste(path(object)[nulls], sep = "\n")
         )
     )

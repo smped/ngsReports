@@ -52,7 +52,7 @@ setMethod("Kmer_Content", "FastqcDataList", function(object){
                     }, logical(1))
     if (sum(nulls) > 0) message(
         sprintf(
-            "The Kmer_Content module was missing from:\n%s",
+            "The Kmer_Content module was missing from %s\n",
             paste(path(object)[nulls], sep = "\n")
         )
     )
