@@ -9,6 +9,7 @@ globalVariables(
         "Category",
         "Count",
         "Cumulative",
+        "Length",
         "Lower",
         "Percentage",
         "Base",
