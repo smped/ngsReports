@@ -282,6 +282,12 @@ setMethod(
             return(qualPlot)
         }
 
+        ## As the Quality Scores may have different ranges across different
+        ## samples, use spread & gather to fill missing values with zero
+        df <- tidyr::spread(df, key = "Quality", value = "Count", fill = 0)
+        df <- tidyr::gather(df, key = "Quality", value = "Count", -Filename)
+        df$Quality <- as.integer(df$Quality)
+
         ## Check for valid plotType
         plotType <- match.arg(plotType)
         xLab <- "Mean Sequence Quality Per Read (Phred Score)"
@@ -292,7 +298,7 @@ setMethod(
         labels <- .makeLabels(df, labels, ...)
 
         ## Sort out the colours
-        if (base::missing(pwfCols)) pwfCols <- ngsReports::pwf
+        if (base::missing(pwfCols)) pwfCols <- pwf
 
         ## Get any arguments for dotArgs that have been set manually
         dotArgs <- list(...)

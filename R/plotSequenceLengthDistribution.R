@@ -34,8 +34,6 @@
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme()
 #' @param expand.x Passed to \code{scale_x_discrete}
-#' @param gridlineWidth,gridlineCol Passed to \code{geom_hline} and
-#' \code{geom_vline} to determine width and colour of gridlines
 #' @param heatCol The colour scheme for the heatmap
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -170,7 +168,7 @@ setMethod(
 
         if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
 
-        if(usePlotly) {
+        if (usePlotly) {
             lenPlot <- suppressMessages(
                 plotly::ggplotly(lenPlot, tooltip = c("x", "y"))
             )
@@ -203,8 +201,7 @@ setMethod(
     function(
         x, usePlotly = FALSE, labels, counts = FALSE,
         plotType = c("heatmap", "line", "cumulative"), cluster = FALSE,
-        dendrogram = FALSE, ..., expand.x = c(0, 0.2), gridlineCol = "grey20",
-        gridlineWidth = 0.2, heatCol = inferno(50)
+        dendrogram = FALSE, ..., expand.x = c(0, 0.2), heatCol = inferno(50)
     ){
 
         df <- Sequence_Length_Distribution(x)
@@ -221,26 +218,38 @@ setMethod(
         ## Drop the suffix, or check the alternate labels
         labels <- .makeLabels(df, labels, ...)
 
-        ## Add zero counts for lengths either side of the included range
-        df <- dplyr::bind_rows(
-            lapply(split(df, f = df$Filename), function(x){
-                ## Fix global environment error
-                Lower <- NULL
-                dplyr::bind_rows(
-                    x,
-                    tibble::tibble(
-                        Filename = x$Filename[1],
-                        Lower = c(min(x$Lower) - 1, max(x$Upper) + 1),
-                        Upper = Lower,
-                        Length = as.character(Lower),
-                        Count = 0)
-                )
-            }
+        ## Lengths will probably be binned so define the bins then expand
+        ## the range at the lower and upper limits to add zero.
+        ## This will enable replication of the default FastQC plot
+        ## In reality, this will only be required when there are <2 bins
+        lenBins <- stringr::str_sort(unique(df$Length), numeric = TRUE)
+        if (length(lenBins) < 3) {
+            lwr <- sprintf("<%i", min(df$Lower))
+            upr <- sprintf("%i+", max(df$Upper))
+            lwrDf <- tibble(
+                Filename = names(labels),
+                Length = lwr,
+                Count = 0
             )
-        )
+            uprDf <- tibble(
+                Filename = names(labels),
+                Length = upr,
+                Count = 0
+            )
+            df <- bind_rows(df, lwrDf, uprDf)
+        }
 
-        df$Lower <- as.integer(df$Lower)
-        df <- dplyr::arrange_at(df, vars("Filename", "Lower"))
+        ## Now spread the gather to fill zeros in any missing bins
+        df <- df[c("Filename", "Length", "Count")]
+        df <- tidyr::spread(df, "Length", "Count", fill = 0)
+        df <- tidyr::gather(df, "Length", "Count", -Filename)
+
+        ## Sort by length bins
+        df$Length <- factor(df$Length, levels = c(lwr, lenBins, upr))
+        df <- droplevels(df)
+        df <- dplyr::arrange(df, Filename, Length)
+
+        ## Get the cumulative count
         df <- dplyr::group_by(df, Filename)
         df <- dplyr::mutate(df, Cumulative = cumsum(Count))
         if (!counts) {
@@ -249,9 +258,8 @@ setMethod(
                                 Freq = Count / sum(Count))
         }
         df <- dplyr::ungroup(df)
-
-        ## Arrange in position & refer to the 'Lower' column as Length
-        df$Length <- factor(df$Lower, levels = unique(df$Lower))
+        ## Round the values for better plotting
+        df <- dplyr::mutate_if(df, is.double, round, 4)
 
         ## Get any arguments for dotArgs that have been set manually
         dotArgs <- list(...)
@@ -260,6 +268,8 @@ setMethod(
         userTheme <- c()
         if (length(keepArgs) > 0)
             userTheme <- do.call(theme, dotArgs[keepArgs])
+        ## Rotate labels if >3 lengths
+        rot <- ifelse(length(lenBins) > 1, 90, 0)
 
         if (plotType %in% c("line", "cumulative")) {
 
@@ -306,39 +316,47 @@ setMethod(
             ## Now define the order for a dendrogram if required
             ## This only applies to a heatmap
             key <- names(labels)
-            if (cluster){
-                cols <- c("Filename", "Lower", plotVal)
+            if (cluster) {
+                cols <- c("Filename", "Length", plotVal)
                 clusterDend <-
-                    .makeDendrogram(df[cols], "Filename","Lower", plotVal)
+                    .makeDendrogram(df[cols], "Filename","Length", plotVal)
                 key <- labels(clusterDend)
             }
 
             ## Now set everything as factors
             df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
+            ## The additional bins are not really required for a heatmap
+            df <- subset(df, subset = Length %in% lenBins)
+            df <- droplevels(df)
+
             lenPlot <- ggplot(
                 df,
                 aes_string("Length", "Filename", fill = plotVal)
             ) +
-                geom_tile(colour = gridlineCol) +
+                geom_tile() +
                 labs(fill = fillLab) +
                 scale_fill_gradientn(colours = heatCol, labels = fillLabelFun) +
                 scale_y_discrete(labels = labels, expand = c(0, 0))
         }
 
+        ## Set theme elements which are common to all plot types
         lenPlot <- lenPlot +
             scale_x_discrete(expand = expand.x) +
             labs(x = "Sequence Length") +
             theme(
-                axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
+                axis.text.x = element_text(angle = rot, hjust = 1, vjust = 0.5)
             )
 
         if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
 
         if (usePlotly) {
+
+            ## Hide the legend
+            lenPlot <- lenPlot + theme(legend.position = "none")
+
             if (plotType %in% c("line", "cumulative")) {
-                # Hide the legend
-                lenPlot <- lenPlot + theme(legend.position = "none")
+
                 ttip <- c("x", "y", "colour")
                 lenPlot <- suppressMessages(
                     suppressWarnings(
@@ -347,14 +365,13 @@ setMethod(
                 )
             }
             else{
-                pwfCols <- ngsReports::pwf
 
+                pwfCols <- pwf
                 lenPlot <- lenPlot  +
                     theme(
                         axis.ticks.y = element_blank(),
                         axis.title.y = element_blank(),
                         axis.text.y = element_blank(),
-                        legend.position = "none",
                         panel.background = element_blank()
                     )
 
@@ -371,7 +388,7 @@ setMethod(
                 ## Draw the PWF status as a sideBar
                 sideBar <- .makeSidebar(status, key, pwfCols)
 
-                ##plot dendrogram
+                ## Plot dendrogram component
                 if (dendrogram) {
                     dx <- ggdendro::dendro_data(clusterDend)
                     dendro <- .renderDendro(dx$segments)
@@ -380,6 +397,7 @@ setMethod(
                     dendro <- plotly::plotly_empty()
                 }
 
+                ## Layout the final plot
                 lenPlot <- suppressMessages(
                     suppressWarnings(
                         plotly::subplot(

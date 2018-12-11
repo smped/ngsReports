@@ -33,8 +33,7 @@ plotSequenceLengthDistribution(x, usePlotly = FALSE, labels, ...)
 \S4method{plotSequenceLengthDistribution}{FastqcDataList}(x,
   usePlotly = FALSE, labels, counts = FALSE, plotType = c("heatmap",
   "line", "cumulative"), cluster = FALSE, dendrogram = FALSE, ...,
-  expand.x = c(0, 0.2), gridlineCol = "grey20", gridlineWidth = 0.2,
-  heatCol = inferno(50))
+  expand.x = c(0, 0.2), heatCol = inferno(50))
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
@@ -64,9 +63,6 @@ fastqc data will be clustered using hierarchical clustering}
 \code{usePlotly} are \code{FALSE}. If both \code{cluster} and
 \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
-
-\item{gridlineWidth, gridlineCol}{Passed to \code{geom_hline} and
-\code{geom_vline} to determine width and colour of gridlines}
 
 \item{heatCol}{The colour scheme for the heatmap}
 }
