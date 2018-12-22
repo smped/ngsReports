@@ -223,6 +223,7 @@ setMethod(
         ## This will enable replication of the default FastQC plot
         ## In reality, this will only be required when there are <2 bins
         lenBins <- stringr::str_sort(unique(df$Length), numeric = TRUE)
+        lwr <- upr <- c()
         if (length(lenBins) < 3) {
             lwr <- sprintf("<%i", min(df$Lower))
             upr <- sprintf("%i+", max(df$Upper))

@@ -307,9 +307,10 @@ setMethod(
                 na.value = "white"
             ) +
             scale_x_continuous(
-                expand = c(0,0),
-                breaks = unique(df$x),
-                labels = unique(df$Base)
+                expand = c(0, 0)
+                # expand = c(0,0),
+                # breaks = unique(df$x),
+                # labels = unique(df$Base)
             ) +
             scale_y_discrete(expand = c(0, 0)) +
             labs(x = xLab, y = "Filename", fill = "%N") +
