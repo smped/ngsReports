@@ -12,6 +12,7 @@
 
 - Check additional import functions
 - Fix `scale_fill_pwf()`
+- Check x-axis values for `plotAdapterContent()` when sequence lengths vary
 - `maxAdapterContent()` as an S4 method
 
 
