@@ -90,7 +90,9 @@ writeHtmlReport <- function(
     nKmer <- suppressWarnings(as.integer(nKmer[1]))
     stopifnot(!is.na(c(nOver, nKmer)))
     gcFun <- match.arg(tolower(dataType), c("genomes","transcriptomes"))
-    avail <- do.call(gcFun, list(object = gcTheoretical))
+    ## Include the namesapce for gcTheoretical as that allows running without
+    ## loading the package, which is a pretty common use case
+    avail <- do.call(gcFun, list(object = ngsReports::gcTheoretical))
     species <- match.arg(species, avail$Name)
 
     ## Compile the document in the directory

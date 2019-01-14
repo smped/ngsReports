@@ -268,7 +268,7 @@ setMethod(
         breaks <- c(0, warn, fail, 100)
 
         ## Check for valid plotType & labels
-        plotType <- match.arg(plotType[1], c("line", "heatmap"))
+        plotType <- match.arg(plotType, c("line", "heatmap"))
         labels <- .makeLabels(df, labels, ...)
 
         ## Change to long form
@@ -359,6 +359,8 @@ setMethod(
                 )
                 cluster <- TRUE
             }
+
+            ## Set the key for interactive plotting in the shiny app
             key <- names(labels)
             if (cluster) {
                 clusterDend <- .makeDendrogram(
