@@ -268,7 +268,7 @@ setMethod(
         breaks <- c(0, warn, fail, 100)
 
         ## Check for valid plotType & labels
-        plotType <- match.arg(plotType, c("line", "heatmap"))
+        plotType <- match.arg(plotType)
         labels <- .makeLabels(df, labels, ...)
 
         ## Change to long form
