@@ -24,7 +24,7 @@
 #' @param theoreticalType \code{character} Select type of data to normalize GC
 #' content against. Accepts either "Genome" (default) or "Transcriptome".
 #' @param GCobject an object of class GCTheoretical.
-#'  Defaults to the gcTheoretical object supplied witht= the package
+#'  Defaults to the gcTheoretical object supplied with the package
 #' @param Fastafile a fasta file contains DNA sequences to generate theoretical
 #' GC content
 #' @param n number of simulated reads to generate theoretical GC content from

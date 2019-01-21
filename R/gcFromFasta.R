@@ -4,7 +4,8 @@
 #' fasta file
 #'
 #' @details Used to obtain theoretical GC content for a given
-#' genome/transcriptome
+#' genome/transcriptome.
+#' Called by \code{plotGcContent} when supplying a custom fasta file.
 #'
 #' @param Fastafile A fasta file containing a genome or transcriptome of
 #' interest

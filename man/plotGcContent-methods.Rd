@@ -69,7 +69,7 @@ accompanied by a species. Species currently supported can be obtained using
 \code{mData(gcTheoretical)}}
 
 \item{GCobject}{an object of class GCTheoretical.
-Defaults to the gcTheoretical object supplied witht= the package}
+Defaults to the gcTheoretical object supplied with the package}
 
 \item{Fastafile}{a fasta file contains DNA sequences to generate theoretical
 GC content}

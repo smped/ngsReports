@@ -15,6 +15,16 @@
 #' for transcriptomic sequences
 #' @slot mData A \code{data.frame} containing metadata about all species in the
 #' object
+#'
+#' @examples
+#' \dontrun{
+#'
+#' ## How to form an object using your own fasta file
+#' gen_df <- ngsReports:::.gcFromFasta("myGenome.fa")
+#' gen_df <- dplyr::rename(gen_df, mySpecies = Freq)
+#' mData_df <- data.frame(Name = "mySpecies", Genome = TRUE, Transcriptome = FALSE)
+#' myGC <- new("TheoreticalGC", Genome = gen_df, Transcriptome = data.frame(), mData = mData_df)
+#' }
 setClass("TheoreticalGC",  slots = c(
     Genome = "data.frame",
     Transcriptome = "data.frame",

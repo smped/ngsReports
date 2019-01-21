@@ -23,7 +23,8 @@ fasta file
 }
 \details{
 Used to obtain theoretical GC content for a given
-genome/transcriptome
+genome/transcriptome.
+Called by \code{plotGcContent} when supplying a custom fasta file.
 }
 \author{
 Hien To <totuhien@gmail.com>
