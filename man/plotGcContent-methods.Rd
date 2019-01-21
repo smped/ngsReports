@@ -83,7 +83,8 @@ GC content}
 \item{...}{Used to pass various potting parameters to theme.}
 
 \item{counts}{\code{logical}. Plot the counts from each file if
-\code{counts = TRUE}. Otherwise frequencies will be plotted.}
+\code{counts = TRUE}, otherwise frequencies will be plotted.
+Ignored if calling the function on a FastqcDataList.}
 
 \item{lineCols}{Colors for observed and theoretical GC lines in single plots}
 

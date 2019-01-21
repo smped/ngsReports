@@ -15,7 +15,8 @@
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param counts \code{logical}. Plot the counts from each file if
-#' \code{counts = TRUE}. Otherwise frequencies will be plotted.
+#' \code{counts = TRUE}, otherwise frequencies will be plotted.
+#' Ignored if calling the function on a FastqcDataList.
 #' @param theoreticalGC \code{logical} default is \code{FALSE} to give the true
 #' GC content, set to \code{TRUE} to normalize values of GC_Content by the
 #' theoretical values using \code{\link{gcTheoretical}}. \code{species} must be
@@ -364,7 +365,7 @@ setMethod(
             else {
                 ## Tidy up the GC content variables
                 if (missing(GCobject)) {
-                    GCobject <- ngsReports::gcTheoretical
+                    GCobject <- gcTheoretical
                 }
                 gcFun <- match.arg(
                     tolower(theoreticalType),
