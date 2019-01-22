@@ -5,10 +5,13 @@ test_that("TRUE statement from a zipped file",{
   expect_true(isCompressed(fl))
 })
 
-test_that("FALSE statement from a directory",{
-  d <- system.file("extdata", package = "ngsReports")
-  expect_false(isCompressed(d))
-})
+## This is currently causing Bioc-devel to fail as a warning has been added to r-devel
+## Once the warnings has been added to r-release, reinstate this test but changing to
+## expect_warning()
+# test_that("FALSE statement from a directory",{
+#   d <- system.file("extdata", package = "ngsReports")
+#   expect_false(isCompressed(d))
+# })
 
 test_that("FALSE statement from a gz file using zip",{
   fl <- system.file("extdata", "errorTestingFiles", "hello.txt.gz", package = "ngsReports")

@@ -20,50 +20,44 @@
 #'
 #' @export
 importBowtieLogs <- function(x){
-    
+
     x <- unique(x) # Remove any  duplicates
     stopifnot(file.exists(x)) # Check they all exist
-    
+
     ## Load the data
     data <- suppressWarnings(lapply(x, readLines))
     names(data) <- basename(x)
-    
-    ## Define a quick check
-    .isValidBowtieLog <- function(x){
-        nLines <- length(x)
-        if (!any(grepl("Time loading forward index", x))) return(FALSE)
-        if (!any(grepl("Time loading mirror index:", x))) return(FALSE)
-        if (!any(grepl("Seeded quality full-index search:", x))) return(FALSE)
-        if (!any(grepl("# reads processed:", x))) return(FALSE)
-        if (!any(grepl("# reads with at least one reported alignment:", x))) return(FALSE)
-        if (!any(grepl("# reads that failed to align:", x))) return(FALSE)
-        if (!any(grepl("Time searching:", x))) return(FALSE)
-        if (!any(grepl("Overall time:", x))) return(FALSE)
-        TRUE
-    }
+
+    ## Perform a check on the data
     validLogs <- vapply(data, .isValidBowtieLog, logical(1))
     if (any(!validLogs)) {
-        stop(paste("Incorrect file structure for:", names(validLogs)[!validLogs], collapse = "\n"))
+        failed <- names(validLogs)[!validLogs]
+        stop(paste("Incorrect file structure for:", failed , collapse = "\n"))
     }
-    
+
     df <- lapply(data, function(x){
         x <- gsub("# ", "", x)
+        ## Treat the line containing the total reads separately
         total <- grep("Reported .* alignments", x = x, value = TRUE)
         x <- setdiff(x, total)
+        ## Split the remaining lines into a nx2 matrix,
+        ## then change to titles and remove spaces/dashes
         x <- stringr::str_split_fixed(x, pattern = ": ", 2)
         x[,1] <- stringr::str_to_title(x[,1])
         x[,1] <- gsub("( |-)", "_", x[,1])
+        ## Remove those percentages from some of the fields
         x[,2] <- gsub("(.+) \\(.+\\)", "\\1", x[,2])
+        ## Return a data.frame
         df <- structure(as.list(x[,2]), names = x[,1])
         df <- as.data.frame(df, stringsAsFactors = FALSE)
     })
     df <- dplyr::bind_rows(df)
-    
+
     ## Some colnames may have a flag from the original bowtie code
-    ## This will replace that after the conversion steps above
+    ## This will correct that after the title case conversion above
     names(df) <- gsub("__(.)", "_-\\L\\1", names(df), perl = TRUE)
-    
-    ## Reformat the columns
+
+    ## Reformat the columns as integers and durations
     timeCols <- grepl("(Time|Full_Index_Search)", names(df))
     df[!timeCols] <- suppressWarnings(lapply(df[!timeCols], as.integer))
     df[timeCols] <- lapply(df[timeCols], function(x){
@@ -72,12 +66,36 @@ importBowtieLogs <- function(x){
         x <- matrix(x, ncol = 3)
         dhours(x[,1]) + dminutes(x[,2]) + dseconds(x[,3])
     })
+    ## Add the filename, reorder the columns & return a tibble
     df$Filename <- basename(x)
     df <- dplyr::select(df,
                         "Filename",
                         tidyselect::contains("Reads"),
                         tidyselect::contains("Time"),
                         tidyselect::everything())
-    
+
     tibble::as_tibble(df)
+}
+
+#' @title Check for correct structure of supplied Bowtie log files
+#' @description Check for correct structure of supplied Bowtie log files after
+#' reading in using readLines.
+#' @details Checks for all the required fields in the lines provided
+#' @param x Character vector as output when readLines to a supplied log file
+#' @return logical(1)
+#' @keywords internal
+.isValidBowtieLog <- function(x){
+    nLines <- length(x)
+    fields <- c(
+        "Time loading forward index",
+        "Time loading mirror index:",
+        "Seeded quality full-index search:",
+        "# reads processed:",
+        "# reads with at least one reported alignment:",
+        "# reads that failed to align:",
+        "Time searching:",
+        "Overall time:"
+    )
+    chk <- vapply(fields, function(f){any(grepl(f, x))}, logical(1))
+    all(chk)
 }
