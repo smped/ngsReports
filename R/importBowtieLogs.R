@@ -11,7 +11,8 @@
 #' but have been modified for easier handling under R naming conventions.
 #'
 #' @examples
-#' bowtieLogs <- system.file("extdata", c("bowtiePE.log", "bowtieSE.log"), package = "ngsReports")
+#' fls <- c("bowtiePE.log", "bowtieSE.log")
+#' bowtieLogs <- system.file("extdata", fls, package = "ngsReports")
 #' df <- importBowtieLogs(bowtieLogs)
 #'
 #' @importFrom lubridate dminutes
