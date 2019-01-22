@@ -45,10 +45,16 @@ isCompressed <- function(path, type = "zip", verbose = FALSE){
     magicNum <- list(zip = c(80, 75, 3, 4),
                      gzip = c(31, 139, 8))[[type]]
 
-    vapply(path, function(x){
-        ## Get the magic number from the files
-        rw <- readBin(x, what = "raw", n = n)
-        if (verbose > 1) message(rw)
-        sum(rw == magicNum) == n
-    }, logical(1))
+    ## Suppress warnings is necessary here as the change to R > 3.5.2
+    ## will produce a warning (which is an excellent warning).
+    ## This causes tests to fail, but the tests should instead test
+    ## for a warning once this change becomes part of r-base
+    suppressWarnings(
+        vapply(path, function(x){
+            ## Get the magic number from the files
+            rw <- readBin(x, what = "raw", n = n)
+            if (verbose > 1) message(rw)
+            sum(rw == magicNum) == n
+        }, logical(1))
+    )
 }
