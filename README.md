@@ -1,4 +1,6 @@
 [![Build Status](https://api.travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=dev)](https://api.travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=dev)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+
 
 # ngsReports
 
@@ -7,13 +9,16 @@ This branch is compatible with Bioconductor >= 3.7 only. To install this package
 
 ## Installation
 To install required packages follows the instructions below.
-Currently you need to install the fastqcTheoreticalGC package separately.
 
 ```
-source("https://bioconductor.org/biocLite.R")
-biocLite(c("BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "scales", "ShortRead", "tidyverse",  "viridisLite", "zoo"))
-devtools::install_github('mikelove/fastqcTheoreticalGC')
-devtools::install_github('UofABioinformaticsHub/ngsReports', "dev", build_vignettes = FALSE)
+install.packages("BiocManager")
+pkgs <- c(
+    "BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "ggdendro", "plotly", 
+    "reshape2", "scales", "ShortRead", "tidyverse", "viridisLite", "zoo", 
+    "mikelove/fastqcTheoreticalGC"
+)
+BiocManager::install(pkgs)
+BiocManager::install("UofABioinformaticsHub/ngsReports", ref = "dev")
 library(ngsReports)
 ```
 
