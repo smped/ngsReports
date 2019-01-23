@@ -22,6 +22,17 @@ test_that("importBowtieLogs loads correctly",{
     expect_equal(basename(bowtieLogs), df$Filename)
 })
 
+test_that("importHisat2Logs loads correctly",{
+    ## NB: This is identical to importBowtie2Logs
+    df <- importHisat2Logs(bowtie2Logs)
+    nm <- c("Filename", "Total_Reads", "Paired_Reads", "Unique_Unpaired",
+            "Unique_In_Pairs", "Unique_Discordant_Pairs", "Multiple_Unpaired",
+            "Multiple_In_Pairs", "Not_Aligned", "Alignment_Rate")
+    ## Just check for the expected colnames & filenames
+    expect_equal(colnames(df), nm)
+    expect_equal(basename(bowtie2Logs), df$Filename)
+})
+
 test_that("importDuplicationMetrics loads correctly",{
     dup <- importDuplicationMetrics(dupLogs)
     nm <- c("Library", "Unpaired Reads Examined", "Read Pairs Examined",
@@ -36,6 +47,11 @@ test_that("importDuplicationMetrics loads correctly",{
 test_that("importBowtieLogs errors correctly",{
     ## These are bowtie2 logs so should error
     expect_error(importBowtieLogs(bowtie2Logs))
+})
+
+test_that("importHisat2Logs errors correctly",{
+    ## These are bowtie logs so should error
+    expect_error(importHisat2Logs(bowtieLogs))
 })
 
 test_that("importDuplicationMetrics errors correctly",{

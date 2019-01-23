@@ -5,12 +5,15 @@
 \alias{importBowtie2Logs}
 \title{Read Hisat2/Bowtie2 Log Files}
 \usage{
-importHisat2Logs(x)
+importHisat2Logs(x, useBasename = TRUE)
 
-importBowtie2Logs(x)
+importBowtie2Logs(x, useBasename = TRUE)
 }
 \arguments{
 \item{x}{\code{character}. Vector of paths to log files}
+
+\item{useBasename}{\code{logical}. Strip file paths from the Filename column
+in the returned tibble?}
 }
 \value{
 A \code{tibble}
@@ -23,7 +26,8 @@ hisat2Logs <- system.file("extdata", "hisat2PE.log", package = "ngsReports")
 df <- importHisat2Logs(hisat2Logs)
 
 # bowtie2 logs are the identical format
-bowtie2Logs <- system.file("extdata", c("bowtie2PE.log", "bowtie2SE.log"), package = "ngsReports")
+fl <- c("bowtie2PE.log", "bowtie2SE.log")
+bowtie2Logs <- system.file("extdata", fl, package = "ngsReports")
 df <- importBowtie2Logs(bowtie2Logs)
 
 }
