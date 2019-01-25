@@ -50,109 +50,94 @@
 #'
 #' @export
 #' @rdname runFastQC-methods
-setGeneric(
-    "runFastQC",
-    function(
-        object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
-        extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
-        adapters = c(), kmers = 7, exec){
-        standardGeneric("runFastQC")
-    }
+setGeneric("runFastQC", function(
+    object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
+    extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
+    adapters = c(), kmers = 7, exec){
+    standardGeneric("runFastQC")
+}
 )
 #' @aliases runFastQC,character-method
 #' @rdname runFastQC-methods
 #' @export
-setMethod(
-    "runFastQC",
-    "character",
-    function(
-        object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
-        extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
-        adapters = c(), kmers = 7, exec){
+setMethod("runFastQC", "character", function(
+    object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
+    extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
+    adapters = c(), kmers = 7, exec){
 
-        fq <- all(grepl("(fq|fastq|fq.gz|fastq.gz|txt)$", basename(object)))
-        bam <- all(grepl("bam$", basename(object)))
+    fq <- all(grepl("(fq|fastq|fq.gz|fastq.gz|txt)$", basename(object)))
+    bam <- all(grepl("bam$", basename(object)))
 
-        if (!bam & !fq) {
-            msg <- paste("File format could not be identified.",
-                         "FastQC will not be run")
-            stop(msg)
-        }
-        n <- length(object)
+    if (!bam & !fq)
+        stop("File format could not be identified. FastQC will not be run")
+    n <- length(object)
 
-        if (fq) object <- ShortRead::FastqFileList(object)
-        if (bam)  object <- Rsamtools::BamFileList(object)
-        if (n == 1) object <- object[[1]]
+    if (fq) object <- ShortRead::FastqFileList(object)
+    if (bam)  object <- Rsamtools::BamFileList(object)
+    if (n == 1) object <- object[[1]]
 
-        runFastQC(
-            object, outPath, threads, casava, nofilter, extract, nogroup,
-            min_length, contaminants = c(), adapters, kmers, exec
-        )
-    })
+    runFastQC(
+        object, outPath, threads, casava, nofilter, extract, nogroup,
+        min_length, contaminants = c(), adapters, kmers, exec
+    )
+})
 #' @aliases runFastQC,FastqFile-method
 #' @rdname runFastQC-methods
 #' @export
-setMethod(
-    "runFastQC",
-    "FastqFile",
-    function(
-        object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
-        extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
-        adapters = c(), kmers = 7, exec){
+setMethod("runFastQC", "FastqFile", function(
+    object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
+    extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
+    adapters = c(), kmers = 7, exec){
 
-        .fastqc(object, outPath, threads, casava, nofilter, extract, nogroup,
-                min_length, contaminants, adapters, kmers, exec,
-                fileType = "FastqFile")
-    }
+    .fastqc(
+        object, outPath, threads, casava, nofilter, extract, nogroup,
+        min_length, contaminants, adapters, kmers, exec, fileType = "FastqFile"
+    )
+}
 )
 #' @aliases runFastQC,FastqFileList-method
 #' @rdname runFastQC-methods
 #' @export
-setMethod(
-    "runFastQC",
-    "FastqFileList",
-    function(
-        object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
-        extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
-        adapters = c(), kmers = 7, exec){
+setMethod("runFastQC", "FastqFileList", function(
+    object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
+    extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
+    adapters = c(), kmers = 7, exec){
 
-        .fastqc(object, outPath, threads, casava, nofilter, extract, nogroup,
-                min_length, contaminants, adapters, kmers, exec,
-                fileType = "FastqFileList")
-
-    }
+    .fastqc(
+        object, outPath, threads, casava, nofilter, extract, nogroup,
+        min_length, contaminants, adapters, kmers, exec,
+        fileType = "FastqFileList"
+    )
+}
 )
 #' @aliases runFastQC,BamFile-method
 #' @rdname runFastQC-methods
 #' @export
-setMethod(
-    "runFastQC",
-    "BamFile",
-    function(
-        object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
-        extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
-        adapters = c(), kmers = 7, exec){
+setMethod("runFastQC", "BamFile", function(
+    object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
+    extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
+    adapters = c(), kmers = 7, exec){
 
-        .fastqc(object, outPath, threads, casava, nofilter, extract, nogroup,
-                min_length, contaminants, adapters, kmers, exec,
-                fileType = "BamFile")
-    }
+    .fastqc(
+        object, outPath, threads, casava, nofilter, extract, nogroup,
+        min_length, contaminants, adapters, kmers, exec, fileType = "BamFile"
+    )
+}
 )
 #' @aliases runFastQC,BamFileList-method
 #' @rdname runFastQC-methods
 #' @export
-setMethod(
-    "runFastQC",
-    "BamFileList",
-    function(
-        object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
-        extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
-        adapters = c(), kmers = 7, exec){
+setMethod("runFastQC", "BamFileList", function(
+    object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
+    extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
+    adapters = c(), kmers = 7, exec){
 
-        .fastqc(object, outPath, threads, casava, nofilter, extract, nogroup,
-                min_length, contaminants, adapters, kmers, exec,
-                fileType = "BamFileList")
-    }
+    .fastqc(
+        object, outPath, threads, casava, nofilter, extract, nogroup,
+        min_length, contaminants, adapters, kmers, exec,
+        fileType = "BamFileList"
+    )
+}
 )
 
 .fastqc <- function(
@@ -192,8 +177,7 @@ setMethod(
 
     ## Set the arguments to the function call
     maxCores <- parallel::detectCores() - 1
-    if (maxCores < threads)
-        message("Too many threads. Resetting to", maxCores)
+    if (maxCores < threads) message("Too many threads. Resetting to", maxCores)
     threads <- paste("-t", min(threads, maxCores))
     stopifnot(is.logical(casava), is.logical(nogroup))
     if (casava) {
@@ -224,8 +208,10 @@ setMethod(
     stopifnot(!is.na(kmers), kmers %in% 2:10)
     kmers <- paste("-k", kmers)
 
-    args <- paste("-o", outPath, threads, casava, extract, nogroup,
-                  contaminants, adapters, kmers)
+    args <- paste(
+        "-o", outPath, threads, casava, extract, nogroup, contaminants,
+        adapters, kmers
+    )
     args <- gsub(" +", " ", args) #Remove any double spaces
     files <- paste(BiocGenerics::path(object), collapse = " ")
 

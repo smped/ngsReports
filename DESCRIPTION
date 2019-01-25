@@ -5,13 +5,13 @@ Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Steve", "Pederson", , "stephen.pederson@adelaide.edu.au", c("aut", "cre")),
     person("Christopher", "Ward", , "christopher.ward@adelaide.edu.au", c("aut")),
-    person("Hien", "To", , "hien.to@adelaide.edu.au", c("aut"))
+    person("Thu-Hien", "To", , "tothuhien@gmail.com", c("aut"))
     )
 Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
 Description: Load FastQC reports and other NGS output summaries into R.
 URL: https://github.com/UofABioinformaticsHub/ngsReports
 BugReports: https://github.com/UofABioinformaticsHub/ngsReports
-License: LGPL (>= 2)
+License: LGPL (>= 3)
 Encoding: UTF-8
 Depends:
   R (>= 3.5.0),

@@ -32,7 +32,7 @@ the range 0 to 255.}
 }
 \value{
 getColours will return a character vector of colours coresponding to
- PASS/WARN/FAIL
+PASS/WARN/FAIL
 
 setColours will return an object of class PwfCols
 

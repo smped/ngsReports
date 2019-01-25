@@ -12,7 +12,7 @@
 #'
 #' @return
 #' getColours will return a character vector of colours coresponding to
-#'  PASS/WARN/FAIL
+#' PASS/WARN/FAIL
 #'
 #' @examples
 #' getColours(pwf)

@@ -63,40 +63,34 @@
 #' @name plotSequenceLengthDistribution
 #' @rdname plotSequenceLengthDistribution-methods
 #' @export
-setGeneric(
-    "plotSequenceLengthDistribution",
-    function(x, usePlotly = FALSE, labels, ...){
-        standardGeneric("plotSequenceLengthDistribution")
-    }
+setGeneric("plotSequenceLengthDistribution", function(
+    x, usePlotly = FALSE, labels, ...){
+    standardGeneric("plotSequenceLengthDistribution")
+}
 )
 #' @aliases plotSequenceLengthDistribution,character
 #' @rdname plotSequenceLengthDistribution-methods
 #' @export
-setMethod(
-    "plotSequenceLengthDistribution",
-    signature = "character",
-    function(x, usePlotly = FALSE, labels, ...){
-        x <- getFastqcData(x)
-        plotSequenceLengthDistribution(x, usePlotly, labels, ...)
-    }
+setMethod("plotSequenceLengthDistribution", signature = "character", function(
+    x, usePlotly = FALSE, labels, ...){
+    x <- getFastqcData(x)
+    plotSequenceLengthDistribution(x, usePlotly, labels, ...)
+}
 )
 #' @aliases plotSequenceLengthDistribution,FastqcFile
 #' @rdname plotSequenceLengthDistribution-methods
 #' @export
-setMethod(
-    "plotSequenceLengthDistribution",
-    signature = "FastqcFile",
-    function(x, usePlotly = FALSE, labels, ...){
-        x <- getFastqcData(x)
-        plotSequenceLengthDistribution(x, usePlotly, labels, ...)
-    }
+setMethod("plotSequenceLengthDistribution", signature = "FastqcFile", function(
+    x, usePlotly = FALSE, labels, ...){
+    x <- getFastqcData(x)
+    plotSequenceLengthDistribution(x, usePlotly, labels, ...)
+}
 )
 #' @aliases plotSequenceLengthDistribution,FastqcFileList
 #' @rdname plotSequenceLengthDistribution-methods
 #' @export
 setMethod(
-    "plotSequenceLengthDistribution",
-    signature = "FastqcFileList",
+    "plotSequenceLengthDistribution", signature = "FastqcFileList",
     function(x, usePlotly = FALSE, labels, ...){
         x <- getFastqcData(x)
         plotSequenceLengthDistribution(x, usePlotly, labels, ...)
@@ -105,104 +99,96 @@ setMethod(
 #' @aliases plotSequenceLengthDistribution,FastqcData
 #' @rdname plotSequenceLengthDistribution-methods
 #' @export
-setMethod(
-    "plotSequenceLengthDistribution",
-    signature = "FastqcData",
-    function(
-        x, usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
-        expand.x = c(0,0.2)
-    ){
+setMethod("plotSequenceLengthDistribution", signature = "FastqcData", function(
+    x, usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
+    expand.x = c(0,0.2)){
 
-        df <- Sequence_Length_Distribution(x)
-        plotType <- match.arg(plotType)
+    df <- Sequence_Length_Distribution(x)
+    plotType <- match.arg(plotType)
 
-        if (!length(df)) {
-            lenPlot <- .emptyPlot("No Sequence Length Module Detected")
-            if (usePlotly) lenPlot <- ggplotly(lenPlot, tooltip = "")
-            return(lenPlot)
-        }
+    if (!length(df)) {
+        lenPlot <- .emptyPlot("No Sequence Length Module Detected")
+        if (usePlotly) lenPlot <- ggplotly(lenPlot, tooltip = "")
+        return(lenPlot)
+    }
 
-        labels <- .makeLabels(df, labels, ...)
-        df$Filename <- labels[df$Filename]
+    labels <- .makeLabels(df, labels, ...)
+    df$Filename <- labels[df$Filename]
 
-        ## Add zero counts for lengths either side of the included range
-        ## This is only required if a single value exists
-        if (nrow(df) == 1) {
-            df <- dplyr::bind_rows(
-                df,
-                dplyr::mutate(df, Lower = Lower - 1, Count = 0),
-                dplyr::mutate(df, Lower = Lower + 1, Count = 0)
-            )
-        }
-
-        df$Lower <- as.integer(df$Lower)
-        df <- dplyr::arrange_at(df, vars("Lower"))
-        df <- df[c("Filename", "Length", "Lower", "Count")]
-        df$Cumulative <- cumsum(df$Count)
-        df$Length <- factor(df$Lower, levels = unique(df$Lower))
-
-        ## Sort out some plotting parameters
-        xLab <- "Sequence Length (bp)"
-        yLab <- c(cumulative = "Cumulative Count", line = "Count")[plotType]
-        plotY <- c(cumulative = "Cumulative", line = "Count")[plotType]
-
-        ## Get any arguments for dotArgs that have been set manually
-        dotArgs <- list(...)
-        allowed <- names(formals(ggplot2::theme))
-        keepArgs <- which(names(dotArgs) %in% allowed)
-        userTheme <- c()
-        if (length(keepArgs) > 0)
-            userTheme <- do.call(theme, dotArgs[keepArgs])
-
-        lenPlot <- ggplot(
+    ## Add zero counts for lengths either side of the included range
+    ## This is only required if a single value exists
+    if (nrow(df) == 1) {
+        df <- dplyr::bind_rows(
             df,
-            aes_string("Length", plotY, colour = "Filename", group = "Filename")
-        ) +
-            geom_line() +
-            facet_wrap(~Filename) +
-            labs(x = xLab, y = yLab) +
-            scale_x_discrete(expand = expand.x) +
-            scale_y_continuous(labels = scales::comma) +
-            theme_bw() +
-            theme(legend.position = "none")
+            dplyr::mutate(df, Lower = Lower - 1, Count = 0),
+            dplyr::mutate(df, Lower = Lower + 1, Count = 0)
+        )
+    }
 
-        if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
+    df$Lower <- as.integer(df$Lower)
+    df <- dplyr::arrange_at(df, vars("Lower"))
+    df <- df[c("Filename", "Length", "Lower", "Count")]
+    df$Cumulative <- cumsum(df$Count)
+    df$Length <- factor(df$Lower, levels = unique(df$Lower))
 
-        if (usePlotly) {
-            lenPlot <- suppressMessages(
-                plotly::ggplotly(lenPlot, tooltip = c("x", "y"))
-            )
+    ## Sort out some plotting parameters
+    xLab <- "Sequence Length (bp)"
+    yLab <- c(cumulative = "Cumulative Count", line = "Count")[plotType]
+    plotY <- c(cumulative = "Cumulative", line = "Count")[plotType]
 
-            lenPlot <- suppressMessages(
-                suppressWarnings(
-                    plotly::subplot(
-                        plotly::plotly_empty(),
-                        lenPlot,
-                        widths = c(0.14,0.86))
-                ))
-            lenPlot <- plotly::layout(
-                lenPlot,
-                xaxis2 = list(title = xLab),
-                yaxis2 = list(title = yLab)
-            )
+    ## Get any arguments for dotArgs that have been set manually
+    dotArgs <- list(...)
+    allowed <- names(formals(ggplot2::theme))
+    keepArgs <- which(names(dotArgs) %in% allowed)
+    userTheme <- c()
+    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-        }
+    lenPlot <- ggplot(
+        df,
+        aes_string("Length", plotY, colour = "Filename", group = "Filename")
+    ) +
+        geom_line() +
+        facet_wrap(~Filename) +
+        labs(x = xLab, y = yLab) +
+        scale_x_discrete(expand = expand.x) +
+        scale_y_continuous(labels = scales::comma) +
+        theme_bw() +
+        theme(legend.position = "none")
 
-        lenPlot
+    if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
+
+    if (usePlotly) {
+        lenPlot <-
+            suppressMessages(plotly::ggplotly(lenPlot, tooltip = c("x", "y")))
+
+        lenPlot <- suppressMessages(
+            suppressWarnings(
+                plotly::subplot(
+                    plotly::plotly_empty(),
+                    lenPlot,
+                    widths = c(0.14,0.86))
+            ))
+        lenPlot <- plotly::layout(
+            lenPlot,
+            xaxis2 = list(title = xLab),
+            yaxis2 = list(title = yLab)
+        )
 
     }
+
+    lenPlot
+
+}
 )
 #' @aliases plotSequenceLengthDistribution,FastqcDataList
 #' @rdname plotSequenceLengthDistribution-methods
 #' @export
 setMethod(
-    "plotSequenceLengthDistribution",
-    signature = "FastqcDataList",
+    "plotSequenceLengthDistribution", signature = "FastqcDataList",
     function(
         x, usePlotly = FALSE, labels, counts = FALSE,
         plotType = c("heatmap", "line", "cumulative"), cluster = FALSE,
-        dendrogram = FALSE, ..., expand.x = c(0, 0.2), heatCol = inferno(50)
-    ){
+        dendrogram = FALSE, ..., expand.x = c(0, 0.2), heatCol = inferno(50)){
 
         df <- Sequence_Length_Distribution(x)
 
@@ -254,9 +240,10 @@ setMethod(
         df <- dplyr::group_by(df, Filename)
         df <- dplyr::mutate(df, Cumulative = cumsum(Count))
         if (!counts) {
-            df <- dplyr::mutate(df,
-                                Cumulative = Cumulative / max(Cumulative),
-                                Freq = Count / sum(Count))
+            df <- dplyr::mutate(
+                df,
+                Cumulative = Cumulative / max(Cumulative),
+                Freq = Count / sum(Count))
         }
         df <- dplyr::ungroup(df)
         ## Round the values for better plotting

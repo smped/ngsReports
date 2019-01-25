@@ -21,8 +21,8 @@
 #' ngsReports:::.makeLabels(df)
 #'
 #' @keywords internal
-.makeLabels <- function(df, labels, pattern = ".(fastq|fq|bam|sam|cram).*",
-                        col ="Filename", ...){
+.makeLabels <- function(
+    df, labels, pattern = ".(fastq|fq|bam|sam|cram).*", col ="Filename", ...){
     stopifnot(is.data.frame(df))
     col <- match.arg(col, colnames(df))
     ## If no labels are provided, just remove the file suffix as determined by
@@ -33,11 +33,8 @@
             names = unique(df[[col]])
         )
     }
-    if (!all(df[[col]] %in% names(labels))) stop(
-        "Names of supplied labels must match all filenames."
-    )
-    if (any(duplicated(labels))) stop(
-        "Labels must be unique."
-    )
+    if (!all(df[[col]] %in% names(labels)))
+        stop("Names of supplied labels must match all filenames.")
+    if (any(duplicated(labels))) stop("Labels must be unique.")
     labels
 }
