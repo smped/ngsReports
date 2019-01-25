@@ -32,8 +32,10 @@ object}
 
 ## How to form an object using your own fasta file
 gen_df <- ngsReports:::.gcFromFasta("myGenome.fa")
-gen_df <- dplyr::rename(gen_df, mySpecies = Freq)
-mData_df <- data.frame(Name = "mySpecies", Genome = TRUE, Transcriptome = FALSE)
-myGC <- new("TheoreticalGC", Genome = gen_df, Transcriptome = data.frame(), mData = mData_df)
+gen_df <- dplyr::rename(gen_df, mySpp = Freq)
+mData_df <- data.frame(Name = "mySpp", Genome = TRUE, Transcriptome = FALSE)
+tr_df <- data.frame()
+myGC <- new(
+   "TheoreticalGC", Genome = gen_df, Transcriptome = tr_df, mData = mData_df)
 }
 }

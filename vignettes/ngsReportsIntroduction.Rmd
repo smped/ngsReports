@@ -30,6 +30,17 @@ Tables of read counts can also be easily generated.
 
 # Basic Usage
 
+## Using the Shiny App
+
+In addition to the useage demonstrated below, a `shiny` app has been developed for interactive viewing of FastQC reports.
+This can be installed using:
+
+```
+remotes::install_github(UofABioinformaticsHub/shinyNgsReports)
+```
+
+A vignette for this app will be installed with the package.
+
 ## The default report
 
 In it's simplest form, a default report can be generated simply by specifying a directory containing the output from FastQC and calling the function `writeHtmlReport()`.

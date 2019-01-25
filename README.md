@@ -22,8 +22,26 @@ BiocManager::install("UofABioinformaticsHub/ngsReports", ref = "dev")
 library(ngsReports)
 ```
 
+## ShinyApp
+
+A Graphical User Interface (Shiny App) has been developed for interactive inspection of many FastQC reports. The ngsReports shiny app can be installed [here](https://github.com/UofABioinformaticsHub/shinyNgsReports).
+
 # Vignette
 
 The vignette for usage is [here](https://uofabioinformaticshub.github.io/ngsReports/vignettes/ngsReportsIntroduction)
 
+# Citation 
+
+Please cite our [preprint](https://www.biorxiv.org/content/early/2018/05/02/313148):
+
+```
+@article{ward2018ngsreports,
+  title={ngsReports: An R Package for managing FastQC reports and other NGS related log files.},
+  author={Ward, Christopher M and To, Hien and Pederson, Stephen M},
+  journal={bioRxiv},
+  pages={313148},
+  year={2018},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
 

@@ -76,12 +76,14 @@ importHisat2Logs <- function(x, useBasename = TRUE){
         1 - out$Not_Aligned / (out$Total_Reads + out$Paired_Reads)
 
     ## Now return in the correct order
-    dplyr::select(out,
-                  "Filename",
-                  tidyselect::ends_with("Reads"),
-                  tidyselect::contains("Unique"),
-                  tidyselect::contains("Multiple"),
-                  tidyselect::everything())
+    dplyr::select(
+        out,
+        "Filename",
+        tidyselect::ends_with("Reads"),
+        tidyselect::contains("Unique"),
+        tidyselect::contains("Multiple"),
+        tidyselect::everything()
+    )
 
 }
 

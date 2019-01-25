@@ -60,11 +60,10 @@ setMethod("Per_base_N_content", "FastqcDataList", function(object){
 #' @export
 #' @rdname Per_base_N_content
 #' @aliases Per_base_N_content
-setMethod("Per_base_N_content", "FastqcFile",
-          function(object){
-              object <- getFastqcData(object)
-              Per_base_N_content(object)
-          })
+setMethod("Per_base_N_content", "FastqcFile", function(object){
+    object <- getFastqcData(object)
+    Per_base_N_content(object)
+})
 
 #' @export
 #' @rdname Per_base_N_content

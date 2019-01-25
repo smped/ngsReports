@@ -42,8 +42,7 @@ isCompressed <- function(path, type = "zip", verbose = FALSE){
 
     ## This is the length of the magic number for each compression type
     n <- c(zip = 4L, gzip = 3L)[type]
-    magicNum <- list(zip = c(80, 75, 3, 4),
-                     gzip = c(31, 139, 8))[[type]]
+    magicNum <- list(zip = c(80, 75, 3, 4), gzip = c(31, 139, 8))[[type]]
 
     ## Suppress warnings is necessary here as the change to R > 3.5.2
     ## will produce a warning (which is an excellent warning).

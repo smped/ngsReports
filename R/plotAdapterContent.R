@@ -318,8 +318,8 @@ setMethod(
         allowed <- names(formals(ggplot2::theme))
         keepArgs <- which(names(dotArgs) %in% allowed)
         userTheme <- c()
-        if (length(keepArgs) > 0) userTheme <- do.call(theme,
-                                                       dotArgs[keepArgs])
+        if (length(keepArgs) > 0)
+            userTheme <- do.call(theme, dotArgs[keepArgs])
 
         ## Set the axis label for either plotType
         xLab <- "Position in read (bp)"
@@ -337,8 +337,8 @@ setMethod(
             ## Adjust the data for files with varying read lengths
             ## This will fill NA values with the previous values
             df <- lapply(split(df, f = df$Filename), function(x){
-                Longest_sequence <- gsub(".*-([0-9]*)", "\\1",
-                                         as.character(x$Position))
+                Longest_sequence <-
+                    gsub(".*-([0-9]*)", "\\1", as.character(x$Position))
                 Longest_sequence <- max(as.integer(Longest_sequence))
                 dfFill <- data.frame(Start = seq_len(Longest_sequence))
                 x <- dplyr::right_join(x, dfFill, by = "Start")
