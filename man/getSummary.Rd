@@ -24,11 +24,13 @@
 \item{object}{Can be a FastqcFile or FastqcFileList}
 }
 \value{
-A \code{tibble} will be returned when supplying a \code{FastqcFile} object,
-whilst a list of tibbles will be returned when supplying a \code{FastqcFileList} object
+A \code{tibble} will be returned when supplying a \code{FastqcFile}
+object, whilst a list of tibbles will be returned when supplying a
+\code{FastqcFileList} object
 }
 \description{
-Read the information from the \code{summary.txt} files in each FastqcFile
+Read the information from the \code{summary.txt} files in each
+FastqcFile
 }
 \examples{
 
@@ -39,7 +41,7 @@ fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)
 
-# Return a data_frame/tibble with the raw information
+# Return a tibble/tibble with the raw information
 getSummary(fdl)
 
 }

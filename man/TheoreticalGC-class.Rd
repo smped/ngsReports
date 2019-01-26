@@ -11,16 +11,31 @@ An object of class TheoreticalGC
 Contains Theoretical GC content for a selection of species
 }
 \details{
-Estimates are able to be retained for genomic and transcriptomic sequences
-Values are stored as frequencies
+Estimates are able to be retained for genomic and transcriptomic
+sequences. Values are stored as frequencies.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{Genome}}{A \code{data.frame} containing theoretical GC content for genomic sequences}
+\item{\code{Genome}}{A \code{data.frame} containing theoretical GC content for
+genomic sequences}
 
-\item{\code{Transcriptome}}{A \code{data.frame} containing theoretical GC content for transcriptomic sequences}
+\item{\code{Transcriptome}}{A \code{data.frame} containing theoretical GC content
+for transcriptomic sequences}
 
-\item{\code{mData}}{A \code{data.frame} containing metadata about all species in the object}
+\item{\code{mData}}{A \code{data.frame} containing metadata about all species in the
+object}
 }}
 
+\examples{
+\dontrun{
+
+## How to form an object using your own fasta file
+gen_df <- ngsReports:::.gcFromFasta("myGenome.fa")
+gen_df <- dplyr::rename(gen_df, mySpp = Freq)
+mData_df <- data.frame(Name = "mySpp", Genome = TRUE, Transcriptome = FALSE)
+tr_df <- data.frame()
+myGC <- new(
+   "TheoreticalGC", Genome = gen_df, Transcriptome = tr_df, mData = mData_df)
+}
+}

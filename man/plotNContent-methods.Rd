@@ -15,36 +15,43 @@
 \alias{plotNContent,FastqcDataList}
 \title{Draw an N Content Plot}
 \usage{
-plotNContent(x, usePlotly = FALSE, ...)
+plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
+  fail = 20, ...)
 
-\S4method{plotNContent}{character}(x, usePlotly = FALSE, ...)
+\S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols,
+  warn = 5, fail = 20, ...)
 
-\S4method{plotNContent}{FastqcFile}(x, usePlotly = FALSE, ...)
+\S4method{plotNContent}{FastqcFile}(x, usePlotly = FALSE, labels,
+  pwfCols, warn = 5, fail = 20, ...)
 
-\S4method{plotNContent}{FastqcFileList}(x, usePlotly = FALSE, ...)
+\S4method{plotNContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
+  pwfCols, warn = 5, fail = 20, ...)
 
 \S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels,
-  warn = 5, fail = 20, pwfCols, ..., lineCol = "red")
+  pwfCols, warn = 5, fail = 20, ..., lineCol = "red")
 
 \S4method{plotNContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  warn = 5, fail = 20, pwfCols, cluster = FALSE,
+  pwfCols, warn = 5, fail = 20, cluster = FALSE,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or path}
 
-\item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly object.}
-
-\item{...}{Used to pass additional attributes to theme() and between methods}
+\item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
+object.}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default}
 
-\item{warn, fail}{The default values for warn and fail are 5 and 10 respectively (i.e. precentages)}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
+for PASS/WARN/FAIL}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+\item{warn, fail}{The default values for warn and fail are 5 and 10
+respectively (i.e. percentages)}
+
+\item{...}{Used to pass additional attributes to theme() and between methods}
 
 \item{lineCol}{Defaults to red}
 
@@ -52,8 +59,8 @@ File extensions are dropped by default}
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-will be displayed.}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+then the dendrogram will be displayed.}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
@@ -62,12 +69,13 @@ A standard ggplot2 object, or an interactive plotly object
 Draw an N Content Plot across one or more FASTQC reports
 }
 \details{
-This extracts the N_Content from the supplied object and generates a ggplot2 object,
-with a set of minimal defaults.
-The output of this function can be further modified using the standard ggplot2 methods.
+This extracts the N_Content from the supplied object and generates a ggplot2
+object, with a set of minimal defaults.
+The output of this function can be further modified using the standard
+ggplot2 methods.
 
-When \code{x} is a single FastqcFile, or FastqcData object line plots will always
-be drawn for all Ns.
+When \code{x} is a single FastqcFile, or FastqcData object line plots will
+always be drawn for all Ns.
 Otherwise, users can select line plots or heatmaps.
 }
 \examples{

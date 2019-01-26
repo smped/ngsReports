@@ -14,17 +14,21 @@ scale_fill_pwf(vals, pwfCols, breaks = c(0, 5, 10, 100),
 
 \item{breaks}{The breaks for the PWF bins}
 
-\item{passLow}{Is the PASS category at the low or high end of the numeric range}
+\item{passLow}{Is the PASS category at the low or high end of the numeric
+range}
 
 \item{na.value}{The colour to plot for missing values}
+}
+\value{
+Returns a ggplot scale object
 }
 \description{
 Construct a scale using PwfCols
 }
 \details{
-This constructs a ggplot scale using the values contained in the fill aesthetic
-and the supplied breaks for PASS/WARN/FAIL criteria.
-As this doesn't follow the conventional ggplot syntax, using more of functional approach,
-it will be a hidden function
+This constructs a ggplot scale using the values contained in the
+fill aesthetic and the supplied breaks for PASS/WARN/FAIL criteria.
+As this doesn't follow the conventional ggplot syntax, using more of
+functional approach, it will be a hidden function.
 }
 \keyword{internal}

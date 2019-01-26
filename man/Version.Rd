@@ -15,7 +15,7 @@
 \item{object}{An object of class \code{FastqcData} or \code{FastqcDataList}}
 }
 \value{
-A character vector (FastqcData), or data_frame (FastqcDataList)
+A character vector (FastqcData), or tibble (FastqcDataList)
 }
 \description{
 Get the FASTQC version used to generate the intial files

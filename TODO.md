@@ -1,7 +1,5 @@
 # Immediate Issues
 
-- Tests on all hidden functions
-- Get build time down
 - Resolve all issues from `R CMD BiocCheck`
 
 ## Chris
@@ -10,8 +8,10 @@
 
 ## Steve
 
-- Build unit tests for classes and methods
+- Check additional import functions
 - Fix `scale_fill_pwf()`
+- Check x-axis values for `plotAdapterContent()` when sequence lengths vary
+- `maxAdapterContent()` as an S4 method
 
 
 # Important But Not Pressing
@@ -26,4 +26,6 @@
 - Add a function to merge kMers
 - Add Fastq Illumina Filter plot/status
 - BigData shiny app (PCA?)
+- Add plots for imported log files
+- Make padding using `plotly_empty()` optional for plots of a `FastqcData` object
 

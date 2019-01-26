@@ -18,13 +18,14 @@
 \S4method{fileName}{FastqcDataList}(object)
 }
 \arguments{
-\item{object}{An object of class FastqcFile, FastqcFileList, FastqcData or FastqcDataList}
+\item{object}{An object of class FastqcFile, FastqcFileList, FastqcData or
+FastqcDataList}
 }
 \value{
-Returns the filenames, without the preceding directories, i.e. basename.
-For a FastqcFile/FastqcFileList these will be the underlying FastQC files.
-For a FastqcData/FastqcDataList, these will correspond to the fastq files 
-about which the FastQC report was written.
+Returns the filenames, without the preceding directories, i.e.
+basename. For a FastqcFile/FastqcFileList these will be the underlying
+FastQC files. For a FastqcData/FastqcDataList, these will correspond to the
+fastq files about which the FastQC report was written.
 }
 \description{
 The File Names from an object

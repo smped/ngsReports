@@ -13,7 +13,8 @@ The FastqcData Object Class
 \section{Slots}{
 
 \describe{
-\item{\code{...}}{this can either be a single character vector of paths to FASTQC files, or several instances of FastqcFile objects}
+\item{\code{...}}{this can either be a single character vector of paths to FASTQC
+files, or several instances of FastqcFile objects}
 }}
 
 \examples{
@@ -26,5 +27,6 @@ fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 # As this is the underlying structure for a FastqcDataList, an object of
 # FastqcData will only be returned from an individual file.
 fd <- getFastqcData(fileList[1])
+fd
 
 }

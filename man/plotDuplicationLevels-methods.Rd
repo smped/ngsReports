@@ -15,14 +15,16 @@
 \alias{plotDuplicationLevels,FastqcDataList}
 \title{Plot the combined Sequence_Duplication_Levels information}
 \usage{
-plotDuplicationLevels(x, usePlotly = FALSE, ...)
+plotDuplicationLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
 
-\S4method{plotDuplicationLevels}{character}(x, usePlotly = FALSE, ...)
+\S4method{plotDuplicationLevels}{character}(x, usePlotly = FALSE, labels,
+  pwfCols, ...)
 
-\S4method{plotDuplicationLevels}{FastqcFile}(x, usePlotly = FALSE, ...)
+\S4method{plotDuplicationLevels}{FastqcFile}(x, usePlotly = FALSE,
+  labels, pwfCols, ...)
 
 \S4method{plotDuplicationLevels}{FastqcFileList}(x, usePlotly = FALSE,
-  ...)
+  labels, pwfCols, ...)
 
 \S4method{plotDuplicationLevels}{FastqcData}(x, usePlotly = FALSE,
   labels, pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"),
@@ -33,33 +35,35 @@ plotDuplicationLevels(x, usePlotly = FALSE, ...)
   dendrogram = FALSE, heatCol = inferno(50), ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or file path}
 
-\item{usePlotly}{\code{logical} Default \code{FALSE} will render using ggplot.
-If \code{TRUE} plot will be rendered with plotly}
-
-\item{...}{Used to pass additional attributes to theme() and between methods}
+\item{usePlotly}{\code{logical} Default \code{FALSE} will render using
+ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for pass, warning, and fail
-values in plot}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
+pass, warning, and fail values in the plot}
 
-\item{warn, fail}{The default values for warn and fail are 20 and 50 respectively (i.e. percentages)}
+\item{...}{Used to pass additional attributes to theme() and between methods}
+
+\item{warn, fail}{The default values for warn and fail are 20 and 50
+respectively (i.e. percentages)}
 
 \item{lineCols}{Colours of the lines drawn for individual libraries}
 
-\item{deduplication}{Plot Duplication levels 'pre' or 'post' deduplication. Can only take values "pre" and "post"}
+\item{deduplication}{Plot Duplication levels 'pre' or 'post' deduplication.
+Can only take values "pre" and "post"}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-will be displayed.}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+then the dendrogram will be displayed.}
 
 \item{heatCol}{Colour palette used for the heatmap}
 }
@@ -67,12 +71,14 @@ will be displayed.}
 A standard ggplot2 or plotly object
 }
 \description{
-Plot the Sequence_Duplication_Levels information for a set of FASTQC reports
+Plot the Sequence_Duplication_Levels information for a set of
+FASTQC reports
 }
 \details{
-This extracts the Sequence_Duplication_Levels from the supplied object and generates a ggplot2 object,
-with a set of minimal defaults.
-The output of this function can be further modified using the standard ggplot2 methods.
+This extracts the Sequence_Duplication_Levels from the supplied object and
+generates a ggplot2 object, with a set of minimal defaults.
+The output of this function can be further modified using the standard
+ggplot2 methods.
 }
 \examples{
 

@@ -3,11 +3,8 @@
 \docType{methods}
 \name{[}
 \alias{[}
-\alias{[,FastqcFileList,ANY,missing-method}
 \alias{[,FastqcFileList,ANY,missing,ANY-method}
-\alias{[,FastqcFileList,character,missing-method}
 \alias{[,FastqcFileList,character,missing,ANY-method}
-\alias{[,FastqcDataList,ANY,missing-method}
 \alias{[,FastqcDataList,ANY,missing,ANY-method}
 \alias{[[}
 \alias{[[,FastqcFileList,character,missing-method}
@@ -33,9 +30,27 @@
 
 \item{drop}{not used}
 }
+\value{
+Will return a subset of the original object following the standard
+rules for subsetting objects
+}
 \description{
-Extract elements from FastqcFileList Objects
+Extract elements from Fastqc*List Objects
 }
 \details{
 Extract elements in a consistent manner with R conventions
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- getFastqcData(fileList)
+
+# Subsetting using the standard methods
+fdl[1]
+fdl[[1]]
+
 }

@@ -6,30 +6,30 @@ x <- system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports")
 # Extract the fastqc data as the lines using the code from `getFastqcData()`
 fl <- file.path( gsub(".zip$", "", basename(x)), "fastqc_data.txt")
 uz <- unz(x, fl)
-fastqcLines <- readLines(uz)
+fqcLines <- readLines(uz)
 close(uz)
 
 # Remove any '#' symbols
-fastqcLines <- gsub("#", "", fastqcLines)
+fqcLines <- gsub("#", "", fqcLines)
 # Remove any lines which specify '>>END_MODULE'
-fastqcLines <- fastqcLines[!grepl(">>END_MODULE", fastqcLines)]
+fqcLines <- fqcLines[!grepl(">>END_MODULE", fqcLines)]
 # Remove the first (FastQC version) line
-fastqcLines <- fastqcLines[-1]
+fqcLines <- fqcLines[-1]
 # Split into modules
-fastqcLines <- split(fastqcLines, cumsum(grepl("^>>", fastqcLines)))
+fqcLines <- split(fqcLines, cumsum(grepl("^>>", fqcLines)))
 # Assign the module names
-names(fastqcLines) <- vapply(fastqcLines, function(x){
+names(fqcLines) <- vapply(fqcLines, function(x){
   # Get the first line before the tab separator
   nm <- gsub(">>(.+)\\t.+", "\\1", x[[1]])
   # Replace the space with underscore
   gsub(" ", "_", nm)
 }, character(1))
 # Remove the first line
-fastqcLines <- lapply(fastqcLines, function(x){x[-1]})
+fqcLines <- lapply(fqcLines, function(x){x[-1]})
 # Now all the tests can be run
 
-test_that("Check getBasicStatistics() is correct",{
-  bs <- getBasicStatistics(fastqcLines)
+test_that("Check .getBasicStatistics() is correct",{
+  bs <- .getBasicStatistics(fqcLines)
   expect_true(
     setequal(names(bs),
              c("Filename", "Total_Sequences", "Sequences_flagged_as_poor_quality",
@@ -42,8 +42,8 @@ test_that("Check getBasicStatistics() is correct",{
   expect_equal(nrow(bs), 1)
 })
 
-test_that("Check getPerBaseSeqQuals() is correct",{
-  sq <- getPerBaseSeqQuals(fastqcLines)
+test_that("Check .getPerBaseSeqQuals() is correct",{
+  sq <- .getPerBaseSeqQuals(fqcLines)
   expect_true(
     setequal(
       names(sq),
@@ -57,8 +57,8 @@ test_that("Check getPerBaseSeqQuals() is correct",{
   expect_equal(nrow(sq), 47)
 })
 
-test_that("Check getPerTileSeqQuals() is correct",{
-  sq <- getPerTileSeqQuals(fastqcLines)
+test_that("Check .getPerTileSeqQuals() is correct",{
+  sq <- .getPerTileSeqQuals(fqcLines)
   expect_true(
     setequal(
       names(sq), c("Tile", "Base", "Mean")
@@ -70,8 +70,8 @@ test_that("Check getPerTileSeqQuals() is correct",{
   expect_equal(nrow(sq), 4512)
 })
 
-test_that("Check getPerSeqQualScores() is correct",{
-  sq <- getPerSeqQualScores(fastqcLines)
+test_that("Check .getPerSeqQualScores() is correct",{
+  sq <- .getPerSeqQualScores(fqcLines)
   expect_true(
     setequal(names(sq), c("Quality","Count"))
     )
@@ -81,8 +81,8 @@ test_that("Check getPerSeqQualScores() is correct",{
   expect_equal(nrow(sq), 39)
 })
 
-test_that("Check getPerBaseSeqContent() is correct",{
-  sc <- getPerBaseSeqContent(fastqcLines)
+test_that("Check .getPerBaseSeqCont() is correct",{
+  sc <- .getPerBaseSeqCont(fqcLines)
   expect_true(
     setequal(names(sc), c("Base", "G", "A", "T", "C"))
   )
@@ -92,8 +92,8 @@ test_that("Check getPerBaseSeqContent() is correct",{
   expect_equal(nrow(sc), 47)
 })
 
-test_that("Check getPerSeqGcContent() is correct",{
-  gc <- getPerSeqGcContent(fastqcLines)
+test_that("Check .getPerSeqGcCont() is correct",{
+  gc <- .getPerSeqGcCont(fqcLines)
   expect_true(
     setequal(names(gc), c("GC_Content", "Count"))
   )
@@ -103,8 +103,8 @@ test_that("Check getPerSeqGcContent() is correct",{
   expect_equal(nrow(gc), 101)
 })
 
-test_that("Check getSeqLengthDist() is correct",{
-  df <- getSeqLengthDist(fastqcLines)
+test_that("Check .getSeqLengthDist() is correct",{
+  df <- .getSeqLengthDist(fqcLines)
   expect_true(
     setequal(names(df), c("Length", "Lower", "Upper", "Count"))
   )
@@ -114,8 +114,8 @@ test_that("Check getSeqLengthDist() is correct",{
   expect_equal(nrow(df), 1)
 })
 
-test_that("Check getSeqDuplicationLevels() provides correct output",{
-  res <- getSeqDuplicationLevels(fastqcLines)
+test_that("Check .getSeqDuplicationLevels() provides correct output",{
+  res <- .getSeqDuplicationLevels(fqcLines)
   expect_true(
     setequal(names(res),
              c("Total_Deduplicated_Percentage", "Sequence_Duplication_Levels"))
@@ -141,8 +141,8 @@ test_that("Check getSeqDuplicationLevels() provides correct output",{
 
 })
 
-test_that("Check getOverrepSeq() is correct",{
-  df <- getOverrepSeq(fastqcLines)
+test_that("Check .getOverrepSeq() is correct",{
+  df <- .getOverrepSeq(fqcLines)
   expect_true(
     setequal(names(df), c("Sequence", "Count", "Percentage", "Possible_Source"))
   )
@@ -155,32 +155,25 @@ test_that("Check getOverrepSeq() is correct",{
 })
 
 
-test_that("Check getOverrepSeq() errors and nulls",{
-  fastqcLines[["Overrepresented_sequences"]] <- fastqcLines[["Overrepresented_sequences"]][-1]
-  otherMods <- names(fastqcLines) != "Overrepresented_sequences"
-  expect_null(getOverrepSeq(fastqcLines[otherMods]))
-  expect_error(getOverrepSeq(fastqcLines))
-})
-
-test_that("Check getAdapterContent() is correct",{
-  df <- getAdapterContent(fastqcLines)
+test_that("Check .getAdapterCont() is correct",{
+  df <- .getAdapterCont(fqcLines)
   nAdapTypes <- ncol(df) - 1
   expect_equal(names(df)[1], "Position")
   expect_gt(ncol(df), 1)
   expect_true(
     all(
-      vapply(df, typeof, character(1)) == c("character", 
+      vapply(df, typeof, character(1)) == c("character",
                                             rep("double", nAdapTypes))
     )
   )
   expect_equal(nrow(df), 72)
 })
 
-test_that("Check getKmerContent() is correct",{
-  df <- getKmerContent(fastqcLines)
+test_that("Check .getKmerCont() is correct",{
+  df <- .getKmerCont(fqcLines)
   expect_true(
-    setequal(names(df), 
-             c("Sequence", "Count", "PValue", "Obs/Exp_Max", 
+    setequal(names(df),
+             c("Sequence", "Count", "PValue", "Obs/Exp_Max",
                "Max_Obs/Exp_Position")
     )
   )
@@ -192,3 +185,5 @@ test_that("Check getKmerContent() is correct",{
   )
   expect_equal(nrow(df), 20)
 })
+
+closeAllConnections()

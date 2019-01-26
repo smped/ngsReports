@@ -1,7 +1,7 @@
 #' @title Theoretical GC content
 #'
-#' @description This object contains the theoretical GC content for each provided species,
-#' for both the genome and transcriptome, where available.
+#' @description This object contains the theoretical GC content for each 
+#' provided species, for both the genome and transcriptome, where available.
 #'
 #' @details The object is defined with the S4 class \code{TheoreticalGC}.
 #' Species for which information is available can be found using
@@ -10,6 +10,7 @@
 #'
 #' Metadata is accessible using \code{mData(gcTheoretical)}.
 #'
-#' All GC content was calculated using code modified from https://github.com/mikelove/fastqcTheoreticalGC
+#' All GC content was calculated using code modified from 
+#' https://github.com/mikelove/fastqcTheoreticalGC
 #'
 "gcTheoretical"

@@ -1,9 +1,10 @@
-#' Check to see if a file is compressed
+#' @title Check to see if a file is compressed
 #'
 #' @description Check to see if a file, or vector of files is compressed
 #'
 #' @details Reads the first four bytes from the local file header.
-#' If the file is a .ZIP file, this should match the magic number \code{PK\003\004}.
+#' If the file is a .ZIP file, this should match the magic number
+#' \code{PK\003\004}.
 #'
 #' This function assumes that the first thing in a zip archive is the
 #' .ZIP entry with the local file header signature.
@@ -12,11 +13,13 @@
 #'
 #' @param path The path to one or more files
 #' @param type The type of compression to check for.
-#' Currently only ZIP files have been implemented.
+#' Currently only ZIP/GZIP files have been implemented.
+#' @param verbose logical/integer Determine the level of output to show as
+#' messages
 #'
 #' @return
 #' A \code{logical} vector
-#' 
+#'
 #' @examples
 #'
 #' # Get the files included with the package
@@ -25,15 +28,32 @@
 #' isCompressed(allFiles)
 #'
 #' @export
-isCompressed <- function(path, type = "zip"){
+isCompressed <- function(path, type = "zip", verbose = FALSE){
 
-  stopifnot(file.exists(path))
-  if (type != "zip") stop("Currently only zip files are implemented")
+    stopifnot(file.exists(path))
+    type <- match.arg(type, c("zip", "gzip"))
+    if (verbose > 0)
+        message(
+            sprintf(
+                "Checking %i file(s) for %s compression",
+                length(path),
+                type)
+        )
 
-  vapply(path, function(x){
-    # Read the first 4 bytes as hexadecimal values
-    rw <- readBin(x, what = "raw", n = 4L)
-    rawToChar(rw) == "PK\003\004" # Magic number
-  }, logical(1))
+    ## This is the length of the magic number for each compression type
+    n <- c(zip = 4L, gzip = 3L)[type]
+    magicNum <- list(zip = c(80, 75, 3, 4), gzip = c(31, 139, 8))[[type]]
 
+    ## Suppress warnings is necessary here as the change to R > 3.5.2
+    ## will produce a warning (which is an excellent warning).
+    ## This causes tests to fail, but the tests should instead test
+    ## for a warning once this change becomes part of r-base
+    suppressWarnings(
+        vapply(path, function(x){
+            ## Get the magic number from the files
+            rw <- readBin(x, what = "raw", n = n)
+            if (verbose > 1) message(rw)
+            sum(rw == magicNum) == n
+        }, logical(1))
+    )
 }

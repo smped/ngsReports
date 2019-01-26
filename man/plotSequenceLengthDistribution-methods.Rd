@@ -15,53 +15,54 @@
 \alias{plotSequenceLengthDistribution,FastqcDataList}
 \title{Plot the Sequence Length Distribution}
 \usage{
-plotSequenceLengthDistribution(x, usePlotly = FALSE, ...)
+plotSequenceLengthDistribution(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSequenceLengthDistribution}{character}(x,
-  usePlotly = FALSE, ...)
+  usePlotly = FALSE, labels, ...)
 
 \S4method{plotSequenceLengthDistribution}{FastqcFile}(x,
-  usePlotly = FALSE, ...)
+  usePlotly = FALSE, labels, ...)
 
 \S4method{plotSequenceLengthDistribution}{FastqcFileList}(x,
-  usePlotly = FALSE, ...)
+  usePlotly = FALSE, labels, ...)
 
 \S4method{plotSequenceLengthDistribution}{FastqcData}(x,
-  usePlotly = FALSE, labels, ..., expand.x = c(0, 0.2))
+  usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
+  expand.x = c(0, 0.2))
 
 \S4method{plotSequenceLengthDistribution}{FastqcDataList}(x,
-  usePlotly = FALSE, labels, counts = FALSE, plotType = "heatmap",
-  cluster = FALSE, dendrogram = FALSE, ..., expand.x = c(0, 0.2),
-  gridlineCol = "grey20", gridlineWidth = 0.2, heatCol = inferno(50))
+  usePlotly = FALSE, labels, counts = FALSE, plotType = c("heatmap",
+  "line", "cumulative"), cluster = FALSE, dendrogram = FALSE, ...,
+  expand.x = c(0, 0.2), heatCol = inferno(50))
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 or plotly object.}
-
-\item{...}{Used to pass additional attributes to theme()}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
+\item{...}{Used to pass additional attributes to theme()}
+
+\item{plotType}{\code{character}. Can only take the values
+\code{plotType = "heatmap"} \code{plotType = "line"} or
+\code{plotType = "cumulative"}}
+
 \item{expand.x}{Passed to \code{scale_x_discrete}}
 
-\item{counts}{\code{logical} Should distributions be shown as counts or frequencies (percentages)}
-
-\item{plotType}{\code{character}. Can only take the values \code{plotType = "heatmap"}
-or \code{plotType = "line"}}
+\item{counts}{\code{logical} Should distributions be shown as counts or
+frequencies (percentages)}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{dendrogram}{\code{logical} redundant if \code{cluster} and \code{usePlotly} are \code{FALSE}.
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+\item{dendrogram}{\code{logical} redundant if \code{cluster} and
+\code{usePlotly} are \code{FALSE}. If both \code{cluster} and
+\code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
-
-\item{gridlineWidth, gridlineCol}{Passed to geom_hline and geom_vline to determine
-width and colour of gridlines}
 
 \item{heatCol}{The colour scheme for the heatmap}
 }
@@ -69,16 +70,20 @@ width and colour of gridlines}
 A standard ggplot2 object, or an interactive plotly object
 }
 \description{
-Plot the Sequence Length Distribution across one or more FASTQC reports
+Plot the Sequence Length Distribution across one or more FASTQC
+reports
 }
 \details{
-This extracts the Sequence Length Distribution from the supplied object and generates a ggplot2 object,
-with a set of minimal defaults.
-The output of this function can be further modified using the standard ggplot2 methods.
-For example, preset axis limits can also be overwritten easily by adding a call to \code{scale_y_continuous}
-after the call to \code{plotSequenceLengthDistribution}.
+This extracts the Sequence Length Distribution from the supplied object and
+generates a ggplot2 object, with a set of minimal defaults.
+The output of this function can be further modified using the standard
+ggplot2 methods.
+For example, preset axis limits can also be overwritten easily by adding a
+call to \code{scale_y_continuous} after the call to
+\code{plotSequenceLengthDistribution}.
 
-An alternative interactive plot is available by setting the argument \code{usePlotly = TRUE}.
+An alternative interactive plot is available by setting the argument
+\code{usePlotly = TRUE}.
 }
 \examples{
 
@@ -91,5 +96,8 @@ fdl <- getFastqcData(fileList)
 
 # Plot as a frequency plot using lines
 plotSequenceLengthDistribution(fdl)
+
+# Or plot the cumulative value
+plotSequenceLengthDistribution(fdl, plotType = "cumulative")
 
 }

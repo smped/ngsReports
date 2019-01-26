@@ -21,18 +21,36 @@ writeHtmlReport(fastqcDir, template, species = "Hsapiens",
 
 \item{nKmer}{The maximum number of Kmers to show}
 
-\item{targetsDF}{A data.frame with at least two columns named \code{Filename} and \code{Label}.
-The filenames should match the original fastq files, and the labels should be simply alternative
-labels for these files for convenience.}
+\item{targetsDF}{A data.frame with at least two columns named
+\code{Filename}  and \code{Label}.
+The filenames should match the original fastq files, and the labels should
+be simply alternative labels for these files for convenience.}
 
-\item{overwrite}{\code{logical}. Overwrite any previous copies of the template file in the destination directory}
+\item{overwrite}{\code{logical}. Overwrite any previous copies of the
+template file in the destination directory}
 
 \item{quiet}{\code{logical}. Show or hide markdown output in the Console.}
+}
+\value{
+Silently returns \code{TRUE} and will output a compiled HTML file from the
+supplied Rmarkdown template file
 }
 \description{
 Compiles an HTML report using a supplied template
 }
 \details{
-This will take a user supplied template, or the file supplied with the package and create an HTML
-summary of all standard FASTQC plots for all files in the supplied directory.
+This will take a user supplied template, or the file supplied with the
+package and create an HTML summary of all standard FASTQC plots for all
+files in the supplied directory.
+}
+\examples{
+\dontrun{
+packageDir <- system.file("extdata", package = "ngsReports")
+fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names= TRUE)
+# Copy these files to tempdir() to avoid overwriting
+# any files in the package directory
+file.copy(fileList, tempdir())
+writeHtmlReport(tempdir())
+}
+
 }

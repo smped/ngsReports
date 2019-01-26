@@ -5,47 +5,47 @@ Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Steve", "Pederson", , "stephen.pederson@adelaide.edu.au", c("aut", "cre")),
     person("Christopher", "Ward", , "christopher.ward@adelaide.edu.au", c("aut")),
-    person("Hien", "To", , "hien.to@adelaide.edu.au", c("aut"))
+    person("Thu-Hien", "To", , "tothuhien@gmail.com", c("aut"))
     )
 Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
 Description: Load FastQC reports and other NGS output summaries into R.
-License: LGPL (>= 2)
+URL: https://github.com/UofABioinformaticsHub/ngsReports
+BugReports: https://github.com/UofABioinformaticsHub/ngsReports
+License: LGPL (>= 3)
 Encoding: UTF-8
 Depends:
   R (>= 3.5.0),
+  BiocGenerics,
   fastqcTheoreticalGC,
   ggplot2,
-  BiocGenerics
+  tibble (>= 1.3.1)
 Imports:
   Biostrings,
   checkmate,
   dplyr (>= 0.7.5),
   ggdendro,
+  grDevices, 
+  grid,
   lubridate,
-  magrittr (>= 1.5),
   methods,
-  pander,
+  parallel,
   plotly,
   readr,
   reshape2,
   rmarkdown,
   Rsamtools,
   scales,
-  shiny,
-  shinydashboard,
-  shinyFiles,
   ShortRead,
   stats,
   stringr,
-  tibble (>= 1.3.1),
   tidyr,
   tidyselect (>= 0.2.3),
-  viridis,
+  utils,
   viridisLite,
   zoo
 Remotes: mikelove/fastqcTheoreticalGC
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Collate: 
     'validationFunctions.R'
     'FastqcDataList.R'
@@ -70,22 +70,25 @@ Collate:
     'Total_Deduplicated_Percentage.R'
     'Version.R'
     'aaa.R'
+    'addPercent.R'
     'data.R'
     'emptyPlot.R'
     'exportOverrepresented.R'
     'extract.R'
     'fileName.R'
+    'gcFromFasta.R'
+    'getColours.R'
     'getFastqcData.R'
     'getSummary.R'
-    'ggdend.R'
     'importBowtieLogs.R'
     'importDuplicationMetrics.R'
     'importHisat2Logs.R'
     'importStarLogs.R'
     'isCompressed.R'
+    'makeDendrogram.R'
+    'makeLabels.R'
     'makeSidebar.R'
     'maxAdapterContent.R'
-    'methods-FastqcData.R'
     'path.R'
     'plotAdapterContent.R'
     'plotBaseQualities.R'
@@ -101,10 +104,15 @@ Collate:
     'plotSummary.R'
     'pwf.R'
     'readTotals.R'
+    'renderDendro.R'
     'runFastQC.R'
     'scale_fill_pwf.R'
     'splitByTab.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr
-Suggests: BiocStyle, knitr, testthat
+Suggests: 
+  BiocStyle, 
+  knitr, 
+  pander,
+  testthat
 biocViews: QualityControl, ReportWriting

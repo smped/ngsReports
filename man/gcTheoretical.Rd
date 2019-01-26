@@ -9,8 +9,8 @@
 gcTheoretical
 }
 \description{
-This object contains the theoretical GC content for each provided species,
-for both the genome and transcriptome, where available.
+This object contains the theoretical GC content for each 
+provided species, for both the genome and transcriptome, where available.
 }
 \details{
 The object is defined with the S4 class \code{TheoreticalGC}.
@@ -20,6 +20,7 @@ or \code{transcriptomes(gcTheoretical)}.
 
 Metadata is accessible using \code{mData(gcTheoretical)}.
 
-All GC content was calculated using code modified from https://github.com/mikelove/fastqcTheoreticalGC
+All GC content was calculated using code modified from 
+https://github.com/mikelove/fastqcTheoreticalGC
 }
 \keyword{datasets}

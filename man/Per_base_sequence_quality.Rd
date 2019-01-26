@@ -21,14 +21,17 @@
 \S4method{Per_base_sequence_quality}{character}(object)
 }
 \arguments{
-\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData}, \code{fastqcDataList},
-or simply a \code{character} vector of paths to fastqc files}
+\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{fastqcDataList}, or simply a \code{character}
+vector of paths to fastqc files}
 }
 \value{
-A single \code{data_frame} containing all information combined from all supplied FastQC reports
+A single \code{tibble} containing all information combined from all
+supplied FastQC reports
 }
 \description{
-Retrieve the Per Base Sequence Quality module from one or more FastQC reports
+Retrieve the Per Base Sequence Quality module from one or more
+FastQC reports
 }
 \examples{
 
@@ -40,6 +43,6 @@ fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
 fdl <- getFastqcData(fileList)
 
 # Print the Per_base_sequence_quality
-Per_base_sequence_quality(fdl)   
+Per_base_sequence_quality(fdl)
 
 }

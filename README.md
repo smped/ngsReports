@@ -1,4 +1,8 @@
+
 [![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=master)](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=master)
+
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+
 
 # ngsReports
 
@@ -7,24 +11,43 @@ This branch is compatible with Bioconductor >= 3.7 only. To install this package
 
 ## Installation
 To install required packages follows the instructions below.
-Currently you need to install the fastqcTheoreticalGC package separately.
 
 ```
-source("https://bioconductor.org/biocLite.R")
-biocLite(c("BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "devtools", "ggdendro",  "plotly", "reshape2", "Rsamtools", "scales", "ShortRead", "tidyverse",  "viridis", "viridisLite", "zoo"))
-devtools::install_github('mikelove/fastqcTheoreticalGC')
-devtools::install_github('UofABioinformaticsHub/ngsReports', build_vignettes = FALSE)
+install.packages("BiocManager")
+pkgs <- c(
+    "BiocGenerics", "BiocStyle", "BSgenome", "checkmate", "ggdendro", "plotly", 
+    "reshape2", "scales", "ShortRead", "tidyverse", "viridisLite", "zoo", 
+    "mikelove/fastqcTheoreticalGC"
+)
+BiocManager::install(pkgs)
+BiocManager::install("UofABioinformaticsHub/ngsReports")
 library(ngsReports)
 ```
 
 ## ShinyApp
 
-A Graphical User Interface (Shiny App) has been developed for interactive inspection of many FastQC reports. The ngsReports shiny app can be installed [here](https://github.com/UofABioinformaticsHub/ngsReports-shinyApp).
+
+A Graphical User Interface (Shiny App) has been developed for interactive inspection of many FastQC reports. The ngsReports shiny app can be installed [here](https://github.com/UofABioinformaticsHub/shinyNgsReports).
+
 
 # Vignette
 
 The vignette for usage is [here](https://uofabioinformaticshub.github.io/ngsReports/vignettes/ngsReportsIntroduction)
 
+# Citation 
+
+Please cite our [preprint](https://www.biorxiv.org/content/early/2018/05/02/313148):
+
+```
+@article{ward2018ngsreports,
+  title={ngsReports: An R Package for managing FastQC reports and other NGS related log files.},
+  author={Ward, Christopher M and To, Hien and Pederson, Stephen M},
+  journal={bioRxiv},
+  pages={313148},
+  year={2018},
+  publisher={Cold Spring Harbor Laboratory}
+}
+```
 
 # Citation 
 

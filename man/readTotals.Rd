@@ -7,11 +7,12 @@
 readTotals(x)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+\code{FastqcData}, \code{FastqcDataList} or path}
 }
 \value{
-A \code{data_frame} with the columns \code{Filename} and \code{Total_Sequences}
+A \code{tibble} with the columns \code{Filename} and 
+\code{Total_Sequences}
 }
 \description{
 Get the read totals from one or more FASTQC reports

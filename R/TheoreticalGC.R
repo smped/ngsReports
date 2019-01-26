@@ -2,20 +2,37 @@
 #'
 #' @description Contains Theoretical GC content for a selection of species
 #'
-#' @details Estimates are able to be retained for genomic and transcriptomic sequences
-#' Values are stored as frequencies
+#' @details Estimates are able to be retained for genomic and transcriptomic
+#' sequences. Values are stored as frequencies.
 #'
 #' @return An object of class TheoreticalGC
 #'
 #' @include validationFunctions.R
 #'
-#' @slot Genome A \code{data.frame} containing theoretical GC content for genomic sequences
-#' @slot Transcriptome A \code{data.frame} containing theoretical GC content for transcriptomic sequences
-#' @slot mData A \code{data.frame} containing metadata about all species in the object
-setClass("TheoreticalGC", slots=c(Genome = "data.frame",
-                                  Transcriptome = "data.frame",
-                                  mData = "data.frame"))
-setValidity("TheoreticalGC", isValidTheoreticalGC)
+#' @slot Genome A \code{data.frame} containing theoretical GC content for
+#' genomic sequences
+#' @slot Transcriptome A \code{data.frame} containing theoretical GC content
+#' for transcriptomic sequences
+#' @slot mData A \code{data.frame} containing metadata about all species in the
+#' object
+#'
+#' @examples
+#' \dontrun{
+#'
+#' ## How to form an object using your own fasta file
+#' gen_df <- ngsReports:::.gcFromFasta("myGenome.fa")
+#' gen_df <- dplyr::rename(gen_df, mySpp = Freq)
+#' mData_df <- data.frame(Name = "mySpp", Genome = TRUE, Transcriptome = FALSE)
+#' tr_df <- data.frame()
+#' myGC <- new(
+#'    "TheoreticalGC", Genome = gen_df, Transcriptome = tr_df, mData = mData_df)
+#' }
+setClass("TheoreticalGC",  slots = c(
+    Genome = "data.frame",
+    Transcriptome = "data.frame",
+    mData = "data.frame")
+)
+setValidity("TheoreticalGC", .isValidTheoreticalGC)
 
 #' @title Extract Metadata for TheoreticalGC objects
 #'
@@ -24,8 +41,8 @@ setValidity("TheoreticalGC", isValidTheoreticalGC)
 #' @param object An object of class Theoretical GC
 #'
 #' @return A \code{tibble} object
-#' 
-#' @examples 
+#'
+#' @examples
 #' mData(gcTheoretical)
 #'
 #' @export
@@ -46,8 +63,8 @@ setMethod("mData", "TheoreticalGC", function(object){object@mData})
 #' @param object An object of class Theoretical GC
 #'
 #' @return A \code{tibble} object
-#' 
-#' @examples 
+#'
+#' @examples
 #' genomes(gcTheoretical)
 #'
 #' @export
@@ -61,8 +78,8 @@ setGeneric("genomes", function(object){standardGeneric("genomes")})
 #' @rdname genomes
 #' @aliases genomes,TheoreticalGC-method
 setMethod("genomes", "TheoreticalGC", function(object){
-  gn <- object@mData$Genome
-  dplyr::select(object@mData[gn,], -tidyselect::ends_with("ome"))
+    gn <- object@mData$Genome
+    dplyr::select(object@mData[gn,], -tidyselect::ends_with("ome"))
 })
 
 #' @title List Available Transcriptomes
@@ -73,21 +90,24 @@ setMethod("genomes", "TheoreticalGC", function(object){
 #'
 #' @return A \code{tibble} object
 #'
-#' @examples 
+#' @examples
 #' transcriptomes(gcTheoretical)
 #'
 #' @export
 #' @name transcriptomes
 #' @rdname transcriptomes
-setGeneric("transcriptomes", function(object){standardGeneric("transcriptomes")})
+setGeneric("transcriptomes", function(object){
+    standardGeneric("transcriptomes")
+}
+)
 
 #' @importFrom methods slot
 #' @export
 #' @rdname transcriptomes
 #' @aliases transcriptomes,TheoreticalGC-method
 setMethod("transcriptomes", "TheoreticalGC", function(object){
-  tr <- object@mData$Transcriptome
-  dplyr::select(object@mData[tr,], -tidyselect::ends_with("ome"))
+    tr <- object@mData$Transcriptome
+    dplyr::select(object@mData[tr,], -tidyselect::ends_with("ome"))
 })
 
 #' @title Get Theoretical GC content
@@ -96,11 +116,12 @@ setMethod("transcriptomes", "TheoreticalGC", function(object){
 #'
 #' @param object An object of class Theoretical GC
 #' @param name The Name of the species in 'Gspecies' format, e.g. Hsapiens
-#' @param type The type of GC content. Can only be either "Genome" or "Transcriptome"
+#' @param type The type of GC content. Can only be either "Genome" or
+#' "Transcriptome"
 #'
 #' @return A \code{tibble} object
-#' 
-#' @examples 
+#'
+#' @examples
 #' getGC(gcTheoretical, name = "Hsapiens", type = "Genome")
 #'
 #' @export
@@ -112,30 +133,29 @@ setGeneric("getGC", function(object, name, type){standardGeneric("getGC")})
 #' @export
 #' @rdname getGC
 #' @aliases getGC,TheoreticalGC-method
-setMethod("getGC", "TheoreticalGC",
-          function(object, name, type){
+setMethod("getGC", "TheoreticalGC", function(object, name, type){
 
-            type <- stringr::str_to_title(type)
-            type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
+    type <- stringr::str_to_title(type)
+    type <- match.arg(type[[1]], c("Genome", "Transcriptome"))
 
-            if (type == "Genome"){
-              col <- tryCatch(match.arg(name, colnames(object@Genome)))
-              df <- object@Genome[c("GC_Content", col)]
-            }
-            else{
-              col <- tryCatch(match.arg(name, colnames(object@Transcriptome)))
-              df <- object@Transcriptome[c("GC_Content", col)]
-            }
-            
-            df
+    if (type == "Genome") {
+        col <- match.arg(name, colnames(object@Genome))
+        df <- object@Genome[c("GC_Content", col)]
+    }
+    if (type == "Transcriptome") {
+        col <- match.arg(name, colnames(object@Transcriptome))
+        df <- object@Transcriptome[c("GC_Content", col)]
+    }
 
-          })
+    df
+
+})
 
 
 setMethod("show", "TheoreticalGC", function(object){
-  meta <- mData(object)
-  nGenomes <- sum(meta$Genome)
-  nTranscriptomes <- sum(meta$Transcriptome)
-  cat("TheoreticalGC Object for:\n")
-  cat(nGenomes, "Genomes &", nTranscriptomes, "Transcriptomes\n")
+    meta <- mData(object)
+    nGenomes <- sum(meta$Genome)
+    nTranscriptomes <- sum(meta$Transcriptome)
+    cat("TheoreticalGC Object for:\n")
+    cat(nGenomes, "Genomes &", nTranscriptomes, "Transcriptomes\n")
 })

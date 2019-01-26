@@ -1,0 +1,11 @@
+bibentry(bibtype = "Article",
+         header = "To cite ngsReports in publications, please use:",
+         title = "{ngsReports}: An {R} Package for managing FastQC reports and other NGS related log files.",
+         journal = "bioRxiv",
+         author = c(
+             person("Christopher", "Ward"),
+             person("Thu-Hien", "To"),
+             person("Stephen", "Pederson")),
+         year = 2018,
+         pages = "313148",
+         doi = "10.1101/313148")

@@ -11,39 +11,43 @@
 \alias{plotSummary,FastqcDataList}
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
-plotSummary(x, usePlotly = FALSE, ...)
+plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
+  dendrogram = FALSE, ...)
 
-\S4method{plotSummary}{character}(x, usePlotly = FALSE, ...)
+\S4method{plotSummary}{character}(x, usePlotly = FALSE, labels, pwfCols,
+  cluster = FALSE, dendrogram = FALSE, ...)
 
-\S4method{plotSummary}{FastqcFileList}(x, usePlotly = FALSE, ...)
+\S4method{plotSummary}{FastqcFileList}(x, usePlotly = FALSE, labels,
+  pwfCols, cluster = FALSE, dendrogram = FALSE, ...)
 
 \S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, cluster = FALSE, dendrogram = TRUE, ...,
+  pwfCols, cluster = FALSE, dendrogram = FALSE, ...,
   gridlineWidth = 0.2, gridlineCol = "grey20")
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, \code{FastqcData},
-\code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\code{FastqcData}, \code{FastqcDataList} or path}
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
-
-\item{...}{Used to pass various potting parameters to theme.}
 
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours for PASS/WARN/FAIL}
+\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
+for PASS/WARN/FAIL}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE} then the dendrogram
-will be displayed.}
+if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+then the dendrogram will be displayed.}
 
-\item{gridlineWidth, gridlineCol}{Passed to geom_hline and geom_vline to determine
-width and colour of gridlines}
+\item{...}{Used to pass various potting parameters to theme.}
+
+\item{gridlineWidth, gridlineCol}{Passed to geom_hline and geom_vline to
+determine width and colour of gridlines}
 }
 \value{
 A ggplot2 object (\code{usePlotly = FALSE})
@@ -54,7 +58,8 @@ Extract the PASS/WARN/FAIL summaries and plot them
 }
 \details{
 This uses the standard ggplot2 syntax to create a three colour plot.
-The output of this function can be further modified using the standard ggplot2 methods.
+The output of this function can be further modified using the standard
+ggplot2 methods.
 }
 \examples{
 
