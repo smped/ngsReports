@@ -2,7 +2,7 @@ context("Check structure of the sideBar")
 
 # This will give the correct structure as a stand alone process
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)[1:2]
+fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:2]
 fdl <- getFastqcData(fileList)
 status <- getSummary(fdl)
 status <- subset(status, Category == "Basic Statistics")

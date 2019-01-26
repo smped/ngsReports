@@ -37,7 +37,7 @@ Files can be zipped (*_fastqc.zip) or extracted directories
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # As this is the root structure, we can only call this
 # function with an individual file

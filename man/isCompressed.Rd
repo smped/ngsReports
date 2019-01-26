@@ -4,7 +4,7 @@
 \alias{isCompressed}
 \title{Check to see if a file is compressed}
 \usage{
-isCompressed(path, type = "zip", verbose = FALSE)
+isCompressed(path, type = c("zip", "gzip"), verbose = FALSE)
 }
 \arguments{
 \item{path}{The path to one or more files}

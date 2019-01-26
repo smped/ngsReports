@@ -28,32 +28,41 @@
 #' isCompressed(allFiles)
 #'
 #' @export
-isCompressed <- function(path, type = "zip", verbose = FALSE){
+isCompressed <- function(path, type = c("zip", "gzip"), verbose = FALSE){
 
     stopifnot(file.exists(path))
-    type <- match.arg(type, c("zip", "gzip"))
+
+    ## Define the compression type
+    type <- match.arg(type)
+    ## This is the magic number for each compression type
+    magicNum <- list(zip = c(80, 75, 3, 4), gzip = c(31, 139, 8))[[type]]
+    n <- length(magicNum)
     if (verbose > 0)
         message(
             sprintf(
-                "Checking %i file(s) for %s compression",
-                length(path),
-                type)
+                "Checking %i file(s) for %s compression", length(path), type
+            )
         )
 
-    ## This is the length of the magic number for each compression type
-    n <- c(zip = 4L, gzip = 3L)[type]
-    magicNum <- list(zip = c(80, 75, 3, 4), gzip = c(31, 139, 8))[[type]]
+    ## If any elements of path are found to be directories these should be
+    ## identified via a message and not tested, but return FALSE.
+    isDir <- file.info(path)$isdir
+    if (verbose > 0 & any(isDir))
+        message(
+            sum(isDir),
+            " supplied path(s) represent directories not files:\n",
+            paste(path[isDir], collapse = "\n")
+        )
 
-    ## Suppress warnings is necessary here as the change to R > 3.5.2
-    ## will produce a warning (which is an excellent warning).
-    ## This causes tests to fail, but the tests should instead test
-    ## for a warning once this change becomes part of r-base
-    suppressWarnings(
-        vapply(path, function(x){
-            ## Get the magic number from the files
-            rw <- readBin(x, what = "raw", n = n)
-            if (verbose > 1) message(rw)
-            sum(rw == magicNum) == n
-        }, logical(1))
-    )
+    ## Test files which were not found to be directories
+    chk <- logical(length(path)) # Defaults to FALSE ensuring dirs are FALSE
+    chk[!isDir] <- vapply(path[!isDir], function(x){
+        ## Get the magic number from the files
+        rw <- readBin(x, what = "raw", n = n)
+        if (verbose > 1) message(rw) # Useful for error checking
+        sum(rw == magicNum) == n
+    }, logical(1))
+
+    ## Return the results, noting again that directories will return FALSE
+    chk
 }

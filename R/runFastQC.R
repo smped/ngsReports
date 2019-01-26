@@ -220,7 +220,7 @@ setMethod("runFastQC", "BamFileList", function(
     system2(exec, paste(args, files))
 
     ## Get the files and make sure there are no html files returned
-    fqcNames <- list.files(outPath, pattern = "fastqc", full.names = TRUE)
+    fqcNames <- list.files(outPath, pattern = "fastqc.zip", full.names = TRUE)
     fqcNames <- grep(fqcNames, pattern = "html", invert = TRUE, value = TRUE)
 
     ## Now define the format as required

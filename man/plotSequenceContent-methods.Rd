@@ -73,7 +73,7 @@ Informative plot where per base sequence content (%A, %T, %G, %C),
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)

@@ -12,7 +12,7 @@
 #' @examples
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #' cols <- c("Filename", "Position", "Illumina_Universal_Adapter")
 #' ac <- Adapter_Content(fileList)[cols]
 #' ngsReports:::.makeDendrogram(df = ac,

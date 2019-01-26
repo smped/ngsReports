@@ -14,7 +14,7 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc", full.names = TRUE)
+#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Form a FastqcFileList
 #' ffl <- FastqcFileList(fileList)
