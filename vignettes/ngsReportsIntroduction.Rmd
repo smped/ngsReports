@@ -36,7 +36,7 @@ In addition to the usage demonstrated below, a `shiny` app has been developed fo
 This can be installed using:
 
 ```
-remotes::install_github(UofABioinformaticsHub/shinyNgsReports)
+remotes::install_github(UofABioinformaticsHub/fastqcRshiny)
 ```
 
 A vignette for this app will be installed with the package.
