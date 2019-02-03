@@ -1,8 +1,16 @@
-## ---- echo=FALSE-----------------------------------------------------------
+## --------------------------------------------------------------------------
 knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 
 ## --------------------------------------------------------------------------
 library(ngsReports)
+
+## ---- eval = FALSE---------------------------------------------------------
+#  fileDir <- system.file("extdata", package = "ngsReports")
+#  writeHtmlReport(fileDir)
+
+## ---- eval = FALSE---------------------------------------------------------
+#  altTemplate <- file.path("path", "to", "template.Rmd")
+#  writeHtmlReport(fileDir, template = altTemplate)
 
 ## --------------------------------------------------------------------------
 fileDir <- system.file("extdata", package = "ngsReports")
@@ -15,8 +23,8 @@ reads <- readTotals(fdl)
 ## --------------------------------------------------------------------------
 library(dplyr)
 library(pander)
-dplyr::filter(reads, grepl("R1", Filename)) %>% 
-  pander(big.mark = ",", caption = "Read totals from R1 libraries", justify = "lr")
+filter(reads, grepl("R1", Filename)) %>% 
+  pander(big.mark = ",")
 
 ## ----plotSummary, fig.cap="Default summary of FastQC flags.", fig.wide = TRUE----
 plotSummary(fdl)
@@ -26,10 +34,7 @@ plotReadTotals(fdl)
 
 ## --------------------------------------------------------------------------
 plotReadTotals(fdl) +
-    theme(
-        legend.position = c(1, 0), 
-        legend.justification = c(1, 0),
-        legend.background = element_rect(colour = "black"))
+  geom_vline(xintercept = 25000, linetype = 2) 
 
 ## --------------------------------------------------------------------------
 plotBaseQualities(fdl)
@@ -54,9 +59,6 @@ plotSequenceContent(fdl)
 plotSequenceContent(fdl[[1]])
 
 ## --------------------------------------------------------------------------
-plotSequenceContent(fdl[1:2], plotType = "line", nc = 1)
-
-## --------------------------------------------------------------------------
 plotNContent(fdl)
 
 ## --------------------------------------------------------------------------
@@ -69,7 +71,7 @@ plotDuplicationLevels(fdl)
 plotAdapterContent(fdl)
 
 ## --------------------------------------------------------------------------
-plotAdapterContent(fdl[[1]]) 
+plotAdapterContent(fdl[[1]])
 
 ## --------------------------------------------------------------------------
 plotKmers(fdl)
@@ -88,7 +90,7 @@ plotGcContent(fdl)
 plotGcContent(fdl, theoreticalType = "Transcriptome", species = "Mmusculus")
 
 ## ----message=FALSE,warning=FALSE-------------------------------------------
-faFile <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package = "ngsReports")
+faFile <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package="ngsReports")
 plotGcContent(fdl, Fastafile = faFile)
 
 ## --------------------------------------------------------------------------
@@ -102,29 +104,6 @@ plotOverrepresentedSummary(fdl[[1]])
 
 ## ---- eval = FALSE---------------------------------------------------------
 #  exportOverrepresented(fdl, n = 10)
-
-## --------------------------------------------------------------------------
-fl <- c("bowtie2PE.log", "bowtie2SE.log")
-bowtie2Logs <- system.file("extdata", fl, package = "ngsReports")
-df <- importBowtie2Logs(bowtie2Logs)
-
-## ---- echo=FALSE-----------------------------------------------------------
-pander(df, style = "rmarkdown", caption = "Example of SE and PE output from bowtie 2")
-
-## --------------------------------------------------------------------------
-fls <- c("bowtiePE.log", "bowtieSE.log")
-bowtieLogs <- system.file("extdata", fls, package = "ngsReports")
-df <- importBowtieLogs(bowtieLogs)
-
-## --------------------------------------------------------------------------
-starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
-df <- importStarLogs(starLog)
-
-## --------------------------------------------------------------------------
-sysDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(sysDir, "Dedup_metrics.log", full.names = TRUE)
-dupMetrics <- importDuplicationMetrics(fl)
-str(dupMetrics)
 
 ## ----sessionInfo, echo=FALSE-----------------------------------------------
 sessionInfo()

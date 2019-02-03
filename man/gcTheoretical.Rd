@@ -20,10 +20,10 @@ or \code{transcriptomes(gcTheoretical)}.
 
 Metadata is accessible using \code{mData(gcTheoretical)}.
 
-All GC content was calculated using code from
+All GC content was calculated using code modified from
 https://github.com/mikelove/fastqcTheoreticalGC using BSgenome packages.
-This provides a default set of GC content data for common organisms
-generated using 100bp reads/fragments and 1e6 reads.
+This provides a set of GC content data for common organisms generated using
+100bp reads/fragments and 1e6 reads.
 }
 \examples{
 ## Check which genomes are included
