@@ -73,7 +73,6 @@
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats hclust dist
 #' @import ggplot2
-#' @import fastqcTheoreticalGC
 #' @importFrom Biostrings readDNAStringSet
 #' @importFrom BiocGenerics width
 #' @importFrom utils read.table
