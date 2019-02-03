@@ -40,10 +40,11 @@ Imports:
   stringr,
   tidyr,
   tidyselect (>= 0.2.3),
+  truncnorm,
   utils,
   viridisLite,
+  XVector,
   zoo
-Remotes: mikelove/fastqcTheoreticalGC
 LazyData: true
 RoxygenNote: 6.1.1
 Collate: 
@@ -76,9 +77,9 @@ Collate:
     'exportOverrepresented.R'
     'extract.R'
     'fileName.R'
-    'gcFromFasta.R'
     'getColours.R'
     'getFastqcData.R'
+    'getGcDistribution.R'
     'getSummary.R'
     'importBowtieLogs.R'
     'importDuplicationMetrics.R'

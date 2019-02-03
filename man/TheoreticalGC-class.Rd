@@ -28,14 +28,16 @@ object}
 }}
 
 \examples{
-\dontrun{
 
 ## How to form an object using your own fasta file
-gen_df <- ngsReports:::.gcFromFasta("myGenome.fa")
-gen_df <- dplyr::rename(gen_df, mySpp = Freq)
-mData_df <- data.frame(Name = "mySpp", Genome = TRUE, Transcriptome = FALSE)
+faDir <- system.file("extdata", package = "ngsReports")
+faFile <- list.files(faDir, pattern = "fasta", full.names = TRUE)
+gen_df <- getGcDistribution(faFile, n = 200)
+gen_df <- dplyr::rename(gen_df, Athaliana = Freq)
+mData_df <-
+    data.frame(Name = "Athaliana", Genome = TRUE, Transcriptome = FALSE)
 tr_df <- data.frame()
 myGC <- new(
    "TheoreticalGC", Genome = gen_df, Transcriptome = tr_df, mData = mData_df)
-}
+
 }

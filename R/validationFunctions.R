@@ -65,30 +65,37 @@
 
     ## Check the colnames of the metaData
     reqCols <- c("Name", "Genome", "Transcriptome")
-    if (!all(reqCols %in% colnames(object@mData))) return(FALSE)
+    stopifnot(all(reqCols %in% colnames(object@mData)))
     gn <- object@mData$Genome
-    if (!is.logical(gn)) return(FALSE)
+    stopifnot(is.logical(gn))
     tr <- object@mData$Transcriptome
-    if (!is.logical(tr)) return(FALSE)
+    stopifnot(is.logical(tr))
 
     ## Check Genome & Transcriptomes called as TRUE match the metadata exactly
-    if (!all(object@mData$Name[gn] %in% colnames(object@Genome)))
-        return(FALSE)
-    if (!all(colnames(object@Genome)[-1] %in% object@mData$Name[gn]))
-        return(FALSE)
-    if (!all(object@mData$Name[tr] %in% colnames(object@Transcriptome)))
-        return(FALSE)
-    if (!all(colnames(object@Transcriptome)[-1] %in% object@mData$Name[tr]))
-        return(FALSE)
-
-    ## Check all content is given as a frequency
-    gFreqs <-
-        vapply(object@Genome[-1], function(x){sum(x > 1 | x < 0)}, integer(1))
-    if (any(gFreqs != 0)) return(FALSE)
-    tFreqs <- vapply(
-        object@Transcriptome[-1], function(x){sum(x > 1 | x < 0)}, integer(1)
-    )
-    if (any(tFreqs != 0)) return(FALSE)
+    if (any(gn)) {
+        stopifnot(all(object@mData$Name[gn] %in% colnames(object@Genome)))
+        stopifnot(all(colnames(object@Genome)[-1] %in% object@mData$Name[gn]))
+        ## Check all content is given as a frequency
+        gFreqs <- vapply(
+            object@Genome[-1], function(x){sum(x > 1 | x < 0)}, integer(1)
+        )
+        stopifnot(all(gFreqs == 0))
+    }
+    if (any(tr)) {
+        stopifnot(
+            all(object@mData$Name[tr] %in% colnames(object@Transcriptome))
+        )
+        stopifnot(
+            all(colnames(object@Transcriptome)[-1] %in% object@mData$Name[tr])
+        )
+        ## Check the frequencies again
+        tFreqs <- vapply(
+            object@Transcriptome[-1],
+            function(x){sum(x > 1 | x < 0)},
+            integer(1)
+        )
+        stopifnot(all(tFreqs == 0))
+    }
 
     TRUE
 

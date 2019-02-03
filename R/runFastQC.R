@@ -1,11 +1,15 @@
 #' A wrapper for the bash shell command fastqc.
 #'
-#' @description Takes a FastqFileList
+#' @description A convenient wrapper for the bash shell command fastqc.
+#' Only runs if Fastqc is installed.
 #'
 #' @details This is a simple wrapper function for controlling & running
 #' \code{fastqc} from within R.
 #' This can be very useful for controlling & documenting an entire pipeline
 #' from within knitr to produce a simple report
+#'
+#' Takes a FastqFile, FastqFileList, BamFile or BamFileList. Alternatively
+#' paths to files which are coerecible to these objects can be passed.
 #'
 #' Only the common functionality of FastQC is implemented,
 #' for more fine detail pease call FastQC directly.

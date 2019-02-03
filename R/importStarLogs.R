@@ -75,7 +75,8 @@ importStarLogs <- function(x, useBasename = TRUE){
     if (useBasename) df$Filename <- basename(df$Filename)
     df$Mapping_Duration <- df$Finished_On - df$Started_Mapping_On
     totMapped <-
-        df$Uniquely_Mapped_Reads_Number + df$Number_Of_Reads_Mapped_To_Multiple_Loci
+        df$Uniquely_Mapped_Reads_Number +
+        df$Number_Of_Reads_Mapped_To_Multiple_Loci
     df$Total_Mapped_Percent <- 100*totMapped / df$Number_Of_Input_Reads
     df <- dplyr::select(
         df, "Filename",

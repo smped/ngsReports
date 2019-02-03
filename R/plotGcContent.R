@@ -29,8 +29,6 @@
 #' GC content
 #' @param n number of simulated reads to generate theoretical GC content from
 #' \code{Fastafile}
-#' @param bp simulated read length to generate theoretical GC content from
-#' \code{Fastafile}
 #' @param species \code{character} if \code{gcTheory} is \code{TRUE} it must be
 #' accompanied by a species. Species currently supported can be obtained using
 #' \code{mData(gcTheoretical)}
@@ -85,7 +83,7 @@
 setGeneric("plotGcContent", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, bp = 100, ...){
+    n = 1e+6, ...){
     standardGeneric("plotGcContent")
 }
 )
@@ -95,11 +93,11 @@ setGeneric("plotGcContent", function(
 setMethod("plotGcContent", signature = "character", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, bp = 100, ...){
+    n = 1e+6, ...){
     x <- getFastqcData(x)
     plotGcContent(
         x, usePlotly, labels, theoreticalGC, theoreticalType, species,
-        GCobject, Fastafile, n, bp, ...
+        GCobject, Fastafile, n, ...
     )
 }
 )
@@ -109,11 +107,11 @@ setMethod("plotGcContent", signature = "character", function(
 setMethod("plotGcContent", signature = "FastqcFile", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, bp = 100, ...){
+    n = 1e+6, ...){
     x <- getFastqcData(x)
     plotGcContent(
         x, usePlotly, labels, theoreticalGC, theoreticalType, species,
-        GCobject, Fastafile, n, bp, ...)
+        GCobject, Fastafile, n, ...)
 }
 )
 #' @aliases plotGcContent,FastqcFileList
@@ -122,12 +120,12 @@ setMethod("plotGcContent", signature = "FastqcFile", function(
 setMethod("plotGcContent", signature = "FastqcFileList", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, bp = 100, ...
+    n = 1e+6, ...
 ){
     x <- getFastqcData(x)
     plotGcContent(
         x, usePlotly, labels, theoreticalGC, theoreticalType, species,
-        GCobject, Fastafile, n, bp, ...)
+        GCobject, Fastafile, n, ...)
 }
 )
 #' @aliases plotGcContent,FastqcData
@@ -136,7 +134,7 @@ setMethod("plotGcContent", signature = "FastqcFileList", function(
 setMethod("plotGcContent", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, bp = 100, counts = FALSE, lineCols = c("red", "blue"), ...){
+    n = 1e+6, counts = FALSE, lineCols = c("red", "blue"), ...){
 
     df <- Per_sequence_GC_content(x)
 
@@ -167,7 +165,8 @@ setMethod("plotGcContent", signature = "FastqcData", function(
 
     if (theoreticalGC) {
         if (!missing(Fastafile)) {
-            gcTheoryDF <- .gcFromFasta(Fastafile,n,bp)
+            readLength <- max(Basic_Statistics(x)$Longest_sequence)
+            gcTheoryDF <- getGcDistribution(Fastafile, n, readLength)
             subTitle <-
                 paste("Theoretical Distribution based on file", Fastafile)
         }
@@ -277,8 +276,8 @@ setMethod("plotGcContent", signature = "FastqcData", function(
 setMethod("plotGcContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n=1e+6, bp=100, plotType = c("heatmap", "line"), pwfCols,
-    cluster = FALSE, dendrogram = FALSE, ...){
+    n=1e+6, plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
+    dendrogram = FALSE, ...){
 
     df <- Per_sequence_GC_content(x)
 
@@ -314,7 +313,8 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     subTitle <- c()
     if (theoreticalGC) {
         if (!missing(Fastafile)) {
-            gcTheoryDF <- suppressMessages(.gcFromFasta(Fastafile, n, bp))
+            readLength <- max(Basic_Statistics(x)$Longest_sequence)
+            gcTheoryDF <- getGcDistribution(Fastafile, n, readLength)
             subTitle <-
                 paste("Theoretical Distribution based on", basename(Fastafile))
         }
