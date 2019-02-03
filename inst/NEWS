@@ -1,3 +1,7 @@
-Changes in version 0.99.0 (2018-05-15)
+Changes in version 0.99.0 (2019-02-01)
 + Submitted to Bioconductor
 + Shiny App has been moved to a separate package, located at https://github.com/UofABioinformaticsHub/shinyNgsReports
+
+Changes in version 0.99.1 (2019-02-03)
++ Removed Remote from DESCRIPTION
++ Added getGcDistribution to enable calculation of GC Content Distributions from FastaFiles
