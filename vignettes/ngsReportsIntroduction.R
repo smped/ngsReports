@@ -87,9 +87,9 @@ plotGcContent(fdl)
 ## --------------------------------------------------------------------------
 plotGcContent(fdl, theoreticalType = "Transcriptome", species = "Mmusculus")
 
-## ----message=FALSE,warning=FALSE-------------------------------------------
+## ---- message=FALSE, warning=FALSE-----------------------------------------
 faFile <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package = "ngsReports")
-plotGcContent(fdl, Fastafile = faFile)
+plotGcContent(fdl, Fastafile = faFile, n = 1000)
 
 ## --------------------------------------------------------------------------
 plotGcContent(fdl, plotType = "line",  theoreticalType = "Transcriptome")
@@ -104,7 +104,7 @@ plotOverrepresentedSummary(fdl[[1]])
 #  exportOverrepresented(fdl, n = 10)
 
 ## --------------------------------------------------------------------------
-fl <- c("bowtie2PE.log", "bowtie2SE.log")
+fl <- c("bowtie2PE.txt", "bowtie2SE.txt")
 bowtie2Logs <- system.file("extdata", fl, package = "ngsReports")
 df <- importBowtie2Logs(bowtie2Logs)
 
@@ -112,7 +112,7 @@ df <- importBowtie2Logs(bowtie2Logs)
 pander(df, style = "rmarkdown", caption = "Example of SE and PE output from bowtie 2")
 
 ## --------------------------------------------------------------------------
-fls <- c("bowtiePE.log", "bowtieSE.log")
+fls <- c("bowtiePE.txt", "bowtieSE.txt")
 bowtieLogs <- system.file("extdata", fls, package = "ngsReports")
 df <- importBowtieLogs(bowtieLogs)
 
@@ -122,7 +122,7 @@ df <- importStarLogs(starLog)
 
 ## --------------------------------------------------------------------------
 sysDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(sysDir, "Dedup_metrics.log", full.names = TRUE)
+fl <- list.files(sysDir, "Dedup_metrics.txt", full.names = TRUE)
 dupMetrics <- importDuplicationMetrics(fl)
 str(dupMetrics)
 

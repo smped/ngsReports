@@ -1,7 +1,7 @@
 context("Check Theoretical GC Content functions")
 
 test_that("Fails on file which is not fasta",{
-    fl <- system.file("extdata", "bowtie2PE.log", package = "ngsReports")
+    fl <- system.file("extdata", "bowtie2PE.txt", package = "ngsReports")
     expect_error(getGcDistribution(fl))
 })
 

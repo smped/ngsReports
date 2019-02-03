@@ -311,9 +311,9 @@ plotGcContent(fdl, theoreticalType = "Transcriptome", species = "Mmusculus")
 
 Customized theoretical GC content can be generated using input DNA sequences from a fasta file
 
-```{r,message=FALSE,warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 faFile <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package = "ngsReports")
-plotGcContent(fdl, Fastafile = faFile)
+plotGcContent(fdl, Fastafile = faFile, n = 1000)
 ```
 
 Line plots can also be produced.
@@ -348,7 +348,7 @@ A selection of log files as produced by tools such as `STAR`, `hisat2`, `bowtie`
 Files produced by `hisat2` and `bowtie2` have the identical format, and produce identical output
 
 ```{r}
-fl <- c("bowtie2PE.log", "bowtie2SE.log")
+fl <- c("bowtie2PE.txt", "bowtie2SE.txt")
 bowtie2Logs <- system.file("extdata", fl, package = "ngsReports")
 df <- importBowtie2Logs(bowtie2Logs)
 ```
@@ -360,7 +360,7 @@ pander(df, style = "rmarkdown", caption = "Example of SE and PE output from bowt
 `Bowtie` provides different output to both `hisat2` and `bowtie2`
 
 ```{r}
-fls <- c("bowtiePE.log", "bowtieSE.log")
+fls <- c("bowtiePE.txt", "bowtieSE.txt")
 bowtieLogs <- system.file("extdata", fls, package = "ngsReports")
 df <- importBowtieLogs(bowtieLogs)
 ```
@@ -378,7 +378,7 @@ This is imported as a list with a `tibble` containing the detailed output in the
 
 ```{r}
 sysDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(sysDir, "Dedup_metrics.log", full.names = TRUE)
+fl <- list.files(sysDir, "Dedup_metrics.txt", full.names = TRUE)
 dupMetrics <- importDuplicationMetrics(fl)
 str(dupMetrics)
 ```

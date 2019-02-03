@@ -1,8 +1,8 @@
 context("Check all import functions behave and error correctly")
 
-bowtieLogs <- system.file("extdata", c("bowtiePE.log", "bowtieSE.log"), package = "ngsReports")
-bowtie2Logs <- system.file("extdata", c("bowtie2PE.log", "bowtie2SE.log"), package = "ngsReports")
-dupLogs <- system.file("extdata", "Sample1_Dedup_metrics.log", package = "ngsReports")
+bowtieLogs <- system.file("extdata", c("bowtiePE.txt", "bowtieSE.txt"), package = "ngsReports")
+bowtie2Logs <- system.file("extdata", c("bowtie2PE.txt", "bowtie2SE.txt"), package = "ngsReports")
+dupLogs <- system.file("extdata", "Sample1_Dedup_metrics.txt", package = "ngsReports")
 starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
 
 test_that("importBowtieLogs loads correctly",{

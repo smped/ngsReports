@@ -16,7 +16,7 @@
 #'
 #' @examples
 #' sysDir <- system.file("extdata", package = "ngsReports")
-#' fl <- list.files(sysDir, "Dedup_metrics.log", full.names = TRUE)
+#' fl <- list.files(sysDir, "Dedup_metrics.txt", full.names = TRUE)
 #' dupMetrics <- importDuplicationMetrics(fl)
 #'
 #' @export
