@@ -111,6 +111,7 @@ Collate:
 VignetteBuilder: knitr
 Suggests: 
   BiocStyle, 
+  Cairo,
   knitr, 
   pander,
   testthat

@@ -6,7 +6,6 @@ fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:
 fdl <- getFastqcData(fileList)
 
 #test dataset
-
 df <- Sequence_Length_Distribution(fdl)
 cols <- c("Filename", "Lower", "Count")
 
@@ -23,9 +22,14 @@ test_that("A plot can be drawn",{
 })
 
 test_that("Plot is as expected",{
-  # This hash was found as the first two digits of the md5sum from
-  # digest::digest(dendro$x$data, "md5")
-  expect_known_hash(dendro$x$data, "c7")
+    expected <- c(x1 = "0", x2 = "0", x3 = NA, x4 = "0", x5 = "0", x6 = NA, x7 = "0",
+                  x8 = "0", x9 = NA, x10 = "0", x11 = "0", y1 = "1.5", y2 = "1",
+                  y3 = NA, y4 = "1", y5 = "1", y6 = NA, y7 = "1.5", y8 = "2", y9 = NA,
+                  y10 = "2", y11 = "2", text = "", type = "scatter", mode = "lines",
+                  line.width = "1.88976377952756", line.color = "rgba(0,0,0,1)",
+                  line.dash = "solid", hoveron = "points", showlegend = "FALSE",
+                  xaxis = "x", yaxis = "y", hoverinfo = "text", name = "")
+  expect_equal(unlist(dendro$x$data[[1]]), expected)
 })
 
 closeAllConnections()

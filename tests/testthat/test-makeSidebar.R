@@ -15,9 +15,15 @@ test_that("A plot can be drawn",{
 })
 
 test_that("Plot is as expected",{
-    # This hash was found as the first two digits of the md5sum from
-    # digest::digest(sb$x$data, "md5")
-    expect_known_hash(sb$x$data, 91)
+    expected <- c(x1 = "0.5", x2 = "0.5", x3 = "1.5", x4 = "1.5", x5 = "0.5",
+                  y1 = "0.5", y2 = "1.5", y3 = "1.5", y4 = "0.5", y5 = "0.5", text = "Status: PASS<br />Filename: ATTG_R1",
+                  key1 = "ATTG_R1.fastq", key2 = "ATTG_R1.fastq", key3 = "ATTG_R1.fastq",
+                  key4 = "ATTG_R1.fastq", key5 = "ATTG_R1.fastq", type = "scatter",
+                  mode = "lines", line.width = "0.377952755905512", line.color = "transparent",
+                  line.dash = "solid", fill = "toself", fillcolor = "rgba(0,204,0,1)",
+                  hoveron = "fills", name = "PASS", legendgroup = "PASS", showlegend = "TRUE",
+                  xaxis = "x", yaxis = "y", hoverinfo = "text")
+    expect_equal(unlist(sb$x$data[[1]]), expected)
 })
 
 closeAllConnections()

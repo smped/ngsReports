@@ -38,8 +38,6 @@
 #' # Check the overall PASS/WARN/FAIL status
 #' plotSummary(fdl)
 #'
-#' # Interactive plot
-#' plotSummary(fdl, usePlotly = TRUE)
 #'
 #' @importFrom dplyr bind_cols
 #' @importFrom grid unit
