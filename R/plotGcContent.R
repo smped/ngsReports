@@ -63,11 +63,6 @@
 #' # Plot a single FastqcData object
 #' plotGcContent(fdl[[1]])
 #'
-#' # Plot GC content with theoretical GC content generated from a given
-#' # fasta file
-#' f <- "Athaliana.TAIR10.tRNA.fasta"
-#' faFile <- system.file("extdata", f, package="ngsReports")
-#' plotGcContent(fdl, Fastafile = faFile)
 #'
 #' @importFrom viridisLite inferno
 #' @importFrom grDevices colorRampPalette
