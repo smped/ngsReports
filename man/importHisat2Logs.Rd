@@ -22,10 +22,7 @@ A \code{tibble}
 Import one or more hisat2/bowtie2 log files as a data frame.
 }
 \examples{
-hisat2Logs <- system.file("extdata", "hisat2PE.txt", package = "ngsReports")
-df <- importHisat2Logs(hisat2Logs)
-
-# bowtie2 logs are the identical format
+# NB bowtie2 & hista2 logs are the identical format
 fl <- c("bowtie2PE.txt", "bowtie2SE.txt")
 bowtie2Logs <- system.file("extdata", fl, package = "ngsReports")
 df <- importBowtie2Logs(bowtie2Logs)

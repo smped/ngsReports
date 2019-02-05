@@ -25,8 +25,7 @@
     ## functions. This step is essentially redundant
     status <- status[order(status$Filename),]
     ## Make the basic plot
-    sideBar <-
-        ggplot(status, aes_string(x = "1", y = "Filename", key = "key")) +
+    sideBar <- ggplot(status, aes_string("1", "Filename", key = "key")) +
         geom_tile(aes_string(fill = "Status")) +
         geom_hline(yintercept = seq(1.5, nx), colour = "grey20", size = 0.2) +
         scale_fill_manual(values = getColours(pwfCols)) +

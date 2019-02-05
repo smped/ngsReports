@@ -29,8 +29,8 @@
     ## the supplied pattern
     if (missing(labels)) {
         labels <- structure(
-            gsub(pattern, "", unique(df[[col]])),
-            names = unique(df[[col]])
+            gsub(pattern, "", unique(df[[col]])), # Remove the pattern
+            names = unique(df[[col]]) # Ensure a named vector
         )
     }
     if (!all(df[[col]] %in% names(labels)))

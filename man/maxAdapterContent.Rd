@@ -36,5 +36,4 @@ fdl <- getFastqcData(fileList)
 # Get the maxAdapterContent
 maxAdapterContent(fdl)
 
-
 }

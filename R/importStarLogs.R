@@ -57,7 +57,7 @@ importStarLogs <- function(x, useBasename = TRUE){
         ## Form a list then tibble
         out <- as.list(x[,2])
         names(out) <- cols
-        as_tibble(out)
+        out
     })
     df <- dplyr::bind_rows(df)
     ## Reformat the time columns
@@ -89,7 +89,7 @@ importStarLogs <- function(x, useBasename = TRUE){
         tidyselect::everything()
     )
 
-    df
+    as_tibble(df)
 }
 
 #' @title Check for a valid Star Alignment log

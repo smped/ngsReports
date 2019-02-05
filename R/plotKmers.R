@@ -177,8 +177,7 @@ setMethod("plotKmers", signature = "FastqcData", function(
     xLab <- "Position in read (bp)"
     yLab <- expression(paste(log[2], " Obs/Exp"))
     kMerPlot <- ggplot(
-        df,
-        aes_string(x = "Position", y = "Value", colour = "Sequence")
+        df, aes_string("Position", "Value", colour = "Sequence")
     ) +
         geom_line(size = lineWidth) +
         facet_wrap(~Filename) +
@@ -200,8 +199,7 @@ setMethod("plotKmers", signature = "FastqcData", function(
         kMerPlot <- kMerPlot +
             theme(axis.text.x = element_text(
                 angle = 90, hjust = 1, vjust = 1
-            )
-            )
+            ))
     }
     if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
 
@@ -315,12 +313,9 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
     kMerPlot <- ggplot(
         df,
         aes_string(
-            x = "`Middle of Bin`",
-            y = "Filename",
-            fill = "Total",
-            width = "Width"
-        )
-    ) +
+            x = "`Middle of Bin`", y = "Filename",
+            fill = "Total", width = "Width"
+        )) +
         geom_tile() +
         labs(x = xLab) +
         scale_x_continuous(expand = c(0.02, 0)) +
@@ -345,12 +340,10 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
         status <- dplyr::arrange(status, Filename)
         sideBar <- .makeSidebar(status, key, pwfCols)
 
+        dendro <- plotly::plotly_empty()
         if (dendrogram) {
             dx <- ggdendro::dendro_data(clusterDend)
             dendro <- .renderDendro(dx$segments)
-        }
-        else{
-            dendro <- plotly::plotly_empty()
         }
 
         kMerPlot <- suppressWarnings(

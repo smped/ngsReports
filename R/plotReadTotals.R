@@ -160,10 +160,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
         if (bars == "adjacent") xMax <- max(df$Total)*(1 + expand.x[[1]])
 
         ## Make the plot
-        rtPlot <- ggplot(
-            df,
-            aes_string(x = "Filename", y = "Total", fill = "Type")
-        ) +
+        rtPlot <- ggplot(df, aes_string("Filename", "Total", fill = "Type")) +
             geom_bar(stat = "identity", position = barPos) +
             scale_y_continuous(
                 labels = scales::comma,
@@ -183,8 +180,9 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
             # Hide the legend
             rtPlot <- rtPlot + theme(legend.position = "none")
             # Render as a plotly object
-            rtPlot <-
-                suppressMessages(suppressWarnings(plotly::ggplotly(rtPlot)))
+            rtPlot <- suppressMessages(
+                suppressWarnings(plotly::ggplotly(rtPlot))
+            )
         }
 
     }

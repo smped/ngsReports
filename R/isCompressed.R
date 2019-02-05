@@ -37,22 +37,17 @@ isCompressed <- function(path, type = c("zip", "gzip"), verbose = FALSE){
     ## This is the magic number for each compression type
     magicNum <- list(zip = c(80, 75, 3, 4), gzip = c(31, 139, 8))[[type]]
     n <- length(magicNum)
-    if (verbose > 0)
-        message(
-            sprintf(
-                "Checking %i file(s) for %s compression", length(path), type
-            )
-        )
+    if (verbose > 0) message(
+        sprintf("Checking %i file(s) for %s compression", length(path), type)
+    )
 
     ## If any elements of path are found to be directories these should be
     ## identified via a message and not tested, but return FALSE.
     isDir <- file.info(path)$isdir
-    if (verbose > 0 & any(isDir))
-        message(
-            sum(isDir),
-            " supplied path(s) represent directories not files:\n",
-            paste(path[isDir], collapse = "\n")
-        )
+    if (verbose > 0 & any(isDir)) message(
+        sum(isDir), " supplied path(s) represent directories not files:\n",
+        paste(path[isDir], collapse = "\n")
+    )
 
     ## Test files which were not found to be directories
     chk <- logical(length(path)) # Defaults to FALSE ensuring dirs are FALSE

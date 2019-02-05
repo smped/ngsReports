@@ -22,7 +22,5 @@
 #' ## Check which transcriptomes are included
 #' transcriptomes(gcTheoretical)
 #'
-#' ## Metadata is also included
-#' mData(gcTheoretical)
 #'
 "gcTheoretical"

@@ -211,7 +211,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
     stopifnot(reqVals %in% names(vals))
 
     ## Setup the tibble with the correct value types
-    df <- tibble::as_tibble(as.list(vals))
+    df <- as_tibble(as.list(vals))
     df$Shortest_sequence <- gsub("(.*)-.*", "\\1", df$Sequence_length)
     df$Longest_sequence <- gsub(".*-(.*)", "\\1", df$Sequence_length)
     intVals <- c(
@@ -256,7 +256,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
     ## Change to numeric where appropriate
     df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
-    tibble::as_tibble(df)
+    as_tibble(df)
 
 }
 
@@ -274,7 +274,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
     stopifnot(reqVals %in% names(df))
 
     df[["Mean"]] <- as.numeric(df[["Mean"]])
-    tibble::as_tibble(df)
+    as_tibble(df)
 
 }
 
@@ -292,7 +292,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
     stopifnot(reqVals %in% names(df))
 
     df <- lapply(df, as.integer)
-    tibble::as_tibble(df)
+    as_tibble(df)
 }
 
 .getPerBaseSeqCont <- function(fqcLines){
@@ -310,7 +310,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
     ## Set all as numeric except the 'Base'column
     df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
-    tibble::as_tibble(df)
+    as_tibble(df)
 
 }
 
@@ -331,7 +331,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
     ## Convert to integers
     df[["GC_Content"]] <- as.integer(df[["GC_Content"]])
     df[["Count"]] <- as.numeric(df[["Count"]])
-    tibble::as_tibble(df)
+    as_tibble(df)
 }
 
 .getPerBaseNCont <- function(fqcLines){
@@ -348,7 +348,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
     stopifnot(reqVals %in% names(df))
 
     df[["N-Count"]] <- as.integer(df[["N-Count"]])
-    tibble::as_tibble(df)
+    as_tibble(df)
 
 }
 
@@ -369,7 +369,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
     df$Lower <- as.integer(gsub("(.*)-.*", "\\1", df$Length))
     df$Upper <- as.integer(gsub(".*-(.*)", "\\1", df$Length))
     df$Count <- as.integer(df$Count)
-    df <- tibble::as_tibble(df)
+    df <- as_tibble(df)
 
     df[c("Length", "Lower", "Upper", "Count")]
 
@@ -423,7 +423,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
     ## Return a list with both values
     list(
         Total_Deduplicated_Percentage = Total_Deduplicated_Percentage,
-        Sequence_Duplication_Levels = tibble::as_tibble(df)
+        Sequence_Duplication_Levels = as_tibble(df)
     )
 
 }
@@ -444,7 +444,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
     df$Count <- as.integer(df$Count)
     df$Percentage <- as.numeric(df$Percentage)
-    tibble::as_tibble(df)
+    as_tibble(df)
 
 }
 
@@ -465,7 +465,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
     numCols <- !names(df) %in% reqVals
     df[numCols] <- lapply(df[numCols], as.numeric)
-    tibble::as_tibble(df)
+    as_tibble(df)
 
 }
 
@@ -488,6 +488,6 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
     df$PValue <- as.numeric(df$PValue)
     df$`Obs/Exp_Max` <- as.numeric(df$`Obs/Exp_Max`)
 
-    tibble::as_tibble(df)
+    as_tibble(df)
 
 }

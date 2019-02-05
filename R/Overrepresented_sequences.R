@@ -34,9 +34,9 @@ setMethod("Overrepresented_sequences", "FastqcData", function(object){
         df$Filename <- fileName(object)
         dplyr::select(df, "Filename", tidyselect::everything())
     }
-    else {# Otherwise return the blank data.frame
-        df
-    }
+
+    df
+
 })
 
 #' @export
@@ -45,13 +45,12 @@ setMethod("Overrepresented_sequences", "FastqcData", function(object){
 setMethod("Overrepresented_sequences", "FastqcDataList", function(object){
     df <- lapply(object@.Data, Overrepresented_sequences)
     nulls <- vapply(df, function(x){length(x) == 0}, logical(1))
-    if (sum(nulls) > 0)
-        message(
-            sprintf(
-                "The Overrepresented_sequences module was empty in %s\n",
-                paste(path(object)[nulls], sep = "\n")
-            )
+    if (sum(nulls) > 0) message(
+        sprintf(
+            "The Overrepresented_sequences module was empty in %s\n",
+            paste(path(object)[nulls], sep = "\n")
         )
+    )
     dplyr::bind_rows(df)
 })
 

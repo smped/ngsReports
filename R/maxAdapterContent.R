@@ -25,7 +25,6 @@
 #' # Get the maxAdapterContent
 #' maxAdapterContent(fdl)
 #'
-#'
 #' @export
 maxAdapterContent <- function(x, asPercent = TRUE){
 

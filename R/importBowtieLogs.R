@@ -69,13 +69,15 @@ importBowtieLogs <- function(x){
     })
     ## Add the filename, reorder the columns & return a tibble
     df$Filename <- basename(x)
-    df <- dplyr::select(df,
-                        "Filename",
-                        tidyselect::contains("Reads"),
-                        tidyselect::contains("Time"),
-                        tidyselect::everything())
+    df <- dplyr::select(
+        df,
+        "Filename",
+        tidyselect::contains("Reads"),
+        tidyselect::contains("Time"),
+        tidyselect::everything()
+    )
 
-    tibble::as_tibble(df)
+    as_tibble(df)
 }
 
 #' @title Check for correct structure of supplied Bowtie log files

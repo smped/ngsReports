@@ -153,50 +153,32 @@ setMethod("plotBaseQualities", signature = "FastqcData", function(
         geom_rect(
             data = rects,
             aes_string(
-                xmin = "xmin",
-                xmax = "xmax",
-                ymin = "ymin",
-                ymax = "ymax",
+                xmin = "xmin", xmax = "xmax",
+                ymin = "ymin", ymax = "ymax",
                 fill = "Status")
         ) +
         geom_rect(
             aes_string(
-                xmin = "xmin",
-                xmax = "xmax",
-                ymin = "Lower_Quartile",
-                ymax = "Upper_Quartile"),
-            fill ="yellow",
-            colour = "black"
+                xmin = "xmin", xmax = "xmax",
+                ymin = "Lower_Quartile", ymax = "Upper_Quartile"
+            ),
+            fill = "yellow", colour = "black"
         ) +
-        geom_segment(
-            aes_string(
-                x = "xmin",
-                xend = "xmax",
-                y = "Median",
-                yend = "Median"),
+        geom_segment(aes_string(
+            x = "xmin", xend = "xmax", y = "Median", yend = "Median"
+        ),
             colour = "red"
         ) +
-        geom_linerange(
-            aes_string(
-                x = "Base",
-                ymin = "`10th_Percentile`",
-                ymax = "Lower_Quartile"
-            )
-        ) +
-        geom_linerange(
-            aes_string(
-                x = "Base",
-                ymin = "Upper_Quartile",
-                ymax = "`90th_Percentile`"
-            )
-        ) +
+        geom_linerange(aes_string(
+            x = "Base", ymin = "`10th_Percentile`", ymax = "Lower_Quartile"
+        )) +
+        geom_linerange(aes_string(
+            x = "Base", ymin = "Upper_Quartile", ymax = "`90th_Percentile`"
+        )) +
         geom_line(
-            aes_string(
-                x = "Base",
-                y = "Mean",
-                group = "Filename"
-            ),
-            colour = "blue") +
+            aes_string("Base", "Mean", group = "Filename"),
+            colour = "blue"
+        ) +
         scale_fill_manual(values = getColours(pwfCols)) +
         scale_x_discrete(expand = c(0, 0)) +
         scale_y_continuous(limits = ylim, expand = c(0, 0)) +
@@ -236,9 +218,7 @@ setMethod("plotBaseQualities", signature = "FastqcData", function(
         qualPlot <- plotly::layout(qualPlot, yaxis2 = list(title = ylab))
         ## Set the hoverinfo for bg rectangles to none,
         ## This will effectively hide them
-        qualPlot$x$data[[2]]$hoverinfo <- "none"
-        qualPlot$x$data[[3]]$hoverinfo <- "none"
-        qualPlot$x$data[[4]]$hoverinfo <- "none"
+        qualPlot$x$data <- lapply(qualPlot$x$data, .hidePWFRects)
         ## Turn off the boxplot fill hover
         qualPlot$x$data[[5]]$hoverinfo <- "none"
         ## Remove xmax & xmin from the hover info
@@ -324,29 +304,22 @@ setMethod("plotBaseQualities", signature = "FastqcDataList", function(
             geom_rect(
                 data = rects,
                 aes_string(
-                    xmin = "xmin",
-                    xmax = "xmax",
-                    ymin = "ymin",
-                    ymax = "ymax",
+                    xmin = "xmin", xmax = "xmax",
+                    ymin = "ymin", ymax = "ymax",
                     fill = "Status"
                 )
             ) +
             geom_rect(
                 aes_string(
-                    xmin = "xmin",
-                    xmax = "xmax",
-                    ymin = "Lower_Quartile",
-                    ymax = "Upper_Quartile"
+                    xmin = "xmin", xmax = "xmax",
+                    ymin = "Lower_Quartile", ymax = "Upper_Quartile"
                 ),
-                fill = "yellow",
-                colour = "black"
+                fill = "yellow", colour = "black"
             ) +
             geom_segment(
                 aes_string(
-                    x = "xmin",
-                    xend = "xmax",
-                    y = "Median",
-                    yend = "Median"
+                    x = "xmin", xend = "xmax",
+                    y = "Median", yend = "Median"
                 ),
                 colour = "red"
             ) +
@@ -365,11 +338,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList", function(
                 )
             ) +
             geom_line(
-                aes_string(
-                    x = "Base",
-                    y = "Mean",
-                    group = "Filename"
-                ),
+                aes_string("Base", "Mean", group = "Filename"),
                 colour = "blue"
             ) +
             scale_fill_manual(values = getColours(pwfCols)) +
@@ -393,13 +362,8 @@ setMethod("plotBaseQualities", signature = "FastqcDataList", function(
         ## Make interactive if required
         if (usePlotly) {
             hv <- c(
-                "Base",
-                "Mean",
-                "Median",
-                "Upper_Quartile",
-                "Lower_Quartile",
-                "`10th_Percentile`",
-                "`90th_Percentile`"
+                "Base", "Mean", "Median", "Upper_Quartile", "Lower_Quartile",
+                "`10th_Percentile`", "`90th_Percentile`"
             )
             qualPlot <- qualPlot + theme(legend.position = "none")
             qualPlot <- suppressMessages(
@@ -407,9 +371,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList", function(
             )
             ## Set the hoverinfo for bg rectangles to the vertices
             ## only. This will effectively hide them
-            qualPlot$x$data[[1]]$hoverinfo <- "none"
-            qualPlot$x$data[[2]]$hoverinfo <- "none"
-            qualPlot$x$data[[3]]$hoverinfo <- "none"
+            qualPlot$x$data <- lapply(qualPlot$x$data, .hidePWFRects)
             qualPlot$x$data <- lapply(qualPlot$x$data, function(x){
                 x$text <- gsub("xmax:.+(Median.+)xmin.+", "\\1", x$text)
                 x
@@ -469,11 +431,7 @@ setMethod("plotBaseQualities", signature = "FastqcDataList", function(
         ## Start the heatmap
         qualPlot <- ggplot(
             df,
-            aes_string(
-                x = "Start",
-                y = "Filename",
-                fill = plotValue
-            )
+            aes_string("Start", "Filename", fill = plotValue)
         ) +
             geom_tile() +
             labs(x = xlab) +

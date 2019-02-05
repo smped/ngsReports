@@ -37,9 +37,8 @@ setMethod("Per_base_N_content", "FastqcData", function(object){
         df$Filename <- fileName(object)
         dplyr::select(df, "Filename", tidyselect::everything())
     }
-    else {# Otherwise return the blank data.frame
-        df
-    }
+
+    df
 })
 
 #' @export

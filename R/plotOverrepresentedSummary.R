@@ -133,10 +133,8 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData", function(
     overPlot <- ggplot(
         df,
         aes_string(
-            x = "Sequence",
-            y = "Percentage",
-            fill = "Status",
-            label = "Possible_Source"
+            "Sequence", "Percentage",
+            fill = "Status", label = "Possible_Source"
         )
     ) +
         geom_bar(stat = "identity") +
@@ -235,7 +233,6 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList", function(
     }
     ## Now set everything as factors
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
-
     maxChar <- max(nchar(levels(df$Filename)))
 
     ## Check the axis expansion
@@ -268,10 +265,7 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList", function(
 
     overPlot <- ggplot(
         df,
-        aes_string(
-            x = "Filename",
-            y = "Percentage",
-            fill = "Possible_Source")
+        aes_string("Filename", "Percentage", fill = "Possible_Source")
     ) +
         geom_bar(stat = "identity") +
         labs(y = xLab, fill = "Possible Source") +
@@ -312,12 +306,10 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcDataList", function(
         sideBar <- .makeSidebar(status, key, pwfCols)
 
         # Prepare the dendrogram
+        dendro <- plotly::plotly_empty()
         if (dendrogram) {
             dx <- ggdendro::dendro_data(clusterDend)
             dendro <- .renderDendro(dx$segments)
-        }
-        else{
-            dendro <- plotly::plotly_empty()
         }
 
         # The final interactive plot

@@ -266,10 +266,8 @@ setMethod("plotSequenceContent", signature = "FastqcDataList", function(
                 Position = "Position")) +
             geom_rect(
                 aes_string(
-                    xmin = "xmin",
-                    xmax = "xmax",
-                    ymin = "ymin",
-                    ymax = "ymax"
+                    xmin = "xmin", xmax = "xmax",
+                    ymin = "ymin", ymax = "ymax"
                 ),
                 linetype = 0) +
             scale_fill_manual(values = tileCols) +
@@ -300,12 +298,10 @@ setMethod("plotSequenceContent", signature = "FastqcDataList", function(
                 factor(status$Filename, levels = levels(df$Filename))
             sideBar <- .makeSidebar(status, key, pwfCols)
 
+            dendro <- plotly::plotly_empty()
             if (dendrogram) {
                 dx <- ggdendro::dendro_data(clusterDend)
                 dendro <- .renderDendro(dx$segments)
-            }
-            else{
-                dendro <- plotly::plotly_empty()
             }
 
             ## Render using ggplotly to enable easier tooltip

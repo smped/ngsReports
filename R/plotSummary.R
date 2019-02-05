@@ -125,10 +125,7 @@ setMethod("plotSummary", signature = "FastqcDataList", function(
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
     ## Create the basic plot
-    sumPlot <- ggplot(
-        df,
-        aes_string(x = "Category", y = "Filename", fill = "Status")
-    ) +
+    sumPlot <- ggplot(df, aes_string("Category", "Filename", fill = "Status")) +
         geom_tile(colour = gridlineCol, size = gridlineWidth) +
         scale_fill_manual(values = fillCol) +
         labs(x = "QC Category", y = "Filename") +

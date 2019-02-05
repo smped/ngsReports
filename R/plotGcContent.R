@@ -157,6 +157,8 @@ setMethod("plotGcContent", signature = "FastqcData", function(
     ## Tidy up the GC content variables
     if (missing(GCobject)) GCobject <- ngsReports::gcTheoretical
 
+    gcTheoryDF <- c()
+    subTitle <- c()
     if (theoreticalGC) {
         if (!missing(Fastafile)) {
             readLength <- max(Basic_Statistics(x)$Longest_sequence)
@@ -166,13 +168,11 @@ setMethod("plotGcContent", signature = "FastqcData", function(
         }
         else{
             gcFun <- match.arg(
-                tolower(theoreticalType),
-                c("genomes","transcriptomes")
+                tolower(theoreticalType), c("genomes","transcriptomes")
             )
             avail <- do.call(gcFun, list(object = GCobject))
             stopifnot(species %in% avail$Name)
-            gcTheoryDF <-
-                getGC(GCobject, name = species, type = theoreticalType)
+            gcTheoryDF <- getGC(GCobject, species,theoreticalType)
             names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
             subTitle <- paste(
                 "Theoretical Distribution based on the",
@@ -183,10 +183,6 @@ setMethod("plotGcContent", signature = "FastqcData", function(
         gcTheoryDF$Type <- "Theoretical Distribution"
         gcTheoryDF$Filename <- "Theoretical Distribution"
         gcTheoryDF$Freq <- round(gcTheoryDF$Freq,4)
-    }
-    else{
-        gcTheoryDF <- c()
-        subTitle <- c()
     }
 
     xLab <- "GC Content (%)"
@@ -201,9 +197,9 @@ setMethod("plotGcContent", signature = "FastqcData", function(
         df$Freq <- round(df$Freq, 4)
 
         gcPlot <- ggplot(
-            df,
-            aes_string(x = "GC_Content", y = "Freq", colour = "Type")
-        ) + geom_line()
+            df, aes_string("GC_Content", "Freq", colour = "Type")
+        ) +
+            geom_line()
     }
     else{
 
@@ -356,8 +352,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
         df$Percent <- round(df$Percent, 2)
 
         gcPlot <- ggplot(
-            df,
-            aes_string("GC_Content", "Percent", colour = "Filename")
+            df, aes_string("GC_Content", "Percent", colour = "Filename")
         ) +
             geom_line(size = lineWidth) +
             scale_x_continuous(

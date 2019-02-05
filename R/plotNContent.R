@@ -95,20 +95,17 @@ setMethod("plotNContent", signature = "FastqcData", function(
 
     ## Get the NContent
     df <- Per_base_N_content(x)
+    colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
     ## Handle empty/missing modules
-    if (!length(df)) {
-        nPlot <- .emptyPlot("No N Content Module Detected")
+    msg <- c()
+    if (!length(df)) msg <- "No N Content Module Detected"
+    if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
+    if (!is.null(msg)) {
+        nPlot <- ngsReports:::.emptyPlot(msg)
         if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
         return(nPlot)
     }
-    if (sum(df[["N-Count"]]) == 0) {
-        nPlot <- ngsReports:::.emptyPlot("No N Content in Sequences")
-        if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
-        return(nPlot)
-    }
-
-    colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
     ## Sort out the colours
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -141,21 +138,15 @@ setMethod("plotNContent", signature = "FastqcData", function(
         geom_rect(
             data = rects,
             aes_string(
-                xmin = "xmin",
-                xmax = "xmax",
-                ymin = "ymin",
-                ymax = "ymax",
+                xmin = "xmin", xmax = "xmax",
+                ymin = "ymin", ymax = "ymax",
                 fill = "Status"
             )
         ) +
-        geom_line(
-            aes_string(x = "xValue", y = "Percentage"),
-            colour = lineCol
-        ) +
+        geom_line(aes_string("xValue", "Percentage"), colour = lineCol) +
         geom_point(
             aes_string(x = "xValue", y = "Percentage", group = "Base"),
-            size = 0,
-            colour = rgb(0, 0, 0, 0)
+            size = 0, colour = rgb(0, 0, 0, 0)
         ) +
         scale_fill_manual(values = getColours(pwfCols)) +
         scale_x_continuous(
@@ -192,11 +183,7 @@ setMethod("plotNContent", signature = "FastqcData", function(
 
         ## Set the hoverinfo for bg rectangles to the vertices only,
         ## This will effectively hide them
-        nPlot$x$data[[1]]$hoverinfo <- "none"
-        nPlot$x$data[[2]]$hoverinfo <- "none"
-        nPlot$x$data[[3]]$hoverinfo <- "none"
-        nPlot$x$data[[4]]$hoverinfo <- "none"
-        nPlot$x$data[[5]]$hoverinfo <- "none"
+        nPlot$x$data <- lapply(nPlot$x$data, .hidePWFRects)
         ## Hide the xValue parameter to make it look nicer
         nPlot$x$data[[6]]$text <- gsub(
             "(.+)(xValue.+)(Percentage.+)",
@@ -216,20 +203,17 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
 
     ## Get the NContent
     df <- Per_base_N_content(x)
-
-    if (!length(df)) {
-        nPlot <- .emptyPlot("No N Content Module Detected")
-        if (usePlotly) acPlot <- ggplotly(nPlot, tooltip = "")
-        return(nPlot)
-    }
-
-    if (sum(df$`N-Count`) == 0) {
-        nPlot <- ngsReports:::.emptyPlot("No N Content in Sequences")
-        if (usePlotly) acPlot <- ggplotly(nPlot, tooltip = "")
-        return(nPlot)
-    }
-
     colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
+
+    ## Handle empty/missing modules
+    msg <- c()
+    if (!length(df)) msg <- "No N Content Module Detected"
+    if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
+    if (!is.null(msg)) {
+        nPlot <- ngsReports:::.emptyPlot(msg)
+        if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
+        return(nPlot)
+    }
 
     ## Sort out the colours
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -274,12 +258,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
     xLab <- "Position in Read (bp)"
     nPlot <- ggplot(
         df,
-        aes_string(
-            x = "Start",
-            y = "Filename",
-            fill = "Percentage",
-            label = "Base"
-        )
+        aes_string("Start", "Filename", fill = "Percentage", label = "Base")
     ) +
         geom_tile() +
         scale_fill_pwf(
@@ -289,12 +268,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
             passLow = TRUE,
             na.value = "white"
         ) +
-        scale_x_continuous(
-            expand = c(0, 0)
-            # expand = c(0,0),
-            # breaks = unique(df$x),
-            # labels = unique(df$Base)
-        ) +
+        scale_x_continuous(expand = c(0, 0)) +
         scale_y_discrete(expand = c(0, 0)) +
         labs(x = xLab, y = "Filename", fill = "%N") +
         theme_bw() +
@@ -329,12 +303,10 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
         if (!is.null(userTheme)) nPlot <- nPlot + userTheme
         nPlot <- nPlot + ylab("")
 
+        dendro <- plotly::plotly_empty()
         if (dendrogram) {
             dx <- ggdendro::dendro_data(clusterDend)
             dendro <- .renderDendro(dx$segments)
-        }
-        else{
-            dendro <- plotly::plotly_empty()
         }
 
         ## Customise for plotly

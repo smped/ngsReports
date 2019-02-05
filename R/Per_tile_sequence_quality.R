@@ -38,9 +38,9 @@ setMethod("Per_tile_sequence_quality", "FastqcData", function(object){
         df$Filename <- fileName(object)
         dplyr::select(df, "Filename", tidyselect::everything())
     }
-    else {# Otherwise return the blank data.frame
-        df
-    }
+
+    df
+
 })
 
 #' @export

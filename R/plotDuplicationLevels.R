@@ -152,20 +152,13 @@ setMethod("plotDuplicationLevels", signature = "FastqcData", function(
         geom_rect(
             data = rects,
             aes_string(
-                xmin = "xmin",
-                xmax = "xmax",
-                ymin = "ymin",
-                ymax = "ymax",
+                xmin = "xmin", xmax = "xmax",
+                ymin = "ymin", ymax = "ymax",
                 fill = "Status"
             )
         ) +
         geom_line(
-            aes_string(
-                x = "x",
-                y = "Percentage",
-                colour = "Type",
-                group = "Type"
-            )
+            aes_string("x", "Percentage", colour = "Type", group = "Type")
         ) +
         scale_fill_manual(values = getColours(pwfCols)) +
         scale_colour_manual(values = lineCols) +
@@ -208,9 +201,7 @@ setMethod("plotDuplicationLevels", signature = "FastqcData", function(
         )
 
         ## Make sure there are no hovers over the background rectangles
-        dupPlot$x$data[[2]]$hoverinfo <- "none"
-        dupPlot$x$data[[3]]$hoverinfo <- "none"
-        dupPlot$x$data[[4]]$hoverinfo <- "none"
+        dupPlot$x$data <- lapply(dupPlot$x$data, .hidePWFRects)
     }
 
     dupPlot
@@ -295,10 +286,8 @@ setMethod("plotDuplicationLevels",signature = "FastqcDataList", function(
     ) +
         geom_rect(
             aes_string(
-                xmin = "xmin",
-                xmax = "xmax",
-                ymin = "ymin",
-                ymax = "ymax",
+                xmin = "xmin", xmax = "xmax",
+                ymin = "ymin", ymax = "ymax",
                 colour = "Duplication_Level"
             )
         ) +
