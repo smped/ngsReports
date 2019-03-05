@@ -6,3 +6,4 @@ temp/*
 testing*
 *Rproj
 vignettes/*html
+vignettes/*R

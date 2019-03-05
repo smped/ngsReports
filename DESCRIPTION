@@ -10,7 +10,7 @@ Authors@R: c(
 Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
 Description: Load raw data from FastQC reports and other NGS output summaries into R.
 URL: https://github.com/UofABioinformaticsHub/ngsReports
-BugReports: https://github.com/UofABioinformaticsHub/ngsReports
+BugReports: https://github.com/UofABioinformaticsHub/ngsReports/issues
 License: LGPL (>= 3)
 Encoding: UTF-8
 Depends:
