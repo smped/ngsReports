@@ -44,58 +44,58 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot for multiple libraries is a heatmap
-#' plotBaseQualities(fdl)
+#' plotBaseQuals(fdl)
 #'
 #' # The default plot for a single library is the standard boxplot
-#' plotBaseQualities(fdl[[1]])
+#' plotBaseQuals(fdl[[1]])
 #'
 #' @import ggplot2
 #' @importFrom stats as.dendrogram order.dendrogram na.omit hclust dist
 #' @importFrom zoo na.locf
 #'
-#' @name plotBaseQualities
-#' @rdname plotBaseQualities-methods
+#' @name plotBaseQuals
+#' @rdname plotBaseQuals-methods
 #' @export
-setGeneric("plotBaseQualities", function(
+setGeneric("plotBaseQuals", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
-    standardGeneric("plotBaseQualities")
+    standardGeneric("plotBaseQuals")
 }
 )
-#' @aliases plotBaseQualities,character
-#' @rdname plotBaseQualities-methods
+#' @aliases plotBaseQuals,character
+#' @rdname plotBaseQuals-methods
 #' @export
-setMethod("plotBaseQualities", signature = "character", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
-    boxWidth = 0.8, ...){
-    x <- getFastqcData(x)
-    plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
-}
-)
-#' @aliases plotBaseQualities,FastqcFile
-#' @rdname plotBaseQualities-methods
-#' @export
-setMethod("plotBaseQualities", signature = "FastqcFile", function(
+setMethod("plotBaseQuals", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
     x <- getFastqcData(x)
-    plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
+    plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
 }
 )
-#' @aliases plotBaseQualities,FastqcFileList
-#' @rdname plotBaseQualities-methods
+#' @aliases plotBaseQuals,FastqcFile
+#' @rdname plotBaseQuals-methods
 #' @export
-setMethod("plotBaseQualities", signature = "FastqcFileList", function(
+setMethod("plotBaseQuals", signature = "FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
     x <- getFastqcData(x)
-    plotBaseQualities(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
+    plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
 }
 )
-#' @aliases plotBaseQualities,FastqcData
-#' @rdname plotBaseQualities-methods
+#' @aliases plotBaseQuals,FastqcFileList
+#' @rdname plotBaseQuals-methods
 #' @export
-setMethod("plotBaseQualities", signature = "FastqcData", function(
+setMethod("plotBaseQuals", signature = "FastqcFileList", function(
+    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
+    boxWidth = 0.8, ...){
+    x <- getFastqcData(x)
+    plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
+}
+)
+#' @aliases plotBaseQuals,FastqcData
+#' @rdname plotBaseQuals-methods
+#' @export
+setMethod("plotBaseQuals", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
 
@@ -231,10 +231,10 @@ setMethod("plotBaseQualities", signature = "FastqcData", function(
     qualPlot
 }
 )
-#' @aliases plotBaseQualities,FastqcDataList
-#' @rdname plotBaseQualities-methods
+#' @aliases plotBaseQuals,FastqcDataList
+#' @rdname plotBaseQuals-methods
 #' @export
-setMethod("plotBaseQualities", signature = "FastqcDataList", function(
+setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, plotType = c("heatmap", "boxplot"),
     plotValue = c("Mean", "Median"), cluster = FALSE, dendrogram = FALSE,

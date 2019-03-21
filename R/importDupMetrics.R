@@ -17,10 +17,10 @@
 #' @examples
 #' sysDir <- system.file("extdata", package = "ngsReports")
 #' fl <- list.files(sysDir, "Dedup_metrics.txt", full.names = TRUE)
-#' dupMetrics <- importDuplicationMetrics(fl)
+#' dupMetrics <- importDupMetrics(fl)
 #'
 #' @export
-importDuplicationMetrics <- function(x, useBasename = TRUE){
+importDupMetrics <- function(x, useBasename = TRUE){
 
     ## Exit if all files don't exist & let the user get their paths right
     fExists <- file.exists(x)
@@ -28,7 +28,7 @@ importDuplicationMetrics <- function(x, useBasename = TRUE){
 
     ## Read the data & check the structure
     data <- lapply(x, readLines)
-    allValid <- vapply(data, .isValidDuplicationMetrics, logical(1))
+    allValid <- vapply(data, .isValidDupMetrics, logical(1))
     if (!all(allValid)) stop(
         paste("File", x[!allValid], "has an incorrect structure")
     )
@@ -98,7 +98,7 @@ importDuplicationMetrics <- function(x, useBasename = TRUE){
 #' readLines
 #' @return logical(1)
 #' @keywords internal
-.isValidDuplicationMetrics <- function(x){
+.isValidDupMetrics <- function(x){
 
     ## Check the METRICS CLASS data
     metricsHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)

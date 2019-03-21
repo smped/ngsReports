@@ -54,8 +54,8 @@ test_that("importStarLogs loads correctly",{
     expect_equal(basename(starLog), df$Filename)
 })
 
-test_that("importDuplicationMetrics loads correctly",{
-    dup <- importDuplicationMetrics(dupLogs)
+test_that("importDupMetrics loads correctly",{
+    dup <- importDupMetrics(dupLogs)
     nm <- c("Library", "Unpaired Reads Examined", "Read Pairs Examined",
             "Secondary Or Supplementary Rds", "Unmapped Reads", "Unpaired Read Duplicates",
             "Read Pair Duplicates", "Read Pair Optical Duplicates", "Percent Duplication",
@@ -80,7 +80,7 @@ test_that("importStarLogs errors correctly",{
     expect_error(importStarLogs(bowtieLogs))
 })
 
-test_that("importDuplicationMetrics errors correctly",{
+test_that("importDupMetrics errors correctly",{
     ## These are bowtie2 logs so should error
-    expect_error(importDuplicationMetrics(bowtie2Logs))
+    expect_error(importDupMetrics(bowtie2Logs))
 })

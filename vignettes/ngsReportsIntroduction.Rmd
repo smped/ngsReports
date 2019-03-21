@@ -168,21 +168,21 @@ plotReadTotals(fdl) +
         legend.background = element_rect(colour = "black"))
 ```
 
-### plotBaseQualities()
+### plotBaseQuals()
 
 A heatmap of the entire `Per base sequence quality` scores can by generated, 
 using the mean as representative of the scores at each position.
 The median can also be selected using `plotValue = "Median"`
 
 ```{r}
-plotBaseQualities(fdl)
+plotBaseQuals(fdl)
 ```
 
 The conventional boxplot for a single file can be created by specifying a 
 single `FastqcData` or `FastqcFile` object.
 
 ```{r}
-plotBaseQualities(fdl[[1]])
+plotBaseQuals(fdl[[1]])
 ```
 
 Boxplots of any combinations can also be drawn from a `FastqcDataList` or 
@@ -190,7 +190,7 @@ Boxplots of any combinations can also be drawn from a `FastqcDataList` or
 However, this may be not suitable for datasets with numerous libraries.
 
 ```{r}
-plotBaseQualities(fdl[1:4], plotType = "boxplot")
+plotBaseQuals(fdl[1:4], plotType = "boxplot")
 ```
 
 ### plotSeqQuals()
@@ -419,7 +419,7 @@ elements.
 ```{r}
 sysDir <- system.file("extdata", package = "ngsReports")
 fl <- list.files(sysDir, "Dedup_metrics.txt", full.names = TRUE)
-dupMetrics <- importDuplicationMetrics(fl)
+dupMetrics <- importDupMetrics(fl)
 str(dupMetrics)
 ```
 
