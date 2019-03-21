@@ -30,20 +30,20 @@
 #'
 #' # Export the top10 Overrepresented Sequences as a single fasta file
 #' faOut <- file.path(tempdir(), "top10.fa")
-#' exportOverrepresented(fdl, path = faOut)
+#' overRep2Fasta(fdl, path = faOut)
 #'
 #'
-#' @name exportOverrepresented
-#' @rdname exportOverrepresented-methods
+#' @name overRep2Fasta
+#' @rdname overRep2Fasta-methods
 #' @export
-setGeneric( "exportOverrepresented", function(
+setGeneric( "overRep2Fasta", function(
     x, path, n = 10, labels, noAdapters = TRUE, ...){
-    standardGeneric("exportOverrepresented")
+    standardGeneric("overRep2Fasta")
 })
-#' @aliases exportOverrepresented,FastqcData
-#' @rdname exportOverrepresented-methods
+#' @aliases overRep2Fasta,FastqcData
+#' @rdname overRep2Fasta-methods
 #' @export
-setMethod("exportOverrepresented", signature = "FastqcData", function(
+setMethod("overRep2Fasta", signature = "FastqcData", function(
     x, path,  n = 10, labels, noAdapters = TRUE, ...){
 
     df <- Overrepresented_sequences(x)
@@ -72,10 +72,10 @@ setMethod("exportOverrepresented", signature = "FastqcData", function(
     invisible(fasta)
 }
 )
-#' @aliases exportOverrepresented,FastqcDataList
-#' @rdname exportOverrepresented-methods
+#' @aliases overRep2Fasta,FastqcDataList
+#' @rdname overRep2Fasta-methods
 #' @export
-setMethod("exportOverrepresented", signature = "FastqcDataList", function(
+setMethod("overRep2Fasta", signature = "FastqcDataList", function(
     x, path,  n = 10, labels, noAdapters = TRUE, ...){
 
     df <- Overrepresented_sequences(x)
