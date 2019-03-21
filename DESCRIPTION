@@ -80,7 +80,7 @@ Collate:
     'fileName.R'
     'getColours.R'
     'getFastqcData.R'
-    'getGcDistribution.R'
+    'getGcDistn.R'
     'getSummary.R'
     'importBowtieLogs.R'
     'importDuplicationMetrics.R'

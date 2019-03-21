@@ -27,7 +27,7 @@
 #' @examples
 #' faDir <- system.file("extdata", package = "ngsReports")
 #' faFile <- list.files(faDir, pattern = "fasta", full.names = TRUE)
-#' gen_df <- getGcDistribution(faFile, n = 200)
+#' gen_df <- getGcDistn(faFile, n = 200)
 #'
 #' @importFrom stats rnorm runif lm.fit
 #' @importFrom XVector subseq
@@ -35,28 +35,28 @@
 #' @importClassesFrom Biostrings DNAStringSet
 #'
 #' @export
-#' @rdname getGcDistribution-methods
-setGeneric("getGcDistribution", function(
+#' @rdname getGcDistn-methods
+setGeneric("getGcDistn", function(
     x, n = 1e6, readLength = 100, fragLength = 200, fragSd = 30, bins = 101
 ){
-    standardGeneric("getGcDistribution")
+    standardGeneric("getGcDistn")
 })
-#' @rdname getGcDistribution-methods
-#' @aliases getGcDistribution,character
+#' @rdname getGcDistn-methods
+#' @aliases getGcDistn,character
 #' @export
-setMethod("getGcDistribution", "character", function(
+setMethod("getGcDistn", "character", function(
     x, n = 1e6, readLength = 100, fragLength = 200, fragSd = 30,
     bins = 101){
 
     stopifnot(file.exists(x))
     x <- tryCatch(readDNAStringSet(x))
-    getGcDistribution(x, n, readLength, fragLength, fragSd, bins)
+    getGcDistn(x, n, readLength, fragLength, fragSd, bins)
 
 })
-#' @rdname getGcDistribution-methods
-#' @aliases getGcDistribution,DNAStringSet
+#' @rdname getGcDistn-methods
+#' @aliases getGcDistn,DNAStringSet
 #' @export
-setMethod("getGcDistribution", "DNAStringSet", function(
+setMethod("getGcDistn", "DNAStringSet", function(
     x, n = 1e6, readLength = 100, fragLength = 200, fragSd = 30,
     bins = 101){
 
