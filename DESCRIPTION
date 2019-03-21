@@ -1,14 +1,18 @@
 Package: ngsReports
 Version: 0.99.7
-Date: 2018/02/01
+Date: 2019/03/22
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
-    person("Steve", "Pederson", , "stephen.pederson@adelaide.edu.au", c("aut", "cre")),
-    person("Christopher", "Ward", , "christopher.ward@adelaide.edu.au", c("aut")),
-    person("Thu-Hien", "To", , "tothuhien@gmail.com", c("aut"))
+    person("Steve", "Pederson", 
+        email = "stephen.pederson@adelaide.edu.au", role = c("aut", "cre")),
+    person("Christopher", "Ward", 
+        email = "christopher.ward@adelaide.edu.au", role = c("aut")),
+    person("Thu-Hien", "To", email = "tothuhien@gmail.com", role = c("aut"))
     )
 Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
-Description: Load raw data from FastQC reports and other NGS output summaries into R.
+Description: This package provides methods and object classes for loading 
+    FastQC reports and output summaries from other NGS tools into R, as well as 
+    visualising the data loaded from these files.
 URL: https://github.com/UofABioinformaticsHub/ngsReports
 BugReports: https://github.com/UofABioinformaticsHub/ngsReports/issues
 License: LGPL (>= 3)
