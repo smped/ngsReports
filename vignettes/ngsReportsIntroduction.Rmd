@@ -356,14 +356,14 @@ overrepresented sequences are summarised by their possible source as defined by
 FastQC.
 
 ```{r}
-plotOverrepresentedSummary(fdl)
+plotOverrep(fdl)
 ```
 
 The top `n`can be plotted for an individual file, again broken down by their 
 possible source, and coloured based on their `WARN/FAIL` status
 
 ```{r, fig.wide = TRUE}
-plotOverrepresentedSummary(fdl[[1]])
+plotOverrep(fdl[[1]])
 ```
 
 In addition to the above, overrepresented sequences can be exported as a FASTA 

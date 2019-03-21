@@ -99,7 +99,7 @@ Collate:
     'plotGcContent.R'
     'plotKmers.R'
     'plotNContent.R'
-    'plotOverrepresentedSummary.R'
+    'plotOverrep.R'
     'plotReadTotals.R'
     'plotSequenceContent.R'
     'plotSequenceLengthDistribution.R'

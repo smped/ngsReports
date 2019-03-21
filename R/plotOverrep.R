@@ -41,7 +41,7 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Another example which isn't ideal
-#' plotOverrepresentedSummary(fdl)
+#' plotOverrep(fdl)
 #'
 #' @importFrom tidyr spread
 #' @importFrom plotly layout
@@ -49,45 +49,45 @@
 #' @import ggplot2
 #'
 #'
-#' @name plotOverrepresentedSummary
-#' @rdname plotOverrepresentedSummary-methods
+#' @name plotOverrep
+#' @rdname plotOverrep-methods
 #' @export
-setGeneric("plotOverrepresentedSummary", function(
+setGeneric("plotOverrep", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
-    standardGeneric("plotOverrepresentedSummary")
+    standardGeneric("plotOverrep")
 }
 )
-#' @aliases plotOverrepresentedSummary,character
-#' @rdname plotOverrepresentedSummary-methods
+#' @aliases plotOverrep,character
+#' @rdname plotOverrep-methods
 #' @export
-setMethod("plotOverrepresentedSummary", signature = "character", function(
-    x, usePlotly = FALSE, labels, pwfCols, ...){
-    x <- getFastqcData(x)
-    plotOverrepresentedSummary(x, usePlotly, labels, pwfCols, ...)
-}
-)
-#' @aliases plotOverrepresentedSummary,FastqcFile
-#' @rdname plotOverrepresentedSummary-methods
-#' @export
-setMethod("plotOverrepresentedSummary", signature = "FastqcFile", function(
+setMethod("plotOverrep", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- getFastqcData(x)
-    plotOverrepresentedSummary(x, usePlotly, labels, pwfCols, ...)
+    plotOverrep(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotOverrepresentedSummary,FastqcFileList
-#' @rdname plotOverrepresentedSummary-methods
+#' @aliases plotOverrep,FastqcFile
+#' @rdname plotOverrep-methods
 #' @export
-setMethod("plotOverrepresentedSummary", signature = "FastqcFileList", function(
+setMethod("plotOverrep", signature = "FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- getFastqcData(x)
-    plotOverrepresentedSummary(x, usePlotly, labels, pwfCols, ...)
+    plotOverrep(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotOverrepresentedSummary,FastqcData
-#' @rdname plotOverrepresentedSummary-methods
+#' @aliases plotOverrep,FastqcFileList
+#' @rdname plotOverrep-methods
 #' @export
-setMethod("plotOverrepresentedSummary", signature = "FastqcData", function(
+setMethod("plotOverrep", signature = "FastqcFileList", function(
+    x, usePlotly = FALSE, labels, pwfCols, ...){
+    x <- getFastqcData(x)
+    plotOverrep(x, usePlotly, labels, pwfCols, ...)
+}
+)
+#' @aliases plotOverrep,FastqcData
+#' @rdname plotOverrep-methods
+#' @export
+setMethod("plotOverrep", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols,  n = 10, ...){
 
     df <- Overrepresented_sequences(x)
@@ -181,10 +181,10 @@ setMethod("plotOverrepresentedSummary", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotOverrepresentedSummary,FastqcDataList
-#' @rdname plotOverrepresentedSummary-methods
+#' @aliases plotOverrep,FastqcDataList
+#' @rdname plotOverrep-methods
 #' @export
-setMethod("plotOverrepresentedSummary", signature = "FastqcDataList", function(
+setMethod("plotOverrep", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, cluster = TRUE, dendrogram = TRUE,
     ..., paletteName = "Set1", expand.x = c(0, 0), expand.y = c(0, 0)){
 
