@@ -45,11 +45,11 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot
-#' plotSequenceQualities(fdl)
+#' plotSeqQuals(fdl)
 #'
 #' # Also subset the reads to just the R1 files
 #' r1 <- grepl("R1", fileName(fdl))
-#' plotSequenceQualities(fdl[r1])
+#' plotSeqQuals(fdl[r1])
 #'
 #'
 #' @importFrom dplyr vars funs
@@ -57,52 +57,52 @@
 #' @importFrom scales percent comma percent_format
 #' @import ggplot2
 #'
-#' @name plotSequenceQualities
-#' @rdname plotSequenceQualities-methods
+#' @name plotSeqQuals
+#' @rdname plotSeqQuals-methods
 #' @export
-setGeneric("plotSequenceQualities", function(
+setGeneric("plotSeqQuals", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
-    standardGeneric("plotSequenceQualities")
+    standardGeneric("plotSeqQuals")
 }
 )
-#' @aliases plotSequenceQualities,character
-#' @rdname plotSequenceQualities-methods
+#' @aliases plotSeqQuals,character
+#' @rdname plotSeqQuals-methods
 #' @export
-setMethod("plotSequenceQualities", signature = "character", function(
-    x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
-    warn = 30, fail = 20, ...){
-    x <- getFastqcData(x)
-    plotSequenceQualities(
-        x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
-}
-)
-#' @aliases plotSequenceQualities,FastqcFile
-#' @rdname plotSequenceQualities-methods
-#' @export
-setMethod("plotSequenceQualities", signature = "FastqcFile", function(
+setMethod("plotSeqQuals", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
     x <- getFastqcData(x)
-    plotSequenceQualities(
+    plotSeqQuals(
         x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
 }
 )
-#' @aliases plotSequenceQualities,FastqcFileList
-#' @rdname plotSequenceQualities-methods
+#' @aliases plotSeqQuals,FastqcFile
+#' @rdname plotSeqQuals-methods
 #' @export
-setMethod("plotSequenceQualities", signature = "FastqcFileList", function(
+setMethod("plotSeqQuals", signature = "FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
     x <- getFastqcData(x)
-    plotSequenceQualities(
+    plotSeqQuals(
         x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
 }
 )
-#' @aliases plotSequenceQualities,FastqcData
-#' @rdname plotSequenceQualities-methods
+#' @aliases plotSeqQuals,FastqcFileList
+#' @rdname plotSeqQuals-methods
 #' @export
-setMethod("plotSequenceQualities", signature = "FastqcData", function(
+setMethod("plotSeqQuals", signature = "FastqcFileList", function(
+    x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
+    warn = 30, fail = 20, ...){
+    x <- getFastqcData(x)
+    plotSeqQuals(
+        x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
+}
+)
+#' @aliases plotSeqQuals,FastqcData
+#' @rdname plotSeqQuals-methods
+#' @export
+setMethod("plotSeqQuals", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
 
@@ -247,10 +247,10 @@ setMethod("plotSequenceQualities", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotSequenceQualities,FastqcDataList
-#' @rdname plotSequenceQualities-methods
+#' @aliases plotSeqQuals,FastqcDataList
+#' @rdname plotSeqQuals-methods
 #' @export
-setMethod("plotSequenceQualities", signature = "FastqcDataList", function(
+setMethod("plotSeqQuals", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, plotType = c("heatmap", "line"), dendrogram = FALSE,
     cluster = FALSE, ...){

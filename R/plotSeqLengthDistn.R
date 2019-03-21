@@ -10,7 +10,7 @@
 #' ggplot2 methods.
 #' For example, preset axis limits can also be overwritten easily by adding a
 #' call to \code{scale_y_continuous} after the call to
-#' \code{plotSequenceLengthDistribution}.
+#' \code{plotSeqLengthDistn}.
 #'
 #' An alternative interactive plot is available by setting the argument
 #' \code{usePlotly = TRUE}.
@@ -48,10 +48,10 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Plot as a frequency plot using lines
-#' plotSequenceLengthDistribution(fdl)
+#' plotSeqLengthDistn(fdl)
 #'
 #' # Or plot the cumulative value
-#' plotSequenceLengthDistribution(fdl, plotType = "cumulative")
+#' plotSeqLengthDistn(fdl, plotType = "cumulative")
 #'
 #' @importFrom dplyr vars
 #' @importFrom plotly ggplotly
@@ -60,46 +60,46 @@
 #' @importFrom viridisLite inferno
 #' @import ggplot2
 #'
-#' @name plotSequenceLengthDistribution
-#' @rdname plotSequenceLengthDistribution-methods
+#' @name plotSeqLengthDistn
+#' @rdname plotSeqLengthDistn-methods
 #' @export
-setGeneric("plotSequenceLengthDistribution", function(
+setGeneric("plotSeqLengthDistn", function(
     x, usePlotly = FALSE, labels, ...){
-    standardGeneric("plotSequenceLengthDistribution")
+    standardGeneric("plotSeqLengthDistn")
 }
 )
-#' @aliases plotSequenceLengthDistribution,character
-#' @rdname plotSequenceLengthDistribution-methods
+#' @aliases plotSeqLengthDistn,character
+#' @rdname plotSeqLengthDistn-methods
 #' @export
-setMethod("plotSequenceLengthDistribution", signature = "character", function(
-    x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
-    plotSequenceLengthDistribution(x, usePlotly, labels, ...)
-}
-)
-#' @aliases plotSequenceLengthDistribution,FastqcFile
-#' @rdname plotSequenceLengthDistribution-methods
-#' @export
-setMethod("plotSequenceLengthDistribution", signature = "FastqcFile", function(
+setMethod("plotSeqLengthDistn", signature = "character", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
-    plotSequenceLengthDistribution(x, usePlotly, labels, ...)
+    plotSeqLengthDistn(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSequenceLengthDistribution,FastqcFileList
-#' @rdname plotSequenceLengthDistribution-methods
+#' @aliases plotSeqLengthDistn,FastqcFile
+#' @rdname plotSeqLengthDistn-methods
+#' @export
+setMethod("plotSeqLengthDistn", signature = "FastqcFile", function(
+    x, usePlotly = FALSE, labels, ...){
+    x <- getFastqcData(x)
+    plotSeqLengthDistn(x, usePlotly, labels, ...)
+}
+)
+#' @aliases plotSeqLengthDistn,FastqcFileList
+#' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod(
-    "plotSequenceLengthDistribution", signature = "FastqcFileList",
+    "plotSeqLengthDistn", signature = "FastqcFileList",
     function(x, usePlotly = FALSE, labels, ...){
         x <- getFastqcData(x)
-        plotSequenceLengthDistribution(x, usePlotly, labels, ...)
+        plotSeqLengthDistn(x, usePlotly, labels, ...)
     }
 )
-#' @aliases plotSequenceLengthDistribution,FastqcData
-#' @rdname plotSequenceLengthDistribution-methods
+#' @aliases plotSeqLengthDistn,FastqcData
+#' @rdname plotSeqLengthDistn-methods
 #' @export
-setMethod("plotSequenceLengthDistribution", signature = "FastqcData", function(
+setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
     expand.x = c(0,0.2)){
 
@@ -180,11 +180,11 @@ setMethod("plotSequenceLengthDistribution", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotSequenceLengthDistribution,FastqcDataList
-#' @rdname plotSequenceLengthDistribution-methods
+#' @aliases plotSeqLengthDistn,FastqcDataList
+#' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod(
-    "plotSequenceLengthDistribution", signature = "FastqcDataList",
+    "plotSeqLengthDistn", signature = "FastqcDataList",
     function(
         x, usePlotly = FALSE, labels, counts = FALSE,
         plotType = c("heatmap", "line", "cumulative"), cluster = FALSE,

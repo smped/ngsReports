@@ -193,18 +193,18 @@ However, this may be not suitable for datasets with numerous libraries.
 plotBaseQualities(fdl[1:4], plotType = "boxplot")
 ```
 
-### plotSequenceQualities()
+### plotSeqQuals()
 
 A heatmap of mean sequence qualities can be generated, with the alternative 
 being a set of overlaid lines.
 
 ```{r}
-plotSequenceQualities(fdl)
+plotSeqQuals(fdl)
 ```
 
 ```{r}
 r2 <- grepl("R2", fileName(fdl))
-plotSequenceQualities(fdl[r2], plotType = "line")
+plotSeqQuals(fdl[r2], plotType = "line")
 ```
 
 ### plotSequenceContent()
@@ -246,13 +246,13 @@ produced.
 plotNContent(fdl)
 ```
 
-### plotSequenceLengthDistribution
+### plotSeqLengthDistn
 
 In the example reports, all reads are 84bp.
 Where lengths vary, a more informative heatmap will be created. 
 
 ```{r}
-plotSequenceLengthDistribution(fdl)
+plotSeqLengthDistn(fdl)
 ```
 
 ### plotDuplicationLevels()
