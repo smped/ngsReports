@@ -35,7 +35,7 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # The default plot
-#' plotSequenceContent(fdl)
+#' plotSeqContent(fdl)
 #'
 #'
 #' @importFrom grDevices rgb
@@ -43,44 +43,44 @@
 #' @importFrom tidyselect one_of
 #' @import ggplot2
 #'
-#' @name plotSequenceContent
-#' @rdname plotSequenceContent-methods
+#' @name plotSeqContent
+#' @rdname plotSeqContent-methods
 #' @export
-setGeneric("plotSequenceContent", function(x, usePlotly = FALSE, labels, ...){
-    standardGeneric("plotSequenceContent")
+setGeneric("plotSeqContent", function(x, usePlotly = FALSE, labels, ...){
+    standardGeneric("plotSeqContent")
 }
 )
-#' @aliases plotSequenceContent,character
-#' @rdname plotSequenceContent-methods
+#' @aliases plotSeqContent,character
+#' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSequenceContent", signature = "character", function(
+setMethod("plotSeqContent", signature = "character", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
-    plotSequenceContent(x, usePlotly, labels, ...)
+    plotSeqContent(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSequenceContent,FastqcFile
-#' @rdname plotSequenceContent-methods
+#' @aliases plotSeqContent,FastqcFile
+#' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSequenceContent", signature = "FastqcFile", function(
+setMethod("plotSeqContent", signature = "FastqcFile", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
-    plotSequenceContent(x, usePlotly, labels, ...)
+    plotSeqContent(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSequenceContent,FastqcFileList
-#' @rdname plotSequenceContent-methods
+#' @aliases plotSeqContent,FastqcFileList
+#' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSequenceContent", signature = "FastqcFileList", function(
+setMethod("plotSeqContent", signature = "FastqcFileList", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
-    plotSequenceContent(x, usePlotly, labels, ...)
+    plotSeqContent(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSequenceContent,FastqcData
-#' @rdname plotSequenceContent-methods
+#' @aliases plotSeqContent,FastqcData
+#' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSequenceContent", signature = "FastqcData", function(
+setMethod("plotSeqContent", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, ...){
 
     ## Get the SequenceContent
@@ -158,10 +158,10 @@ setMethod("plotSequenceContent", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotSequenceContent,FastqcDataList
-#' @rdname plotSequenceContent-methods
+#' @aliases plotSeqContent,FastqcDataList
+#' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSequenceContent", signature = "FastqcDataList", function(
+setMethod("plotSeqContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, plotType = c("heatmap", "line"),
     cluster = TRUE, dendrogram = TRUE, ..., nc = 2){
 

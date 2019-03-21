@@ -45,53 +45,53 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Draw the default plot for a single file
-#' plotDuplicationLevels(fdl[[1]])
+#' plotDupLevels(fdl[[1]])
 #'
-#' plotDuplicationLevels(fdl)
+#' plotDupLevels(fdl)
 #'
 #' @import ggplot2
 #' @importFrom stats hclust dist
 #' @importFrom viridisLite inferno
 #'
-#' @name plotDuplicationLevels
-#' @rdname plotDuplicationLevels-methods
+#' @name plotDupLevels
+#' @rdname plotDupLevels-methods
 #' @export
-setGeneric("plotDuplicationLevels", function(
+setGeneric("plotDupLevels", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
-    standardGeneric("plotDuplicationLevels")
+    standardGeneric("plotDupLevels")
 }
 )
-#' @aliases plotDuplicationLevels,character
-#' @rdname plotDuplicationLevels-methods
+#' @aliases plotDupLevels,character
+#' @rdname plotDupLevels-methods
 #' @export
-setMethod("plotDuplicationLevels", signature = "character", function(
-    x, usePlotly = FALSE, labels, pwfCols, ...){
-    x <- getFastqcData(x)
-    plotDuplicationLevels(x, usePlotly, labels, pwfCols, ...)
-}
-)
-#' @aliases plotDuplicationLevels,FastqcFile
-#' @rdname plotDuplicationLevels-methods
-#' @export
-setMethod("plotDuplicationLevels", signature = "FastqcFile", function(
+setMethod("plotDupLevels", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- getFastqcData(x)
-    plotDuplicationLevels(x, usePlotly, labels, pwfCols, ...)
+    plotDupLevels(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotDuplicationLevels,FastqcFileList
-#' @rdname plotDuplicationLevels-methods
+#' @aliases plotDupLevels,FastqcFile
+#' @rdname plotDupLevels-methods
 #' @export
-setMethod("plotDuplicationLevels",signature = "FastqcFileList", function(
+setMethod("plotDupLevels", signature = "FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- getFastqcData(x)
-    plotDuplicationLevels(x, usePlotly, labels, pwfCols, ...)
+    plotDupLevels(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotDuplicationLevels,FastqcData
-#' @rdname plotDuplicationLevels-methods
+#' @aliases plotDupLevels,FastqcFileList
+#' @rdname plotDupLevels-methods
 #' @export
-setMethod("plotDuplicationLevels", signature = "FastqcData", function(
+setMethod("plotDupLevels",signature = "FastqcFileList", function(
+    x, usePlotly = FALSE, labels, pwfCols, ...){
+    x <- getFastqcData(x)
+    plotDupLevels(x, usePlotly, labels, pwfCols, ...)
+}
+)
+#' @aliases plotDupLevels,FastqcData
+#' @rdname plotDupLevels-methods
+#' @export
+setMethod("plotDupLevels", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 20, fail = 50,
     lineCols = c("red", "blue"), ...){
 
@@ -208,10 +208,10 @@ setMethod("plotDuplicationLevels", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotDuplicationLevels,FastqcDataList
-#' @rdname plotDuplicationLevels-methods
+#' @aliases plotDupLevels,FastqcDataList
+#' @rdname plotDupLevels-methods
 #' @export
-setMethod("plotDuplicationLevels",signature = "FastqcDataList", function(
+setMethod("plotDupLevels",signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, deduplication = c("pre", "post"),
     cluster = FALSE, dendrogram = FALSE,  heatCol = inferno(50), ...){
 

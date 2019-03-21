@@ -207,14 +207,14 @@ r2 <- grepl("R2", fileName(fdl))
 plotSeqQuals(fdl[r2], plotType = "line")
 ```
 
-### plotSequenceContent()
+### plotSeqContent()
 
 Heatmaps showing a composite colour for each position can be drawn. 
 Colours are combined using `rgb()` with `A`,`C`, `G` and `T` being represented 
 by green, blue, black and red respectively.
 
 ```{r}
-plotSequenceContent(fdl)
+plotSeqContent(fdl)
 ```
 
 **NB** These plots can be very informative setting the argument 
@@ -224,7 +224,7 @@ the package `plotly` renders graphics.
 Individual plots can also be drawn using a `FastqcData` or `FastqcFile` object
 
 ```{r}
-plotSequenceContent(fdl[[1]])
+plotSeqContent(fdl[[1]])
 ```
 
 Again, supplying multiple files and setting `plotType = "line"` will replicate 
@@ -232,7 +232,7 @@ the individual plots from original reports.
 The argument `nc` is passed to `facet_wrap()` from the package `ggplot2`.
 
 ```{r}
-plotSequenceContent(fdl[1:2], plotType = "line", nc = 1)
+plotSeqContent(fdl[1:2], plotType = "line", nc = 1)
 ```
 
 
@@ -255,14 +255,14 @@ Where lengths vary, a more informative heatmap will be created.
 plotSeqLengthDistn(fdl)
 ```
 
-### plotDuplicationLevels()
+### plotDupLevels()
 
 Duplication levels are shown as a heatmap based on each default bin included 
 in the initial FastQC reports.
 By default these are the values provided in the reports as "Pre" de-duplication.
 
 ```{r}
-plotDuplicationLevels(fdl)
+plotDupLevels(fdl)
 ```
 
 ### plotAdapterContent()
