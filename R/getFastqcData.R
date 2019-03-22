@@ -188,7 +188,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 # These are all tested using testthat to ensure they're working correctly
 .getBasicStatistics <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Basic_Statistics"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -234,7 +234,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getPerBaseSeqQuals <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Per_base_sequence_quality"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -262,7 +262,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getPerTileSeqQuals <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Per_tile_sequence_quality"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -280,7 +280,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getPerSeqQualScores <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Per_sequence_quality_scores"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -297,7 +297,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getPerBaseSeqCont <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Per_base_sequence_content"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -316,7 +316,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getPerSeqGcCont <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Per_sequence_GC_content"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -336,7 +336,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getPerBaseNCont <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Per_base_N_content"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -354,7 +354,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getSeqLengthDist <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Sequence_Length_Distribution"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -377,7 +377,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getSeqDuplicationLevels <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Sequence_Duplication_Levels"
     if (!mod %in% names(fqcLines))
         return(list(
@@ -430,7 +430,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getOverrepSeq <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Overrepresented_sequences"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -450,7 +450,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getAdapterCont <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Adapter_Content"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))
@@ -471,7 +471,7 @@ setMethod("getFastqcData", "FastqcFileList", function(object){
 
 .getKmerCont <- function(fqcLines){
 
-    ## Return NULL if the module is missing
+    ## Return empty df if the module is missing
     mod <- "Kmer_Content"
     if (!mod %in% names(fqcLines)) return(data.frame(NULL))
     if (length(fqcLines[[mod]]) == 0) return(data.frame(NULL))

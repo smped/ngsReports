@@ -5,6 +5,11 @@ setGeneric(
 )
 
 setGeneric(
+    "getModule",
+    function(object, module){standardGeneric("getModule")}
+)
+
+setGeneric(
     "Basic_Statistics",
     function(object){standardGeneric("Basic_Statistics")}
 )

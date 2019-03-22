@@ -81,6 +81,7 @@ Collate:
     'getColours.R'
     'getFastqcData.R'
     'getGcDistn.R'
+    'getModule.R'
     'getSummary.R'
     'importBowtieLogs.R'
     'importDupMetrics.R'
