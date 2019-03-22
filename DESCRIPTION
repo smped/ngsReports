@@ -87,7 +87,7 @@ Collate:
     'importHisat2Logs.R'
     'importStarLogs.R'
     'isCompressed.R'
-    'makeDendrogram.R'
+    'makeDendro.R'
     'makeLabels.R'
     'makeSidebar.R'
     'maxAdapterContent.R'

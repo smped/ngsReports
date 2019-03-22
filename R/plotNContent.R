@@ -242,7 +242,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
     if (cluster) {
         cols <- c("Filename", "Start", "Percentage")
         clusterDend <-
-            .makeDendrogram(df[cols], "Filename", "Start", "Percentage")
+            .makeDendro(df[cols], "Filename", "Start", "Percentage")
         key <- labels(clusterDend)
     }
     ## Now set everything as factors

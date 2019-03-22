@@ -420,7 +420,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
         }
         key <- names(labels)
         if (cluster) {
-            clusterDend <- .makeDendrogram(df, "Filename", "Start", plotValue)
+            clusterDend <- .makeDendro(df, "Filename", "Start", plotValue)
             key <- labels(clusterDend)
         }
         df$Filename <- factor(labels[df$Filename], levels = labels[key])

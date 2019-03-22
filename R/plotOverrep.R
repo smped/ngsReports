@@ -227,7 +227,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
     key <- names(labels)
     if (cluster) {
         cols <- c("Filename", "Possible_Source", "Percentage")
-        clusterDend <-  .makeDendrogram(
+        clusterDend <-  .makeDendro(
             df[cols], "Filename", "Possible_Source", "Percentage")
         key <- labels(clusterDend)
     }

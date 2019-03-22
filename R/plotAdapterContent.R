@@ -334,7 +334,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
         ## Set the key for interactive plotting in the shiny app
         key <- names(labels)
         if (cluster) {
-            clusterDend <- .makeDendrogram(df, "Filename", "Start", "Percent")
+            clusterDend <- .makeDendro(df, "Filename", "Start", "Percent")
             key <- labels(clusterDend)
         }
 

@@ -234,7 +234,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
             df_gath$Start <- paste(df_gath$Start, df_gath$Base, sep = "_")
             df_gath <- df_gath[c("Filename", "Start", "Percent")]
             clusterDend <-
-                .makeDendrogram(df_gath, "Filename", "Start", "Percent")
+                .makeDendro(df_gath, "Filename", "Start", "Percent")
             key <- labels(clusterDend)
         }
         ## Now set everything as factors

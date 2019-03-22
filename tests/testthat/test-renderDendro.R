@@ -10,7 +10,7 @@ df <- Sequence_Length_Distribution(fdl)
 cols <- c("Filename", "Lower", "Count")
 
 #cluster the data
-clusterDend <- .makeDendrogram(df[cols], "Filename","Lower", "Count")
+clusterDend <- .makeDendro(df[cols], "Filename","Lower", "Count")
 
 #build and render the dendrogram
 dx <- ggdendro::dendro_data(clusterDend)

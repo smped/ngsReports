@@ -15,7 +15,7 @@
 #' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #' cols <- c("Filename", "Position", "Illumina_Universal_Adapter")
 #' ac <- Adapter_Content(fileList)[cols]
-#' ngsReports:::.makeDendrogram(df = ac,
+#' ngsReports:::.makeDendro(df = ac,
 #'                             rowVal = "Filename",
 #'                             colVal = "Position",
 #'                             value = "Illumina_Universal_Adapter")
@@ -23,7 +23,7 @@
 #' @importFrom stats as.formula
 #'
 #' @keywords internal
-.makeDendrogram <- function(df, rowVal, colVal, value){
+.makeDendro <- function(df, rowVal, colVal, value){
 
     stopifnot(setequal(c(rowVal, colVal, value), names(df)))
     fm <- as.formula(paste0(rowVal, "~", colVal))

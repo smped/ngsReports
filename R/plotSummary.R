@@ -112,7 +112,7 @@ setMethod("plotSummary", signature = "FastqcDataList", function(
     key <- names(labels)
     if (cluster) {
         cols <- c("Filename", "Category", "StatusNum")
-        clusterDend <- .makeDendrogram(
+        clusterDend <- .makeDendro(
             df = df[cols],
             rowVal = "Filename",
             colVal = "Category",

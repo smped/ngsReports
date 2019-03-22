@@ -253,7 +253,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
     key <- names(labels)
     if (cluster) {
         clusterDend <-
-            .makeDendrogram(df, "Filename", "Duplication_Level", type)
+            .makeDendro(df, "Filename", "Duplication_Level", type)
         key <- labels(clusterDend)
     }
     ## Now set everything as factors

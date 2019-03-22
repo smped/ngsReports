@@ -408,7 +408,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
         key <- names(labels)
         if (cluster) {
             clusterDend <-
-                .makeDendrogram(df, "Filename", "GC_Content", "Percent")
+                .makeDendro(df, "Filename", "GC_Content", "Percent")
             key <- labels(clusterDend)
         }
         ## Now set everything as factors

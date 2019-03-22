@@ -286,7 +286,7 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
     ## Now define the order for a dendrogram if required
     key <- names(labels)
     if (cluster) {
-        clusterDend <- .makeDendrogram(df, "Filename", "Position", "Total")
+        clusterDend <- .makeDendro(df, "Filename", "Position", "Total")
         key <- labels(clusterDend)
     }
     ## Now set everything as factors

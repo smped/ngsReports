@@ -315,7 +315,7 @@ setMethod("plotSeqQuals", signature = "FastqcDataList", function(
         if (cluster) {
             cols <- c("Filename", "Quality", plotVal)
             clusterDend <-
-                .makeDendrogram(df[cols], "Filename", "Quality", plotVal)
+                .makeDendro(df[cols], "Filename", "Quality", plotVal)
             key <- labels(clusterDend)
         }
 

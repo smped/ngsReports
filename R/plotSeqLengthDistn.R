@@ -307,7 +307,7 @@ setMethod(
             if (cluster) {
                 cols <- c("Filename", "Length", plotVal)
                 clusterDend <-
-                    .makeDendrogram(df[cols], "Filename","Length", plotVal)
+                    .makeDendro(df[cols], "Filename","Length", plotVal)
                 key <- labels(clusterDend)
             }
 
