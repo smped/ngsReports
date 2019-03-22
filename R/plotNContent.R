@@ -94,7 +94,7 @@ setMethod("plotNContent", signature = "FastqcData", function(
     lineCol = "red"){
 
     ## Get the NContent
-    df <- Per_base_N_content(x)
+    df <- getModule(x, "Per_base_N_content")
     colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
     ## Handle empty/missing modules
@@ -202,7 +202,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
     cluster = FALSE, dendrogram = FALSE, ...){
 
     ## Get the NContent
-    df <- Per_base_N_content(x)
+    df <- getModule(x, "Per_base_N_content")
     colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
     ## Handle empty/missing modules

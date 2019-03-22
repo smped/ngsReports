@@ -10,11 +10,6 @@ setGeneric(
 )
 
 setGeneric(
-    "Per_base_N_content",
-    function(object){standardGeneric("Per_base_N_content")}
-)
-
-setGeneric(
     "Sequence_Length_Distribution",
     function(object){standardGeneric("Sequence_Length_Distribution")}
 )

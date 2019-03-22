@@ -59,7 +59,6 @@ Collate:
     'AdapterContent.R'
     'Kmer_Content.R'
     'Overrepresented_sequences.R'
-    'Per_base_N_content.R'
     'PwfCols.R'
     'Sequence_Duplication_Levels.R'
     'Sequence_Length_Distribution.R'
