@@ -114,7 +114,7 @@ using the function `getModule()` and choosing one of the following modules:
 * `Summary` (The PASS/WARN/FAIL status for each module)
 * `Basic_Statistics`
 * `Per_base_sequence_quality`
-* `Per_sequence_quality_scores(fdl)`
+* `Per_sequence_quality_scores`
 * `Per_base_sequence_content(fdl)`
 * `Per_sequence_GC_content(fdl)`
 * `Per_base_N_content(fdl)`

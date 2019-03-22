@@ -106,7 +106,7 @@ setMethod("plotSeqQuals", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
 
-    df <- Per_sequence_quality_scores(x)
+    df <- getModule(x, "Per_sequence_quality_scores")
 
     if (!length(df)) {
         qualPlot <- .emptyPlot("No Sequence Quality Moudule Detected")
@@ -256,7 +256,7 @@ setMethod("plotSeqQuals", signature = "FastqcDataList", function(
     cluster = FALSE, ...){
 
     ## Read in data
-    df <- Per_sequence_quality_scores(x)
+    df <- getModule(x, "Per_sequence_quality_scores")
 
     if (!length(df)) {
         qualPlot <- .emptyPlot("No Sequence Quality Moudule Detected")

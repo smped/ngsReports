@@ -62,8 +62,6 @@ Collate:
     'Per_base_N_content.R'
     'Per_base_sequence_content.R'
     'Per_sequence_GC_content.R'
-    'Per_sequence_quality_scores.R'
-    'Per_tile_sequence_quality.R'
     'PwfCols.R'
     'Sequence_Duplication_Levels.R'
     'Sequence_Length_Distribution.R'

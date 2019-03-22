@@ -35,7 +35,7 @@ values are \code{Summary}, \code{Basic_Statistics},
 \code{Kmer_Content}, \code{Total_Deduplicated_Percentage}.
 Note that spelling and capitalisation is exactly as contained within a
 FastQC report, with the exception that spaces have been converted to
-underscores.}
+underscores. Partial matching is implemented for this argument.}
 }
 \value{
 A single \code{tibble} containing module-level information

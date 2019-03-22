@@ -10,16 +10,6 @@ setGeneric(
 )
 
 setGeneric(
-    "Per_tile_sequence_quality",
-    function(object){standardGeneric("Per_tile_sequence_quality")}
-)
-
-setGeneric(
-    "Per_sequence_quality_scores",
-    function(object){standardGeneric("Per_sequence_quality_scores")}
-)
-
-setGeneric(
     "Per_base_sequence_content",
     function(object){standardGeneric("Per_base_sequence_content")}
 )
