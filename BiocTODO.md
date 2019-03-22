@@ -13,7 +13,7 @@
 
 - [x] Remove the R file from the folder
 - [x] Respect the 80 column width limits. It improves readability and maintainership
-- [ ] Use system.file to provide the template.Rmd
+- [x] Use system.file to provide the template.Rmd
 - [ ] Do you need to make a distinction between a single file and a list of files? Can they be accomodated by a single FastqcFileList class?
 - [ ] It's easy to get lost in the 'Generating Plots' section. Perhaps it would be helpful to categorize groups of functions.
 
