@@ -84,7 +84,7 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, ...){
 
     ## Get the SequenceContent
-    df <- Per_base_sequence_content(x)
+    df <- getModule(x, "Per_base_sequence_content")
     names(df)[names(df) == "Base"] <- "Position"
 
     if (!length(df)) {
@@ -166,7 +166,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     cluster = TRUE, dendrogram = TRUE, ..., nc = 2){
 
     ## Get the SequenceContent
-    df <- Per_base_sequence_content(x)
+    df <- getModule(x, "Per_base_sequence_content")
 
     if (!length(df)) {
         scPlot <- .emptyPlot("No Sequence Content Module Detected")

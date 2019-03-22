@@ -60,7 +60,6 @@ Collate:
     'Kmer_Content.R'
     'Overrepresented_sequences.R'
     'Per_base_N_content.R'
-    'Per_base_sequence_content.R'
     'Per_sequence_GC_content.R'
     'PwfCols.R'
     'Sequence_Duplication_Levels.R'

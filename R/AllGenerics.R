@@ -10,11 +10,6 @@ setGeneric(
 )
 
 setGeneric(
-    "Per_base_sequence_content",
-    function(object){standardGeneric("Per_base_sequence_content")}
-)
-
-setGeneric(
     "Per_sequence_GC_content",
     function(object){standardGeneric("Per_sequence_GC_content")}
 )

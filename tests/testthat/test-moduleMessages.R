@@ -15,7 +15,7 @@ test_that("All modules give correct messages",{
   expect_message(Kmer_Content(fdl))
   expect_message(Overrepresented_sequences(fdl))
   expect_message(Per_base_N_content(fdl))
-  expect_message(Per_base_sequence_content(fdl))
+  expect_message(getModule(fdl, "Per_base_sequence_content"))
   expect_message(getModule(fdl, "Per_base_sequence_quality"))
   expect_message(Per_sequence_GC_content(fdl))
   expect_message(getModule(fdl, "Per_sequence_quality_scores"))
