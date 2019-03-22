@@ -100,7 +100,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
     boxWidth = 0.8, ...){
 
     ## Get the data
-    df <- Per_base_sequence_quality(x)
+    df <- getModule(x, "Per_base_sequence_quality")
 
     ## Make a blank plot if no data is found
     if (!length(df)) {
@@ -241,7 +241,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     nc = 2, ...){
 
     ## Get the data
-    df <- Per_base_sequence_quality(x)
+    df <- getModule(x, "Per_base_sequence_quality")
     maxQ <- max(df[["90th_Percentile"]])
 
     if (!length(df)) {

@@ -61,7 +61,6 @@ Collate:
     'Overrepresented_sequences.R'
     'Per_base_N_content.R'
     'Per_base_sequence_content.R'
-    'Per_base_sequence_quality.R'
     'Per_sequence_GC_content.R'
     'Per_sequence_quality_scores.R'
     'Per_tile_sequence_quality.R'

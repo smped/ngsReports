@@ -3,5 +3,8 @@ Changes in version 0.99.0 (2019-02-01)
 + Shiny App has been moved to a separate package, located at https://github.com/UofABioinformaticsHub/shinyNgsReports
 
 Changes in version 0.99.1 (2019-02-03)
-+ Removed Remote from DESCRIPTION
++ Removed Remotes from DESCRIPTION
 + Added getGcDistribution to enable calculation of GC Content Distributions from FastaFiles
+
+Changes in version 0.99.7 (2019-03-23)
++ Extracting modules is no longer performed by individual functions, but is now performed using the function getModule
