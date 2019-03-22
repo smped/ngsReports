@@ -57,7 +57,6 @@ Collate:
     'AllGenerics.R'
     'FastqcData.R'
     'AdapterContent.R'
-    'Basic_Statistics.R'
     'Kmer_Content.R'
     'Overrepresented_sequences.R'
     'Per_base_N_content.R'

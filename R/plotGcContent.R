@@ -161,7 +161,7 @@ setMethod("plotGcContent", signature = "FastqcData", function(
     subTitle <- c()
     if (theoreticalGC) {
         if (!missing(Fastafile)) {
-            readLength <- max(Basic_Statistics(x)$Longest_sequence)
+            readLength <- max(getModule(x, "Basic_Statistics")$Longest_sequence)
             gcTheoryDF <- getGcDistn(Fastafile, n, readLength)
             subTitle <-
                 paste("Theoretical Distribution based on file", Fastafile)
@@ -303,7 +303,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     subTitle <- c()
     if (theoreticalGC) {
         if (!missing(Fastafile)) {
-            readLength <- max(Basic_Statistics(x)$Longest_sequence)
+            readLength <- max(getModule(x, "Basic_Statistics")$Longest_sequence)
             gcTheoryDF <- getGcDistn(Fastafile, n, readLength)
             subTitle <-
                 paste("Theoretical Distribution based on", basename(Fastafile))

@@ -214,7 +214,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
             blue = C * opacity / maxBase)
         )
 
-        basicStat <- Basic_Statistics(x)
+        basicStat <- getModule(x, "Basic_Statistics")
         basicStat <- basicStat[c("Filename", "Longest_sequence")]
         df <- dplyr::right_join(df, basicStat, by = "Filename")
         cols <- c("Filename", "Start", "End", "colour", "Longest_sequence")

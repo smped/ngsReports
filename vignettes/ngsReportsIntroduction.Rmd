@@ -109,9 +109,10 @@ fdl <- getFastqcData(files)
 ```
 
 From here, all FastQC modules can be obtained as a `tibble` (i.e. `data.frame`) 
-using the functions:
+using the function `getModule()` and choosing one of the following modules:
 
-* `Basic_Statistics(fdl)`
+* `Summary` (The PASS/WARN/FAIL status for each module)
+* `Basic_Statistics`
 * `Per_base_sequence_quality(fdl)`
 * `Per_sequence_quality_scores(fdl)`
 * `Per_base_sequence_content(fdl)`
@@ -124,8 +125,12 @@ using the functions:
 * `Kmer_Content(fdl)`
 * `Per_tile_sequence_quality(fdl)`
 
-Capitalisation of these function names follows the default patterns of FastQC 
-with spaces replaced by underscores.
+```{r}
+getModule(fdl[[1]], "Summary")
+```
+
+Capitalisation and spelling of these module names follows the default patterns 
+from FastQC reports with spaces replaced by underscores.
 One additional module is available and taken directly from the text within the 
 supplied reports
 

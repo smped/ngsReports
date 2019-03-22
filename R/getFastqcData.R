@@ -109,7 +109,7 @@ setMethod("getFastqcData", "FastqcFile", function(object){
         ## Replace the space with underscore
         gsub(" ", "_", nm)
     }, character(1))
-    ## Remove the name from each module's data
+    ## Remove the module name (i.e. the 1st value) from each module's data
     fqcLines <- lapply(fqcLines, function(x){x[-1]})
 
     ## Define the output to have the same structure as fastqcData,

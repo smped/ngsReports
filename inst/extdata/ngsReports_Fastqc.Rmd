@@ -78,7 +78,7 @@ if (file.exists(params$tgtsFile)){
 		message("No valid labels found")
 	}
 }
-if (!file.exists(params$tgtsFile)){
+if (!file.exists(params$tgtsFile)) {
 	message(params$tgtsFile, " not found. Using default labels")
 }
 ```
@@ -88,7 +88,7 @@ if (!file.exists(params$tgtsFile)){
 
 
 ```{r}
-bs <- Basic_Statistics(fastqcData)
+bs <- getModule(fastqcData, "Basic_Statistics")
 bs %>%
 	mutate(Sequence_length = paste(Shortest_sequence, Longest_sequence, sep = "-")) %>%
 	dplyr::select(Filename, contains("sequence"), `%GC`, -contains("est")) %>%

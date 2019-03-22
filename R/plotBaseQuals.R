@@ -144,7 +144,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
     )
 
     ## Get the Illumina encoding
-    enc <- Basic_Statistics(x)$Encoding[1]
+    enc <- getModule(x, "Basic_Statistics")$Encoding[1]
     enc <- gsub(".*(Illumina [0-9\\.]*)", "\\1", enc)
     ylab <- paste0("Quality Scores (", enc, " encoding)")
 
@@ -258,8 +258,8 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(df, labels, ...)
 
-    ## Get the Illumina encoding
-    enc <- Basic_Statistics(x)$Encoding[1]
+    ## Get the Illumina encoding for the axis label
+    enc <- getModule(x, "Basic_Statistics")$Encoding[1]
     enc <- gsub(".*(Illumina [0-9\\.]*)", "\\1", enc)
 
     plotType <- match.arg(plotType)

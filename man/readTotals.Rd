@@ -7,11 +7,11 @@
 readTotals(x)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList}, 
+\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or path}
 }
 \value{
-A \code{tibble} with the columns \code{Filename} and 
+A \code{tibble} with the columns \code{Filename} and
 \code{Total_Sequences}
 }
 \description{
@@ -27,6 +27,6 @@ fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 fdl <- getFastqcData(fileList)
 
 # Print the read totals
-readTotals(fdl)    
+readTotals(fdl)
 
 }

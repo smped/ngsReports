@@ -77,7 +77,14 @@ setMethod("getModule", "FastqcData", function(object, module){
     ## The Total_Deduplicated_Percentage needs to be handled separately
     ## as this returns a double which needs to be coerced into a df
     if (module == "Total_Deduplicated_Percentage") {
-        df <- tibble(Total_Deduplicated_Percentage = df)
+        if (length(df) == 0) df <- tibble()
+        else df <- tibble(Total_Deduplicated_Percentage = df)
+    }
+
+    ## If we have an empty data.frame, just return that here with a message
+    if (nrow(df) == 0) {
+        message(module, " missing from ", nm)
+        return(df)
     }
 
     ## Make sure the first column is the name of the underlying fastq file

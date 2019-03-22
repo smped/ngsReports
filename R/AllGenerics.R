@@ -9,10 +9,10 @@ setGeneric(
     function(object, module){standardGeneric("getModule")}
 )
 
-setGeneric(
-    "Basic_Statistics",
-    function(object){standardGeneric("Basic_Statistics")}
-)
+# setGeneric(
+#     "Basic_Statistics",
+#     function(object){standardGeneric("Basic_Statistics")}
+# )
 
 setGeneric(
     "Per_base_sequence_quality",
