@@ -17,10 +17,13 @@ params:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,
-											results = "asis",
-											message = FALSE, warning = FALSE,
-											error = FALSE)
+knitr::opts_chunk$set(
+    echo = FALSE,
+    results = "asis",
+    message = FALSE, 
+    warning = FALSE,
+    error = FALSE
+    )
 ```
 
 
@@ -39,12 +42,14 @@ library(readr)
 ```
 
 ```{r setGlobals}
-globals <- list(usePlotly = TRUE,
-								cluster = TRUE,
-								dendrogram = TRUE,
-								theoreticalGC = TRUE,
-								theoreticalType = params$dataType,
-								species = params$species)
+globals <- list(
+    usePlotly = TRUE,
+    cluster = TRUE,
+    dendrogram = TRUE,
+    theoreticalGC = TRUE,
+    theoreticalType = params$dataType,
+    species = params$species
+    )
 ```
 
 
@@ -88,15 +93,17 @@ bs %>%
 	mutate(Sequence_length = paste(Shortest_sequence, Longest_sequence, sep = "-")) %>%
 	dplyr::select(Filename, contains("sequence"), `%GC`, -contains("est")) %>%
 	set_names(gsub("_", " ", names(.))) %>%
-	set_names(str_to_title(names(.))) %>%
-	set_names(gsub("Sequences", "", names(.))) %>%
-	set_names(str_trim(names(.))) %>%
-	dplyr::rename(`%GC` = `%Gc`) %>%
-	pander(big.mark = ",",
-				 split.tables = Inf,
-				 style = "rmarkdown",
-				 justify = "lrrrr",
-				 caption = "Summary statistics for all libraries")
+    set_names(str_to_title(names(.))) %>%
+    set_names(gsub("Sequences", "", names(.))) %>%
+    set_names(str_trim(names(.))) %>%
+    dplyr::rename(`%GC` = `%Gc`) %>%
+    pander(
+        big.mark = ",",
+        split.tables = Inf,
+        style = "rmarkdown",
+        justify = "lrrrr",
+        caption = "Summary statistics for all libraries"
+    )
 ```
 
 ## Read Totals
@@ -116,20 +123,20 @@ plotSummary(fastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
 
 ## Per Base Sequence Quality
 
-```{r plotBaseQualities, fig.cap = "Heatmap showing mean base qualities for each library"}
-plotBaseQualities(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```{r plotBaseQuals, fig.cap = "Heatmap showing mean base qualities for each library"}
+plotBaseQuals(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Per Sequence Quality Scores
 
-```{r plotSequenceQualitiesHeatmap, fig.cap = "Heatmap showing mean sequence qualities for each library"}
-plotSequenceQualities(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```{r plotSeqQualsHeatmap, fig.cap = "Heatmap showing mean sequence qualities for each library"}
+plotSeqQuals(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Per Base Sequence Content
 
-```{r plotSequenceContent, fig.cap = "Heatmap of summed base distributions along each read"}
-plotSequenceContent(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```{r plotSeqContent, fig.cap = "Heatmap of summed base distributions along each read"}
+plotSeqContent(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Per Sequence GC Content
@@ -145,24 +152,24 @@ plotGcContent(fastqcData, labels = plotLabels, theoreticalGC = globals$theoretic
 
 ## Sequence Length Distribution
 
-```{r plotSequenceLengthDistribution}
-plotSequenceLengthDistribution(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```{r plotSeqLengthDistn}
+plotSeqLengthDistn(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ```{r plotCumulativeLengthDistribution}
-plotSequenceLengthDistribution(fastqcData, plotType = "cumulative", labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotSeqLengthDistn(fastqcData, plotType = "cumulative", labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Sequence Duplication Levels
 
-```{r plotDuplicationLevels}
-plotDuplicationLevels(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```{r plotDupLevels}
+plotDupLevels(fastqcData, labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Overrepresented Summary
 
 ```{r Overrepresented_summary, fig.cap="Total overrepresented sequences for each library"}
-plotOverrepresentedSummary(fastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
+plotOverrep(fastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
 ```
 
 ## Overrepresented Sequences
