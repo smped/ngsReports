@@ -17,7 +17,7 @@ test_that("All modules give correct messages",{
   expect_message(Per_base_N_content(fdl))
   expect_message(getModule(fdl, "Per_base_sequence_content"))
   expect_message(getModule(fdl, "Per_base_sequence_quality"))
-  expect_message(Per_sequence_GC_content(fdl))
+  expect_message(getModule(fdl, "Per_sequence_GC_content"))
   expect_message(getModule(fdl, "Per_sequence_quality_scores"))
   expect_message(getModule(fdl, "Per_tile_sequence_quality"))
   expect_message(Sequence_Duplication_Levels(fdl))

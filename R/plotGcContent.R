@@ -130,7 +130,7 @@ setMethod("plotGcContent", signature = "FastqcData", function(
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
     n = 1e+6, counts = FALSE, lineCols = c("red", "blue"), ...){
 
-    df <- Per_sequence_GC_content(x)
+    df <- getModule(x, "Per_sequence_GC_content")
 
     if (!length(df)) {
         gcPlot <- .emptyPlot("No Duplication Levels Module Detected")
@@ -269,7 +269,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     n=1e+6, plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
     dendrogram = FALSE, ...){
 
-    df <- Per_sequence_GC_content(x)
+    df <- getModule(x, "Per_sequence_GC_content")
 
     if (!length(df)) {
         gcPlot <- .emptyPlot("No Duplication Levels Module Detected")
