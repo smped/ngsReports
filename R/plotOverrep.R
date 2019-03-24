@@ -90,7 +90,7 @@ setMethod("plotOverrep", signature = "FastqcFileList", function(
 setMethod("plotOverrep", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols,  n = 10, ...){
 
-    df <- Overrepresented_sequences(x)
+    df <- getModule(x, "Overrepresented_sequences")
 
     if (!length(df)) {
         overPlot <- .emptyPlot("No Overrepresented Sequences")
@@ -188,7 +188,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, cluster = TRUE, dendrogram = TRUE,
     ..., paletteName = "Set1", expand.x = c(0, 0), expand.y = c(0, 0)){
 
-    df <- Overrepresented_sequences(x)
+    df <- getModule(x, "Overrepresented_sequences")
 
     if (!length(df)) {
         overPlot <- .emptyPlot("No Overrepresented Sequences")

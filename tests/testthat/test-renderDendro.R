@@ -6,7 +6,7 @@ fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:
 fdl <- getFastqcData(fileList)
 
 #test dataset
-df <- Sequence_Length_Distribution(fdl)
+df <- getModule(fdl, "Sequence_Length_Distribution")
 cols <- c("Filename", "Lower", "Count")
 
 #cluster the data

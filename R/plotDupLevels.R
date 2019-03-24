@@ -95,7 +95,7 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 20, fail = 50,
     lineCols = c("red", "blue"), ...){
 
-    df <- Sequence_Duplication_Levels(x)
+    df <- getModule(x, "Sequence_Duplication_Levels")
 
     if (!length(df)) {
         dupPlot <- .emptyPlot("No Duplication Levels Module Detected")
@@ -215,7 +215,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, deduplication = c("pre", "post"),
     cluster = FALSE, dendrogram = FALSE,  heatCol = inferno(50), ...){
 
-    df <- Sequence_Duplication_Levels(x)
+    df <- getModule(x, "Sequence_Duplication_Levels")
 
     if (!length(df)) {
         dupPlot <- .emptyPlot("No Duplication Levels Module Detected")

@@ -36,7 +36,7 @@
 #' @name overRep2Fasta
 #' @rdname overRep2Fasta-methods
 #' @export
-setGeneric( "overRep2Fasta", function(
+setGeneric("overRep2Fasta", function(
     x, path, n = 10, labels, noAdapters = TRUE, ...){
     standardGeneric("overRep2Fasta")
 })
@@ -46,7 +46,7 @@ setGeneric( "overRep2Fasta", function(
 setMethod("overRep2Fasta", signature = "FastqcData", function(
     x, path,  n = 10, labels, noAdapters = TRUE, ...){
 
-    df <- Overrepresented_sequences(x)
+    df <- getModule(x, "Overrepresented_sequences")
 
     labels <- .makeLabels(df, labels, ...)
     df$Filename <- labels[df$Filename]
@@ -78,7 +78,7 @@ setMethod("overRep2Fasta", signature = "FastqcData", function(
 setMethod("overRep2Fasta", signature = "FastqcDataList", function(
     x, path,  n = 10, labels, noAdapters = TRUE, ...){
 
-    df <- Overrepresented_sequences(x)
+    df <- getModule(x, "Overrepresented_sequences")
     labels <- .makeLabels(df, labels, ...)
     df$Filename <- labels[df$Filename]
 

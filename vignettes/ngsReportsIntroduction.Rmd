@@ -118,9 +118,9 @@ using the function `getModule()` and choosing one of the following modules:
 * `Per_base_sequence_content`
 * `Per_sequence_GC_content`
 * `Per_base_N_content`
-* `Sequence_Length_Distribution(fdl)`
-* `Sequence_Duplication_Levels(fdl)`
-* `Overrepresented_sequences(fdl)`
+* `Sequence_Length_Distribution`
+* `Sequence_Duplication_Levels`
+* `Overrepresented_sequences`
 * `Adapter_Content(fdl)`
 * `Kmer_Content(fdl)`
 * `Per_tile_sequence_quality(fdl)`

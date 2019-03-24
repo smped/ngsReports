@@ -10,21 +10,6 @@ setGeneric(
 )
 
 setGeneric(
-    "Sequence_Length_Distribution",
-    function(object){standardGeneric("Sequence_Length_Distribution")}
-)
-
-setGeneric(
-    "Sequence_Duplication_Levels",
-    function(object){standardGeneric("Sequence_Duplication_Levels")}
-)
-
-setGeneric(
-    "Overrepresented_sequences",
-    function(object){standardGeneric("Overrepresented_sequences")}
-)
-
-setGeneric(
     "Adapter_Content",
     function(object){standardGeneric("Adapter_Content")}
 )

@@ -103,7 +103,7 @@ setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
     expand.x = c(0,0.2)){
 
-    df <- Sequence_Length_Distribution(x)
+    df <- getModule(x, "Sequence_Length_Distribution")
     plotType <- match.arg(plotType)
 
     if (!length(df)) {
@@ -190,7 +190,7 @@ setMethod(
         plotType = c("heatmap", "line", "cumulative"), cluster = FALSE,
         dendrogram = FALSE, ..., expand.x = c(0, 0.2), heatCol = inferno(50)){
 
-        df <- Sequence_Length_Distribution(x)
+        df <- getModule(x, "Sequence_Length_Distribution")
 
         if (!length(df)) {
             lenPlot <- .emptyPlot("No Sequence Length Module Detected")

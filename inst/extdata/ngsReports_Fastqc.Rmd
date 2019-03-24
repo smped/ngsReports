@@ -176,8 +176,8 @@ plotOverrep(fastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
 
 ```{r Overrepresented_sequences, echo=FALSE, results='asis', message=TRUE}
 nOver <- 30
-os <- Overrepresented_sequences(fastqcData) 
-if (length(os) > 0){
+os <- getModule(fastqcData, "Overrepresented_sequences") 
+if (length(os) > 0) {
 	os %>% 
 		mutate(Filename = plotLabels[Filename]) %>%
 		group_by(Sequence, Possible_Source) %>%
