@@ -50,14 +50,12 @@ Imports:
 LazyData: true
 RoxygenNote: 6.1.1
 Collate: 
-    'validationFunctions.R'
-    'FastqcDataList.R'
-    'FastqcFileList.R'
-    'FastqcFile.R'
     'AllGenerics.R'
+    'validationFunctions.R'
     'FastqcData.R'
-    'AdapterContent.R'
-    'Kmer_Content.R'
+    'FastqcDataList.R'
+    'FastqcFile.R'
+    'FastqcFileList.R'
     'PwfCols.R'
     'TheoreticalGC.R'
     'Total_Deduplicated_Percentage.R'

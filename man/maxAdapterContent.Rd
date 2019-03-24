@@ -22,8 +22,9 @@ Get the maximum Adapter Content across one or more FASTQC
 reports
 }
 \details{
-This will extract the \code{Adapter_Content} from the supplied
-object, and provide a \code{tibble} with the final value for each file
+This will extract the \code{Adapter_Content} module from the
+supplied object, and provide a \code{tibble} with the final value for each
+file.
 }
 \examples{
 # Get the files included with the package
