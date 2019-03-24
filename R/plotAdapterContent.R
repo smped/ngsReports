@@ -3,8 +3,8 @@
 #' @description Draw an Adapter Content Plot across one or more FASTQC reports
 #'
 #' @details
-#' This extracts the Adapter_Content from the supplied object and generates a
-#' ggplot2 object, with a set of minimal defaults.
+#' This extracts the Adapter_Content module from the supplied object and
+#' generates a ggplot2 object, with a set of minimal defaults.
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
@@ -109,7 +109,7 @@ setMethod("plotAdapterContent", signature = "FastqcFileList", function(
 setMethod("plotAdapterContent", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10,  ...){
 
-    df <- Adapter_Content(x)
+    df <- getModule(x, "Adapter_Content")
 
     ## Check for values to plot & return an empty plot if none are found
     valueCols <- setdiff(colnames(df), c("Filename", "Position"))
@@ -223,7 +223,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     plotType = c("heatmap", "line"), adapterType = "Total",
     cluster = FALSE, dendrogram = FALSE, ...){
 
-    df <- Adapter_Content(x)
+    df <- getModule(x, "Adapter_Content")
 
     ## Check for values to plot & return an empty plot if none are found
     valueCols <- setdiff(colnames(df), c("Filename", "Position"))

@@ -14,7 +14,7 @@
 #' packageDir <- system.file("extdata", package = "ngsReports")
 #' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #' cols <- c("Filename", "Position", "Illumina_Universal_Adapter")
-#' ac <- Adapter_Content(fileList)[cols]
+#' ac <- getModule(fileList, "Adapter_Content")[cols]
 #' ngsReports:::.makeDendro(df = ac,
 #'                             rowVal = "Filename",
 #'                             colVal = "Position",

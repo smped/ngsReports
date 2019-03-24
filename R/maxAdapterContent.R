@@ -3,8 +3,9 @@
 #' @description Get the maximum Adapter Content across one or more FASTQC
 #' reports
 #'
-#' @details This will extract the \code{Adapter_Content} from the supplied
-#' object, and provide a \code{tibble} with the final value for each file
+#' @details This will extract the \code{Adapter_Content} module from the
+#' supplied object, and provide a \code{tibble} with the final value for each
+#' file.
 #'
 #' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or path
@@ -31,7 +32,7 @@ maxAdapterContent <- function(x, asPercent = TRUE){
     stopifnot(is.logical(asPercent))
 
     ## Get the AdapterContent
-    ac <- tryCatch(Adapter_Content(x))
+    ac <- tryCatch(getModule(x, "Adapter_Content"))
 
     ## Perform the summary
     adapters <- setdiff(colnames(ac), c("Filename", "Position"))
