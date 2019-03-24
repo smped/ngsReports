@@ -82,10 +82,10 @@ setMethod("plotKmers", signature = "FastqcData", function(
     pal = c("red", "blue", "green", "black", "magenta", "yellow")){
 
     ## Get the basic data frame
-    df <- Kmer_Content(x)
+    df <- getModule(x, "Kmer_Content")
 
     if (!length(df)) {
-        kMerPlot <- .emptyPlot("No Adapter Content Module Detected")
+        kMerPlot <- .emptyPlot("No Kmer_Content Module Detected")
         if (usePlotly) kMerPlot <- ggplotly(kMerPlot, tooltip = "")
         return(kMerPlot)
     }
@@ -231,7 +231,7 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, cluster = FALSE, dendrogram = FALSE,
     pwfCols, heatCol = inferno(50), ...){
 
-    df <- Kmer_Content(x)
+    df <- getModule(x, "Kmer_Content")
 
     if (!length(df)) {
         kMerPlot <- .emptyPlot("No Overrepresented Kmers Detected")

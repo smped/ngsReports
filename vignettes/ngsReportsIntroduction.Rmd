@@ -122,7 +122,7 @@ using the function `getModule()` and choosing one of the following modules:
 * `Sequence_Duplication_Levels`
 * `Overrepresented_sequences`
 * `Adapter_Content`
-* `Kmer_Content(fdl)`
+* `Kmer_Content`
 * `Per_tile_sequence_quality(fdl)`
 
 ```{r}

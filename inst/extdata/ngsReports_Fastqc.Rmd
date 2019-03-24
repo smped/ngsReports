@@ -217,7 +217,7 @@ plotKmers(fastqcData, labels = plotLabels, usePlotly = globals$usePlotly, cluste
 
 ```{r Kmer_Content, message=TRUE}
 nK <- 30
-kc <- Kmer_Content(fastqcData)
+kc <- getModule(fastqcData, "Kmer_Content")
 if (length(kc) > 0){
   kc %>%
     group_by(Sequence, `Max_Obs/Exp_Position`) %>%

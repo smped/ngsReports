@@ -10,16 +10,6 @@ setGeneric(
 )
 
 setGeneric(
-    "Adapter_Content",
-    function(object){standardGeneric("Adapter_Content")}
-)
-
-setGeneric(
-    "Kmer_Content",
-    function(object){standardGeneric("Kmer_Content")}
-)
-
-setGeneric(
     "Total_Deduplicated_Percentage",
     function(object){standardGeneric("Total_Deduplicated_Percentage")}
 )

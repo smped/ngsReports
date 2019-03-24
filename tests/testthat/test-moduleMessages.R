@@ -12,7 +12,7 @@ fdl <- getFastqcData(f)
 test_that("All modules give correct messages",{
   expect_message(getModule(fdl, "Adapter_Content"))
   expect_message(getModule(fdl, "Basic_Statistics"))
-  expect_message(Kmer_Content(fdl))
+  expect_message(getModule(fdl, "Kmer_Content"))
   expect_message(getModule(fdl, "Overrepresented_sequences"))
   expect_message(getModule(fdl, "Per_base_N_content"))
   expect_message(getModule(fdl, "Per_base_sequence_content"))
