@@ -58,7 +58,6 @@ Collate:
     'FastqcFileList.R'
     'PwfCols.R'
     'TheoreticalGC.R'
-    'Total_Deduplicated_Percentage.R'
     'Version.R'
     'aaa.R'
     'addPercent.R'

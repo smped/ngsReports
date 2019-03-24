@@ -9,10 +9,6 @@ setGeneric(
     function(object, module){standardGeneric("getModule")}
 )
 
-setGeneric(
-    "Total_Deduplicated_Percentage",
-    function(object){standardGeneric("Total_Deduplicated_Percentage")}
-)
 setGeneric("Version", function(object){standardGeneric("Version")})
 
 setGeneric("getColours", function(object){standardGeneric("getColours")})

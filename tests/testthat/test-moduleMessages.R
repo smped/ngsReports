@@ -22,6 +22,7 @@ test_that("All modules give correct messages",{
   expect_message(getModule(fdl, "Per_tile_sequence_quality"))
   expect_message(getModule(fdl, "Sequence_Duplication_Levels"))
   expect_message(getModule(fdl, "Sequence_Length_Distribution"))
+  expect_message(getModule(fdl, "Total_Deduplicated_Percentage"))
 })
 
 closeAllConnections()

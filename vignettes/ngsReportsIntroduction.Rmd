@@ -123,7 +123,7 @@ using the function `getModule()` and choosing one of the following modules:
 * `Overrepresented_sequences`
 * `Adapter_Content`
 * `Kmer_Content`
-* `Per_tile_sequence_quality(fdl)`
+* `Per_tile_sequence_quality`
 
 ```{r}
 getModule(fdl[[1]], "Summary")
@@ -134,10 +134,10 @@ from FastQC reports with spaces replaced by underscores.
 One additional module is available and taken directly from the text within the 
 supplied reports
 
-* `Total_Duplicated_Percentage(fdl)`
+* `Total_Duplicated_Percentage`
 
 In addition, the read totals for each file in the library can be obtained using `readTotals()`, which can be easily used to make a table of read totals.
-This essentially just returns the first two columns from `Basic_Statistics()`
+This essentially just returns the first two columns from `getModule(x, "Basic_Statistics")`
 
 ```{r, results='hide'}
 reads <- readTotals(fdl)

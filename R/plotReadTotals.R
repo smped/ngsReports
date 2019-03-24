@@ -140,10 +140,11 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
         bars <- match.arg(bars)
 
         ## Add the information to a joined data.frame
-        deDup <- Total_Deduplicated_Percentage(x)
+        deDup <- getModule(x, "Total_Deduplicated_Percentage")
         deDup$Filename <- labels[deDup$Filename]
         deDup$Filename <- factor(deDup$Filename, levels = levels(df$Filename))
-        deDup <- dplyr::rename(deDup, Percentage = Total)
+        deDup <-
+            dplyr::rename(deDup, Percentage = Total_Deduplicated_Percentage)
         df <- dplyr::left_join(deDup, df, by = "Filename")
 
         ##Setup the df for plotting
