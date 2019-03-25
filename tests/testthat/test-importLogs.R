@@ -36,7 +36,7 @@ test_that("importHisat2Logs loads correctly",{
 
 test_that("importStarLogs loads correctly",{
     ## NB: This is identical to importBowtie2Logs
-    df <- importStarLogs(starLog)
+    df <- importNgsLogs(starLog, type = "star")
     nm <- c("Filename", "Total_Mapped_Percent", "Number_Of_Input_Reads",
             "Average_Input_Read_Length", "Uniquely_Mapped_Reads_Number",
             "Uniquely_Mapped_Reads_Percent", "Average_Mapped_Length", "Number_Of_Reads_Mapped_To_Multiple_Loci",
@@ -77,7 +77,7 @@ test_that("importHisat2Logs errors correctly",{
 
 test_that("importStarLogs errors correctly",{
     ## These are bowtie logs so should error
-    expect_error(importStarLogs(bowtieLogs))
+    expect_error(importNgsLogs(bowtieLogs, type = "star"))
 })
 
 test_that("importDupMetrics errors correctly",{

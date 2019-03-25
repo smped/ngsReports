@@ -72,7 +72,6 @@ Collate:
     'getSummary.R'
     'importDupMetrics.R'
     'importNgsLogs.R'
-    'importStarLogs.R'
     'isCompressed.R'
     'makeDendro.R'
     'makeLabels.R'

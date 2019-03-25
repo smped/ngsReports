@@ -20,9 +20,7 @@
 #' bowtieLogs <- system.file("extdata", f, package = "ngsReports")
 #' df <- importNgsLogs(bowtieLogs, type = "bowtie")
 #'
-#' @importFrom lubridate dminutes
-#' @importFrom lubridate dhours
-#' @importFrom lubridate dseconds
+#' @importFrom lubridate dminutes dhours dseconds parse_date_time
 #'
 #' @export
 importNgsLogs <- function(x, type) {
@@ -31,40 +29,28 @@ importNgsLogs <- function(x, type) {
     stopifnot(file.exists(x)) # Check they all exist
 
     ## Check for a valid filetype
-    possibleTypes <- c("bowtie", "bowtie2", "hisat2")
-    type <- match.arg(type, possibleTypes)
+    possibleTypes <- c("bowtie", "bowtie2", "hisat2", "star")
+    type <- match.arg(tolower(type), possibleTypes)
+    ## Change to title case for easier parsing below
+    type <- stringr::str_to_title(type)
 
     ## Load the data
     data <- suppressWarnings(lapply(x, readLines))
     names(data) <- basename(x)
 
-    if (type == "bowtie") {
-
-        ## Perform a check on the data
-        validLogs <- vapply(data, .isValidBowtieLog, logical(1))
-        if (any(!validLogs)) {
-            failed <- names(validLogs)[!validLogs]
-            stop(paste("Incorrect file structure for:", failed , collapse = "\n"))
-        }
-
-        ## Load the data
-        df <- .parseBowtieLogs(data)
+    ## Check validity
+    vFun <- paste0(".isValid", type, "Log")
+    validLogs <- vapply(data, eval(parse(text = vFun)), logical(1))
+    if (any(!validLogs)) {
+        failed <- names(validLogs)[!validLogs]
+        stop(paste("Incorrect file structure for:", failed , collapse = "\n"))
     }
 
-    if (type %in% c("bowtie2", "hisat2")) {
+    ## Parse the data
+    pFun <- paste0(".parse", type, "Logs(data)")
+    df <- eval(parse(text = pFun))
 
-        ## Perform a check on the data
-        validLogs <- vapply(data, .isValidHisat2Log, logical(1))
-        if (any(!validLogs)) {
-            failed <- names(validLogs)[!validLogs]
-            stop(paste("Incorrect file structure for:", failed , collapse = "\n"))
-        }
-
-        ## Load the data
-        df <- .parseHisat2Logs(data)
-
-    }
-
+    ## Return the tibble
     as_tibble(df)
 
 }
@@ -107,6 +93,22 @@ importNgsLogs <- function(x, type) {
     alnExact <- sum(grepl("aligned exactly 1 time$", x)) == 1
     alnG1 <- sum(grepl("aligned >1 times$", x)) == 1
     all(c(chkLen, firstLine, lastLine, noAln, alnExact, alnG1))
+}
+.isValidBowtie2Log <- .isValidHisat2Log
+
+#' @title Check for a valid Star Alignment log
+#' @description Checks internal structure of the parsed log file
+#' @param x Character vector containing parsed log file using the function
+#' readLines
+#' @return logical(1)
+#' @keywords internal
+.isValidStarLog <- function(x){
+    ## Just check for the key fields
+    chkStart <- grepl("Started job on", x[1])
+    chkUniq <- any(grepl("UNIQUE READS:", x))
+    chkMulti <- any(grepl("MULTI-MAPPING READS:", x))
+    chkUnmapped <- any(grepl("UNMAPPED READS:", x))
+    all(chkStart, chkUniq, chkMulti, chkUnmapped)
 }
 
 #' @title Parse data from Bowtie log files
@@ -224,6 +226,73 @@ importNgsLogs <- function(x, type) {
         tidyselect::ends_with("Reads"),
         tidyselect::contains("Unique"),
         tidyselect::contains("Multiple"),
+        tidyselect::everything()
+    )
+
+}
+.parseBowtie2Logs <- .parseHisat2Logs
+
+#' @title Parse data from STAR log files
+#' @description Parse data from STAR log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @return data.frame
+#' @keywords internal
+.parseStarLogs <- function(data){
+    ## Reformat as a data.frame / tibble
+    df <- lapply(data, function(x){
+        ## Split on '|\t'
+        x <- stringr::str_split_fixed(x, pattern = "\\|\t", n = 2)
+        ## Remove whitespace
+        x <- apply(x, MARGIN = 2, stringr::str_trim)
+        ## Remove blank rows
+        x <- x[rowSums(x == "") == 0,]
+        ## Tidy up the percent signs & brackets
+        x[, 1] <- gsub("%", "Percent", x[,1])
+        x <- apply(x, 2, stringr::str_remove_all, "[%\\(\\)]")
+        ## Define the column names
+        cols <- stringr::str_to_title(x[,1])
+        cols <- gsub("[ :,]+", "_", cols)
+        cols <-
+            gsub("([ACGTacgt]{2}/[ACGTacgt]{2})", "\\U\\1", cols, perl = TRUE)
+        ## Form a list then tibble
+        out <- as.list(x[,2])
+        names(out) <- cols
+        ## Using tibble here preserves column names in a nicer format
+        as_tibble(out)
+    })
+    df <- dplyr::bind_rows(df)
+
+    ## Reformat the time columns
+    timeCols <- grepl("On$", names(df))
+    df[timeCols] <-
+        lapply(df[timeCols], parse_date_time, orders = "b! d! HMS")
+
+    ## Reformat the integer columns
+    intCols <- grepl("Number", names(df))
+    df[intCols] <- lapply(df[intCols], as.integer)
+
+    ## Set the remaining columns as numeric
+    df[!intCols & !timeCols] <- lapply(df[!intCols & !timeCols], as.numeric)
+
+    ## Add the filename & additional columns
+    df$Filename <- names(data)
+    df$Mapping_Duration <- df$Finished_On - df$Started_Mapping_On
+    totMapped <-
+        df$Uniquely_Mapped_Reads_Number +
+        df$Number_Of_Reads_Mapped_To_Multiple_Loci
+    df$Total_Mapped_Percent <- 100*totMapped / df$Number_Of_Input_Reads
+
+    ## Return the output
+    dplyr::select(
+        df,
+        "Filename",
+        tidyselect::starts_with("Total"),
+        tidyselect::contains("Input"),
+        tidyselect::contains("Mapped"),
+        tidyselect::contains("Splice"),
+        tidyselect::ends_with("On"),
+        tidyselect::contains("Mapping"),
         tidyselect::everything()
     )
 

@@ -438,7 +438,7 @@ Different information again is contained in STAR alignment logs.
 
 ```{r}
 starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
-df <- importStarLogs(starLog)
+df <- importNgsLogs(starLog, type = "star")
 ```
 
 In addition to the files produced by the above alignment tools, the output 
