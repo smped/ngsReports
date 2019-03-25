@@ -431,9 +431,8 @@ pander(
 ```{r}
 fls <- c("bowtiePE.txt", "bowtieSE.txt")
 bowtieLogs <- system.file("extdata", fls, package = "ngsReports")
-df <- importBowtieLogs(bowtieLogs)
+df <- importNgsLogs(bowtieLogs, type = "bowtie")
 ```
-
 
 Different information again is contained in STAR alignment logs.
 

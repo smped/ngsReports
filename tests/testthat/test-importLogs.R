@@ -5,8 +5,8 @@ bowtie2Logs <- system.file("extdata", c("bowtie2PE.txt", "bowtie2SE.txt"), packa
 dupLogs <- system.file("extdata", "Sample1_Dedup_metrics.txt", package = "ngsReports")
 starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
 
-test_that("importBowtieLogs loads correctly",{
-    df <- importBowtieLogs(bowtieLogs)
+test_that("importBowtieLogs works correctly",{
+    df <- importNgsLogs(bowtieLogs, type = "bowtie")
     nm <- c("Filename", "Reads_Processed",
             "Reads_With_At_Least_One_Reported_Alignment",
             "Reads_That_Failed_To_Align",
@@ -67,7 +67,7 @@ test_that("importDupMetrics loads correctly",{
 
 test_that("importBowtieLogs errors correctly",{
     ## These are bowtie2 logs so should error
-    expect_error(importBowtieLogs(bowtie2Logs))
+    expect_error(importNgsLogs(bowtie2Logs, type = "bowtie"))
 })
 
 test_that("importHisat2Logs errors correctly",{

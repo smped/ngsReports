@@ -5,7 +5,7 @@
 - [x] Avoid using any GitHub repositories (remove the Remotes field)
 
 # NAMESPACE
-- [ ] Stick to either snake_case or camelCase (snake case is recommended for tidyverse interfacing packages, otherwise use camelCase)
+- [x] Stick to either snake_case or camelCase (snake case is recommended for tidyverse interfacing packages, otherwise use camelCase)
 - [ ] Consider shortening function names, long function names can be cumbersome and awkward for the user unless they are established file standards
 - [ ] Consider using plot methods on classes so that you don't have to append each plot method with plot*
 
