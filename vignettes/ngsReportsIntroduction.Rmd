@@ -415,7 +415,7 @@ identical output
 ```{r}
 fl <- c("bowtie2PE.txt", "bowtie2SE.txt")
 bowtie2Logs <- system.file("extdata", fl, package = "ngsReports")
-df <- importBowtie2Logs(bowtie2Logs)
+df <- importNgsLogs(bowtie2Logs, type = "bowtie2")
 ```
 
 ```{r, echo=FALSE}

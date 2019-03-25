@@ -25,7 +25,7 @@ test_that("importBowtieLogs works correctly",{
 
 test_that("importHisat2Logs loads correctly",{
     ## NB: This is identical to importBowtie2Logs
-    df <- importHisat2Logs(bowtie2Logs)
+    df <- importNgsLogs(bowtie2Logs, type = "bowtie2")
     nm <- c("Filename", "Total_Reads", "Paired_Reads", "Unique_Unpaired",
             "Unique_In_Pairs", "Unique_Discordant_Pairs", "Multiple_Unpaired",
             "Multiple_In_Pairs", "Not_Aligned", "Alignment_Rate")
@@ -72,7 +72,7 @@ test_that("importBowtieLogs errors correctly",{
 
 test_that("importHisat2Logs errors correctly",{
     ## These are bowtie logs so should error
-    expect_error(importHisat2Logs(bowtieLogs))
+    expect_error(importNgsLogs(bowtieLogs, type = "hisat2"))
 })
 
 test_that("importStarLogs errors correctly",{

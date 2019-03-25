@@ -31,7 +31,7 @@ importNgsLogs <- function(x, type) {
     stopifnot(file.exists(x)) # Check they all exist
 
     ## Check for a valid filetype
-    possibleTypes <- c("bowtie")
+    possibleTypes <- c("bowtie", "bowtie2", "hisat2")
     type <- match.arg(type, possibleTypes)
 
     ## Load the data
@@ -49,6 +49,20 @@ importNgsLogs <- function(x, type) {
 
         ## Load the data
         df <- .parseBowtieLogs(data)
+    }
+
+    if (type %in% c("bowtie2", "hisat2")) {
+
+        ## Perform a check on the data
+        validLogs <- vapply(data, .isValidHisat2Log, logical(1))
+        if (any(!validLogs)) {
+            failed <- names(validLogs)[!validLogs]
+            stop(paste("Incorrect file structure for:", failed , collapse = "\n"))
+        }
+
+        ## Load the data
+        df <- .parseHisat2Logs(data)
+
     }
 
     as_tibble(df)
@@ -76,6 +90,23 @@ importNgsLogs <- function(x, type) {
     )
     chk <- vapply(fields, function(f){any(grepl(f, x))}, logical(1))
     all(chk)
+}
+
+#' @title Check for a valid Hisat2 log
+#' @description Checks internal structure of the parsed log file
+#' @param x Character vector containing parsed log file using the function
+#' readLines
+#' @return logical(1)
+#' @keywords internal
+.isValidHisat2Log <- function(x){
+    n <- length(x)
+    chkLen <- length(x) > 0
+    firstLine <- grepl("reads; of these:$", x[1])
+    lastLine <- grepl("overall alignment rate$", x[n])
+    noAln <- sum(grepl("aligned 0 times$", x)) == 1
+    alnExact <- sum(grepl("aligned exactly 1 time$", x)) == 1
+    alnG1 <- sum(grepl("aligned >1 times$", x)) == 1
+    all(c(chkLen, firstLine, lastLine, noAln, alnExact, alnG1))
 }
 
 #' @title Parse data from Bowtie log files
@@ -119,7 +150,7 @@ importNgsLogs <- function(x, type) {
         dhours(x[,1]) + dminutes(x[,2]) + dseconds(x[,3])
     })
     ## Add the filename, reorder the columns & return a tibble
-    df$Filename <- basename(x)
+    df$Filename <- names(data)
     df <- dplyr::select(
         df,
         "Filename",
@@ -129,4 +160,71 @@ importNgsLogs <- function(x, type) {
     )
 
     df
+}
+
+#' @title Parse data from HISAT2 log files
+#' @description Parse data from HISAT2 log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @return data.frame
+#' @keywords internal
+.parseHisat2Logs <- function(data){
+
+    df <- lapply(data, function(x){
+
+        x <- stringr::str_trim(x)
+        paired <- grepl("were paired", x[2])
+        totReads <- gsub("([0-9]*) reads; of these:", "\\1", x[1])
+        ## Now find each category then extract the numbers
+        noAln <- x[grep("aligned 0 times$", x)]
+        noAln <- gsub("([0-9]*) .+ aligned 0 times", "\\1", noAln)
+        uniq <- x[grep("aligned exactly 1 time$", x)]
+        uniq <- gsub("([0-9]*) .+ aligned exactly 1 time", "\\1", uniq)
+        mult <- x[grep("aligned >1 times", x)]
+        mult <- gsub("([0-9]*) .+ aligned >1 times", "\\1", mult)
+
+        ## Get the paired only fields
+        pairReads <- uniqPairs <- multPairs <- uniqDiscord <- 0
+        if (paired) {
+            pairReads <- x[grep("were paired; of these:$", x)]
+            pairReads <- gsub("([0-9]*) .+ of these:", "\\1", pairReads)
+            uniqPairs <- x[grep("aligned concordantly exactly 1 time$", x)]
+            uniqPairs <- gsub("([0-9]*) .+ exactly 1 time", "\\1", uniqPairs)
+            multPairs <- x[grep("aligned concordantly >1 times$", x)]
+            multPairs <- gsub("([0-9]*) .+ >1 times", "\\1", multPairs)
+            uniqDiscord <- x[grep("aligned discordantly 1 time$", x)]
+            uniqDiscord <- gsub("([0-9]*) .+ 1 time", "\\1", uniqDiscord)
+        }
+
+        out <- list(
+            Total_Reads = totReads,
+            Not_Aligned = noAln,
+            Unique_Unpaired = uniq,
+            Multiple_Unpaired = mult,
+            Paired_Reads = pairReads,
+            Unique_In_Pairs = uniqPairs,
+            Multiple_In_Pairs = multPairs,
+            Unique_Discordant_Pairs = uniqDiscord
+        )
+        ## Set all values as integers
+        out <- lapply(out, as.integer)
+        as.data.frame(out)
+    })
+
+    ## Bind all reults together
+    df <- bind_rows(df)
+
+    ## Add a final column
+    df$Alignment_Rate <-
+        1 - df$Not_Aligned / (df$Total_Reads + df$Paired_Reads)
+    df$Filename <- names(data)
+    dplyr::select(
+        df,
+        "Filename",
+        tidyselect::ends_with("Reads"),
+        tidyselect::contains("Unique"),
+        tidyselect::contains("Multiple"),
+        tidyselect::everything()
+    )
+
 }

@@ -71,7 +71,6 @@ Collate:
     'getModule.R'
     'getSummary.R'
     'importDupMetrics.R'
-    'importHisat2Logs.R'
     'importNgsLogs.R'
     'importStarLogs.R'
     'isCompressed.R'
