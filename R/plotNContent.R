@@ -261,7 +261,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
         aes_string("Start", "Filename", fill = "Percentage", label = "Base")
     ) +
         geom_tile() +
-        scale_fill_pwf(
+        .scale_fill_pwf(
             df$Percentage,
             pwfCols,
             breaks = c(0, warn, fail, 101),

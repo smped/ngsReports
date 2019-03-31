@@ -435,7 +435,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
         ) +
             geom_tile() +
             labs(x = xlab) +
-            scale_fill_pwf(
+            .scale_fill_pwf(
                 vals = na.omit(df[[plotValue]]),
                 pwfCols = pwfCols,
                 breaks = c(0, fail, warn, phredMax),

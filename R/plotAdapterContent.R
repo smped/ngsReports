@@ -352,7 +352,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
             labs(x = xLab) +
             scale_x_continuous(expand = c(0,0)) +
             scale_y_discrete(expand = c(0, 0)) +
-            scale_fill_pwf(
+            .scale_fill_pwf(
                 df$Percent, pwf, breaks = breaks, na.value = "white"
             ) +
             theme_bw() +
