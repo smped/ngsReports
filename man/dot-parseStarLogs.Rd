@@ -4,13 +4,15 @@
 \alias{.parseStarLogs}
 \title{Parse data from STAR log files}
 \usage{
-.parseStarLogs(data)
+.parseStarLogs(data, ...)
 }
 \arguments{
 \item{data}{List of lines read using readLines on one or more files}
+
+\item{...}{Not used}
 }
 \value{
-data.frame
+tibble
 }
 \description{
 Parse data from STAR log files

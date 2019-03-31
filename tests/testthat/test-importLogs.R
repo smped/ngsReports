@@ -55,14 +55,16 @@ test_that("importStarLogs loads correctly",{
 })
 
 test_that("importDupMetrics loads correctly",{
-    dup <- importDupMetrics(dupLogs)
-    nm <- c("Library", "Unpaired Reads Examined", "Read Pairs Examined",
-            "Secondary Or Supplementary Rds", "Unmapped Reads", "Unpaired Read Duplicates",
-            "Read Pair Duplicates", "Read Pair Optical Duplicates", "Percent Duplication",
-            "Estimated Library Size")
-    expect_equal(names(dup), c("metrics", "histogram"))
-    expect_equal(colnames(dup$histogram), c("Library", "Bin", "Value"))
-    expect_equal(colnames(dup$metrics), nm)
+    dup <- importNgsLogs(dupLogs, "duplicationMetrics", 1)
+    nm <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
+            "SECONDARY_OR_SUPPLEMENTARY_RDS", "UNMAPPED_READS",
+            "UNPAIRED_READ_DUPLICATES", "READ_PAIR_DUPLICATES",
+            "READ_PAIR_OPTICAL_DUPLICATES", "PERCENT_DUPLICATION",
+            "ESTIMATED_LIBRARY_SIZE")
+    expect_equal(colnames(dup), nm)
+    dup <- importNgsLogs(dupLogs, "duplicationMetrics", 2)
+    nm <- c("LIBRARY", "BIN", "VALUE")
+    expect_equal(colnames(dup), nm)
 })
 
 test_that("importBowtieLogs errors correctly",{
@@ -82,5 +84,5 @@ test_that("importStarLogs errors correctly",{
 
 test_that("importDupMetrics errors correctly",{
     ## These are bowtie2 logs so should error
-    expect_error(importDupMetrics(bowtie2Logs))
+    expect_error(importNgsLogs(bowtie2Logs, type = "duplicationMetrics"))
 })

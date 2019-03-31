@@ -4,10 +4,12 @@
 \alias{.parseBowtieLogs}
 \title{Parse data from Bowtie log files}
 \usage{
-.parseBowtieLogs(data)
+.parseBowtieLogs(data, ...)
 }
 \arguments{
 \item{data}{List of lines read using readLines on one or more files}
+
+\item{...}{Not used}
 }
 \value{
 data.frame

@@ -450,8 +450,8 @@ elements.
 ```{r}
 sysDir <- system.file("extdata", package = "ngsReports")
 fl <- list.files(sysDir, "Dedup_metrics.txt", full.names = TRUE)
-dupMetrics <- importDupMetrics(fl)
-str(dupMetrics)
+dupMetrics <- importNgsLogs(fl, type = "duplicationMetrics", which = "metrics")
+dupMetrics
 ```
 
 

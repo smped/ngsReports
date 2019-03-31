@@ -4,12 +4,16 @@
 #' stderr
 #'
 #' @details Imports one or more log files as output by tools such as:
-#' \code{bowtie}
+#' \code{bowtie}, \code{bowtie2}, \code{Hisat2} or \code{STAR}.
 #'
 #' @param x \code{character}. Vector of filenames. All log files must be of the
-#' same type. Duplicates of the file name will be ignored.
+#' same type. Duplicate file paths will be silently ignored.
 #' @param type \code{character}. The type of file being imported. Can be one of
-#' \code{bowtie}
+#' \code{bowtie}, \code{bowtie2}, \code{hisat2} or \code{star}
+#' @param which Which element of the parsed object to return. Ignored in all
+#' file types except duplication metrics which can return either the metrics
+#' or the data supplied as a histogram. Defaults to the metrics data in this
+#' case.
 #'
 #' @return A \code{tibble}.
 #' Column names are broadly similar to the text in supplied files,
@@ -23,16 +27,18 @@
 #' @importFrom lubridate dminutes dhours dseconds parse_date_time
 #'
 #' @export
-importNgsLogs <- function(x, type) {
+importNgsLogs <- function(x, type, which = 1) {
 
     x <- unique(x) # Remove any  duplicates
     stopifnot(file.exists(x)) # Check they all exist
 
     ## Check for a valid filetype
-    possibleTypes <- c("bowtie", "bowtie2", "hisat2", "star")
-    type <- match.arg(tolower(type), possibleTypes)
+    possTypes <- c("bowtie", "bowtie2", "hisat2", "star", "duplicationMetrics")
+    type <- match.arg(type, possTypes)
     ## Change to title case for easier parsing below
-    type <- stringr::str_to_title(type)
+    type <- stringr::str_split_fixed(type, pattern = "", n = nchar(type))
+    type[1] <- stringr::str_to_upper(type[1])
+    type <- paste(type, collapse = "")
 
     ## Load the data
     data <- suppressWarnings(lapply(x, readLines))
@@ -47,7 +53,8 @@ importNgsLogs <- function(x, type) {
     }
 
     ## Parse the data
-    pFun <- paste0(".parse", type, "Logs(data)")
+    if (is.character(which)) which <- paste0("'", which, "'")
+    pFun <- paste0(".parse", type, "Logs(data, which = ", which, ")")
     df <- eval(parse(text = pFun))
 
     ## Return the tibble
@@ -111,13 +118,42 @@ importNgsLogs <- function(x, type) {
     all(chkStart, chkUniq, chkMulti, chkUnmapped)
 }
 
+#' @title Check for a valid Duplication Metrics log
+#' @description Checks internal structure of the parsed log file
+#' @param x Character vector containing parsed log file using the function
+#' readLines
+#' @return logical(1)
+#' @keywords internal
+.isValidDuplicationMetricsLog <- function(x){
+
+    ## Check the METRICS CLASS data
+    metricsHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
+    stopifnot(length(metricsHeader) == 1) # Must appear only once
+    metricCols <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
+                    "SECONDARY_OR_SUPPLEMENTARY_RDS", "UNMAPPED_READS",
+                    "UNPAIRED_READ_DUPLICATES", "READ_PAIR_DUPLICATES",
+                    "READ_PAIR_OPTICAL_DUPLICATES", "PERCENT_DUPLICATION",
+                    "ESTIMATED_LIBRARY_SIZE")
+    ## Check the column names in the log match the expected columns
+    checkMetCols <- all(names(.splitByTab(x[metricsHeader + 1])) == metricCols)
+
+    ## Check the HISTOGRAM data
+    histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
+    stopifnot(length(histHeader) == 1) # Must appear only once
+    histCols <- c("BIN", "VALUE")
+    checkHistCols <- all(names(.splitByTab(x[histHeader + 1])) == histCols)
+
+    all(checkMetCols, checkHistCols)
+}
+
 #' @title Parse data from Bowtie log files
 #' @description Parse data from Bowtie log files
 #' @details Checks for structure will have been performed
 #' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
 #' @return data.frame
 #' @keywords internal
-.parseBowtieLogs <- function(data){
+.parseBowtieLogs <- function(data, ...){
 
     ## This will have already been through the validity checks
     df <- lapply(data, function(x){
@@ -168,9 +204,10 @@ importNgsLogs <- function(x, type) {
 #' @description Parse data from HISAT2 log files
 #' @details Checks for structure will have been performed
 #' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
 #' @return data.frame
 #' @keywords internal
-.parseHisat2Logs <- function(data){
+.parseHisat2Logs <- function(data, ...){
 
     df <- lapply(data, function(x){
 
@@ -236,9 +273,10 @@ importNgsLogs <- function(x, type) {
 #' @description Parse data from STAR log files
 #' @details Checks for structure will have been performed
 #' @param data List of lines read using readLines on one or more files
-#' @return data.frame
+#' @param ... Not used
+#' @return tibble
 #' @keywords internal
-.parseStarLogs <- function(data){
+.parseStarLogs <- function(data, ...){
     ## Reformat as a data.frame / tibble
     df <- lapply(data, function(x){
         ## Split on '|\t'
@@ -296,4 +334,69 @@ importNgsLogs <- function(x, type) {
         tidyselect::everything()
     )
 
+}
+
+#' @title Parse data from STAR log files
+#' @description Parse data from STAR log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param which which element of the log file to return. Can be 1:2, "metrics"
+#' or "histogram"
+#' @return tibble
+#' @keywords internal
+.parseDuplicationMetricsLogs <- function(data, which = 1){
+
+    stopifnot(which %in% c(1:2, "metrics", "histogram"))
+
+    ## Collect the metrics from all files as a tibble
+    metrics <- lapply(data, function(x){
+        ## Find the library name
+        libName <- grep(
+            "picard.sam.markduplicates.MarkDuplicates.+INPUT=", x, value = TRUE
+        )
+        libName <- gsub(".+INPUT=\\[(.+)\\] OUTPUT.+", "\\1", libName[[1]])
+        ## Find the header. The next two rows will be the colnames + data
+        metHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
+        df <- .splitByTab(x[seq(metHeader + 1, by = 1, length.out = 2)])
+        df$LIBRARY <- basename(libName)
+        df
+    })
+    metrics <- dplyr::bind_rows(metrics)
+    ## Now ensure the correct types
+    metrics$PERCENT_DUPLICATION <- as.numeric(metrics$PERCENT_DUPLICATION)
+    intCols <- setdiff(colnames(metrics), c("LIBRARY", "PERCENT_DUPLICATION"))
+    metrics[intCols] <- lapply(metrics[intCols], as.integer)
+    metrics <- as_tibble(metrics)
+
+    ## Collect the histogram data from all files as a tibble
+    histData <- lapply(data, function(x){
+        ## Find the library name
+        libName <- grep(
+            "picard.sam.markduplicates.MarkDuplicates.+INPUT=", x, value = TRUE
+        )
+        libName <- gsub(".+INPUT=\\[(.+)\\] OUTPUT.+", "\\1", libName[[1]])
+
+        ## Find the header then remove up until that line
+        histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
+        x <- x[-seq_len(histHeader)]
+        ## Remove any blank lines (this is the last line)
+        x <- x[!grepl("^$", x)]
+        df <- .splitByTab(x)
+        df$LIBRARY <- basename(libName)
+        dplyr::select(df, "LIBRARY", tidyselect::everything())
+    })
+    histData <- dplyr::bind_rows(histData)
+    ## Ensure the correct types
+    histData$BIN <- as.integer(histData$BIN)
+    histData$VALUE <- as.numeric(histData$VALUE)
+    histData <- as_tibble(histData)
+
+    ## Setup the output, then format the column names
+    out <- list(metrics = metrics, histogram = histData)
+    lapply(out, function(x){
+        colnames(x) <- stringr::str_replace_all(colnames(x), "_", " ")
+        colnames(x) <- stringr::str_to_title(colnames(x))
+        x
+    })
+    out[[which]]
 }

@@ -70,7 +70,6 @@ Collate:
     'getGcDistn.R'
     'getModule.R'
     'getSummary.R'
-    'importDupMetrics.R'
     'importNgsLogs.R'
     'isCompressed.R'
     'makeDendro.R'

@@ -4,14 +4,19 @@
 \alias{importNgsLogs}
 \title{Import Various NGS-related log files}
 \usage{
-importNgsLogs(x, type)
+importNgsLogs(x, type, which = 1)
 }
 \arguments{
 \item{x}{\code{character}. Vector of filenames. All log files must be of the
-same type. Duplicates of the file name will be ignored.}
+same type. Duplicate file paths will be silently ignored.}
 
 \item{type}{\code{character}. The type of file being imported. Can be one of
-\code{bowtie}}
+\code{bowtie}, \code{bowtie2}, \code{hisat2} or \code{star}}
+
+\item{which}{Which element of the parsed object to return. Ignored in all
+file types except duplication metrics which can return either the metrics
+or the data supplied as a histogram. Defaults to the metrics data in this
+case.}
 }
 \value{
 A \code{tibble}.
@@ -24,7 +29,7 @@ stderr
 }
 \details{
 Imports one or more log files as output by tools such as:
-\code{bowtie}
+\code{bowtie}, \code{bowtie2}, \code{Hisat2} or \code{STAR}.
 }
 \examples{
 f <- c("bowtiePE.txt", "bowtieSE.txt")
