@@ -1,14 +1,11 @@
-#' @title Return the File Names from an Object
+#' @title Return the Underlying Fastq File Names from FastqcData* Objects
 #'
-#' @description The File Names from an object
+#' @description Return the Underlying Fastq File Names from FastqcData* Objects
 #'
-#' @param object An object of class FastqcFile, FastqcFileList, FastqcData or
-#' FastqcDataList
+#' @param object An object of class FastqcData or FastqcDataList
 #'
-#' @return Returns the filenames, without the preceding directories, i.e.
-#' basename. For a FastqcFile/FastqcFileList these will be the underlying
-#' FastQC files. For a FastqcData/FastqcDataList, these will correspond to the
-#' fastq files about which the FastQC report was written.
+#' @return Returns the filenames for the Fastq file the FastQC report was
+#' generated from, without any preceding directories.
 #'
 #' @examples
 #'
@@ -16,31 +13,10 @@
 #' packageDir <- system.file("extdata", package = "ngsReports")
 #' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
-#' # Form a FastqcFileList
-#' ffl <- FastqcFileList(fileList)
-#' fileName(ffl)
-#'
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- getFastqcData(fileList)
 #' fileName(fdl)
 #'
-#' @importMethodsFrom BiocGenerics fileName
-#' @export
-#' @name fileName
-#' @aliases fileName,FastqcFile-method
-#' @rdname fileName-methods
-setMethod("fileName", "FastqcFile", function(object){basename(object@path)})
-
-#' @importMethodsFrom BiocGenerics fileName
-#' @export
-#' @name fileName
-#' @aliases fileName,FastqcFileList-method
-#' @rdname fileName-methods
-setMethod(
-    "fileName",
-    "FastqcFileList",
-    function(object){vapply(object, fileName, character(1))}
-)
 
 #' @importMethodsFrom BiocGenerics fileName
 #' @export

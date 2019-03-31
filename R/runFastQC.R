@@ -232,7 +232,7 @@ setMethod("runFastQC", "BamFileList", function(
         ## Return a FastqcFileList
         ffl <- FastqcFileList(fqcNames)
         ## Now return the files that have been run in the same order
-        m <- pmatch(gsub("(.+)\\..+", "\\1", names(object)), fileName(ffl))
+        m <- pmatch(gsub("(.+)\\..+", "\\1", names(object)), basename(path(ffl)))
         if (anyNA(m)) {
             wn <- "Some Fastqc files may be missing/duplicated"
             warning(wn)
@@ -245,7 +245,7 @@ setMethod("runFastQC", "BamFileList", function(
         ffl <- FastqcFileList(fqcNames)
         ## Now return the file that has been run
         nm <- basename(path(object))
-        m <- pmatch(gsub("(.+)\\..+", "\\1", nm), fileName(ffl))
+        m <- pmatch(gsub("(.+)\\..+", "\\1", nm), basename(path(ffl)))
         out <- ffl[[m]]
     }
     out

@@ -3,42 +3,29 @@
 \docType{methods}
 \name{fileName}
 \alias{fileName}
-\alias{fileName,FastqcFile-method}
-\alias{fileName,FastqcFileList-method}
 \alias{fileName,FastqcData-method}
 \alias{fileName,FastqcDataList-method}
-\title{Return the File Names from an Object}
+\title{Return the Underlying Fastq File Names from FastqcData* Objects}
 \usage{
-\S4method{fileName}{FastqcFile}(object)
-
-\S4method{fileName}{FastqcFileList}(object)
-
 \S4method{fileName}{FastqcData}(object)
 
 \S4method{fileName}{FastqcDataList}(object)
 }
 \arguments{
-\item{object}{An object of class FastqcFile, FastqcFileList, FastqcData or
-FastqcDataList}
+\item{object}{An object of class FastqcData or FastqcDataList}
 }
 \value{
-Returns the filenames, without the preceding directories, i.e.
-basename. For a FastqcFile/FastqcFileList these will be the underlying
-FastQC files. For a FastqcData/FastqcDataList, these will correspond to the
-fastq files about which the FastQC report was written.
+Returns the filenames for the Fastq file the FastQC report was
+generated from, without any preceding directories.
 }
 \description{
-The File Names from an object
+Return the Underlying Fastq File Names from FastqcData* Objects
 }
 \examples{
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
 fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
-
-# Form a FastqcFileList
-ffl <- FastqcFileList(fileList)
-fileName(ffl)
 
 # Load the FASTQC data as a FastqcDataList object
 fdl <- getFastqcData(fileList)

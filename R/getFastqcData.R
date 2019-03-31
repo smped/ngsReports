@@ -36,7 +36,7 @@ setMethod("getFastqcData", "FastqcFile", function(object){
     if (comp) {
 
         ## Get the internal path within the zip archive
-        fl <- file.path(gsub(".zip$", "", fileName(object)), "fastqc_data.txt")
+        fl <- file.path(gsub(".zip$", "", basename(path)), "fastqc_data.txt")
 
         ## Check the required file exists within the file
         allFiles <- unzip(path, list = TRUE)$Name
