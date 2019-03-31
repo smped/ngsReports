@@ -201,7 +201,7 @@
     ## make sure status is in right order so key can apply
     ## This only works because the factor levels of the 'Filename' column
     ## correspond to the order of the key as determined earlier the plotting
-    ## functions. This step is essentially redundant
+    ## functions. This step is now essentially redundant
     status <- status[order(status$Filename),]
     ## Make the basic plot
     sideBar <- ggplot(status, aes_string("1", "Filename", key = "key")) +
@@ -281,7 +281,7 @@
 #'
 #' @keywords internal
 #'
-..scale_fill_pwf <- function(
+.scale_fill_pwf <- function(
     vals, pwfCols, breaks = c(0, 5, 10, 100),  passLow = TRUE,
     na.value = "white"){
 
