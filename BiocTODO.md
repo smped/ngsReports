@@ -18,7 +18,7 @@
 - [x] Remove the R file from the folder
 - [x] Respect the 80 column width limits. It improves readability and maintainership
 - [x] Use system.file to provide the template.Rmd
-    - I actually don't understand this comment. This is how the file is referred to internally. Beyond that it's not referred to here with anything beyond a toy example path.
+    - I don't really understand this comment. This is how the file is referred to internally. Beyond that it's not referred to here with anything beyond a toy example path. What am I missing?
 - [x] Do you need to make a distinction between a single file and a list of files? Can they be accomodated by a single FastqcFileList class?
     - I can't see problem with this layout as it provides for transparent checking and parsing. This object class will rarely be used by users as this is essentially an intermediary file class used in preparation for parsing. This was based on object classes structures in ShortRead (`FastqFile` & `FastqFileList`) and Rsamtools (`BamFile` & `BamFileList`), making this a very consistent approach with existing Bioc Packages. This request would make the package less consistent with Bioc methods in our opinion.
 - [x] It's easy to get lost in the 'Generating Plots' section. Perhaps it would be helpful to categorize groups of functions.
@@ -29,14 +29,14 @@
 - [x] As mentioned earlier, you can reduce FastqcFile and FastqcFileList into
 a single class. This would avoid you the repitition of methods for both
 classes, otherwise use inheritance.
-    - As mentioned above, we disagree with this suggestion. The overheads in terms of methods are quite minimal and allow for simple construction of the `FastqcData` and `FastqcDataList` objects, which have distinct plotting methods (see revised vignette) and serve very different roles within the package.
+    - As mentioned above, we disagree with this suggestion. The overheads in terms of methods are quite minimal and allow for simple construction of the `FastqcData` and `FastqcDataList` objects, which have distinct plotting methods (see revised vignette) and serve very different roles within the package. We also this would be less consistent with existing Bioc approaches
 - [x] Group files where possible to reduce the number of files to maintain, such
 as helper functions
 - [x] I don't quite understand why you need to create a generic from the class
 name instead of a simple constructor function (FastqcFile).
     - Thanks for pointing this out. I'd misunderstood the normal approach for this...
 - [x] Why not use the established path generic rather than creating fileName?
-    - We actually have used the path generic. The function `fileName` returns the name of the underlying file for each object. In the case of a `FastqcData*` object, this is the actual Fastq file the report was generated from. We have changed the help page to clarify this. I've also removed this method from `FastqcFile` and `FastqcFileList` object classes to avoid confusion, leaving basename/path as the only options for obtaining information about the underlying FastQC report we are parsing.
+    - We actually have used the path generic. The function `fileName` returns the name of the underlying Fastq file the report was generated from. We have changed the help page to clarify this. I've also removed this method from `FastqcFile` and `FastqcFileList` object classes to avoid confusion, leaving basename/path as the only options for obtaining information about the underlying FastQC report we are parsing.
 - [ ] Create a coercion method instead of a class method to move from one class
 representation to another
 - [ ] Only set methods for classes that are your own and use the ANY class for
