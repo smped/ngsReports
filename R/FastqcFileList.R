@@ -8,8 +8,7 @@
 #' Files can be any combination of zipped (*_fastqc.zip) or extracted
 #' directories
 #'
-#'
-#' @return An object of class FastqcFile
+#' @seealso \code{\link{FastqcFile}}
 #'
 #' @examples
 #'
@@ -28,36 +27,33 @@
 setClass("FastqcFileList", contains = "list")
 setValidity("FastqcFileList", .isValidFastqcFileList)
 
-#' @param x Character vector specifying a valid paths to files/directories as
-#' output by FastQC
+#' @param x character vector or generic list of FastqcFiles
+#' @return An object of class FastqcFileList
+#' @rdname FastqcFileList
 #' @importFrom methods new
 #' @export
-#' @rdname FastqcFileList
-#' @aliases FastqcFileList
-setGeneric("FastqcFileList", function(x){standardGeneric("FastqcFileList")})
+FastqcFileList <- function(x){
 
-#' @export
-#' @rdname FastqcFileList
-#' @aliases FastqcFileList
-setMethod("FastqcFileList", "character", function(x) {
-    fls <- lapply(x, FastqcFile)
-    new("FastqcFileList", fls)
-})
-
-#' @export
-#' @rdname FastqcFileList
-#' @aliases FastqcFileList
-setMethod("FastqcFileList", "list", function(x) {
-    cls <- vapply(x, class, character(1))
-    if (any(!cls %in% "FastqcFile")) {
-        msg <-  paste0(
-            "Method can only be applied to\n",
-            "FastqcFile objects as a generic list."
-        )
-        stop(msg)
+    if (is.character(x)) {
+        fls <- lapply(x, FastqcFile)
     }
-    new("FastqcFileList", x)
-})
+    if (is.list(x)) {
+        ## Check the class of every list element
+        cls <- vapply(x, class, character(1))
+        ## Exit if any elements are not FastqcFiles
+        if (any(!cls %in% "FastqcFile")) {
+            msg <-  paste0(
+                "Method can only be applied to a generic list\n",
+                "of FastqcFile objects."
+            )
+            stop(msg)
+        }
+        fls <- x
+    }
+
+    new("FastqcFileList", fls)
+}
+
 
 ## The show method doesn't need exporting
 setMethod("show", "FastqcFileList",function(object){

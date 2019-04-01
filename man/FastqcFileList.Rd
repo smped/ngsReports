@@ -4,22 +4,15 @@
 \name{FastqcFileList-class}
 \alias{FastqcFileList-class}
 \alias{FastqcFileList}
-\alias{FastqcFileList,character-method}
-\alias{FastqcFileList,list-method}
 \title{The FastqcFileList Object Class}
 \usage{
 FastqcFileList(x)
-
-\S4method{FastqcFileList}{character}(x)
-
-\S4method{FastqcFileList}{list}(x)
 }
 \arguments{
-\item{x}{Character vector specifying a valid paths to files/directories as
-output by FastQC}
+\item{x}{character vector or generic list of FastqcFiles}
 }
 \value{
-An object of class FastqcFile
+An object of class FastqcFileList
 }
 \description{
 The FastqcFileList Object Class
@@ -47,4 +40,7 @@ fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 # Load the FASTQC data as a FastqcFileList
 ffl <- FastqcFileList(fileList)
 
+}
+\seealso{
+\code{\link{FastqcFile}}
 }

@@ -32,8 +32,9 @@ classes, otherwise use inheritance.
     - As mentioned above, we disagree with this suggestion. The overheads in terms of methods are quite minimal and allow for simple construction of the `FastqcData` and `FastqcDataList` objects, which have distinct plotting methods (see revised vignette) and serve very different roles within the package.
 - [x] Group files where possible to reduce the number of files to maintain, such
 as helper functions
-- [ ] I don't quite understand why you need to create a generic from the class
+- [x] I don't quite understand why you need to create a generic from the class
 name instead of a simple constructor function (FastqcFile).
+    - Thanks for pointing this out. I'd misunderstood the normal approach for this...
 - [x] Why not use the established path generic rather than creating fileName?
     - We actually have used the path generic. The function `fileName` returns the name of the underlying file for each object. In the case of a `FastqcData*` object, this is the actual Fastq file the report was generated from. We have changed the help page to clarify this. I've also removed this method from `FastqcFile` and `FastqcFileList` object classes to avoid confusion, leaving basename/path as the only options for obtaining information about the underlying FastQC report we are parsing.
 - [ ] Create a coercion method instead of a class method to move from one class

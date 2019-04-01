@@ -9,14 +9,14 @@
     }
 
     comp <- isCompressed(path, type = "zip") # This includes a file.exists step
-    if (comp){
+    if (comp) {
         ## List the files
         subFiles <- basename(unzip(path, list = TRUE)$Name)
     }
     else{
         ## Check the file is a directory
         chk <- checkmate::testDirectoryExists(path)
-        if (!chk){
+        if (!chk) {
             warning("The supplied file is not a directory")
             return(FALSE)
         }
