@@ -33,7 +33,8 @@
 #' \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme()
-#' @param expand.x Passed to \code{scale_x_discrete}
+#' @param expand.x Output from \code{expand_scale()} or numeric vector of
+#' length 4. Passed to \code{scale_x_discrete}
 #' @param heatCol The colour scheme for the heatmap
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -101,7 +102,7 @@ setMethod(
 #' @export
 setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
-    expand.x = c(0,0.2)){
+    expand.x = expand_scale(0, 0.2)){
 
     df <- getModule(x, "Sequence_Length_Distribution")
     plotType <- match.arg(plotType)
@@ -132,13 +133,14 @@ setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
     df$Length <- factor(df$Lower, levels = unique(df$Lower))
 
     ## Sort out some plotting parameters
+    stopifnot(is.numeric(expand.x), length(expand.x) == 4)
     xLab <- "Sequence Length (bp)"
     yLab <- c(cumulative = "Cumulative Count", line = "Count")[plotType]
     plotY <- c(cumulative = "Cumulative", line = "Count")[plotType]
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
-    allowed <- names(formals(ggplot2::theme))
+    allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
@@ -188,7 +190,8 @@ setMethod(
     function(
         x, usePlotly = FALSE, labels, counts = FALSE,
         plotType = c("heatmap", "line", "cumulative"), cluster = FALSE,
-        dendrogram = FALSE, ..., expand.x = c(0, 0.2), heatCol = inferno(50)){
+        dendrogram = FALSE, ..., expand.x = expand_scale(0, 0.2),
+        heatCol = inferno(50)){
 
         df <- getModule(x, "Sequence_Length_Distribution")
 
@@ -251,13 +254,17 @@ setMethod(
 
         ## Get any arguments for dotArgs that have been set manually
         dotArgs <- list(...)
-        allowed <- names(formals(ggplot2::theme))
+        allowed <- names(formals(theme))
         keepArgs <- which(names(dotArgs) %in% allowed)
         userTheme <- c()
         if (length(keepArgs) > 0)
             userTheme <- do.call(theme, dotArgs[keepArgs])
+
         ## Rotate labels if >3 lengths
         rot <- ifelse(length(lenBins) > 1, 90, 0)
+
+        ## Check axis expansion
+        stopifnot(is.numeric(expand.x), length(expand.x) == 4)
 
         if (plotType %in% c("line", "cumulative")) {
 

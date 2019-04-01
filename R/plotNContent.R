@@ -128,7 +128,7 @@ setMethod("plotNContent", signature = "FastqcData", function(
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
-    allowed <- names(formals(ggplot2::theme))
+    allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
@@ -250,7 +250,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
-    allowed <- names(formals(ggplot2::theme))
+    allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])

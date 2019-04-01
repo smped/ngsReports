@@ -13,19 +13,22 @@
 \usage{
 plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
   bars = c("stacked", "adjacent"), barCols = c("red", "blue"),
-  expand.x = c(0, 0.02), ...)
+  expand.x = expand_scale(mult = c(0, 0.02)), ...)
 
 \S4method{plotReadTotals}{character}(x, usePlotly = FALSE, labels,
   duplicated = TRUE, bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"), expand.x = c(0, 0.02), ...)
+  barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
+  0.02)), ...)
 
 \S4method{plotReadTotals}{FastqcFileList}(x, usePlotly = FALSE, labels,
   duplicated = TRUE, bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"), expand.x = c(0, 0.02), ...)
+  barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
+  0.02)), ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(x, usePlotly = FALSE, labels,
   duplicated = TRUE, bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"), expand.x = c(0, 0.02), ...)
+  barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
+  0.02)), ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
@@ -46,8 +49,8 @@ as "stacked" or "adjacent".}
 
 \item{barCols}{Colours for duplicated and unique reads.}
 
-\item{expand.x}{Passed to \code{expand_scale(mult = expand.x)} for the
-x-axis.}
+\item{expand.x}{Output from \code{expand_scale()} controlling x-axis
+expansion. Alternatively can be a numeric vector of length 4}
 
 \item{...}{Used to pass additional attributes to theme()}
 }

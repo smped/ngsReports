@@ -23,8 +23,8 @@
 #' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 #' then the dendrogram will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
-#' @param expand.x,expand.y Vectors of length 2. Passed to
-#' \code{scale_*_continuous()}
+#' @param expand.x,expand.y Output from \code{expand_scale()} or numeric
+#' vectors of length 4. Passed to \code{scale_*_continuous()}
 #' @param paletteName Name of the palette for colouring the possible sources
 #' of the overrepresented sequences. Must be a palette name from
 #' \code{RColorBrewer}
@@ -88,7 +88,9 @@ setMethod("plotOverrep", signature = "FastqcFileList", function(
 #' @rdname plotOverrep-methods
 #' @export
 setMethod("plotOverrep", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, pwfCols,  n = 10, ...){
+    x, usePlotly = FALSE, labels, pwfCols,  n = 10, ...,
+    expand.x = expand_scale(mult = c(0, 0.05)),
+    expand.y = expand_scale(0, 0.6)){
 
     df <- getModule(x, "Overrepresented_sequences")
 
@@ -104,7 +106,7 @@ setMethod("plotOverrep", signature = "FastqcData", function(
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
-    allowed <- names(formals(ggplot2::theme))
+    allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
@@ -121,8 +123,11 @@ setMethod("plotOverrep", signature = "FastqcData", function(
     df$Percentage <- round(df$Percentage, 2)
     df <- droplevels(df)
 
+    ## Check the axis expansion
+    stopifnot(is.numeric(expand.x), length(expand.x) == 4)
+    stopifnot(is.numeric(expand.y), length(expand.y) == 4)
+
     ## Set plotting parameters
-    ymax <- 1.05*max(df$Percentage)
     xLab <- "Percent of Total Reads (%)"
     yLab <- "Overrepresented Sequence"
 
@@ -133,15 +138,14 @@ setMethod("plotOverrep", signature = "FastqcData", function(
     overPlot <- ggplot(
         df,
         aes_string(
-            "Sequence", "Percentage",
-            fill = "Status", label = "Possible_Source"
+            x = "Sequence", y = "Percentage", fill = "Status",
+            label = "Possible_Source"
         )
     ) +
         geom_bar(stat = "identity") +
         labs(y = xLab, x = yLab) +
-        scale_y_continuous(
-            limits = c(0, ymax), expand = c(0,0), labels = .addPercent
-        ) +
+        scale_y_continuous(expand = expand.x, labels = .addPercent) +
+        scale_x_discrete(expand = expand.y) +
         theme_bw() +
         coord_flip() +
         scale_fill_manual(values = pwfCols)
@@ -186,7 +190,8 @@ setMethod("plotOverrep", signature = "FastqcData", function(
 #' @export
 setMethod("plotOverrep", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, cluster = TRUE, dendrogram = TRUE,
-    ..., paletteName = "Set1", expand.x = c(0, 0), expand.y = c(0, 0)){
+    ..., paletteName = "Set1", expand.x = expand_scale(mult = c(0, 0.05)),
+    expand.y = expand_scale(0, 0)){
 
     df <- getModule(x, "Overrepresented_sequences")
 
@@ -203,7 +208,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
-    allowed <- names(formals(ggplot2::theme))
+    allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
@@ -236,15 +241,8 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
     maxChar <- max(nchar(levels(df$Filename)))
 
     ## Check the axis expansion
-    stopifnot(is.numeric(expand.x), is.numeric(expand.y))
-    stopifnot(length(expand.x) == 2, length(expand.y) == 2)
-    ## Set the axis limits. Just scale the upper limit by 1.05
-    ymax <- 1.05*max(
-        dplyr::summarise(
-            dplyr::group_by(df, Filename),
-            Total = sum(Percentage)
-        )$Total
-    )
+    stopifnot(is.numeric(expand.x), length(expand.x) == 4)
+    stopifnot(is.numeric(expand.y), length(expand.y) == 4)
 
     ## Define the palette
     paletteName <-
@@ -269,11 +267,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
     ) +
         geom_bar(stat = "identity") +
         labs(y = xLab, fill = "Possible Source") +
-        scale_y_continuous(
-            limits = c(0, ymax),
-            expand = expand.x,
-            labels = .addPercent
-        ) +
+        scale_y_continuous(expand = expand.x, labels = .addPercent) +
         scale_x_discrete(expand = expand.y) +
         scale_fill_manual(values = pal) +
         theme_bw() +

@@ -27,11 +27,13 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
   pwfCols, ...)
 
 \S4method{plotOverrep}{FastqcData}(x, usePlotly = FALSE, labels, pwfCols,
-  n = 10, ...)
+  n = 10, ..., expand.x = expand_scale(mult = c(0, 0.05)),
+  expand.y = expand_scale(0, 0.6))
 
 \S4method{plotOverrep}{FastqcDataList}(x, usePlotly = FALSE, labels,
   pwfCols, cluster = TRUE, dendrogram = TRUE, ...,
-  paletteName = "Set1", expand.x = c(0, 0), expand.y = c(0, 0))
+  paletteName = "Set1", expand.x = expand_scale(mult = c(0, 0.05)),
+  expand.y = expand_scale(0, 0))
 }
 \arguments{
 \item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
@@ -51,6 +53,9 @@ for PASS/WARN/FAIL}
 
 \item{n}{The number of sequences to plot from an individual file}
 
+\item{expand.x, expand.y}{Output from \code{expand_scale()} or numeric
+vectors of length 4. Passed to \code{scale_*_continuous()}}
+
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
@@ -61,9 +66,6 @@ then the dendrogram will be displayed.}
 \item{paletteName}{Name of the palette for colouring the possible sources
 of the overrepresented sequences. Must be a palette name from
 \code{RColorBrewer}}
-
-\item{expand.x, expand.y}{Vectors of length 2. Passed to
-\code{scale_*_continuous()}}
 }
 \value{
 A standard ggplot2 object

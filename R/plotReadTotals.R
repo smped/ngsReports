@@ -24,8 +24,8 @@
 #' @param bars If \code{duplicated = TRUE}, show unique and deduplicated reads
 #' as "stacked" or "adjacent".
 #' @param barCols Colours for duplicated and unique reads.
-#' @param expand.x Passed to \code{expand_scale(mult = expand.x)} for the
-#' x-axis.
+#' @param expand.x Output from \code{expand_scale()} controlling x-axis
+#' expansion. Alternatively can be a numeric vector of length 4
 #' @param ... Used to pass additional attributes to theme()
 #'
 #' @examples
@@ -55,7 +55,7 @@
 setGeneric("plotReadTotals", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = c(0, 0.02), ...){
+    expand.x = expand_scale(mult = c(0, 0.02)), ...){
     standardGeneric("plotReadTotals")
 }
 )
@@ -65,7 +65,7 @@ setGeneric("plotReadTotals", function(
 setMethod("plotReadTotals", signature = "character", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = c(0, 0.02), ...){
+    expand.x = expand_scale(mult = c(0, 0.02)), ...){
     if (length(x) == 1)
         stop("plotReadTotals cannot be called on a single FastqcFile")
 
@@ -80,7 +80,7 @@ setMethod("plotReadTotals", signature = "character", function(
 setMethod("plotReadTotals", signature = "FastqcFileList", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = c(0, 0.02), ...){
+    expand.x = expand_scale(mult = c(0, 0.02)), ...){
     x <- getFastqcData(x)
     plotReadTotals(
         x, usePlotly, labels, duplicated, bars, barCols,  expand.x, ...)
@@ -92,7 +92,7 @@ setMethod("plotReadTotals", signature = "FastqcFileList", function(
 setMethod("plotReadTotals", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = c(0, 0.02), ...){
+    expand.x = expand_scale(mult = c(0, 0.02)), ...){
 
     df <- readTotals(x)
     stopifnot(is.logical(duplicated))
@@ -104,7 +104,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
-    allowed <- names(formals(ggplot2::theme))
+    allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
@@ -113,7 +113,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
     barCols <- tryCatch(barCols[seq_len(duplicated + 1)])
 
     ## Check the axis expansion
-    stopifnot(is.numeric(expand.x))
+    stopifnot(length(expand.x) == 4, is.numeric(expand.x))
     xMax <- max(df$Total_Sequences)
     xLab <- "Read Totals"
 
@@ -124,7 +124,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
             scale_y_continuous(
                 labels = scales::comma,
                 limits = c(0, xMax),
-                expand = expand_scale(mult = expand.x)
+                expand = expand.x
             ) +
             labs(y = xLab) +
             coord_flip() +
@@ -165,7 +165,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
             scale_y_continuous(
                 labels = scales::comma,
                 limits = c(0, xMax),
-                expand = expand_scale(mult = expand.x)
+                expand = expand.x
             ) +
             scale_fill_manual(values = barCols) +
             labs(y = xLab) +

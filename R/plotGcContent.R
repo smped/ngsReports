@@ -149,7 +149,7 @@ setMethod("plotGcContent", signature = "FastqcData", function(
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
-    allowed <- names(formals(ggplot2::theme))
+    allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
@@ -293,7 +293,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     if ("size" %in% names(dotArgs)) lineWidth <- dotArgs$size
     else lineWidth <- c(line = 0.5, heatmap = 0.2)[plotType]
 
-    allowed <- names(formals(ggplot2::theme))
+    allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
