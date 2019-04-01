@@ -56,14 +56,15 @@
 #' @aliases getModule
 setMethod("getModule", "FastqcData", function(object, module){
 
-    ## This is the list of defined modules on the object specification
-    allMods <-  c("Summary", "Basic_Statistics", "Per_base_sequence_quality",
-                  "Per_tile_sequence_quality", "Per_sequence_quality_scores",
-                  "Per_base_sequence_content", "Per_sequence_GC_content",
-                  "Per_base_N_content", "Sequence_Length_Distribution",
-                  "Sequence_Duplication_Levels", "Overrepresented_sequences",
-                  "Adapter_Content", "Kmer_Content",
-                  "Total_Deduplicated_Percentage")
+    ## This is the list of defined modules in the object specification
+    allMods <-  c(
+        "Summary", "Basic_Statistics", "Per_base_sequence_quality",
+        "Per_tile_sequence_quality", "Per_sequence_quality_scores",
+        "Per_base_sequence_content", "Per_sequence_GC_content",
+        "Per_base_N_content", "Sequence_Length_Distribution",
+        "Sequence_Duplication_Levels", "Overrepresented_sequences",
+        "Adapter_Content", "Kmer_Content", "Total_Deduplicated_Percentage"
+    )
 
     ## Make sure we have asked for a valid module
     module <- match.arg(module, allMods)

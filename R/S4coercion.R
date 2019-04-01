@@ -1,3 +1,4 @@
+#' @importFrom methods as
 setAs("FastqcFile", "FastqcData", function(from){
 
     ## Import each line as an element in a character vector then detect the

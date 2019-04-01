@@ -37,7 +37,7 @@ name instead of a simple constructor function (FastqcFile).
     - Thanks for pointing this out. I'd misunderstood the normal approach for this...
 - [x] Why not use the established path generic rather than creating fileName?
     - We actually have used the path generic. The function `fileName` returns the name of the underlying Fastq file the report was generated from. We have changed the help page to clarify this. I've also removed this method from `FastqcFile` and `FastqcFileList` object classes to avoid confusion, leaving basename/path as the only options for obtaining information about the underlying FastQC report we are parsing.
-- [ ] Create a coercion method instead of a class method to move from one class
+- [x] Create a coercion method instead of a class method to move from one class
 representation to another
 - [ ] Only set methods for classes that are your own and use the ANY class for
 setting methods for vectors.
@@ -45,3 +45,11 @@ setting methods for vectors.
     - Correct. `DataFrame` objects play poorly with `ggplot2` and as that is the primary role of this package, this would impede ease of use. This would mean that every parsed object would require an extra line of code converting back to a data.frame before it was able to be used for plotting would serve no purpose beyond being user-unfriendly. I could possibly change these outputs to data.frame objects, but they're not as user-friendly & honestly can't see any functional advantage that would give to package users.
 - [x] Is there functionality that you could use from the ShortRead package?
     - Not really. This current package is about simply parsing outputs from stand-alone tools and not about performing any new analysis. It's possible that at a later date, plot methods may be plausibly implemented for `ShortRead` outputs but that is not our current intent. However, as mentioned, we have used the `FastqFile` and `FastqFileList` object classes from `ShortRead`, and it should be noted that the structure of these formed the basis of package design.
+
+## Steve's temporary notes:
+
+- Now the formal coercion method is written, the function `getFastqcData` needs to be rewritten as a simple constructor. Try this as `FastqcData` and `FastqcDataList`.
+- I think these methods should be applicable as S4 methods, but I'm not totally sure
+- Still need to figure out how to manage the `ANY` methods...
+- Going by the behaviour of `BamFileList`, we should add a names property to a `FastqcFileList` object. This could also apply to a `FastqcDataList` object
+- Maybe we should also change the `fileName()` function to `fqName()` to avoid any confusion
