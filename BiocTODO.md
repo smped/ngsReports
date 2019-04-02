@@ -48,8 +48,6 @@ setting methods for vectors.
 
 ## Steve's temporary notes:
 
-- Now the formal coercion method is written, the function `getFastqcData` needs to be rewritten as a simple constructor. Try this as `FastqcData` and `FastqcDataList`.
 - Still need to figure out how to manage the `ANY` methods...
-- Going by the behaviour of `BamFileList`, we should add a names property to a `FastqcDataList` object
 - Maybe we should also change the `fileName()` function to `fqName()` to avoid any confusion
 - Should we also add a `labels` element to a `FastqcDataList`?

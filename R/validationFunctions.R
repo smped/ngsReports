@@ -39,8 +39,8 @@
 
 .isValidFastqcDataList <- function(object){
     ## This is very rudimentary & may need more thought
-    cls <- vapply(object, class, character(1))
-    all(cls == "FastqcData")
+    cls <- vapply(object, is, logical(1), "FastqcData")
+    all(cls)
 }
 
 .isValidPwf <- function(object){
