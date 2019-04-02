@@ -33,7 +33,7 @@
 #' Refer to the \code{fastqc} help page for more details
 #' @param kmers An integer between 2 and 10
 #'
-#' @return An object of class \code{FastqcFileList}
+#' @return An object of class \code{.FastqcFileList}
 #'
 #' @author Steve Pederson <stephen.pederson@@adelaide.edu.au>
 #' @seealso \code{\link{FastqFileList}}
@@ -229,8 +229,8 @@ setMethod("runFastQC", "BamFileList", function(
 
     ## Now define the format as required
     if (fileType %in% c("FastqFileList", "BamFileList")) {
-        ## Return a FastqcFileList
-        ffl <- FastqcFileList(fqcNames)
+        ## Return a .FastqcFileList
+        ffl <- .FastqcFileList(fqcNames)
         ## Now return the files that have been run in the same order
         m <- pmatch(
             gsub("(.+)\\..+", "\\1", names(object)), basename(path(ffl))
@@ -243,8 +243,8 @@ setMethod("runFastQC", "BamFileList", function(
         out <- ffl[m]
     }
     if (fileType %in% c("FastqFile", "BamFile")) {
-        ## Return a FastqcFileList
-        ffl <- FastqcFileList(fqcNames)
+        ## Return a .FastqcFileList
+        ffl <- .FastqcFileList(fqcNames)
         ## Now return the file that has been run
         nm <- basename(path(object))
         m <- pmatch(gsub("(.+)\\..+", "\\1", nm), basename(path(ffl)))

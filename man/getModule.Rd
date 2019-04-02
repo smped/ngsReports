@@ -5,8 +5,8 @@
 \alias{getModule,FastqcData-method}
 \alias{getModule}
 \alias{getModule,FastqcDataList-method}
-\alias{getModule,FastqcFile-method}
-\alias{getModule,FastqcFileList-method}
+\alias{getModule,.FastqcFile-method}
+\alias{getModule,.FastqcFileList-method}
 \alias{getModule,character-method}
 \title{Retrieve a given module from a Fastqc* Object}
 \usage{
@@ -14,14 +14,14 @@
 
 \S4method{getModule}{FastqcDataList}(object, module)
 
-\S4method{getModule}{FastqcFile}(object, module)
+\S4method{getModule}{.FastqcFile}(object, module)
 
-\S4method{getModule}{FastqcFileList}(object, module)
+\S4method{getModule}{.FastqcFileList}(object, module)
 
 \S4method{getModule}{character}(object, module)
 }
 \arguments{
-\item{object}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{object}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
 of paths to fastqc files}
 

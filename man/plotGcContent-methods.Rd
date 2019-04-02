@@ -5,10 +5,10 @@
 \alias{plotGcContent}
 \alias{plotGcContent,character-method}
 \alias{plotGcContent,character}
-\alias{plotGcContent,FastqcFile-method}
-\alias{plotGcContent,FastqcFile}
-\alias{plotGcContent,FastqcFileList-method}
-\alias{plotGcContent,FastqcFileList}
+\alias{plotGcContent,.FastqcFile-method}
+\alias{plotGcContent,.FastqcFile}
+\alias{plotGcContent,.FastqcFileList-method}
+\alias{plotGcContent,.FastqcFileList}
 \alias{plotGcContent,FastqcData-method}
 \alias{plotGcContent,FastqcData}
 \alias{plotGcContent,FastqcDataList-method}
@@ -23,11 +23,11 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
   theoreticalGC = TRUE, theoreticalType = "Genome",
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
 
-\S4method{plotGcContent}{FastqcFile}(x, usePlotly = FALSE, labels,
+\S4method{plotGcContent}{.FastqcFile}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome",
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
 
-\S4method{plotGcContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotGcContent}{.FastqcFileList}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome",
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
 
@@ -43,7 +43,7 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
@@ -102,10 +102,10 @@ Plot the Per Sequence GC Content for a set of FASTQC files
 }
 \details{
 Makes plots for GC_Content.
-When applied to a single FastqcFile or FastqcData object a simple line plot
+When applied to a single .FastqcFile or FastqcData object a simple line plot
 will be drawn, with Theoretical GC content overlaid if desired
 
-For a FastqcFileList, or FastqcDataList either a line plot or heatmap can be
+For a .FastqcFileList, or FastqcDataList either a line plot or heatmap can be
 drawn
 }
 \examples{

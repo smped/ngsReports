@@ -2,7 +2,7 @@
 #'
 #' @description Get the read totals from one or more FASTQC reports
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or path
 #'
 #' @return A \code{tibble} with the columns \code{Filename} and

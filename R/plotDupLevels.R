@@ -10,7 +10,7 @@
 #' ggplot2 methods.
 #'
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
@@ -70,19 +70,19 @@ setMethod("plotDupLevels", signature = "character", function(
     plotDupLevels(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotDupLevels,FastqcFile
+#' @aliases plotDupLevels,.FastqcFile
 #' @rdname plotDupLevels-methods
 #' @export
-setMethod("plotDupLevels", signature = "FastqcFile", function(
+setMethod("plotDupLevels", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- getFastqcData(x)
     plotDupLevels(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotDupLevels,FastqcFileList
+#' @aliases plotDupLevels,.FastqcFileList
 #' @rdname plotDupLevels-methods
 #' @export
-setMethod("plotDupLevels",signature = "FastqcFileList", function(
+setMethod("plotDupLevels",signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- getFastqcData(x)
     plotDupLevels(x, usePlotly, labels, pwfCols, ...)

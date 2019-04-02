@@ -3,24 +3,24 @@
 \docType{methods}
 \name{[}
 \alias{[}
-\alias{[,FastqcFileList,ANY,missing,ANY-method}
-\alias{[,FastqcFileList,character,missing,ANY-method}
+\alias{[,.FastqcFileList,ANY,missing,ANY-method}
+\alias{[,.FastqcFileList,character,missing,ANY-method}
 \alias{[,FastqcDataList,ANY,missing,ANY-method}
 \alias{[[}
-\alias{[[,FastqcFileList,character,missing-method}
+\alias{[[,.FastqcFileList,character,missing-method}
 \title{Extract Elements}
 \usage{
-\S4method{[}{FastqcFileList,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
+\S4method{[}{.FastqcFileList,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
 
-\S4method{[}{FastqcFileList,character,missing,ANY}(x, i, j, ...,
+\S4method{[}{.FastqcFileList,character,missing,ANY}(x, i, j, ...,
   drop = TRUE)
 
 \S4method{[}{FastqcDataList,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
 
-\S4method{[[}{FastqcFileList,character,missing}(x, i, j, ...)
+\S4method{[[}{.FastqcFileList,character,missing}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A FastqcFileList or FastqcDataList}
+\item{x}{A .FastqcFileList or FastqcDataList}
 
 \item{i}{character, logical or integer vector}
 

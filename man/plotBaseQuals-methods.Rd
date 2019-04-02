@@ -5,10 +5,10 @@
 \alias{plotBaseQuals}
 \alias{plotBaseQuals,character-method}
 \alias{plotBaseQuals,character}
-\alias{plotBaseQuals,FastqcFile-method}
-\alias{plotBaseQuals,FastqcFile}
-\alias{plotBaseQuals,FastqcFileList-method}
-\alias{plotBaseQuals,FastqcFileList}
+\alias{plotBaseQuals,.FastqcFile-method}
+\alias{plotBaseQuals,.FastqcFile}
+\alias{plotBaseQuals,.FastqcFileList-method}
+\alias{plotBaseQuals,.FastqcFileList}
 \alias{plotBaseQuals,FastqcData-method}
 \alias{plotBaseQuals,FastqcData}
 \alias{plotBaseQuals,FastqcDataList-method}
@@ -21,10 +21,10 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25,
 \S4method{plotBaseQuals}{character}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
 
-\S4method{plotBaseQuals}{FastqcFile}(x, usePlotly = FALSE, labels,
+\S4method{plotBaseQuals}{.FastqcFile}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
 
-\S4method{plotBaseQuals}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotBaseQuals}{.FastqcFileList}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
 
 \S4method{plotBaseQuals}{FastqcData}(x, usePlotly = FALSE, labels,
@@ -36,7 +36,7 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25,
   cluster = FALSE, dendrogram = FALSE, nc = 2, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or path}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using

@@ -8,7 +8,7 @@
 #' data.frame. Note that each module will be it's own unique structure,
 #' although all will return a data.frame
 #'
-#' @param object Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param object Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
 #' of paths to fastqc files
 #' @param module The requested module as contained in a FastQC report. Possible
@@ -130,7 +130,7 @@ setMethod("getModule", "FastqcDataList", function(object, module){
 #' @export
 #' @rdname getModule
 #' @aliases getModule
-setMethod("getModule", "FastqcFile", function(object, module){
+setMethod("getModule", ".FastqcFile", function(object, module){
 
     ## This is the list of defined modules on the object specification
     allMods <-  c("Summary", "Basic_Statistics", "Per_base_sequence_quality",
@@ -152,7 +152,7 @@ setMethod("getModule", "FastqcFile", function(object, module){
 #' @export
 #' @rdname getModule
 #' @aliases getModule
-setMethod("getModule", "FastqcFileList", function(object, module){
+setMethod("getModule", ".FastqcFileList", function(object, module){
 
     ## This is the list of defined modules on the object specification
     allMods <-  c("Summary", "Basic_Statistics", "Per_base_sequence_quality",

@@ -5,10 +5,10 @@
 \alias{plotOverrep}
 \alias{plotOverrep,character-method}
 \alias{plotOverrep,character}
-\alias{plotOverrep,FastqcFile-method}
-\alias{plotOverrep,FastqcFile}
-\alias{plotOverrep,FastqcFileList-method}
-\alias{plotOverrep,FastqcFileList}
+\alias{plotOverrep,.FastqcFile-method}
+\alias{plotOverrep,.FastqcFile}
+\alias{plotOverrep,.FastqcFileList-method}
+\alias{plotOverrep,.FastqcFileList}
 \alias{plotOverrep,FastqcData-method}
 \alias{plotOverrep,FastqcData}
 \alias{plotOverrep,FastqcDataList-method}
@@ -20,10 +20,10 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
 \S4method{plotOverrep}{character}(x, usePlotly = FALSE, labels, pwfCols,
   ...)
 
-\S4method{plotOverrep}{FastqcFile}(x, usePlotly = FALSE, labels, pwfCols,
-  ...)
+\S4method{plotOverrep}{.FastqcFile}(x, usePlotly = FALSE, labels,
+  pwfCols, ...)
 
-\S4method{plotOverrep}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotOverrep}{.FastqcFileList}(x, usePlotly = FALSE, labels,
   pwfCols, ...)
 
 \S4method{plotOverrep}{FastqcData}(x, usePlotly = FALSE, labels, pwfCols,
@@ -36,7 +36,7 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
   expand.y = expand_scale(0, 0))
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using

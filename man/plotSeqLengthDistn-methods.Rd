@@ -5,10 +5,10 @@
 \alias{plotSeqLengthDistn}
 \alias{plotSeqLengthDistn,character-method}
 \alias{plotSeqLengthDistn,character}
-\alias{plotSeqLengthDistn,FastqcFile-method}
-\alias{plotSeqLengthDistn,FastqcFile}
-\alias{plotSeqLengthDistn,FastqcFileList-method}
-\alias{plotSeqLengthDistn,FastqcFileList}
+\alias{plotSeqLengthDistn,.FastqcFile-method}
+\alias{plotSeqLengthDistn,.FastqcFile}
+\alias{plotSeqLengthDistn,.FastqcFileList-method}
+\alias{plotSeqLengthDistn,.FastqcFileList}
 \alias{plotSeqLengthDistn,FastqcData-method}
 \alias{plotSeqLengthDistn,FastqcData}
 \alias{plotSeqLengthDistn,FastqcDataList-method}
@@ -20,10 +20,10 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
 \S4method{plotSeqLengthDistn}{character}(x, usePlotly = FALSE, labels,
   ...)
 
-\S4method{plotSeqLengthDistn}{FastqcFile}(x, usePlotly = FALSE, labels,
+\S4method{plotSeqLengthDistn}{.FastqcFile}(x, usePlotly = FALSE, labels,
   ...)
 
-\S4method{plotSeqLengthDistn}{FastqcFileList}(x, usePlotly = FALSE,
+\S4method{plotSeqLengthDistn}{.FastqcFileList}(x, usePlotly = FALSE,
   labels, ...)
 
 \S4method{plotSeqLengthDistn}{FastqcData}(x, usePlotly = FALSE, labels,
@@ -36,7 +36,7 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
   expand.x = expand_scale(0, 0.2), heatCol = inferno(50))
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 or plotly object.}

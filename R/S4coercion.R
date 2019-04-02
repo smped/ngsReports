@@ -1,5 +1,5 @@
 #' @importFrom methods as
-setAs("FastqcFile", "FastqcData", function(from){
+setAs(".FastqcFile", "FastqcData", function(from){
 
     ## Import each line as an element in a character vector then detect the
     ## modules and return as a list containing each module as an element
@@ -45,7 +45,7 @@ setAs("FastqcFile", "FastqcData", function(from){
     args <- list(
         Class = "FastqcData",
         path = path(from),
-        Version = vers,
+        version = vers,
         Summary = Summary
     )
 
@@ -53,7 +53,7 @@ setAs("FastqcFile", "FastqcData", function(from){
 
 })
 
-setAs("FastqcFileList", "FastqcDataList", function(from){
+setAs(".FastqcFileList", "FastqcDataList", function(from){
 
     ## First form a generic list
     initList <- lapply(from, as, "FastqcData")
@@ -89,7 +89,7 @@ setAs("FastqcFileList", "FastqcDataList", function(from){
     else{
 
         ## The existence of this file will have been checked at
-        ## instantiation of the FastqcFile. Check in case it has been
+        ## instantiation of the .FastqcFile. Check in case it has been
         ## deleted post-instantiation
         fl <- file.path(path, "fastqc_data.txt")
         if (!file.exists(fl)) stop("'fastqc_data.txt' could not be found.")

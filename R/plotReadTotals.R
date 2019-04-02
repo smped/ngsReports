@@ -12,7 +12,7 @@
 #' As it still gives a good guide as to sequence diversity it is included as the
 #' default.
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or path
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
@@ -67,17 +67,17 @@ setMethod("plotReadTotals", signature = "character", function(
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
     expand.x = expand_scale(mult = c(0, 0.02)), ...){
     if (length(x) == 1)
-        stop("plotReadTotals cannot be called on a single FastqcFile")
+        stop("plotReadTotals cannot be called on a single .FastqcFile")
 
     x <- getFastqcData(x)
     plotReadTotals(
         x, usePlotly, labels, duplicated, bars,  barCols, expand.x, ...)
 }
 )
-#' @aliases plotReadTotals,FastqcFileList
+#' @aliases plotReadTotals,.FastqcFileList
 #' @rdname plotReadTotals-methods
 #' @export
-setMethod("plotReadTotals", signature = "FastqcFileList", function(
+setMethod("plotReadTotals", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
     expand.x = expand_scale(mult = c(0, 0.02)), ...){

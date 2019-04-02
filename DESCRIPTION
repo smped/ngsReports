@@ -59,7 +59,6 @@ Collate:
     'PwfCols.R'
     'S4coercion.R'
     'TheoreticalGC.R'
-    'Version.R'
     'aaa.R'
     'data.R'
     'extract.R'
@@ -90,6 +89,7 @@ Collate:
     'pwf.R'
     'readTotals.R'
     'runFastQC.R'
+    'version.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr
 Suggests: 

@@ -3,7 +3,7 @@
 #' @description Plot the Per Base content for a set of FASTQC files.
 #' Informative plot where per base sequence content (%A, %T, %G, %C),
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
@@ -59,19 +59,19 @@ setMethod("plotSeqContent", signature = "character", function(
     plotSeqContent(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSeqContent,FastqcFile
+#' @aliases plotSeqContent,.FastqcFile
 #' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSeqContent", signature = "FastqcFile", function(
+setMethod("plotSeqContent", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
     plotSeqContent(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSeqContent,FastqcFileList
+#' @aliases plotSeqContent,.FastqcFileList
 #' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSeqContent", signature = "FastqcFileList", function(
+setMethod("plotSeqContent", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
     plotSeqContent(x, usePlotly, labels, ...)

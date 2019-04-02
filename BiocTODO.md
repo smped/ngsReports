@@ -20,7 +20,7 @@
 - [x] Use system.file to provide the template.Rmd
     - I don't really understand this comment. This is how the file is referred to internally. Beyond that it's not referred to here with anything beyond a toy example path. What am I missing?
 - [x] Do you need to make a distinction between a single file and a list of files? Can they be accomodated by a single FastqcFileList class?
-    - I can't see problem with this layout as it provides for transparent checking and parsing. This object class will rarely be used by users as this is essentially an intermediary file class used in preparation for parsing. This was based on object classes structures in ShortRead (`FastqFile` & `FastqFileList`) and Rsamtools (`BamFile` & `BamFileList`), making this a very consistent approach with existing Bioc Packages. This request would make the package less consistent with Bioc methods in our opinion.
+    - I can't see problem with this layout as it provides for transparent checking and parsing. This object class will rarely be used by users as this is essentially an intermediary file class used in preparation for parsing. This was based on object classes structures in ShortRead (`FastqFile` & `FastqFileList`) and Rsamtools (`BamFile` & `BamFileList`), making this a very consistent approach with existing Bioc Packages. This request would make the package less consistent with existing Bioc methods in our opinion.
 - [x] It's easy to get lost in the 'Generating Plots' section. Perhaps it would be helpful to categorize groups of functions.
     - This has been significantly rewritten removing less common plots and highlighting the differences between applying `plot*` methods to a `FastqcData` and `FastqcDataList` object.
 

@@ -3,7 +3,14 @@
 \docType{class}
 \name{FastqcDataList-class}
 \alias{FastqcDataList-class}
+\alias{FastqcDataList}
 \title{The FastqcDataList Object Class}
+\usage{
+FastqcDataList(x)
+}
+\arguments{
+\item{x}{Character vector of file paths specifying paths to FastQC reports}
+}
 \value{
 An object of class FastqcDataList
 }
@@ -14,7 +21,7 @@ The FastqcDataList Object Class
 
 \describe{
 \item{\code{...}}{this can either be a single character vector of paths to FASTQC
-files, or several instances of FastqcFile objects}
+files, or several instances of .FastqcFile objects}
 }}
 
 \examples{

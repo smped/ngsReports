@@ -6,7 +6,7 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or path
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
 #' for PASS/WARN/FAIL
@@ -63,10 +63,10 @@ setMethod("plotSummary", signature = "character", function(
     plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
 }
 )
-#' @aliases plotSummary,FastqcFileList
+#' @aliases plotSummary,.FastqcFileList
 #' @rdname plotSummary-methods
 #' @export
-setMethod("plotSummary", signature = "FastqcFileList", function(
+setMethod("plotSummary", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
     ...){
     x <- getFastqcData(x)

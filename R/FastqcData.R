@@ -2,24 +2,58 @@
 #'
 #' @description The FastqcData Object Class
 #'
+#' @details This object class is the main object required for generating plots
+#' and tables. Instantiation will first test for a compressed file (or
+#' extracted directory) with the correct data structure, and will then parse
+#' all the data into R as a \code{FastqcData} object. FastQC modules are
+#' contained as individual slots, which can be viewed using \code{slotNames}.
+#'
+#' Individual modules can be returned using the function \code{getModule()}
+#' and specifying which module is required. See \code{\link{getModule}} for
+#' more details.
+#'
 #' @return An object of class FastqcData
 #'
 #' @examples
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1]
 #'
 #' # Load the FASTQC data as a FastqcData object
-#' # As this is the underlying structure for a FastqcDataList, an object of
-#' # FastqcData will only be returned from an individual file.
-#' fd <- getFastqcData(fileList[1])
+#' fd <- FastqcData(fl)
 #' fd
 #'
 #' @include validationFunctions.R
 #'
-#' @slot ... this can either be a single character vector of paths to FASTQC
-#' files, or several instances of FastqcFile objects
+#' @slot Summary Summary of PASS/WARN/FAIL status for each module
+#' @slot Basic_Statistics The Basic_Statstics table from the top of a FastQC
+#' html report
+#' @slot Per_base_sequence_quality The underlying data from the
+#' Per_base_sequence_quality module
+#' @slot Per_sequence_quality_scores The underlying data from the
+#' Per_sequence_quality_scores module
+#' @slot Per_base_sequence_content The underlying data from the
+#' Per_base_sequence_content module
+#' @slot Per_sequence_GC_content The underlying data from the
+#' Per_sequence_GC_content module
+#' @slot Per_base_N_content The underlying data from the
+#' Per_base_N_content module
+#' @slot Sequence_Length_Distribution The underlying data from the
+#' Sequence_Length_Distribution module
+#' @slot Sequence_Duplication_Levels The underlying data from the
+#' Sequence_Duplication_Levels module
+#' @slot Overrepresented_sequences The underlying data from the
+#' Overrepresented_sequences module
+#' @slot Adapter_Content The underlying data from the Adapter_Content module
+#' @slot Kmer_Content The underlying data from the Kmer_Content module
+#' @slot Total_Deduplicated_Percentage Estimate taken from the plot data for
+#' Sequence_Duplication_Levels. Only included in later versions of FastQC
+#' @slot version The version of FastQC used for generation of the report (if
+#' available)
+#' @slot path Path to the FastQC report
+#' @rdname FastqcData
+#' @aliases FastqcData-class
 setClass(
     "FastqcData",
     slots = c(
@@ -37,11 +71,20 @@ setClass(
         Adapter_Content = "data.frame",
         Kmer_Content = "data.frame",
         Total_Deduplicated_Percentage = "numeric",
-        Version = "character",
+        version = "character",
         path = "character"
     )
 )
 setValidity("FastqcData", .isValidFastqcData)
+
+#' @param x Path to a single zip archive or extracted folder for a individual
+#' FastQC report.
+#' @rdname FastqcData
+#' @export
+FastqcData <- function(x){
+    fl <- .FastqcFile(x)
+    as(fl, "FastqcData")
+}
 
 ## The show method doesn't need exporting
 setMethod(

@@ -9,7 +9,7 @@
 #' Any faceting or scale adjustment can be performed after generation of the
 #' initial plot, using the standard methods of ggplot2 as desired.
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or path
 #' @param counts \code{logical}. Plot the counts from each file if
 #' \code{counts = TRUE}, otherwise the frequencies will be plotted
@@ -77,10 +77,10 @@ setMethod("plotSeqQuals", signature = "character", function(
         x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
 }
 )
-#' @aliases plotSeqQuals,FastqcFile
+#' @aliases plotSeqQuals,.FastqcFile
 #' @rdname plotSeqQuals-methods
 #' @export
-setMethod("plotSeqQuals", signature = "FastqcFile", function(
+setMethod("plotSeqQuals", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
     x <- getFastqcData(x)
@@ -88,10 +88,10 @@ setMethod("plotSeqQuals", signature = "FastqcFile", function(
         x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
 }
 )
-#' @aliases plotSeqQuals,FastqcFileList
+#' @aliases plotSeqQuals,.FastqcFileList
 #' @rdname plotSeqQuals-methods
 #' @export
-setMethod("plotSeqQuals", signature = "FastqcFileList", function(
+setMethod("plotSeqQuals", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
     x <- getFastqcData(x)

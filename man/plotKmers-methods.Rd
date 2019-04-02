@@ -5,10 +5,10 @@
 \alias{plotKmers}
 \alias{plotKmers,character-method}
 \alias{plotKmers,character}
-\alias{plotKmers,FastqcFile-method}
-\alias{plotKmers,FastqcFile}
-\alias{plotKmers,FastqcFileList-method}
-\alias{plotKmers,FastqcFileList}
+\alias{plotKmers,.FastqcFile-method}
+\alias{plotKmers,.FastqcFile}
+\alias{plotKmers,.FastqcFileList-method}
+\alias{plotKmers,.FastqcFileList}
 \alias{plotKmers,FastqcData-method}
 \alias{plotKmers,FastqcData}
 \alias{plotKmers,FastqcDataList-method}
@@ -19,9 +19,9 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotKmers}{character}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{FastqcFile}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotKmers}{.FastqcFile}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{FastqcFileList}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotKmers}{.FastqcFileList}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, labels, n = 6,
   ..., lineWidth = 0.5, pal = c("red", "blue", "green", "black",
@@ -32,7 +32,7 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   heatCol = inferno(50), ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using

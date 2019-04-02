@@ -8,12 +8,12 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
-#' When \code{x} is a single FastqcFile, or FastqcData object line plots will
+#' When \code{x} is a single .FastqcFile, or FastqcData object line plots will
 #' always be drawn for all Ns.
 #' Otherwise, users can select line plots or heatmaps.
 #'
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or path
 #' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly
 #' object.
@@ -68,19 +68,19 @@ setMethod("plotNContent", signature = "character", function(
     plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )
-#' @aliases plotNContent,FastqcFile
+#' @aliases plotNContent,.FastqcFile
 #' @rdname plotNContent-methods
 #' @export
-setMethod("plotNContent", signature = "FastqcFile", function(
+setMethod("plotNContent", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
     x <- getFastqcData(x)
     plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )
-#' @aliases plotNContent,FastqcFileList
+#' @aliases plotNContent,.FastqcFileList
 #' @rdname plotNContent-methods
 #' @export
-setMethod("plotNContent", signature = "FastqcFileList", function(
+setMethod("plotNContent", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
     x <- getFastqcData(x)
     plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)

@@ -72,7 +72,7 @@ Refer to the \code{fastqc} help page for more details}
 \item{exec}{The location of the fastqc executable.}
 }
 \value{
-An object of class \code{FastqcFileList}
+An object of class \code{.FastqcFileList}
 }
 \description{
 A convenient wrapper for the bash shell command fastqc.

@@ -5,10 +5,10 @@
 \alias{plotDupLevels}
 \alias{plotDupLevels,character-method}
 \alias{plotDupLevels,character}
-\alias{plotDupLevels,FastqcFile-method}
-\alias{plotDupLevels,FastqcFile}
-\alias{plotDupLevels,FastqcFileList-method}
-\alias{plotDupLevels,FastqcFileList}
+\alias{plotDupLevels,.FastqcFile-method}
+\alias{plotDupLevels,.FastqcFile}
+\alias{plotDupLevels,.FastqcFileList-method}
+\alias{plotDupLevels,.FastqcFileList}
 \alias{plotDupLevels,FastqcData-method}
 \alias{plotDupLevels,FastqcData}
 \alias{plotDupLevels,FastqcDataList-method}
@@ -20,10 +20,10 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
 \S4method{plotDupLevels}{character}(x, usePlotly = FALSE, labels,
   pwfCols, ...)
 
-\S4method{plotDupLevels}{FastqcFile}(x, usePlotly = FALSE, labels,
+\S4method{plotDupLevels}{.FastqcFile}(x, usePlotly = FALSE, labels,
   pwfCols, ...)
 
-\S4method{plotDupLevels}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotDupLevels}{.FastqcFileList}(x, usePlotly = FALSE, labels,
   pwfCols, ...)
 
 \S4method{plotDupLevels}{FastqcData}(x, usePlotly = FALSE, labels,
@@ -34,7 +34,7 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
   dendrogram = FALSE, heatCol = inferno(50), ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using

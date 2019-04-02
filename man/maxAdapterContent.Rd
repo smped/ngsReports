@@ -7,7 +7,7 @@
 maxAdapterContent(x, asPercent = TRUE)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or path}
 
 \item{asPercent}{\code{logical}.

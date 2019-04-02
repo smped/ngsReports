@@ -8,14 +8,14 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
-#' When \code{x} is a single FastqcFile, or FastqcData object line plots will
+#' When \code{x} is a single .FastqcFile, or FastqcData object line plots will
 #' always be drawn for all adapters.
 #' Otherwise, users can select line plots or heatmaps.
 #' When plotting more than one fastqc file, any undetected adapters will not be
 #' shown.
 #'
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly
 #' object.
@@ -85,19 +85,19 @@ setMethod("plotAdapterContent", signature = "character", function(
     plotAdapterContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )
-#' @aliases plotAdapterContent,FastqcFile
+#' @aliases plotAdapterContent,.FastqcFile
 #' @rdname plotAdapterContent-methods
 #' @export
-setMethod("plotAdapterContent", signature = "FastqcFile", function(
+setMethod("plotAdapterContent", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
     x <- getFastqcData(x)
     plotAdapterContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )
-#' @aliases plotAdapterContent,FastqcFileList
+#' @aliases plotAdapterContent,.FastqcFileList
 #' @rdname plotAdapterContent-methods
 #' @export
-setMethod("plotAdapterContent", signature = "FastqcFileList", function(
+setMethod("plotAdapterContent", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
     x <- getFastqcData(x)
     plotAdapterContent(x, usePlotly, labels, pwfCols, warn, fail, ...)

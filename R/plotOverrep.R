@@ -7,7 +7,7 @@
 #' Any possible double counting by FastQC is ignored for the purposes of a
 #' simple approximation.
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
@@ -66,19 +66,19 @@ setMethod("plotOverrep", signature = "character", function(
     plotOverrep(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotOverrep,FastqcFile
+#' @aliases plotOverrep,.FastqcFile
 #' @rdname plotOverrep-methods
 #' @export
-setMethod("plotOverrep", signature = "FastqcFile", function(
+setMethod("plotOverrep", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- getFastqcData(x)
     plotOverrep(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotOverrep,FastqcFileList
+#' @aliases plotOverrep,.FastqcFileList
 #' @rdname plotOverrep-methods
 #' @export
-setMethod("plotOverrep", signature = "FastqcFileList", function(
+setMethod("plotOverrep", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- getFastqcData(x)
     plotOverrep(x, usePlotly, labels, pwfCols, ...)

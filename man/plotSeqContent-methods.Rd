@@ -5,10 +5,10 @@
 \alias{plotSeqContent}
 \alias{plotSeqContent,character-method}
 \alias{plotSeqContent,character}
-\alias{plotSeqContent,FastqcFile-method}
-\alias{plotSeqContent,FastqcFile}
-\alias{plotSeqContent,FastqcFileList-method}
-\alias{plotSeqContent,FastqcFileList}
+\alias{plotSeqContent,.FastqcFile-method}
+\alias{plotSeqContent,.FastqcFile}
+\alias{plotSeqContent,.FastqcFileList-method}
+\alias{plotSeqContent,.FastqcFileList}
 \alias{plotSeqContent,FastqcData-method}
 \alias{plotSeqContent,FastqcData}
 \alias{plotSeqContent,FastqcDataList-method}
@@ -19,9 +19,9 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqContent}{character}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSeqContent}{FastqcFile}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSeqContent}{.FastqcFile}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSeqContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotSeqContent}{.FastqcFileList}(x, usePlotly = FALSE, labels,
   ...)
 
 \S4method{plotSeqContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
@@ -31,7 +31,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
   dendrogram = TRUE, ..., nc = 2)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}

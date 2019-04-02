@@ -190,7 +190,7 @@ test_that("Check .getSeqDuplicationLevels() errors and nulls",{
 
 test_that("Completely empty fastqc file errors",{
   f <- system.file("extdata/errorTestingFiles/completelyEmpty.zip", package = "ngsReports")
-  fqcFile <- FastqcFile(f)
+  fqcFile <- .FastqcFile(f)
   expect_error(getFastqcData(fqcFile))
   expect_error(.getSummary(fqcFile))
 })

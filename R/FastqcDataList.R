@@ -17,9 +17,21 @@
 #' @include validationFunctions.R
 #'
 #' @slot ... this can either be a single character vector of paths to FASTQC
-#' files, or several instances of FastqcFile objects
+#' files, or several instances of .FastqcFile objects
+#' @rdname FastqcDataList
+#' @aliases FastqcDataList-class
 setClass("FastqcDataList", contains = "list")
 setValidity("FastqcDataList", .isValidFastqcDataList)
+
+#' @param x Character vector of file paths specifying paths to FastQC reports
+#' @rdname FastqcDataList
+#' @aliases FastqcDataList-class
+#' @export
+FastqcDataList <- function(x){
+    fls <- lapply(x, .FastqcFile)
+    fdl <- lapply(fls, as, "FastqcData")
+    new("FastqcDataList", fdl)
+}
 
 ## The show method doesn't need exporting
 setMethod(

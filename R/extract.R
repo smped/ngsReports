@@ -4,7 +4,7 @@
 #'
 #' @details Extract elements in a consistent manner with R conventions
 #'
-#' @param x A FastqcFileList or FastqcDataList
+#' @param x A .FastqcFileList or FastqcDataList
 #' @param i character, logical or integer vector
 #' @param j not used
 #' @param ... not used
@@ -31,12 +31,12 @@
 #' fdl[[1]]
 #'
 #' @name [
-#' @aliases [,FastqcFileList,ANY,missing,ANY-method
+#' @aliases [,.FastqcFileList,ANY,missing,ANY-method
 #' @rdname extract-methods
 #' @export
 setMethod(
     f = "[",
-    signature = c(x = "FastqcFileList", i = "ANY", j = "missing"),
+    signature = c(x = ".FastqcFileList", i = "ANY", j = "missing"),
     definition = function(x, i, j, ..., drop){
         if (is.numeric(i) && max(i) > length(x)) stop(
             "Error: subscript out of bounds"
@@ -44,23 +44,23 @@ setMethod(
         if (is.logical(i) && length(i) != length(x)) stop(
             "Invalid vector length for subsetting"
         )
-        FastqcFileList(x@.Data[i])}
+        .FastqcFileList(x@.Data[i])}
 )
 
 #' @name [
-#' @aliases [,FastqcFileList,character,missing,ANY-method
+#' @aliases [,.FastqcFileList,character,missing,ANY-method
 #' @rdname extract-methods
 #' @export
 setMethod(
     f = "[",
-    signature = c(x = "FastqcFileList", i = "character", j = "missing"),
+    signature = c(x = ".FastqcFileList", i = "character", j = "missing"),
     definition = function(x, i, j, ..., drop){
         sub <- match(i, fileName(x))
         if (any(is.na(sub))) {
             msg <- paste("Names not found:", i[is.na(sub)], sep = "\n")
             stop(msg)
         }
-        FastqcFileList(x@.Data[sub])}
+        .FastqcFileList(x@.Data[sub])}
 )
 
 #' @name [
@@ -77,12 +77,12 @@ setMethod(
 
 
 #' @name [[
-#' @aliases [[,FastqcFileList,character,missing-method
+#' @aliases [[,.FastqcFileList,character,missing-method
 #' @rdname extract-methods
 #' @export
 setMethod(
     f = "[[",
-    signature = c(x = "FastqcFileList", i = "character", j = "missing"),
+    signature = c(x = ".FastqcFileList", i = "character", j = "missing"),
     definition = function(x, i, j, ...){
         sub <- match(i, fileName(x))
         if (any(is.na(sub))) {

@@ -1,13 +1,13 @@
 #' Get the summary information from Fastqc Files
 #'
 #' @description Read the information from the \code{summary.txt} files in each
-#' FastqcFile
+#' .FastqcFile
 #'
-#' @param object Can be a FastqcFile or FastqcFileList
+#' @param object Can be a .FastqcFile or .FastqcFileList
 #'
-#' @return A \code{tibble} will be returned when supplying a \code{FastqcFile}
+#' @return A \code{tibble} will be returned when supplying a \code{.FastqcFile}
 #' object, whilst a list of tibbles will be returned when supplying a
-#' \code{FastqcFileList} object
+#' \code{.FastqcFileList} object
 #'
 #' @examples
 #'
@@ -31,7 +31,7 @@
 #' @export
 #' @rdname getSummary
 #' @aliases getSummary
-setMethod("getSummary", "FastqcFile", function(object){
+setMethod("getSummary", ".FastqcFile", function(object){
     modules <- c(
         "Basic Statistics",
         "Per base sequence quality",
@@ -81,7 +81,7 @@ setMethod("getSummary", "FastqcFile", function(object){
 #' @export
 #' @rdname getSummary
 #' @aliases getSummary
-setMethod("getSummary", "FastqcFileList", function(object){
+setMethod("getSummary", ".FastqcFileList", function(object){
     out <- lapply(object, getSummary)
     dplyr::bind_rows(out)
 })
@@ -91,10 +91,10 @@ setMethod("getSummary", "FastqcFileList", function(object){
 #' @aliases getSummary
 setMethod("getSummary", "character", function(object){
     if (length(object) == 1) {
-        tryCatch(object <- FastqcFile(object))
+        tryCatch(object <- .FastqcFile(object))
     }
     else{
-        tryCatch(object <- FastqcFileList(object))
+        tryCatch(object <- .FastqcFileList(object))
     }
     getSummary(object)
 })

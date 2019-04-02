@@ -15,7 +15,7 @@
 #' An alternative interactive plot is available by setting the argument
 #' \code{usePlotly = TRUE}.
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
 #' @param plotType \code{character}. Can only take the values
@@ -78,20 +78,20 @@ setMethod("plotSeqLengthDistn", signature = "character", function(
     plotSeqLengthDistn(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSeqLengthDistn,FastqcFile
+#' @aliases plotSeqLengthDistn,.FastqcFile
 #' @rdname plotSeqLengthDistn-methods
 #' @export
-setMethod("plotSeqLengthDistn", signature = "FastqcFile", function(
+setMethod("plotSeqLengthDistn", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
     plotSeqLengthDistn(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSeqLengthDistn,FastqcFileList
+#' @aliases plotSeqLengthDistn,.FastqcFileList
 #' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod(
-    "plotSeqLengthDistn", signature = "FastqcFileList",
+    "plotSeqLengthDistn", signature = ".FastqcFileList",
     function(x, usePlotly = FALSE, labels, ...){
         x <- getFastqcData(x)
         plotSeqLengthDistn(x, usePlotly, labels, ...)

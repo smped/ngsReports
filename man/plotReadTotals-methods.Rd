@@ -5,8 +5,8 @@
 \alias{plotReadTotals}
 \alias{plotReadTotals,character-method}
 \alias{plotReadTotals,character}
-\alias{plotReadTotals,FastqcFileList-method}
-\alias{plotReadTotals,FastqcFileList}
+\alias{plotReadTotals,.FastqcFileList-method}
+\alias{plotReadTotals,.FastqcFileList}
 \alias{plotReadTotals,FastqcDataList-method}
 \alias{plotReadTotals,FastqcDataList}
 \title{Draw a barplot of read totals}
@@ -20,7 +20,7 @@ plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
   barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
   0.02)), ...)
 
-\S4method{plotReadTotals}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotReadTotals}{.FastqcFileList}(x, usePlotly = FALSE, labels,
   duplicated = TRUE, bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
   0.02)), ...)
@@ -31,7 +31,7 @@ plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
   0.02)), ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or path}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using

@@ -3,22 +3,22 @@
 \docType{methods}
 \name{path}
 \alias{path}
-\alias{path,FastqcFile-method}
-\alias{path,FastqcFileList-method}
+\alias{path,.FastqcFile-method}
+\alias{path,.FastqcFileList-method}
 \alias{path,FastqcData-method}
 \alias{path,FastqcDataList-method}
 \title{Return the File Paths from an object}
 \usage{
-\S4method{path}{FastqcFile}(object)
+\S4method{path}{.FastqcFile}(object)
 
-\S4method{path}{FastqcFileList}(object)
+\S4method{path}{.FastqcFileList}(object)
 
 \S4method{path}{FastqcData}(object)
 
 \S4method{path}{FastqcDataList}(object)
 }
 \arguments{
-\item{object}{An object of class FastqcFile or FastqcFileList}
+\item{object}{An object of class .FastqcFile or .FastqcFileList}
 }
 \value{
 A character vector of the file paths to the underlying FastQC reports

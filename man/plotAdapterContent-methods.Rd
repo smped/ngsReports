@@ -5,10 +5,10 @@
 \alias{plotAdapterContent}
 \alias{plotAdapterContent,character-method}
 \alias{plotAdapterContent,character}
-\alias{plotAdapterContent,FastqcFile-method}
-\alias{plotAdapterContent,FastqcFile}
-\alias{plotAdapterContent,FastqcFileList-method}
-\alias{plotAdapterContent,FastqcFileList}
+\alias{plotAdapterContent,.FastqcFile-method}
+\alias{plotAdapterContent,.FastqcFile}
+\alias{plotAdapterContent,.FastqcFileList-method}
+\alias{plotAdapterContent,.FastqcFileList}
 \alias{plotAdapterContent,FastqcData-method}
 \alias{plotAdapterContent,FastqcData}
 \alias{plotAdapterContent,FastqcDataList-method}
@@ -21,10 +21,10 @@ plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
 \S4method{plotAdapterContent}{character}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 10, ...)
 
-\S4method{plotAdapterContent}{FastqcFile}(x, usePlotly = FALSE, labels,
+\S4method{plotAdapterContent}{.FastqcFile}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 10, ...)
 
-\S4method{plotAdapterContent}{FastqcFileList}(x, usePlotly = FALSE,
+\S4method{plotAdapterContent}{.FastqcFileList}(x, usePlotly = FALSE,
   labels, pwfCols, warn = 5, fail = 10, ...)
 
 \S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, labels,
@@ -36,7 +36,7 @@ plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
@@ -80,7 +80,7 @@ generates a ggplot2 object, with a set of minimal defaults.
 The output of this function can be further modified using the standard
 ggplot2 methods.
 
-When \code{x} is a single FastqcFile, or FastqcData object line plots will
+When \code{x} is a single .FastqcFile, or FastqcData object line plots will
 always be drawn for all adapters.
 Otherwise, users can select line plots or heatmaps.
 When plotting more than one fastqc file, any undetected adapters will not be

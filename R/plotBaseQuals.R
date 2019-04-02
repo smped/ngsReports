@@ -7,7 +7,7 @@
 #'
 #' For large datasets, subsetting by R1 or R2 reads may be helpful
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or path
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
@@ -72,20 +72,20 @@ setMethod("plotBaseQuals", signature = "character", function(
     plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
 }
 )
-#' @aliases plotBaseQuals,FastqcFile
+#' @aliases plotBaseQuals,.FastqcFile
 #' @rdname plotBaseQuals-methods
 #' @export
-setMethod("plotBaseQuals", signature = "FastqcFile", function(
+setMethod("plotBaseQuals", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
     x <- getFastqcData(x)
     plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
 }
 )
-#' @aliases plotBaseQuals,FastqcFileList
+#' @aliases plotBaseQuals,.FastqcFileList
 #' @rdname plotBaseQuals-methods
 #' @export
-setMethod("plotBaseQuals", signature = "FastqcFileList", function(
+setMethod("plotBaseQuals", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
     x <- getFastqcData(x)

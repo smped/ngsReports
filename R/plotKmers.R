@@ -3,7 +3,7 @@
 #' @description Plot Overrepresented Kmers
 #'
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param n \code{numeric}. The number of Kmers to show.
 #' @param labels An optional named vector of labels for the file names.
@@ -56,19 +56,19 @@ setMethod("plotKmers", signature = "character", function(
     plotKmers(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotKmers,FastqcFile
+#' @aliases plotKmers,.FastqcFile
 #' @rdname plotKmers-methods
 #' @export
-setMethod("plotKmers", signature = "FastqcFile", function(
+setMethod("plotKmers", signature = ".FastqcFile", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
     plotKmers(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotKmers,FastqcFileList
+#' @aliases plotKmers,.FastqcFileList
 #' @rdname plotKmers-methods
 #' @export
-setMethod("plotKmers", signature = "FastqcFileList", function(
+setMethod("plotKmers", signature = ".FastqcFileList", function(
     x, usePlotly = FALSE, labels, ...){
     x <- getFastqcData(x)
     plotKmers(x, usePlotly, labels, ...)

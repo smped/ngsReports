@@ -5,10 +5,10 @@
 \alias{plotNContent}
 \alias{plotNContent,character-method}
 \alias{plotNContent,character}
-\alias{plotNContent,FastqcFile-method}
-\alias{plotNContent,FastqcFile}
-\alias{plotNContent,FastqcFileList-method}
-\alias{plotNContent,FastqcFileList}
+\alias{plotNContent,.FastqcFile-method}
+\alias{plotNContent,.FastqcFile}
+\alias{plotNContent,.FastqcFileList-method}
+\alias{plotNContent,.FastqcFileList}
 \alias{plotNContent,FastqcData-method}
 \alias{plotNContent,FastqcData}
 \alias{plotNContent,FastqcDataList-method}
@@ -21,10 +21,10 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
 \S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols,
   warn = 5, fail = 20, ...)
 
-\S4method{plotNContent}{FastqcFile}(x, usePlotly = FALSE, labels,
+\S4method{plotNContent}{.FastqcFile}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 20, ...)
 
-\S4method{plotNContent}{FastqcFileList}(x, usePlotly = FALSE, labels,
+\S4method{plotNContent}{.FastqcFileList}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 20, ...)
 
 \S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels,
@@ -35,7 +35,7 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcFile}, \code{FastqcFileList},
+\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 \code{FastqcData}, \code{FastqcDataList} or path}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
@@ -74,7 +74,7 @@ object, with a set of minimal defaults.
 The output of this function can be further modified using the standard
 ggplot2 methods.
 
-When \code{x} is a single FastqcFile, or FastqcData object line plots will
+When \code{x} is a single .FastqcFile, or FastqcData object line plots will
 always be drawn for all Ns.
 Otherwise, users can select line plots or heatmaps.
 }

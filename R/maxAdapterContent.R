@@ -7,7 +7,7 @@
 #' supplied object, and provide a \code{tibble} with the final value for each
 #' file.
 #'
-#' @param x Can be a \code{FastqcFile}, \code{FastqcFileList},
+#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
 #' \code{FastqcData}, \code{FastqcDataList} or path
 #' @param asPercent \code{logical}.
 #' Format the values as percentages with the added \code{\%} symbol

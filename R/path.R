@@ -4,7 +4,7 @@
 #'
 #' @details Obtains the file.path for objects of multiple classes
 #'
-#' @param object An object of class FastqcFile or FastqcFileList
+#' @param object An object of class .FastqcFile or .FastqcFileList
 #'
 #' @return A character vector of the file paths to the underlying FastQC reports
 #'
@@ -20,15 +20,15 @@
 #'
 #' @importMethodsFrom BiocGenerics path
 #' @name path
-#' @aliases path,FastqcFile-method
+#' @aliases path,.FastqcFile-method
 #' @export
-setMethod("path", "FastqcFile", function(object){object@path})
+setMethod("path", ".FastqcFile", function(object){object@path})
 
 #' @importMethodsFrom BiocGenerics path
 #' @name path
-#' @aliases path,FastqcFileList-method
+#' @aliases path,.FastqcFileList-method
 #' @export
-setMethod("path", "FastqcFileList", function(object){
+setMethod("path", ".FastqcFileList", function(object){
     vapply(object, path, character(1))
 })
 

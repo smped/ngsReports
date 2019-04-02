@@ -17,7 +17,7 @@
 #' fdl <- getFastqcData(fileList)
 #'
 #' # Get the FASTQC version
-#' Version(fdl)
+#' version(fdl)
 #'
 #' @include FastqcData.R
 #' @include AllGenerics.R
@@ -25,17 +25,17 @@
 #' @docType methods
 
 #' @export
-#' @rdname Version
-#' @aliases Version
-setMethod("Version", "FastqcData", function(object){object@Version})
+#' @rdname version
+#' @aliases version
+setMethod("version", "FastqcData", function(object){object@version})
 
 #' @export
-#' @rdname Version
-#' @aliases Version
-setMethod("Version", "FastqcDataList", function(object){
+#' @rdname version
+#' @aliases version
+setMethod("version", "FastqcDataList", function(object){
     tibble::tibble(
         Filename = fileName(object),
-        Version = vapply(object@.Data, Version, character(1))
+        version = vapply(object@.Data, version, character(1))
     )
 })
 
