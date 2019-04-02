@@ -55,7 +55,6 @@ Collate:
     'FastqcData.R'
     'FastqcDataList.R'
     'FastqcFile.R'
-    'FastqcFileList.R'
     'PwfCols.R'
     'S4coercion.R'
     'TheoreticalGC.R'

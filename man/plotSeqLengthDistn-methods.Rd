@@ -5,10 +5,6 @@
 \alias{plotSeqLengthDistn}
 \alias{plotSeqLengthDistn,character-method}
 \alias{plotSeqLengthDistn,character}
-\alias{plotSeqLengthDistn,.FastqcFile-method}
-\alias{plotSeqLengthDistn,.FastqcFile}
-\alias{plotSeqLengthDistn,.FastqcFileList-method}
-\alias{plotSeqLengthDistn,.FastqcFileList}
 \alias{plotSeqLengthDistn,FastqcData-method}
 \alias{plotSeqLengthDistn,FastqcData}
 \alias{plotSeqLengthDistn,FastqcDataList-method}
@@ -20,12 +16,6 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
 \S4method{plotSeqLengthDistn}{character}(x, usePlotly = FALSE, labels,
   ...)
 
-\S4method{plotSeqLengthDistn}{.FastqcFile}(x, usePlotly = FALSE, labels,
-  ...)
-
-\S4method{plotSeqLengthDistn}{.FastqcFileList}(x, usePlotly = FALSE,
-  labels, ...)
-
 \S4method{plotSeqLengthDistn}{FastqcData}(x, usePlotly = FALSE, labels,
   plotType = c("line", "cumulative"), ..., expand.x = expand_scale(0,
   0.2))
@@ -36,8 +26,7 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
   expand.x = expand_scale(0, 0.2), heatCol = inferno(50))
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or file path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 or plotly object.}
 
@@ -90,10 +79,10 @@ An alternative interactive plot is available by setting the argument
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Plot as a frequency plot using lines
 plotSeqLengthDistn(fdl)

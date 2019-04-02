@@ -5,10 +5,6 @@
 \alias{plotNContent}
 \alias{plotNContent,character-method}
 \alias{plotNContent,character}
-\alias{plotNContent,.FastqcFile-method}
-\alias{plotNContent,.FastqcFile}
-\alias{plotNContent,.FastqcFileList-method}
-\alias{plotNContent,.FastqcFileList}
 \alias{plotNContent,FastqcData-method}
 \alias{plotNContent,FastqcData}
 \alias{plotNContent,FastqcDataList-method}
@@ -21,12 +17,6 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
 \S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols,
   warn = 5, fail = 20, ...)
 
-\S4method{plotNContent}{.FastqcFile}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 5, fail = 20, ...)
-
-\S4method{plotNContent}{.FastqcFileList}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 5, fail = 20, ...)
-
 \S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 20, ..., lineCol = "red")
 
@@ -35,8 +25,7 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
 object.}
@@ -74,18 +63,18 @@ object, with a set of minimal defaults.
 The output of this function can be further modified using the standard
 ggplot2 methods.
 
-When \code{x} is a single .FastqcFile, or FastqcData object line plots will
-always be drawn for all Ns.
+When \code{x} is a single FastqcData object line plots will always be drawn
+for all Ns.
 Otherwise, users can select line plots or heatmaps.
 }
 \examples{
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # The default plot
 plotNContent(fdl[[1]])

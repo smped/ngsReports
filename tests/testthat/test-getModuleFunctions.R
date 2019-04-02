@@ -3,7 +3,7 @@ context("Test all functions for correct module data")
 # Define the example file with known structure
 x <- system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports")
 
-# Extract the fastqc data as the lines using the code from `getFastqcData()`
+# Extract the fastqc data as the lines using the code from `FastqcData()`
 fl <- file.path( gsub(".zip$", "", basename(x)), "fastqc_data.txt")
 uz <- unz(x, fl)
 fqcLines <- readLines(uz)

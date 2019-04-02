@@ -7,8 +7,7 @@
 #'
 #' For large datasets, subsetting by R1 or R2 reads may be helpful
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or path
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param nc \code{numeric}. The number of columns to create in the plot layout.
@@ -38,10 +37,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # The default plot for multiple libraries is a heatmap
 #' plotBaseQuals(fdl)
@@ -68,27 +67,8 @@ setGeneric("plotBaseQuals", function(
 setMethod("plotBaseQuals", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
-    x <- getFastqcData(x)
-    plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
-}
-)
-#' @aliases plotBaseQuals,.FastqcFile
-#' @rdname plotBaseQuals-methods
-#' @export
-setMethod("plotBaseQuals", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
-    boxWidth = 0.8, ...){
-    x <- getFastqcData(x)
-    plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
-}
-)
-#' @aliases plotBaseQuals,.FastqcFileList
-#' @rdname plotBaseQuals-methods
-#' @export
-setMethod("plotBaseQuals", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
-    boxWidth = 0.8, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
 }
 )

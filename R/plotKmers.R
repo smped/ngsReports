@@ -3,8 +3,7 @@
 #' @description Plot Overrepresented Kmers
 #'
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or file path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param n \code{numeric}. The number of Kmers to show.
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
@@ -32,10 +31,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #' plotKmers(fdl[[1]])
 #'
 #' @importFrom dplyr desc
@@ -52,25 +51,8 @@ setGeneric("plotKmers", function(x, usePlotly = FALSE, labels, ...){
 #' @export
 setMethod("plotKmers", signature = "character", function(
     x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
-    plotKmers(x, usePlotly, labels, ...)
-}
-)
-#' @aliases plotKmers,.FastqcFile
-#' @rdname plotKmers-methods
-#' @export
-setMethod("plotKmers", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
-    plotKmers(x, usePlotly, labels, ...)
-}
-)
-#' @aliases plotKmers,.FastqcFileList
-#' @rdname plotKmers-methods
-#' @export
-setMethod("plotKmers", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotKmers(x, usePlotly, labels, ...)
 }
 )

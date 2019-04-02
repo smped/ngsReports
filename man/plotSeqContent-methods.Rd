@@ -5,10 +5,6 @@
 \alias{plotSeqContent}
 \alias{plotSeqContent,character-method}
 \alias{plotSeqContent,character}
-\alias{plotSeqContent,.FastqcFile-method}
-\alias{plotSeqContent,.FastqcFile}
-\alias{plotSeqContent,.FastqcFileList-method}
-\alias{plotSeqContent,.FastqcFileList}
 \alias{plotSeqContent,FastqcData-method}
 \alias{plotSeqContent,FastqcData}
 \alias{plotSeqContent,FastqcDataList-method}
@@ -19,11 +15,6 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqContent}{character}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSeqContent}{.FastqcFile}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotSeqContent}{.FastqcFileList}(x, usePlotly = FALSE, labels,
-  ...)
-
 \S4method{plotSeqContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
@@ -31,8 +22,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
   dendrogram = TRUE, ..., nc = 2)
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or file path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
@@ -70,10 +60,10 @@ Informative plot where per base sequence content (%A, %T, %G, %C),
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # The default plot
 plotSeqContent(fdl)

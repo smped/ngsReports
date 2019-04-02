@@ -72,7 +72,7 @@ Refer to the \code{fastqc} help page for more details}
 \item{exec}{The location of the fastqc executable.}
 }
 \value{
-An object of class \code{.FastqcFileList}
+An list of paths to the output
 }
 \description{
 A convenient wrapper for the bash shell command fastqc.
@@ -100,9 +100,6 @@ f <- FastqFile(fl)
 fqcFile <- runFastQC(f, outPath = tempdir())
 }
 
-}
-\seealso{
-\code{\link{FastqFileList}}
 }
 \author{
 Steve Pederson <stephen.pederson@adelaide.edu.au>

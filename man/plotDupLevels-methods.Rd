@@ -5,10 +5,6 @@
 \alias{plotDupLevels}
 \alias{plotDupLevels,character-method}
 \alias{plotDupLevels,character}
-\alias{plotDupLevels,.FastqcFile-method}
-\alias{plotDupLevels,.FastqcFile}
-\alias{plotDupLevels,.FastqcFileList-method}
-\alias{plotDupLevels,.FastqcFileList}
 \alias{plotDupLevels,FastqcData-method}
 \alias{plotDupLevels,FastqcData}
 \alias{plotDupLevels,FastqcDataList-method}
@@ -20,12 +16,6 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
 \S4method{plotDupLevels}{character}(x, usePlotly = FALSE, labels,
   pwfCols, ...)
 
-\S4method{plotDupLevels}{.FastqcFile}(x, usePlotly = FALSE, labels,
-  pwfCols, ...)
-
-\S4method{plotDupLevels}{.FastqcFileList}(x, usePlotly = FALSE, labels,
-  pwfCols, ...)
-
 \S4method{plotDupLevels}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)
 
@@ -34,8 +24,7 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
   dendrogram = FALSE, heatCol = inferno(50), ...)
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or file path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file path}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
@@ -83,10 +72,10 @@ ggplot2 methods.
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Draw the default plot for a single file
 plotDupLevels(fdl[[1]])

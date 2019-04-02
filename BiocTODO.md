@@ -20,7 +20,7 @@
 - [x] Use system.file to provide the template.Rmd
     - I don't really understand this comment. This is how the file is referred to internally. Beyond that it's not referred to here with anything beyond a toy example path. What am I missing?
 - [x] Do you need to make a distinction between a single file and a list of files? Can they be accomodated by a single FastqcFileList class?
-    - I can't see problem with this layout as it provides for transparent checking and parsing. This object class will rarely be used by users as this is essentially an intermediary file class used in preparation for parsing. This was based on object classes structures in ShortRead (`FastqFile` & `FastqFileList`) and Rsamtools (`BamFile` & `BamFileList`), making this a very consistent approach with existing Bioc Packages. This request would make the package less consistent with existing Bioc methods in our opinion.
+    - I can see your point here & I've tried to alleviate the confusion with these classes. I've made the `FastqcFile` class into a private class (`.FastqcFile`), essentially acting just as a checking step, and I've removed the `FastqcFileList` class. Now the only classes shown to the user are `FastqcData` and `FastqcDataList`.
 - [x] It's easy to get lost in the 'Generating Plots' section. Perhaps it would be helpful to categorize groups of functions.
     - This has been significantly rewritten removing less common plots and highlighting the differences between applying `plot*` methods to a `FastqcData` and `FastqcDataList` object.
 
@@ -29,14 +29,14 @@
 - [x] As mentioned earlier, you can reduce FastqcFile and FastqcFileList into
 a single class. This would avoid you the repitition of methods for both
 classes, otherwise use inheritance.
-    - As mentioned above, we disagree with this suggestion. The overheads in terms of methods are quite minimal and allow for simple construction of the `FastqcData` and `FastqcDataList` objects, which have distinct plotting methods (see revised vignette) and serve very different roles within the package. We also this would be less consistent with existing Bioc approaches
+    - As noted above, I have removed the `FastqcFileList` and set `FastqcFile` as a private helper class
 - [x] Group files where possible to reduce the number of files to maintain, such
 as helper functions
 - [x] I don't quite understand why you need to create a generic from the class
 name instead of a simple constructor function (FastqcFile).
     - Thanks for pointing this out. I'd misunderstood the normal approach for this...
 - [x] Why not use the established path generic rather than creating fileName?
-    - We actually have used the path generic. The function `fileName` returns the name of the underlying Fastq file the report was generated from. We have changed the help page to clarify this. I've also removed this method from `FastqcFile` and `FastqcFileList` object classes to avoid confusion, leaving basename/path as the only options for obtaining information about the underlying FastQC report we are parsing.
+    - We actually have used the path generic. The function `fileName` returns the name of the underlying Fastq file the report was generated from. We have changed the help page to clarify this. 
 - [x] Create a coercion method instead of a class method to move from one class
 representation to another
 - [ ] Only set methods for classes that are your own and use the ANY class for
@@ -49,7 +49,7 @@ setting methods for vectors.
 ## Steve's temporary notes:
 
 - Now the formal coercion method is written, the function `getFastqcData` needs to be rewritten as a simple constructor. Try this as `FastqcData` and `FastqcDataList`.
-- I think these methods should be applicable as S4 methods, but I'm not totally sure
 - Still need to figure out how to manage the `ANY` methods...
-- Going by the behaviour of `BamFileList`, we should add a names property to a `FastqcFileList` object. This could also apply to a `FastqcDataList` object
+- Going by the behaviour of `BamFileList`, we should add a names property to a `FastqcDataList` object
 - Maybe we should also change the `fileName()` function to `fqName()` to avoid any confusion
+- Should we also add a `labels` element to a `FastqcDataList`?

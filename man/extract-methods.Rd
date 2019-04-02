@@ -3,24 +3,13 @@
 \docType{methods}
 \name{[}
 \alias{[}
-\alias{[,.FastqcFileList,ANY,missing,ANY-method}
-\alias{[,.FastqcFileList,character,missing,ANY-method}
 \alias{[,FastqcDataList,ANY,missing,ANY-method}
-\alias{[[}
-\alias{[[,.FastqcFileList,character,missing-method}
 \title{Extract Elements}
 \usage{
-\S4method{[}{.FastqcFileList,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
-
-\S4method{[}{.FastqcFileList,character,missing,ANY}(x, i, j, ...,
-  drop = TRUE)
-
 \S4method{[}{FastqcDataList,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
-
-\S4method{[[}{.FastqcFileList,character,missing}(x, i, j, ...)
 }
 \arguments{
-\item{x}{A .FastqcFileList or FastqcDataList}
+\item{x}{A FastqcDataList}
 
 \item{i}{character, logical or integer vector}
 
@@ -35,7 +24,7 @@ Will return a subset of the original object following the standard
 rules for subsetting objects
 }
 \description{
-Extract elements from Fastqc*List Objects
+Extract elements from FastqcDataList Object
 }
 \details{
 Extract elements in a consistent manner with R conventions
@@ -44,10 +33,10 @@ Extract elements in a consistent manner with R conventions
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Subsetting using the standard methods
 fdl[1]

@@ -10,8 +10,7 @@
 #' ggplot2 methods.
 #'
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or file path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param labels An optional named vector of labels for the file names.
@@ -39,10 +38,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # Draw the default plot for a single file
 #' plotDupLevels(fdl[[1]])
@@ -66,25 +65,8 @@ setGeneric("plotDupLevels", function(
 #' @export
 setMethod("plotDupLevels", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
-    x <- getFastqcData(x)
-    plotDupLevels(x, usePlotly, labels, pwfCols, ...)
-}
-)
-#' @aliases plotDupLevels,.FastqcFile
-#' @rdname plotDupLevels-methods
-#' @export
-setMethod("plotDupLevels", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, pwfCols, ...){
-    x <- getFastqcData(x)
-    plotDupLevels(x, usePlotly, labels, pwfCols, ...)
-}
-)
-#' @aliases plotDupLevels,.FastqcFileList
-#' @rdname plotDupLevels-methods
-#' @export
-setMethod("plotDupLevels",signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, pwfCols, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotDupLevels(x, usePlotly, labels, pwfCols, ...)
 }
 )

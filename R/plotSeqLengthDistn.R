@@ -15,8 +15,7 @@
 #' An alternative interactive plot is available by setting the argument
 #' \code{usePlotly = TRUE}.
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or file path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
 #' @param plotType \code{character}. Can only take the values
 #' \code{plotType = "heatmap"} \code{plotType = "line"} or
@@ -43,10 +42,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # Plot as a frequency plot using lines
 #' plotSeqLengthDistn(fdl)
@@ -74,28 +73,10 @@ setGeneric("plotSeqLengthDistn", function(
 #' @export
 setMethod("plotSeqLengthDistn", signature = "character", function(
     x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotSeqLengthDistn(x, usePlotly, labels, ...)
 }
-)
-#' @aliases plotSeqLengthDistn,.FastqcFile
-#' @rdname plotSeqLengthDistn-methods
-#' @export
-setMethod("plotSeqLengthDistn", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
-    plotSeqLengthDistn(x, usePlotly, labels, ...)
-}
-)
-#' @aliases plotSeqLengthDistn,.FastqcFileList
-#' @rdname plotSeqLengthDistn-methods
-#' @export
-setMethod(
-    "plotSeqLengthDistn", signature = ".FastqcFileList",
-    function(x, usePlotly = FALSE, labels, ...){
-        x <- getFastqcData(x)
-        plotSeqLengthDistn(x, usePlotly, labels, ...)
-    }
 )
 #' @aliases plotSeqLengthDistn,FastqcData
 #' @rdname plotSeqLengthDistn-methods

@@ -4,15 +4,12 @@
 \name{getSummary,.FastqcFile-method}
 \alias{getSummary,.FastqcFile-method}
 \alias{getSummary}
-\alias{getSummary,.FastqcFileList-method}
 \alias{getSummary,character-method}
 \alias{getSummary,FastqcData-method}
 \alias{getSummary,FastqcDataList-method}
 \title{Get the summary information from Fastqc Files}
 \usage{
 \S4method{getSummary}{.FastqcFile}(object)
-
-\S4method{getSummary}{.FastqcFileList}(object)
 
 \S4method{getSummary}{character}(object)
 
@@ -21,12 +18,11 @@
 \S4method{getSummary}{FastqcDataList}(object)
 }
 \arguments{
-\item{object}{Can be a .FastqcFile or .FastqcFileList}
+\item{object}{Can be a FastqcData or FastqcDataList object}
 }
 \value{
 A \code{tibble} will be returned when supplying a \code{.FastqcFile}
-object, whilst a list of tibbles will be returned when supplying a
-\code{.FastqcFileList} object
+object.
 }
 \description{
 Read the information from the \code{summary.txt} files in each
@@ -36,10 +32,10 @@ Read the information from the \code{summary.txt} files in each
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Return a tibble/tibble with the raw information
 getSummary(fdl)

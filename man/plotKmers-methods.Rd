@@ -5,10 +5,6 @@
 \alias{plotKmers}
 \alias{plotKmers,character-method}
 \alias{plotKmers,character}
-\alias{plotKmers,.FastqcFile-method}
-\alias{plotKmers,.FastqcFile}
-\alias{plotKmers,.FastqcFileList-method}
-\alias{plotKmers,.FastqcFileList}
 \alias{plotKmers,FastqcData-method}
 \alias{plotKmers,FastqcData}
 \alias{plotKmers,FastqcDataList-method}
@@ -19,10 +15,6 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotKmers}{character}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{.FastqcFile}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotKmers}{.FastqcFileList}(x, usePlotly = FALSE, labels, ...)
-
 \S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, labels, n = 6,
   ..., lineWidth = 0.5, pal = c("red", "blue", "green", "black",
   "magenta", "yellow"))
@@ -32,8 +24,7 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   heatCol = inferno(50), ...)
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or file path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
@@ -75,10 +66,10 @@ Plot Overrepresented Kmers
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 plotKmers(fdl[[1]])
 
 }

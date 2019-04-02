@@ -5,8 +5,6 @@
 \alias{plotReadTotals}
 \alias{plotReadTotals,character-method}
 \alias{plotReadTotals,character}
-\alias{plotReadTotals,.FastqcFileList-method}
-\alias{plotReadTotals,.FastqcFileList}
 \alias{plotReadTotals,FastqcDataList-method}
 \alias{plotReadTotals,FastqcDataList}
 \title{Draw a barplot of read totals}
@@ -20,19 +18,13 @@ plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
   barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
   0.02)), ...)
 
-\S4method{plotReadTotals}{.FastqcFileList}(x, usePlotly = FALSE, labels,
-  duplicated = TRUE, bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
-  0.02)), ...)
-
 \S4method{plotReadTotals}{FastqcDataList}(x, usePlotly = FALSE, labels,
   duplicated = TRUE, bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
   0.02)), ...)
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
@@ -75,10 +67,10 @@ default.
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Plot the Read Totals showing estimated duplicates
 plotReadTotals(fdl)

@@ -5,8 +5,6 @@
 \alias{plotSummary}
 \alias{plotSummary,character-method}
 \alias{plotSummary,character}
-\alias{plotSummary,.FastqcFileList-method}
-\alias{plotSummary,.FastqcFileList}
 \alias{plotSummary,FastqcDataList-method}
 \alias{plotSummary,FastqcDataList}
 \title{Plot the PASS/WARN/FAIL information}
@@ -17,16 +15,12 @@ plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
 \S4method{plotSummary}{character}(x, usePlotly = FALSE, labels, pwfCols,
   cluster = FALSE, dendrogram = FALSE, ...)
 
-\S4method{plotSummary}{.FastqcFileList}(x, usePlotly = FALSE, labels,
-  pwfCols, cluster = FALSE, dendrogram = FALSE, ...)
-
 \S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels,
   pwfCols, cluster = FALSE, dendrogram = FALSE, ...,
   gridlineWidth = 0.2, gridlineCol = "grey20")
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
@@ -65,10 +59,10 @@ ggplot2 methods.
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Check the overall PASS/WARN/FAIL status
 plotSummary(fdl)

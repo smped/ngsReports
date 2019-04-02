@@ -49,10 +49,10 @@ Fasta will contain \code{Filename}, \code{Possible Source},
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Export the top10 Overrepresented Sequences as a single fasta file
 faOut <- file.path(tempdir(), "top10.fa")

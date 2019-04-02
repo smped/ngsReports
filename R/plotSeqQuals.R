@@ -9,8 +9,7 @@
 #' Any faceting or scale adjustment can be performed after generation of the
 #' initial plot, using the standard methods of ggplot2 as desired.
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or path
 #' @param counts \code{logical}. Plot the counts from each file if
 #' \code{counts = TRUE}, otherwise the frequencies will be plotted
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
@@ -39,10 +38,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # The default plot
 #' plotSeqQuals(fdl)
@@ -72,29 +71,8 @@ setGeneric("plotSeqQuals", function(
 setMethod("plotSeqQuals", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
-    x <- getFastqcData(x)
-    plotSeqQuals(
-        x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
-}
-)
-#' @aliases plotSeqQuals,.FastqcFile
-#' @rdname plotSeqQuals-methods
-#' @export
-setMethod("plotSeqQuals", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
-    warn = 30, fail = 20, ...){
-    x <- getFastqcData(x)
-    plotSeqQuals(
-        x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
-}
-)
-#' @aliases plotSeqQuals,.FastqcFileList
-#' @rdname plotSeqQuals-methods
-#' @export
-setMethod("plotSeqQuals", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
-    warn = 30, fail = 20, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotSeqQuals(
         x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
 }

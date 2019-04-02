@@ -6,8 +6,7 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
 #' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
@@ -30,10 +29,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # Check the overall PASS/WARN/FAIL status
 #' plotSummary(fdl)
@@ -59,17 +58,7 @@ setMethod("plotSummary", signature = "character", function(
     ...){
     if (length(x) == 1)
         stop("plotSummary() can only be called on two or more files.")
-    x <- getFastqcData(x)
-    plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
-}
-)
-#' @aliases plotSummary,.FastqcFileList
-#' @rdname plotSummary-methods
-#' @export
-setMethod("plotSummary", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
-    ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
     plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
 }
 )

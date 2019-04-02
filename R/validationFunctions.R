@@ -30,11 +30,6 @@
     TRUE
 }
 
-.isValidFastqcFileList <- function(object){
-    cls <- vapply(object, class, character(1))
-    all(cls == ".FastqcFile")
-}
-
 .isValidFastqcData <- function(object){
     ## At minimum, this should contain slots for Summary, Basic_Statistics,
     ## version & path. The remainder of the modules may be missing

@@ -3,8 +3,7 @@
 #' @description Plot the Per Base content for a set of FASTQC files.
 #' Informative plot where per base sequence content (%A, %T, %G, %C),
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or file path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
@@ -29,10 +28,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # The default plot
 #' plotSeqContent(fdl)
@@ -55,25 +54,8 @@ setGeneric("plotSeqContent", function(x, usePlotly = FALSE, labels, ...){
 #' @export
 setMethod("plotSeqContent", signature = "character", function(
     x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
-    plotSeqContent(x, usePlotly, labels, ...)
-}
-)
-#' @aliases plotSeqContent,.FastqcFile
-#' @rdname plotSeqContent-methods
-#' @export
-setMethod("plotSeqContent", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
-    plotSeqContent(x, usePlotly, labels, ...)
-}
-)
-#' @aliases plotSeqContent,.FastqcFileList
-#' @rdname plotSeqContent-methods
-#' @export
-setMethod("plotSeqContent", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotSeqContent(x, usePlotly, labels, ...)
 }
 )

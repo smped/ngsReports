@@ -7,8 +7,7 @@
 #' Any possible double counting by FastQC is ignored for the purposes of a
 #' simple approximation.
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or file path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param labels An optional named factor of labels for the file names.
@@ -35,10 +34,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # Another example which isn't ideal
 #' plotOverrep(fdl)
@@ -62,25 +61,8 @@ setGeneric("plotOverrep", function(
 #' @export
 setMethod("plotOverrep", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
-    x <- getFastqcData(x)
-    plotOverrep(x, usePlotly, labels, pwfCols, ...)
-}
-)
-#' @aliases plotOverrep,.FastqcFile
-#' @rdname plotOverrep-methods
-#' @export
-setMethod("plotOverrep", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, pwfCols, ...){
-    x <- getFastqcData(x)
-    plotOverrep(x, usePlotly, labels, pwfCols, ...)
-}
-)
-#' @aliases plotOverrep,.FastqcFileList
-#' @rdname plotOverrep-methods
-#' @export
-setMethod("plotOverrep", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, pwfCols, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotOverrep(x, usePlotly, labels, pwfCols, ...)
 }
 )

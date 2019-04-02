@@ -8,9 +8,8 @@
 #' data.frame. Note that each module will be it's own unique structure,
 #' although all will return a data.frame
 #'
-#' @param object Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
-#' of paths to fastqc files
+#' @param object Can be a \code{.FastqcFile}, \code{FastqcData},
+#' \code{fastqcDataList}, or simply a \code{character} vector of paths
 #' @param module The requested module as contained in a FastQC report. Possible
 #' values are \code{Summary}, \code{Basic_Statistics},
 #' \code{Per_base_sequence_quality}, \code{Per_tile_sequence_quality},
@@ -26,7 +25,6 @@
 #' @include FastqcData.R
 #' @include AllGenerics.R
 #' @include FastqcFile.R
-#' @include FastqcFileList.R
 #' @include FastqcDataList.R
 #'
 #' @return A single \code{tibble} containing module-level information
@@ -35,10 +33,10 @@
 #' @examples
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # Extract the Summary module, which corresponds to the PASS/WARN/FAIL flags
 #' getModule(fdl, "Summary")
@@ -145,29 +143,7 @@ setMethod("getModule", ".FastqcFile", function(object, module){
     ## Make sure we have asked for a valid module
     module <- match.arg(module, allMods)
     ## Obtain a FastqcData object then extract the module
-    fqcData <- getFastqcData(object)
-    getModule(fqcData, module)
-
-})
-
-#' @export
-#' @rdname getModule
-#' @aliases getModule
-setMethod("getModule", ".FastqcFileList", function(object, module){
-
-    ## This is the list of defined modules on the object specification
-    allMods <-  c("Summary", "Basic_Statistics", "Per_base_sequence_quality",
-                  "Per_tile_sequence_quality", "Per_sequence_quality_scores",
-                  "Per_base_sequence_content", "Per_sequence_GC_content",
-                  "Per_base_N_content", "Sequence_Length_Distribution",
-                  "Sequence_Duplication_Levels", "Overrepresented_sequences",
-                  "Adapter_Content", "Kmer_Content",
-                  "Total_Deduplicated_Percentage")
-
-    ## Make sure we have asked for a valid module
-    module <- match.arg(module, allMods)
-    ## Obtain a FastqcDataList object then extract the module
-    fqcData <- getFastqcData(object)
+    fqcData <- FastqcData(object)
     getModule(fqcData, module)
 
 })
@@ -189,7 +165,8 @@ setMethod("getModule", "character", function(object, module){
     ## Make sure we have asked for a valid module
     module <- match.arg(module, allMods)
     ## Obtain a FastqcData/List object then extract the module
-    fqcData <- getFastqcData(object)
+    fqcData <- FastqcDataList(object)
+    if (length(fqcData) == 1) fqcData <- fqcData[[1]]
     getModule(fqcData, module)
 
 })

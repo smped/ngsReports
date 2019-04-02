@@ -5,10 +5,6 @@
 \alias{plotAdapterContent}
 \alias{plotAdapterContent,character-method}
 \alias{plotAdapterContent,character}
-\alias{plotAdapterContent,.FastqcFile-method}
-\alias{plotAdapterContent,.FastqcFile}
-\alias{plotAdapterContent,.FastqcFileList-method}
-\alias{plotAdapterContent,.FastqcFileList}
 \alias{plotAdapterContent,FastqcData-method}
 \alias{plotAdapterContent,FastqcData}
 \alias{plotAdapterContent,FastqcDataList-method}
@@ -21,12 +17,6 @@ plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
 \S4method{plotAdapterContent}{character}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 10, ...)
 
-\S4method{plotAdapterContent}{.FastqcFile}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 5, fail = 10, ...)
-
-\S4method{plotAdapterContent}{.FastqcFileList}(x, usePlotly = FALSE,
-  labels, pwfCols, warn = 5, fail = 10, ...)
-
 \S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 10, ...)
 
@@ -36,8 +26,7 @@ plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or file path}
+\item{x}{Can be a \code{FastqcData}, a \code{FastqcDataList} or file paths}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
 object.}
@@ -80,8 +69,8 @@ generates a ggplot2 object, with a set of minimal defaults.
 The output of this function can be further modified using the standard
 ggplot2 methods.
 
-When \code{x} is a single .FastqcFile, or FastqcData object line plots will
-always be drawn for all adapters.
+When \code{x} is a single or FastqcData object line plots will always be
+drawn for all adapters.
 Otherwise, users can select line plots or heatmaps.
 When plotting more than one fastqc file, any undetected adapters will not be
 shown.
@@ -90,10 +79,10 @@ shown.
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # The default plot
 plotAdapterContent(fdl)

@@ -5,10 +5,6 @@
 \alias{plotOverrep}
 \alias{plotOverrep,character-method}
 \alias{plotOverrep,character}
-\alias{plotOverrep,.FastqcFile-method}
-\alias{plotOverrep,.FastqcFile}
-\alias{plotOverrep,.FastqcFileList-method}
-\alias{plotOverrep,.FastqcFileList}
 \alias{plotOverrep,FastqcData-method}
 \alias{plotOverrep,FastqcData}
 \alias{plotOverrep,FastqcDataList-method}
@@ -20,12 +16,6 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
 \S4method{plotOverrep}{character}(x, usePlotly = FALSE, labels, pwfCols,
   ...)
 
-\S4method{plotOverrep}{.FastqcFile}(x, usePlotly = FALSE, labels,
-  pwfCols, ...)
-
-\S4method{plotOverrep}{.FastqcFileList}(x, usePlotly = FALSE, labels,
-  pwfCols, ...)
-
 \S4method{plotOverrep}{FastqcData}(x, usePlotly = FALSE, labels, pwfCols,
   n = 10, ..., expand.x = expand_scale(mult = c(0, 0.05)),
   expand.y = expand_scale(0, 0.6))
@@ -36,8 +26,7 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
   expand.y = expand_scale(0, 0))
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or file path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
@@ -83,10 +72,10 @@ simple approximation.
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Another example which isn't ideal
 plotOverrep(fdl)

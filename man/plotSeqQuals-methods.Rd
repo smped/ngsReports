@@ -5,10 +5,6 @@
 \alias{plotSeqQuals}
 \alias{plotSeqQuals,character-method}
 \alias{plotSeqQuals,character}
-\alias{plotSeqQuals,.FastqcFile-method}
-\alias{plotSeqQuals,.FastqcFile}
-\alias{plotSeqQuals,.FastqcFileList-method}
-\alias{plotSeqQuals,.FastqcFileList}
 \alias{plotSeqQuals,FastqcData-method}
 \alias{plotSeqQuals,FastqcData}
 \alias{plotSeqQuals,FastqcDataList-method}
@@ -21,12 +17,6 @@ plotSeqQuals(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE,
 \S4method{plotSeqQuals}{character}(x, usePlotly = FALSE, labels, pwfCols,
   counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
 
-\S4method{plotSeqQuals}{.FastqcFile}(x, usePlotly = FALSE, labels,
-  pwfCols, counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
-
-\S4method{plotSeqQuals}{.FastqcFileList}(x, usePlotly = FALSE, labels,
-  pwfCols, counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
-
 \S4method{plotSeqQuals}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
 
@@ -36,8 +26,7 @@ plotSeqQuals(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE,
   cluster = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or path}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
@@ -88,10 +77,10 @@ initial plot, using the standard methods of ggplot2 as desired.
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # The default plot
 plotSeqQuals(fdl)

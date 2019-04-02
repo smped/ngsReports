@@ -4,14 +4,12 @@
 #'
 #' @details
 #' Makes plots for GC_Content.
-#' When applied to a single .FastqcFile or FastqcData object a simple line plot
-#' will be drawn, with Theoretical GC content overlaid if desired
+#' When applied to a single FastqcData object a simple line plot will be drawn,
+#' with Theoretical GC content overlaid if desired.
 #'
-#' For a .FastqcFileList, or FastqcDataList either a line plot or heatmap can be
-#' drawn
+#' For a FastqcDataList either a line plot or heatmap can be drawn.
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or file path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param counts \code{logical}. Plot the counts from each file if
@@ -52,10 +50,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # The default plot for a FastqcDataList
 #' plotGcContent(fdl)
@@ -88,38 +86,12 @@ setMethod("plotGcContent", signature = "character", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
     n = 1e+6, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotGcContent(
         x, usePlotly, labels, theoreticalGC, theoreticalType, species,
         GCobject, Fastafile, n, ...
     )
-}
-)
-#' @aliases plotGcContent,.FastqcFile
-#' @rdname plotGcContent-methods
-#' @export
-setMethod("plotGcContent", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, ...){
-    x <- getFastqcData(x)
-    plotGcContent(
-        x, usePlotly, labels, theoreticalGC, theoreticalType, species,
-        GCobject, Fastafile, n, ...)
-}
-)
-#' @aliases plotGcContent,.FastqcFileList
-#' @rdname plotGcContent-methods
-#' @export
-setMethod("plotGcContent", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, ...
-){
-    x <- getFastqcData(x)
-    plotGcContent(
-        x, usePlotly, labels, theoreticalGC, theoreticalType, species,
-        GCobject, Fastafile, n, ...)
 }
 )
 #' @aliases plotGcContent,FastqcData

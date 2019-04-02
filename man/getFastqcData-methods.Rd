@@ -6,7 +6,6 @@
 \alias{getFastqcData,.FastqcFile-method}
 \alias{getFastqcData,NULL-method}
 \alias{getFastqcData,character-method}
-\alias{getFastqcData,.FastqcFileList-method}
 \title{Get all data from FastQC files}
 \usage{
 getFastqcData(object)
@@ -16,11 +15,9 @@ getFastqcData(object)
 \S4method{getFastqcData}{`NULL`}(object)
 
 \S4method{getFastqcData}{character}(object)
-
-\S4method{getFastqcData}{.FastqcFileList}(object)
 }
 \arguments{
-\item{object}{Can be a .FastqcFile or .FastqcFileList, or paths to files}
+\item{object}{Can be a .FastqcFile or paths to files}
 }
 \value{
 An object of \code{FastqcData} or a \code{FastqcDataList}
@@ -32,9 +29,9 @@ each .FastqcFile
 \examples{
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fileList)
 
 }

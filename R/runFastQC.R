@@ -33,10 +33,9 @@
 #' Refer to the \code{fastqc} help page for more details
 #' @param kmers An integer between 2 and 10
 #'
-#' @return An object of class \code{.FastqcFileList}
+#' @return An list of paths to the output
 #'
 #' @author Steve Pederson <stephen.pederson@@adelaide.edu.au>
-#' @seealso \code{\link{FastqFileList}}
 #'
 #' @examples
 #' \dontrun{
@@ -190,7 +189,7 @@ setMethod("runFastQC", "BamFileList", function(
     else {
         casava <- c()
     }
-    extract <- dplyr::if_else(extract, "--extract", "--noextract")
+    fqcExtract <- dplyr::if_else(extract, "--extract", "--noextract")
     if (nogroup) {
         message(
             "Setting the option '--nogroup' may cause FastQC to become unstable"
@@ -213,7 +212,7 @@ setMethod("runFastQC", "BamFileList", function(
     kmers <- paste("-k", kmers)
 
     args <- paste(
-        "-o", outPath, threads, casava, extract, nogroup, contaminants,
+        "-o", outPath, threads, casava, fqcExtract, nogroup, contaminants,
         adapters, kmers
     )
     args <- gsub(" +", " ", args) #Remove any double spaces
@@ -224,31 +223,36 @@ setMethod("runFastQC", "BamFileList", function(
     system2(exec, paste(args, files))
 
     ## Get the files and make sure there are no html files returned
-    fqcNames <- list.files(outPath, pattern = "fastqc.zip", full.names = TRUE)
-    fqcNames <- grep(fqcNames, pattern = "html", invert = TRUE, value = TRUE)
+    if (!extract) {
+        fqcNames <-
+            list.files(outPath, pattern = "fastqc.zip", full.names = TRUE)
+        fqcNames <-
+            grep(fqcNames, pattern = "html", invert = TRUE, value = TRUE)
+    }
+    else {
+        fqcNames <- list.dirs(outPath, full.names = TRUE)
+    }
 
     ## Now define the format as required
     if (fileType %in% c("FastqFileList", "BamFileList")) {
-        ## Return a .FastqcFileList
-        ffl <- .FastqcFileList(fqcNames)
+
         ## Now return the files that have been run in the same order
         m <- pmatch(
-            gsub("(.+)\\..+", "\\1", names(object)), basename(path(ffl))
+            gsub("(.+)\\..+", "\\1", names(object)), basename(fqcNames)
         )
         if (anyNA(m)) {
             wn <- "Some Fastqc files may be missing/duplicated"
             warning(wn)
             m <- m[!is.na(m)]
         }
-        out <- ffl[m]
+        out <- fqcNames[m]
     }
     if (fileType %in% c("FastqFile", "BamFile")) {
-        ## Return a .FastqcFileList
-        ffl <- .FastqcFileList(fqcNames)
+
         ## Now return the file that has been run
         nm <- basename(path(object))
-        m <- pmatch(gsub("(.+)\\..+", "\\1", nm), basename(path(ffl)))
-        out <- ffl[[m]]
+        m <- pmatch(gsub("(.+)\\..+", "\\1", nm), basename(fqcNames))
+        out <- fqcNames[[m]]
     }
     out
 }

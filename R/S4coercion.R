@@ -53,13 +53,6 @@ setAs(".FastqcFile", "FastqcData", function(from){
 
 })
 
-setAs(".FastqcFileList", "FastqcDataList", function(from){
-
-    ## First form a generic list
-    initList <- lapply(from, as, "FastqcData")
-    new("FastqcDataList", initList)
-})
-
 ## This helper checks for compressed or extracted FastQC reports then
 ## imports the contents of fastqc_data.txt as a character vector.
 ## Comments (#) and lines denoting the end of a module are then removed

@@ -12,8 +12,7 @@
 #' As it still gives a good guide as to sequence diversity it is included as the
 #' default.
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param labels An optional named vector of labels for the file names.
@@ -32,10 +31,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # Plot the Read Totals showing estimated duplicates
 #' plotReadTotals(fdl)
@@ -69,21 +68,9 @@ setMethod("plotReadTotals", signature = "character", function(
     if (length(x) == 1)
         stop("plotReadTotals cannot be called on a single .FastqcFile")
 
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
     plotReadTotals(
         x, usePlotly, labels, duplicated, bars,  barCols, expand.x, ...)
-}
-)
-#' @aliases plotReadTotals,.FastqcFileList
-#' @rdname plotReadTotals-methods
-#' @export
-setMethod("plotReadTotals", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, duplicated = TRUE,
-    bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = expand_scale(mult = c(0, 0.02)), ...){
-    x <- getFastqcData(x)
-    plotReadTotals(
-        x, usePlotly, labels, duplicated, bars, barCols,  expand.x, ...)
 }
 )
 #' @aliases plotReadTotals,FastqcDataList

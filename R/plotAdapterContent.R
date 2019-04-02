@@ -8,15 +8,14 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
-#' When \code{x} is a single .FastqcFile, or FastqcData object line plots will
-#' always be drawn for all adapters.
+#' When \code{x} is a single or FastqcData object line plots will always be
+#' drawn for all adapters.
 #' Otherwise, users can select line plots or heatmaps.
 #' When plotting more than one fastqc file, any undetected adapters will not be
 #' shown.
 #'
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or file path
+#' @param x Can be a \code{FastqcData}, a \code{FastqcDataList} or file paths
 #' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly
 #' object.
 #' @param adapterType A regular expression matching the adapter(s) to be
@@ -44,10 +43,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # The default plot
 #' plotAdapterContent(fdl)
@@ -81,28 +80,12 @@ setGeneric("plotAdapterContent", function(
 #' @export
 setMethod("plotAdapterContent", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotAdapterContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )
-#' @aliases plotAdapterContent,.FastqcFile
-#' @rdname plotAdapterContent-methods
-#' @export
-setMethod("plotAdapterContent", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
-    x <- getFastqcData(x)
-    plotAdapterContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
-}
-)
-#' @aliases plotAdapterContent,.FastqcFileList
-#' @rdname plotAdapterContent-methods
-#' @export
-setMethod("plotAdapterContent", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
-    x <- getFastqcData(x)
-    plotAdapterContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
-}
-)
+
 #' @aliases plotAdapterContent,FastqcData
 #' @rdname plotAdapterContent-methods
 #' @export

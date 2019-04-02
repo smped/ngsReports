@@ -3,20 +3,19 @@
 #' @description Read the information from the \code{summary.txt} files in each
 #' .FastqcFile
 #'
-#' @param object Can be a .FastqcFile or .FastqcFileList
+#' @param object Can be a FastqcData or FastqcDataList object
 #'
 #' @return A \code{tibble} will be returned when supplying a \code{.FastqcFile}
-#' object, whilst a list of tibbles will be returned when supplying a
-#' \code{.FastqcFileList} object
+#' object.
 #'
 #' @examples
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # Return a tibble/tibble with the raw information
 #' getSummary(fdl)
@@ -81,20 +80,12 @@ setMethod("getSummary", ".FastqcFile", function(object){
 #' @export
 #' @rdname getSummary
 #' @aliases getSummary
-setMethod("getSummary", ".FastqcFileList", function(object){
-    out <- lapply(object, getSummary)
-    dplyr::bind_rows(out)
-})
-
-#' @export
-#' @rdname getSummary
-#' @aliases getSummary
 setMethod("getSummary", "character", function(object){
     if (length(object) == 1) {
-        tryCatch(object <- .FastqcFile(object))
+        tryCatch(object <- FastqcData(object))
     }
     else{
-        tryCatch(object <- .FastqcFileList(object))
+        tryCatch(object <- FastqcDataList(object))
     }
     getSummary(object)
 })

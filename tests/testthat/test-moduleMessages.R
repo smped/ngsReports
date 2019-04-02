@@ -7,7 +7,7 @@ f <- c(
         package = "ngsReports"
     )
 )
-fdl <- getFastqcData(f)
+fdl <- FastqcDataList(f)
 
 test_that("All modules give correct messages",{
   expect_message(getModule(fdl, "Adapter_Content"))

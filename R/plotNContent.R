@@ -8,13 +8,12 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
-#' When \code{x} is a single .FastqcFile, or FastqcData object line plots will
-#' always be drawn for all Ns.
+#' When \code{x} is a single FastqcData object line plots will always be drawn
+#' for all Ns.
 #' Otherwise, users can select line plots or heatmaps.
 #'
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-#' \code{FastqcData}, \code{FastqcDataList} or path
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly
 #' object.
 #' @param warn,fail The default values for warn and fail are 5 and 10
@@ -38,10 +37,10 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 #'
 #' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- getFastqcData(fileList)
+#' fdl <- FastqcDataList(fl)
 #'
 #' # The default plot
 #' plotNContent(fdl[[1]])
@@ -64,25 +63,8 @@ setGeneric("plotNContent", function(
 #' @export
 setMethod("plotNContent", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
-    x <- getFastqcData(x)
-    plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
-}
-)
-#' @aliases plotNContent,.FastqcFile
-#' @rdname plotNContent-methods
-#' @export
-setMethod("plotNContent", signature = ".FastqcFile", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
-    x <- getFastqcData(x)
-    plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
-}
-)
-#' @aliases plotNContent,.FastqcFileList
-#' @rdname plotNContent-methods
-#' @export
-setMethod("plotNContent", signature = ".FastqcFileList", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
-    x <- getFastqcData(x)
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
     plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )

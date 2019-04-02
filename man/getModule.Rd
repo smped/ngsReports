@@ -6,7 +6,6 @@
 \alias{getModule}
 \alias{getModule,FastqcDataList-method}
 \alias{getModule,.FastqcFile-method}
-\alias{getModule,.FastqcFileList-method}
 \alias{getModule,character-method}
 \title{Retrieve a given module from a Fastqc* Object}
 \usage{
@@ -16,14 +15,11 @@
 
 \S4method{getModule}{.FastqcFile}(object, module)
 
-\S4method{getModule}{.FastqcFileList}(object, module)
-
 \S4method{getModule}{character}(object, module)
 }
 \arguments{
-\item{object}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{fastqcDataList}, or simply a \code{character} vector
-of paths to fastqc files}
+\item{object}{Can be a \code{.FastqcFile}, \code{FastqcData},
+\code{fastqcDataList}, or simply a \code{character} vector of paths}
 
 \item{module}{The requested module as contained in a FastQC report. Possible
 values are \code{Summary}, \code{Basic_Statistics},
@@ -53,10 +49,10 @@ although all will return a data.frame
 \examples{
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Extract the Summary module, which corresponds to the PASS/WARN/FAIL flags
 getModule(fdl, "Summary")

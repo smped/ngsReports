@@ -3,7 +3,7 @@ context("Check structure of the dendrogram")
 # This will give the correct structure as a stand alone process
 packageDir <- system.file("extdata", package = "ngsReports")
 fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:2]
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fileList)
 
 #test dataset
 df <- getModule(fdl, "Sequence_Length_Distribution")

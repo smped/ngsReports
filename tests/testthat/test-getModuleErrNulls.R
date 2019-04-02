@@ -7,7 +7,7 @@ test_that("Example file exists",{
   expect_true(file.exists(x))
 })
 
-# Extract the fastqc data as the lines using the code from `getFastqcData()`
+# Extract the fastqc data as the lines using the code from `FastqcData()`
 fl <- file.path( gsub(".zip$", "", basename(x)), "fastqc_data.txt")
 uz <- unz(x, fl)
 fqcLines <- readLines(uz)
@@ -191,7 +191,7 @@ test_that("Check .getSeqDuplicationLevels() errors and nulls",{
 test_that("Completely empty fastqc file errors",{
   f <- system.file("extdata/errorTestingFiles/completelyEmpty.zip", package = "ngsReports")
   fqcFile <- .FastqcFile(f)
-  expect_error(getFastqcData(fqcFile))
+  expect_error(FastqcData(fqcFile))
   expect_error(.getSummary(fqcFile))
 })
 

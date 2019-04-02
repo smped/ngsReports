@@ -21,7 +21,9 @@ exec <- Sys.which("fastqc")
 if (exec != "") {
     f <- FastqFile(fl)
     ff <- suppressMessages(runFastQC(f, tempdir(), exec = exec))
-    expect_true(methods::is(ff, ".FastqcFile"))
+    expect_equal(
+        ff, file.path(tempdir(), gsub(".txt", "_fastqc.zip", basename(fl)))
+    )
 }
 
 ## This ensures that any stray connections formed during testing are closed

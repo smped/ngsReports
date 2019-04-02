@@ -7,8 +7,8 @@
 maxAdapterContent(x, asPercent = TRUE)
 }
 \arguments{
-\item{x}{Can be a \code{.FastqcFile}, \code{.FastqcFileList},
-\code{FastqcData}, \code{FastqcDataList} or path}
+\item{x}{Can be a \code{.FastqcFile}, \code{FastqcData},
+\code{FastqcDataList} or path}
 
 \item{asPercent}{\code{logical}.
 Format the values as percentages with the added \code{\%} symbol}
@@ -29,10 +29,10 @@ file.
 \examples{
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
-fdl <- getFastqcData(fileList)
+fdl <- FastqcDataList(fl)
 
 # Get the maxAdapterContent
 maxAdapterContent(fdl)
