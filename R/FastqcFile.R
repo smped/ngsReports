@@ -18,11 +18,11 @@
 #'
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1]
 #'
 #' # As this is the root structure, we can only call this
 #' # function with an individual file
-#' ff <- .FastqcFile(fileList[[1]])
+#' ff <- ngsReports:::.FastqcFile(fl)
 #'
 #' @include validationFunctions.R
 #'

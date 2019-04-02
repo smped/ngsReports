@@ -31,10 +31,10 @@ files, or several instances of .FastqcFile objects}
 
 # Get the files included with the package
 packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a .FastqcFileList
-ffl <- .FastqcFileList(fileList)
+ffl <- ngsReports:::.FastqcFileList(fl)
 
 }
 \keyword{internal}
