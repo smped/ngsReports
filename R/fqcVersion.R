@@ -1,7 +1,6 @@
-#' Get the FASTQC version
+#' @title Get the FASTQC version
 #'
 #' @description Get the FASTQC version used to generate the intial files
-#'
 #'
 #' @param object An object of class \code{FastqcData} or \code{FastqcDataList}
 #'
@@ -17,7 +16,7 @@
 #' fdl <- FastqcDataList(fl)
 #'
 #' # Get the FASTQC version
-#' version(fdl)
+#' fqcVersion(fdl)
 #'
 #' @include FastqcData.R
 #' @include AllGenerics.R
@@ -25,17 +24,17 @@
 #' @docType methods
 
 #' @export
-#' @rdname version
-#' @aliases version
-setMethod("version", "FastqcData", function(object){object@version})
+#' @rdname fqcVersion
+#' @aliases fqcVersion
+setMethod("fqcVersion", "FastqcData", function(object){object@version})
 
 #' @export
-#' @rdname version
-#' @aliases version
-setMethod("version", "FastqcDataList", function(object){
+#' @rdname fqcVersion
+#' @aliases fqcVersion
+setMethod("fqcVersion", "FastqcDataList", function(object){
     tibble::tibble(
         Filename = fileName(object),
-        version = vapply(object@.Data, version, character(1))
+        version = vapply(object@.Data, fqcVersion, character(1))
     )
 })
 

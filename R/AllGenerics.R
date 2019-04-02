@@ -3,7 +3,7 @@ setGeneric("getSummary", function(object){standardGeneric("getSummary")})
 
 setGeneric("getModule",function(object, module){standardGeneric("getModule")})
 
-setGeneric("version", function(object){standardGeneric("version")})
+setGeneric("fqcVersion", function(object){standardGeneric("fqcVersion")})
 
 setGeneric("getColours", function(object){standardGeneric("getColours")})
 

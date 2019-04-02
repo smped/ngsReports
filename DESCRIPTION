@@ -62,6 +62,7 @@ Collate:
     'data.R'
     'extract.R'
     'fileName.R'
+    'fqcVersion.R'
     'getColours.R'
     'getGcDistn.R'
     'getModule.R'
@@ -87,7 +88,6 @@ Collate:
     'pwf.R'
     'readTotals.R'
     'runFastQC.R'
-    'version.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr
 Suggests: 
