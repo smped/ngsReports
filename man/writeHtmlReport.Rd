@@ -4,14 +4,16 @@
 \alias{writeHtmlReport}
 \title{Write an HTML Summary Report}
 \usage{
-writeHtmlReport(fastqcDir, template, species = "Hsapiens",
-  dataType = "Transcriptome", nOver = 30, nKmer = 30, targetsDF,
-  overwrite = FALSE, quiet = TRUE)
+writeHtmlReport(fastqcDir, template, usePlotly = TRUE,
+  species = "Hsapiens", dataType = "Transcriptome", nOver = 30,
+  nKmer = 30, targetsDF, overwrite = FALSE, quiet = TRUE)
 }
 \arguments{
 \item{fastqcDir}{A directory containing zipped, or extracted FastQC reports}
 
 \item{template}{The template file which will be copied into \code{fastqcDir}}
+
+\item{usePlotly}{Generate interactive plots?}
 
 \item{species}{Species/closely related species of sequenced samples}
 

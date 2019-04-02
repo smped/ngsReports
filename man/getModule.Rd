@@ -5,15 +5,12 @@
 \alias{getModule,FastqcData-method}
 \alias{getModule}
 \alias{getModule,FastqcDataList-method}
-\alias{getModule,.FastqcFile-method}
 \alias{getModule,character-method}
 \title{Retrieve a given module from a Fastqc* Object}
 \usage{
 \S4method{getModule}{FastqcData}(object, module)
 
 \S4method{getModule}{FastqcDataList}(object, module)
-
-\S4method{getModule}{.FastqcFile}(object, module)
 
 \S4method{getModule}{character}(object, module)
 }

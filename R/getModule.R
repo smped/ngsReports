@@ -129,38 +129,17 @@ setMethod("getModule", "FastqcDataList", function(object, module){
 #' @export
 #' @rdname getModule
 #' @aliases getModule
-setMethod("getModule", ".FastqcFile", function(object, module){
-
-    ## This is the list of defined modules on the object specification
-    allMods <-  c("Summary", "Basic_Statistics", "Per_base_sequence_quality",
-                  "Per_tile_sequence_quality", "Per_sequence_quality_scores",
-                  "Per_base_sequence_content", "Per_sequence_GC_content",
-                  "Per_base_N_content", "Sequence_Length_Distribution",
-                  "Sequence_Duplication_Levels", "Overrepresented_sequences",
-                  "Adapter_Content", "Kmer_Content",
-                  "Total_Deduplicated_Percentage")
-
-    ## Make sure we have asked for a valid module
-    module <- match.arg(module, allMods)
-    ## Obtain a FastqcData object then extract the module
-    fqcData <- FastqcData(object)
-    getModule(fqcData, module)
-
-})
-
-#' @export
-#' @rdname getModule
-#' @aliases getModule
 setMethod("getModule", "character", function(object, module){
 
     ## This is the list of defined modules on the object specification
-    allMods <-  c("Summary", "Basic_Statistics", "Per_base_sequence_quality",
-                  "Per_tile_sequence_quality", "Per_sequence_quality_scores",
-                  "Per_base_sequence_content", "Per_sequence_GC_content",
-                  "Per_base_N_content", "Sequence_Length_Distribution",
-                  "Sequence_Duplication_Levels", "Overrepresented_sequences",
-                  "Adapter_Content", "Kmer_Content",
-                  "Total_Deduplicated_Percentage")
+    allMods <-  c(
+        "Summary", "Basic_Statistics", "Per_base_sequence_quality",
+        "Per_tile_sequence_quality", "Per_sequence_quality_scores",
+        "Per_base_sequence_content", "Per_sequence_GC_content",
+        "Per_base_N_content", "Sequence_Length_Distribution",
+        "Sequence_Duplication_Levels", "Overrepresented_sequences",
+        "Adapter_Content", "Kmer_Content", "Total_Deduplicated_Percentage"
+    )
 
     ## Make sure we have asked for a valid module
     module <- match.arg(module, allMods)

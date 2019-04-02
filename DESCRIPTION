@@ -63,7 +63,6 @@ Collate:
     'extract.R'
     'fileName.R'
     'getColours.R'
-    'getFastqcData.R'
     'getGcDistn.R'
     'getModule.R'
     'getSummary.R'

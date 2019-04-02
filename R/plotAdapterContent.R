@@ -212,7 +212,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     valueCols <- setdiff(colnames(df), c("Filename", "Position"))
     msg <- c()
     if (!length(df)) msg <- "No Adapter Content Module Detected"
-    if (sum(df[valueCols]) == 0)
+    if (sum(df[valueCols], na.rm = TRUE) == 0)
         msg <- "No Adapter Content Found in Sequences"
     if (!is.null(msg)) {
         acPlot <- .emptyPlot(msg)

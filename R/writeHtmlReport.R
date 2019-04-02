@@ -4,6 +4,7 @@
 #'
 #' @param fastqcDir A directory containing zipped, or extracted FastQC reports
 #' @param template The template file which will be copied into \code{fastqcDir}
+#' @param usePlotly Generate interactive plots?
 #' @param species Species/closely related species of sequenced samples
 #' @param dataType Is the data "Transcriptomic" or "Genomic" in nature?
 #' @param nOver The maximum number of Overrepresented Sequences to show
@@ -37,8 +38,9 @@
 #'
 #' @export
 writeHtmlReport <- function(
-    fastqcDir, template, species = "Hsapiens", dataType = "Transcriptome",
-    nOver = 30, nKmer = 30, targetsDF, overwrite = FALSE, quiet = TRUE){
+    fastqcDir, template, usePlotly = TRUE, species = "Hsapiens",
+    dataType = "Transcriptome", nOver = 30, nKmer = 30, targetsDF,
+    overwrite = FALSE, quiet = TRUE){
 
     ## Maybe include checks for the package webshot & PhantomJS
     ## Install looks like webshot::install_phantomjs() should work
@@ -85,6 +87,7 @@ writeHtmlReport <- function(
     }
 
     ## Check the remaining arguments
+    stopifnot(is.logical(usePlotly))
     dataType <- match.arg(dataType, c("Transcriptome", "Genome"))
     nOver <- suppressWarnings(as.integer(nOver[1]))
     nKmer <- suppressWarnings(as.integer(nKmer[1]))
@@ -106,6 +109,7 @@ writeHtmlReport <- function(
         envir = new.env(),
         quiet = quiet,
         params = list(
+            usePlotly = usePlotly,
             dataType = dataType,
             species = species,
             nOver = nOver,
