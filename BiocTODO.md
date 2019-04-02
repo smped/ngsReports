@@ -36,7 +36,7 @@ as helper functions
 name instead of a simple constructor function (FastqcFile).
     - Thanks for pointing this out. I'd misunderstood the normal approach for this. Of course the constructors are now `FastqcData()` and `FastqcDataList()`
 - [x] Why not use the established path generic rather than creating fileName?
-    - We actually have used the path generic. The function `fileName` returns the name of the underlying Fastq file the report was generated from. We have changed the help page to clarify this. 
+    - We actually have used the path generic. The function `fileName` returned the name of the underlying Fastq file the report was generated from, and has now been changed to `fqName()` to avoid any confusion
 - [x] Create a coercion method instead of a class method to move from one class
 representation to another
 - [ ] Only set methods for classes that are your own and use the ANY class for
@@ -49,5 +49,3 @@ setting methods for vectors.
 ## Steve's temporary notes:
 
 - Still need to figure out how to manage the `ANY` methods...
-- Maybe we should also change the `fileName()` function to `fqName()` to avoid any confusion
-- Should we also add a `labels` element to a `FastqcDataList`?

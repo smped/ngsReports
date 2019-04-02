@@ -59,7 +59,7 @@ fastqcFiles <- list.files(pattern = "(fastqc.zip|fastqc)$")
 stopifnot(length(fastqcFiles) > 1)
 message("FastQC files found. Loading FastQC data")
 fastqcData <- tryCatch(FastqcDataList(fastqcFiles))
-plotLabels <- structure(gsub(".(fastq|fastq.gz|bam)", "", fileName(fastqcData)),	names = fileName(fastqcData))
+plotLabels <- structure(gsub(".(fastq|fastq.gz|bam)", "", fqName(fastqcData)),	names = fqName(fastqcData))
 ```
 
 
@@ -71,7 +71,7 @@ if (file.exists(params$tgtsFile)) {
 	fCol <- grep("[Ff]ile[Nn]ame", colnames(targets))
 	lCol <- grep("[Ll]abel", colnames(targets))
 	if (length(fCol) == 1 && length(lCol) == 1) {
-		stopifnot(all(fileName(fastqcData) %in% targets[[fCol]]))
+		stopifnot(all(fqName(fastqcData) %in% targets[[fCol]]))
 		message("Alternate labels found")
 		plotLabels <- structure(targets[[lCol]], names = targets[[fCol]])
 	}

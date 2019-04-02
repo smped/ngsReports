@@ -61,7 +61,7 @@ Collate:
     'aaa.R'
     'data.R'
     'extract.R'
-    'fileName.R'
+    'fqName.R'
     'fqcVersion.R'
     'getColours.R'
     'getGcDistn.R'

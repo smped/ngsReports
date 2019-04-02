@@ -47,7 +47,7 @@
 #' plotSeqQuals(fdl)
 #'
 #' # Also subset the reads to just the R1 files
-#' r1 <- grepl("R1", fileName(fdl))
+#' r1 <- grepl("R1", fqName(fdl))
 #' plotSeqQuals(fdl[r1])
 #'
 #'

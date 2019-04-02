@@ -33,7 +33,7 @@ setMethod("fqcVersion", "FastqcData", function(object){object@version})
 #' @aliases fqcVersion
 setMethod("fqcVersion", "FastqcDataList", function(object){
     tibble::tibble(
-        Filename = fileName(object),
+        Filename = fqName(object),
         version = vapply(object@.Data, fqcVersion, character(1))
     )
 })

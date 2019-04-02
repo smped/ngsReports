@@ -68,7 +68,7 @@ setMethod("getModule", "FastqcData", function(object, module){
     module <- match.arg(module, allMods)
 
     ## Get the Filename for the underlying Fastq file
-    nm <- fileName(object)
+    nm <- fqName(object)
 
     ## Extract the actual module
     df <- slot(object, module)

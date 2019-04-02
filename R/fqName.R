@@ -4,7 +4,7 @@
 #'
 #' @param object An object of class FastqcData or FastqcDataList
 #'
-#' @return Returns the filenames for the Fastq file the FastQC report was
+#' @return Returns the names of the Fastq files the FastQC report was
 #' generated from, without any preceding directories.
 #'
 #' @examples
@@ -15,28 +15,26 @@
 #'
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- FastqcDataList(fl)
-#' fileName(fdl)
+#' fqName(fdl)
 #'
 
-#' @importMethodsFrom BiocGenerics fileName
 #' @export
-#' @name fileName
-#' @aliases fileName,FastqcData-method
-#' @rdname fileName-methods
+#' @name fqName
+#' @aliases fqName,FastqcData-method
+#' @rdname fqName-methods
 setMethod(
-    "fileName",
+    "fqName",
     "FastqcData",
     function(object){object@Summary$Filename[1]}
 )
 
-#' @importMethodsFrom BiocGenerics fileName
 #' @export
-#' @name fileName
-#' @aliases fileName,FastqcDataList-method
-#' @rdname fileName-methods
+#' @name fqName
+#' @aliases fqName,FastqcDataList-method
+#' @rdname fqName-methods
 setMethod(
-    "fileName",
+    "fqName",
     "FastqcDataList",
-    function(object){vapply(object@.Data, fileName, character(1))}
+    function(object){vapply(object@.Data, fqName, character(1))}
 )
 
