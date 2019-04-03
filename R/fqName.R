@@ -22,19 +22,15 @@
 #' @name fqName
 #' @aliases fqName,FastqcData-method
 #' @rdname fqName-methods
-setMethod(
-    "fqName",
-    "FastqcData",
-    function(object){object@Summary$Filename[1]}
-)
+setMethod("fqName", "FastqcData", function(object){
+    object@Summary$Filename[1]
+})
 
 #' @export
 #' @name fqName
 #' @aliases fqName,FastqcDataList-method
 #' @rdname fqName-methods
-setMethod(
-    "fqName",
-    "FastqcDataList",
-    function(object){vapply(object@.Data, fqName, character(1))}
-)
+setMethod("fqName", "FastqcDataList", function(object){
+    vapply(object@.Data, fqName, character(1))
+})
 

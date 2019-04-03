@@ -34,6 +34,7 @@ isCompressed <- function(path, type = c("zip", "gzip"), verbose = FALSE){
 
     ## Define the compression type
     type <- match.arg(type)
+
     ## This is the magic number for each compression type
     magicNum <- list(zip = c(80, 75, 3, 4), gzip = c(31, 139, 8))[[type]]
     n <- length(magicNum)

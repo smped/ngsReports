@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotOverrep}
 \alias{plotOverrep}
-\alias{plotOverrep,character-method}
-\alias{plotOverrep,character}
+\alias{plotOverrep,ANY-method}
+\alias{plotOverrep,ANY}
 \alias{plotOverrep,FastqcData-method}
 \alias{plotOverrep,FastqcData}
 \alias{plotOverrep,FastqcDataList-method}
@@ -13,8 +13,7 @@
 \usage{
 plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
 
-\S4method{plotOverrep}{character}(x, usePlotly = FALSE, labels, pwfCols,
-  ...)
+\S4method{plotOverrep}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotOverrep}{FastqcData}(x, usePlotly = FALSE, labels, pwfCols,
   n = 10, ..., expand.x = expand_scale(mult = c(0, 0.05)),
@@ -67,6 +66,13 @@ FASTQC reports
 Percentages are obtained by simply summing those within a report.
 Any possible double counting by FastQC is ignored for the purposes of a
 simple approximation.
+
+Plots generated from a \code{FastqcData} object will show the top \code{n}
+sequences grouped by their predicted source & coloured by whether the
+individual sequence would cause a WARN/FAIL.
+
+Plots generated from a \code{FastqcDataList} group sequences by predicted
+source and summarise as a percentage of the total reads.
 }
 \examples{
 

@@ -12,6 +12,8 @@
 #'
 #' @param x character(1) denoting a file.path
 #'
+#' @slot path Character vector of length 1 which contains a valid file path.
+#'
 #' @return An object of class .FastqcFile
 #'
 #' @examples
@@ -26,7 +28,6 @@
 #'
 #' @include validationFunctions.R
 #'
-#' @slot path Character vector of length 1 which contains a valid file path.
 #' @importFrom methods new
 #' @keywords internal
 setClass(".FastqcFile", slots = c(path = "character"))

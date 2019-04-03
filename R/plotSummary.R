@@ -4,9 +4,10 @@
 #'
 #' @details This uses the standard ggplot2 syntax to create a three colour plot.
 #' The output of this function can be further modified using the standard
-#' ggplot2 methods.
+#' ggplot2 methods if required.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or character
+#' vector of file paths
 #' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
 #' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
@@ -50,10 +51,10 @@ setGeneric("plotSummary", function(
     standardGeneric("plotSummary")
 }
 )
-#' @aliases plotSummary,character
+#' @aliases plotSummary,ANY
 #' @rdname plotSummary-methods
 #' @export
-setMethod("plotSummary", signature = "character", function(
+setMethod("plotSummary", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
     ...){
     if (length(x) == 1)

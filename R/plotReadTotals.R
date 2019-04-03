@@ -3,14 +3,13 @@
 #' @description Draw a barplot of read totals
 #'
 #' @details Draw a barplot of read totals using the standard ggplot2 syntax.
-#' Read totals will be plotted in millions as this is the most common.
 #' The raw data from \code{\link{readTotals}} can otherwise be used to manually
 #' create a plot.
 #'
-#' However, this is based on the value shown on FASTQC reports at the top of
-#' DeDuplicatedTotals plot, and is known to be inaccurate.
-#' As it still gives a good guide as to sequence diversity it is included as the
-#' default.
+#' Duplication levels are based on the value shown on FASTQC reports at the
+#' top of the DeDuplicatedTotals plot, which is known to be inaccurate.
+#' As it still gives a good guide as to sequence diversity it is included as
+#' the default. This can be turned off by setting \code{duplicated = FALSE}.
 #'
 #' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
@@ -58,13 +57,14 @@ setGeneric("plotReadTotals", function(
     standardGeneric("plotReadTotals")
 }
 )
-#' @aliases plotReadTotals,character
+#' @aliases plotReadTotals,ANY
 #' @rdname plotReadTotals-methods
 #' @export
-setMethod("plotReadTotals", signature = "character", function(
+setMethod("plotReadTotals", signature = "ANY", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
     expand.x = expand_scale(mult = c(0, 0.02)), ...){
+
     if (length(x) == 1)
         stop("plotReadTotals cannot be called on a single .FastqcFile")
 
@@ -81,8 +81,8 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
     expand.x = expand_scale(mult = c(0, 0.02)), ...){
 
-    df <- readTotals(x)
     stopifnot(is.logical(duplicated))
+    df <- readTotals(x)
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(df, labels, ...)

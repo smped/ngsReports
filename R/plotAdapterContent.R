@@ -14,8 +14,11 @@
 #' When plotting more than one fastqc file, any undetected adapters will not be
 #' shown.
 #'
+#' An interactive version of the plot can be made by setting \code{usePlotly}
+#' as \code{TRUE}
 #'
-#' @param x Can be a \code{FastqcData}, a \code{FastqcDataList} or file paths
+#' @param x Can be a \code{FastqcData}, a \code{FastqcDataList} or character
+#' vector of file paths
 #' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly
 #' object.
 #' @param adapterType A regular expression matching the adapter(s) to be
@@ -75,10 +78,10 @@ setGeneric("plotAdapterContent", function(
     standardGeneric("plotAdapterContent")
 }
 )
-#' @aliases plotAdapterContent,character
+#' @aliases plotAdapterContent,ANY
 #' @rdname plotAdapterContent-methods
 #' @export
-setMethod("plotAdapterContent", signature = "character", function(
+setMethod("plotAdapterContent", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]

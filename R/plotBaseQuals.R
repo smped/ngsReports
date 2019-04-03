@@ -2,12 +2,21 @@
 #'
 #' @description Plot the Base Qualities for each file as separate plots
 #'
-#' @details This replicates the \code{Per base sequence quality} plots from
-#' FASTQC, using facets to plce them all in a single ggplot2 object.
+#' @details When acting on a \code{FastqcDataList}, this defaults to a heatmap
+#' using the mean Per_base_sequence_quality score. A set of plots which
+#' replicate those obtained through a standard FastQC html report can be
+#' obtained by setting \code{plotType = "boxplot"}, which uses \code{facet_wrap}
+#' to provide the layout as a single ggplot object.
 #'
-#' For large datasets, subsetting by R1 or R2 reads may be helpful
+#' When acting an a \code{FastqcData} object, this replicates the
+#' \code{Per base sequence quality} plots from FastQC with no faceting.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or path
+#' For large datasets, subsetting by R1 or R2 reads may be helpful.
+#'
+#' An interactive plot can be obtained by setting \code{usePlotly = TRUE}.
+#'
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or character
+#' vector of file paths
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param nc \code{numeric}. The number of columns to create in the plot layout.
@@ -20,7 +29,8 @@
 #' @param plotType \code{character} Can be either \code{"boxplot"} or
 #' \code{"heatmap"}
 #' @param plotValue \code{character} Type of data to be presented. Can be
-#' "Mean" or "Median"
+#' any of the columns returned by
+#' \code{getModule(x, module = "Per_base_sequence_qual")}
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for
 #' pass, warning, and fail values in plot
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
@@ -31,7 +41,7 @@
 #' @param boxWidth set the width of boxes when using a boxplot
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
-#' @return A standard ggplot2 object
+#' @return A standard ggplot2 object or an interactive plotly object
 #'
 #' @examples
 #'
@@ -61,10 +71,10 @@ setGeneric("plotBaseQuals", function(
     standardGeneric("plotBaseQuals")
 }
 )
-#' @aliases plotBaseQuals,character
+#' @aliases plotBaseQuals,ANY
 #' @rdname plotBaseQuals-methods
 #' @export
-setMethod("plotBaseQuals", signature = "character", function(
+setMethod("plotBaseQuals", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
     x <- FastqcDataList(x)
@@ -217,7 +227,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
 setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, plotType = c("heatmap", "boxplot"),
-    plotValue = c("Mean", "Median"), cluster = FALSE, dendrogram = FALSE,
+    plotValue = "Mean", cluster = FALSE, dendrogram = FALSE,
     nc = 2, ...){
 
     ## Get the data
@@ -242,7 +252,10 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     enc <- getModule(x, "Basic_Statistics")$Encoding[1]
     enc <- gsub(".*(Illumina [0-9\\.]*)", "\\1", enc)
 
+    ## Set the plot type & value
     plotType <- match.arg(plotType)
+    possVals <- setdiff(colnames(df), c("Filename", "Base"))
+    plotValue <- match.arg(plotValue, possVals)
     xlab <- "Position in read (bp)"
 
     if (plotType == "boxplot") {
@@ -361,8 +374,6 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
 
     if (plotType == "heatmap") {
 
-        plotValue <- ifelse(missing(plotValue), "Mean", match.arg(plotValue))
-        stopifnot(plotValue %in% names(df))
         stopifnot(is.logical(cluster))
 
         ## Get any arguments for dotArgs that have been set manually
@@ -426,7 +437,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
                 panel.grid.minor = element_blank(),
                 panel.background = element_blank()
             ) +
-            scale_x_continuous(expand = c(0,0))
+            scale_x_continuous(expand = c(0, 0))
 
         ## Add custom elements
         if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme

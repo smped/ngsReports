@@ -20,8 +20,8 @@ overRep2Fasta(x, path, n = 10, labels, noAdapters = TRUE, ...)
 \arguments{
 \item{x}{Can be a \code{FastqcData} or \code{FastqcDataList}}
 
-\item{path}{Path to export the fasta file to. Reverts to a default if not
-supplied}
+\item{path}{Path to export the fasta file to. Reverts to a default in the
+working directory if not supplied}
 
 \item{n}{The number of sequences to output}
 

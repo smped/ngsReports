@@ -5,18 +5,18 @@
 \alias{getModule,FastqcData-method}
 \alias{getModule}
 \alias{getModule,FastqcDataList-method}
-\alias{getModule,character-method}
+\alias{getModule,ANY-method}
 \title{Retrieve a given module from a Fastqc* Object}
 \usage{
 \S4method{getModule}{FastqcData}(object, module)
 
 \S4method{getModule}{FastqcDataList}(object, module)
 
-\S4method{getModule}{character}(object, module)
+\S4method{getModule}{ANY}(object, module)
 }
 \arguments{
-\item{object}{Can be a \code{.FastqcFile}, \code{FastqcData},
-\code{fastqcDataList}, or simply a \code{character} vector of paths}
+\item{object}{Can be a \code{FastqcData}, \code{fastqcDataList}, or simply
+a \code{character} vector of paths}
 
 \item{module}{The requested module as contained in a FastQC report. Possible
 values are \code{Summary}, \code{Basic_Statistics},

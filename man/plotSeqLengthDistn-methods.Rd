@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotSeqLengthDistn}
 \alias{plotSeqLengthDistn}
-\alias{plotSeqLengthDistn,character-method}
-\alias{plotSeqLengthDistn,character}
+\alias{plotSeqLengthDistn,ANY-method}
+\alias{plotSeqLengthDistn,ANY}
 \alias{plotSeqLengthDistn,FastqcData-method}
 \alias{plotSeqLengthDistn,FastqcData}
 \alias{plotSeqLengthDistn,FastqcDataList-method}
@@ -13,8 +13,7 @@
 \usage{
 plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSeqLengthDistn}{character}(x, usePlotly = FALSE, labels,
-  ...)
+\S4method{plotSeqLengthDistn}{ANY}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqLengthDistn}{FastqcData}(x, usePlotly = FALSE, labels,
   plotType = c("line", "cumulative"), ..., expand.x = expand_scale(0,
@@ -68,9 +67,11 @@ This extracts the Sequence Length Distribution from the supplied object and
 generates a ggplot2 object, with a set of minimal defaults.
 The output of this function can be further modified using the standard
 ggplot2 methods.
-For example, preset axis limits can also be overwritten easily by adding a
-call to \code{scale_y_continuous} after the call to
-\code{plotSeqLengthDistn}.
+
+A cumulative plot can also be generated to provide guidance for minimum
+read length in some NGS workflows, by setting \code{plotType = "cumulative"}.
+If all libraries have reads of identical lengths, these plots may be less
+informative.
 
 An alternative interactive plot is available by setting the argument
 \code{usePlotly = TRUE}.

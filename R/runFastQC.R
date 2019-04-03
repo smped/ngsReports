@@ -14,7 +14,9 @@
 #' Only the common functionality of FastQC is implemented,
 #' for more fine detail pease call FastQC directly.
 #'
-#' @param object A \code{\link{FastqFileList}}
+#' @param object A \code{FastqFileList}, \code{BamFileList}, \code{FastqFile},
+#' \code{BamFile} or character vector of file paths with all objects coercible
+#' to a single one of these types.
 #' @param outPath The path to write the FastQC reports. Must exist as (for
 #' safety) it will not be created when calling this function
 #' @param exec The location of the fastqc executable.
@@ -60,14 +62,15 @@ setGeneric("runFastQC", function(
     standardGeneric("runFastQC")
 }
 )
-#' @aliases runFastQC,character-method
+#' @aliases runFastQC,ALL-method
 #' @rdname runFastQC-methods
 #' @export
-setMethod("runFastQC", "character", function(
+setMethod("runFastQC", "ALL", function(
     object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
     extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
     adapters = c(), kmers = 7, exec){
 
+    stopifnot(file.exists(object))
     fq <- all(grepl("(fq|fastq|fq.gz|fastq.gz|txt)$", basename(object)))
     bam <- all(grepl("bam$", basename(object)))
 

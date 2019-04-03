@@ -1,12 +1,17 @@
-#' Get the summary information from Fastqc Files
+#' @title Get the summary information from Fastqc Files
 #'
 #' @description Read the information from the \code{summary.txt} files in each
 #' .FastqcFile
 #'
-#' @param object Can be a FastqcData or FastqcDataList object
+#' @details
+#' This simply extracts the summary of PASS/WARN/FAIL status for every module
+#' as defined by the tool FastQC for each supplied file.
 #'
-#' @return A \code{tibble} will be returned when supplying a \code{.FastqcFile}
-#' object.
+#' @param object Can be a \code{FastqcData}, \code{FastqcDataList} object or
+#' a vector of paths to unparsed FastQC reports.
+#'
+#' @return A \code{tibble} containing the PASS/WARN/FAIL status for each
+#' module, as defined in a FastQC report.
 #'
 #' @examples
 #'
@@ -80,13 +85,11 @@ setMethod("getSummary", ".FastqcFile", function(object){
 #' @export
 #' @rdname getSummary
 #' @aliases getSummary
-setMethod("getSummary", "character", function(object){
-    if (length(object) == 1) {
-        tryCatch(object <- FastqcData(object))
-    }
-    else{
-        tryCatch(object <- FastqcDataList(object))
-    }
+setMethod("getSummary", "ANY", function(object){
+    ## This will error if the file doesn't exist, or if it's not in the
+    ## correct format (i.e a FastQC output)
+    object <- FastqcDataList(object)
+    if (length(object) == 1) object <- object[[1]]
     getSummary(object)
 })
 

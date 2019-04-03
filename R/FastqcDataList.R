@@ -2,6 +2,9 @@
 #'
 #' @description The FastqcDataList Object Class
 #'
+#' @slot ... this can either be a single character vector of paths to FASTQC
+#' files, or several instances of .FastqcFile objects
+#'
 #' @return An object of class FastqcDataList
 #'
 #' @examples
@@ -16,8 +19,6 @@
 #'
 #' @include validationFunctions.R
 #'
-#' @slot ... this can either be a single character vector of paths to FASTQC
-#' files, or several instances of .FastqcFile objects
 #' @rdname FastqcDataList
 #' @aliases FastqcDataList-class
 setClass("FastqcDataList", contains = "list")

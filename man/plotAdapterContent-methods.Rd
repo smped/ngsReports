@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotAdapterContent}
 \alias{plotAdapterContent}
-\alias{plotAdapterContent,character-method}
-\alias{plotAdapterContent,character}
+\alias{plotAdapterContent,ANY-method}
+\alias{plotAdapterContent,ANY}
 \alias{plotAdapterContent,FastqcData-method}
 \alias{plotAdapterContent,FastqcData}
 \alias{plotAdapterContent,FastqcDataList-method}
@@ -14,8 +14,8 @@
 plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   fail = 10, ...)
 
-\S4method{plotAdapterContent}{character}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 5, fail = 10, ...)
+\S4method{plotAdapterContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
+  warn = 5, fail = 10, ...)
 
 \S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 10, ...)
@@ -26,7 +26,8 @@ plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcData}, a \code{FastqcDataList} or file paths}
+\item{x}{Can be a \code{FastqcData}, a \code{FastqcDataList} or character
+vector of file paths}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
 object.}
@@ -74,6 +75,9 @@ drawn for all adapters.
 Otherwise, users can select line plots or heatmaps.
 When plotting more than one fastqc file, any undetected adapters will not be
 shown.
+
+An interactive version of the plot can be made by setting \code{usePlotly}
+as \code{TRUE}
 }
 \examples{
 

@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotGcContent}
 \alias{plotGcContent}
-\alias{plotGcContent,character-method}
-\alias{plotGcContent,character}
+\alias{plotGcContent,ANY-method}
+\alias{plotGcContent,ANY}
 \alias{plotGcContent,FastqcData-method}
 \alias{plotGcContent,FastqcData}
 \alias{plotGcContent,FastqcDataList-method}
@@ -15,7 +15,7 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
   theoreticalType = "Genome", species = "Hsapiens", GCobject,
   Fastafile, n = 1e+06, ...)
 
-\S4method{plotGcContent}{character}(x, usePlotly = FALSE, labels,
+\S4method{plotGcContent}{ANY}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, theoreticalType = "Genome",
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
 
@@ -31,7 +31,8 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
   dendrogram = FALSE, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or character
+vector of file paths}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
@@ -92,7 +93,16 @@ Makes plots for GC_Content.
 When applied to a single FastqcData object a simple line plot will be drawn,
 with Theoretical GC content overlaid if desired.
 
-For a FastqcDataList either a line plot or heatmap can be drawn.
+When applied to multiple FastQC reports, the density at each GC content bin
+can be shown as a heatmap by setting \code{theoreticalGC = FALSE}. By
+default the difference in observed and expected theoretical GC is shown.
+Species and genome/transcriptome should also be set if utilising the
+theoretical GC content.
+
+As an alternative to a heatmap, a series of overlaid distributions can be
+shown by setting \code{plotType = "line"}.
+
+Can produce a static ggplot2 object or an interactive plotly object.
 }
 \examples{
 

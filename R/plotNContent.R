@@ -1,6 +1,6 @@
 #' @title Draw an N Content Plot
 #'
-#' @description Draw an N Content Plot across one or more FASTQC reports
+#' @description Draw an N Content Plot across one or more FastQC reports
 #'
 #' @details
 #' This extracts the N_Content from the supplied object and generates a ggplot2
@@ -58,10 +58,10 @@ setGeneric("plotNContent", function(
     standardGeneric("plotNContent")
 }
 )
-#' @aliases plotNContent,character
+#' @aliases plotNContent,ANY
 #' @rdname plotNContent-methods
 #' @export
-setMethod("plotNContent", signature = "character", function(
+setMethod("plotNContent", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]

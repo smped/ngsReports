@@ -7,9 +7,19 @@
 #' When applied to a single FastqcData object a simple line plot will be drawn,
 #' with Theoretical GC content overlaid if desired.
 #'
-#' For a FastqcDataList either a line plot or heatmap can be drawn.
+#' When applied to multiple FastQC reports, the density at each GC content bin
+#' can be shown as a heatmap by setting \code{theoreticalGC = FALSE}. By
+#' default the difference in observed and expected theoretical GC is shown.
+#' Species and genome/transcriptome should also be set if utilising the
+#' theoretical GC content.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
+#' As an alternative to a heatmap, a series of overlaid distributions can be
+#' shown by setting \code{plotType = "line"}.
+#'
+#' Can produce a static ggplot2 object or an interactive plotly object.
+#'
+#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or character
+#' vector of file paths
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
 #' @param counts \code{logical}. Plot the counts from each file if
@@ -68,7 +78,6 @@
 #' @import ggplot2
 #' @importFrom Biostrings readDNAStringSet
 #' @importFrom BiocGenerics width
-#' @importFrom utils read.table
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
 #' @export
@@ -79,10 +88,10 @@ setGeneric("plotGcContent", function(
     standardGeneric("plotGcContent")
 }
 )
-#' @aliases plotGcContent,character
+#' @aliases plotGcContent,ANY
 #' @rdname plotGcContent-methods
 #' @export
-setMethod("plotGcContent", signature = "character", function(
+setMethod("plotGcContent", signature = "ANY", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
     n = 1e+6, ...){
@@ -133,8 +142,8 @@ setMethod("plotGcContent", signature = "FastqcData", function(
     subTitle <- c()
     if (theoreticalGC) {
         if (!missing(Fastafile)) {
-            readLength <- max(getModule(x, "Basic_Statistics")$Longest_sequence)
-            gcTheoryDF <- getGcDistn(Fastafile, n, readLength)
+            rdLen <- max(getModule(x, "Basic_Statistics")$Longest_sequence)
+            gcTheoryDF <- getGcDistn(Fastafile, n, rdLen)
             subTitle <-
                 paste("Theoretical Distribution based on file", Fastafile)
         }
@@ -275,8 +284,8 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     subTitle <- c()
     if (theoreticalGC) {
         if (!missing(Fastafile)) {
-            readLength <- max(getModule(x, "Basic_Statistics")$Longest_sequence)
-            gcTheoryDF <- getGcDistn(Fastafile, n, readLength)
+            rdLen <- max(getModule(x, "Basic_Statistics")$Longest_sequence)
+            gcTheoryDF <- getGcDistn(Fastafile, n, rdLen)
             subTitle <-
                 paste("Theoretical Distribution based on", basename(Fastafile))
         }
@@ -312,8 +321,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     if (plotType == "line") {
         df$Filename <- labels[df$Filename]
         ## Setup a palette with black as the first colour.
-        ## Use the paired palette for easier visualisation of paired
-        ## data
+        ## Use the paired palette for easier visualisation of paired data
         n <- length(x)
         lineCols <- RColorBrewer::brewer.pal(min(12, n), "Paired")
         lineCols <- colorRampPalette(lineCols)(n)

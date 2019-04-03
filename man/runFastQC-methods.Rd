@@ -3,7 +3,7 @@
 \docType{methods}
 \name{runFastQC}
 \alias{runFastQC}
-\alias{runFastQC,character-method}
+\alias{runFastQC,ALL-method}
 \alias{runFastQC,FastqFile-method}
 \alias{runFastQC,FastqFileList-method}
 \alias{runFastQC,BamFile-method}
@@ -15,7 +15,7 @@ runFastQC(object, outPath, threads = 1L, casava = FALSE,
   min_length = 1, contaminants = c(), adapters = c(), kmers = 7,
   exec)
 
-\S4method{runFastQC}{character}(object, outPath, threads = 1L,
+\S4method{runFastQC}{ALL}(object, outPath, threads = 1L,
   casava = FALSE, nofilter = FALSE, extract = FALSE,
   nogroup = FALSE, min_length = 1, contaminants = c(),
   adapters = c(), kmers = 7, exec)
@@ -41,7 +41,9 @@ runFastQC(object, outPath, threads = 1L, casava = FALSE,
   adapters = c(), kmers = 7, exec)
 }
 \arguments{
-\item{object}{A \code{\link{FastqFileList}}}
+\item{object}{A \code{FastqFileList}, \code{BamFileList}, \code{FastqFile},
+\code{BamFile} or character vector of file paths with all objects coercible
+to a single one of these types.}
 
 \item{outPath}{The path to write the FastQC reports. Must exist as (for
 safety) it will not be created when calling this function}

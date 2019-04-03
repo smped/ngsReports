@@ -12,20 +12,6 @@
 #' and specifying which module is required. See \code{\link{getModule}} for
 #' more details.
 #'
-#' @return An object of class FastqcData
-#'
-#' @examples
-#'
-#' # Get the files included with the package
-#' packageDir <- system.file("extdata", package = "ngsReports")
-#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1]
-#'
-#' # Load the FASTQC data as a FastqcData object
-#' fd <- FastqcData(fl)
-#' fd
-#'
-#' @include validationFunctions.R
-#'
 #' @slot Summary Summary of PASS/WARN/FAIL status for each module
 #' @slot Basic_Statistics The Basic_Statstics table from the top of a FastQC
 #' html report
@@ -51,7 +37,22 @@
 #' Sequence_Duplication_Levels. Only included in later versions of FastQC
 #' @slot version The version of FastQC used for generation of the report (if
 #' available)
-#' @slot path Path to the FastQC report
+#' @slot path Path to the FastQC report#'
+#'
+#' @return An object of class FastqcData
+#'
+#' @examples
+#'
+#' # Get the files included with the package
+#' packageDir <- system.file("extdata", package = "ngsReports")
+#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1]
+#'
+#' # Load the FASTQC data as a FastqcData object
+#' fd <- FastqcData(fl)
+#' fd
+#'
+#' @include validationFunctions.R
+#'
 #' @rdname FastqcData
 #' @aliases FastqcData-class
 setClass(

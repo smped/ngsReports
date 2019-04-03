@@ -8,9 +8,11 @@
 #' generates a ggplot2 object, with a set of minimal defaults.
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
-#' For example, preset axis limits can also be overwritten easily by adding a
-#' call to \code{scale_y_continuous} after the call to
-#' \code{plotSeqLengthDistn}.
+#'
+#' A cumulative plot can also be generated to provide guidance for minimum
+#' read length in some NGS workflows, by setting \code{plotType = "cumulative"}.
+#' If all libraries have reads of identical lengths, these plots may be less
+#' informative.
 #'
 #' An alternative interactive plot is available by setting the argument
 #' \code{usePlotly = TRUE}.
@@ -68,10 +70,10 @@ setGeneric("plotSeqLengthDistn", function(
     standardGeneric("plotSeqLengthDistn")
 }
 )
-#' @aliases plotSeqLengthDistn,character
+#' @aliases plotSeqLengthDistn,ANY
 #' @rdname plotSeqLengthDistn-methods
 #' @export
-setMethod("plotSeqLengthDistn", signature = "character", function(
+setMethod("plotSeqLengthDistn", signature = "ANY", function(
     x, usePlotly = FALSE, labels, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]

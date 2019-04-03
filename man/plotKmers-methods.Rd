@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotKmers}
 \alias{plotKmers}
-\alias{plotKmers,character-method}
-\alias{plotKmers,character}
+\alias{plotKmers,ANY-method}
+\alias{plotKmers,ANY}
 \alias{plotKmers,FastqcData-method}
 \alias{plotKmers,FastqcData}
 \alias{plotKmers,FastqcDataList-method}
@@ -13,7 +13,7 @@
 \usage{
 plotKmers(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{character}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotKmers}{ANY}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, labels, n = 6,
   ..., lineWidth = 0.5, pal = c("red", "blue", "green", "black",
@@ -61,6 +61,15 @@ A standard ggplot2 object or an interactive plotly object
 }
 \description{
 Plot Overrepresented Kmers
+}
+\details{
+As the Kmer Content module present in FastQC reports is relatively
+uninformative, and omitted by default in later versions of FastQC, these
+are rudimentary plots.
+
+Plots for \code{FastqcData} objects replicate those contained in a FastQC
+report, whilst the heatmap generated from \code{FastqcDataList} objects
+simply show the location and abundance of over-represented Kmers.
 }
 \examples{
 

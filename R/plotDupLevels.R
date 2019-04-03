@@ -5,10 +5,13 @@
 #'
 #' @details
 #' This extracts the Sequence_Duplication_Levels from the supplied object and
-#' generates a ggplot2 object, with a set of minimal defaults.
-#' The output of this function can be further modified using the standard
-#' ggplot2 methods.
+#' generates a ggplot2 object, with a set of minimal defaults. For multiple
+#' reports, this defaults to a heatmap with block sizes proportional to the
+#' percentage of reads belonging to that duplication category.
 #'
+#' If setting \code{usePlotly = FALSE}, the output of this function can be
+#' further modified using standard ggplot2 syntax. If setting
+#' \code{usePlotly = TRUE} an interactive plotly object will be produced.
 #'
 #' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file path
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
@@ -60,10 +63,10 @@ setGeneric("plotDupLevels", function(
     standardGeneric("plotDupLevels")
 }
 )
-#' @aliases plotDupLevels,character
+#' @aliases plotDupLevels,ANY
 #' @rdname plotDupLevels-methods
 #' @export
-setMethod("plotDupLevels", signature = "character", function(
+setMethod("plotDupLevels", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]

@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotSeqQuals}
 \alias{plotSeqQuals}
-\alias{plotSeqQuals,character-method}
-\alias{plotSeqQuals,character}
+\alias{plotSeqQuals,ANY-method}
+\alias{plotSeqQuals,ANY}
 \alias{plotSeqQuals,FastqcData-method}
 \alias{plotSeqQuals,FastqcData}
 \alias{plotSeqQuals,FastqcDataList-method}
@@ -14,7 +14,7 @@
 plotSeqQuals(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE,
   alpha = 0.1, warn = 30, fail = 20, ...)
 
-\S4method{plotSeqQuals}{character}(x, usePlotly = FALSE, labels, pwfCols,
+\S4method{plotSeqQuals}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
   counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
 
 \S4method{plotSeqQuals}{FastqcData}(x, usePlotly = FALSE, labels,

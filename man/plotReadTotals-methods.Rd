@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotReadTotals}
 \alias{plotReadTotals}
-\alias{plotReadTotals,character-method}
-\alias{plotReadTotals,character}
+\alias{plotReadTotals,ANY-method}
+\alias{plotReadTotals,ANY}
 \alias{plotReadTotals,FastqcDataList-method}
 \alias{plotReadTotals,FastqcDataList}
 \title{Draw a barplot of read totals}
@@ -13,7 +13,7 @@ plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
   bars = c("stacked", "adjacent"), barCols = c("red", "blue"),
   expand.x = expand_scale(mult = c(0, 0.02)), ...)
 
-\S4method{plotReadTotals}{character}(x, usePlotly = FALSE, labels,
+\S4method{plotReadTotals}{ANY}(x, usePlotly = FALSE, labels,
   duplicated = TRUE, bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
   0.02)), ...)
@@ -54,14 +54,13 @@ Draw a barplot of read totals
 }
 \details{
 Draw a barplot of read totals using the standard ggplot2 syntax.
-Read totals will be plotted in millions as this is the most common.
 The raw data from \code{\link{readTotals}} can otherwise be used to manually
 create a plot.
 
-However, this is based on the value shown on FASTQC reports at the top of
-DeDuplicatedTotals plot, and is known to be inaccurate.
-As it still gives a good guide as to sequence diversity it is included as the
-default.
+Duplication levels are based on the value shown on FASTQC reports at the
+top of the DeDuplicatedTotals plot, which is known to be inaccurate.
+As it still gives a good guide as to sequence diversity it is included as
+the default. This can be turned off by setting \code{duplicated = FALSE}.
 }
 \examples{
 

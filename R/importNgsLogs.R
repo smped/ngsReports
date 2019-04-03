@@ -4,16 +4,18 @@
 #' stderr
 #'
 #' @details Imports one or more log files as output by tools such as:
-#' \code{bowtie}, \code{bowtie2}, \code{Hisat2} or \code{STAR}.
+#' \code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR} or
+#' \code{picard MarkDuplicates}
 #'
 #' @param x \code{character}. Vector of filenames. All log files must be of the
 #' same type. Duplicate file paths will be silently ignored.
 #' @param type \code{character}. The type of file being imported. Can be one of
-#' \code{bowtie}, \code{bowtie2}, \code{hisat2} or \code{star}
+#' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star} or
+#' \code{duplicationMetrics}
 #' @param which Which element of the parsed object to return. Ignored in all
-#' file types except duplication metrics which can return either the metrics
-#' or the data supplied as a histogram. Defaults to the metrics data in this
-#' case.
+#' file types except \code{type = "duplicationMetrics"}, which can return
+#' either the metrics or the data supplied as a histogram. Defaults to the
+#' metrics data.
 #'
 #' @return A \code{tibble}.
 #' Column names are broadly similar to the text in supplied files,
@@ -35,6 +37,7 @@ importNgsLogs <- function(x, type, which = 1) {
     ## Check for a valid filetype
     possTypes <- c("bowtie", "bowtie2", "hisat2", "star", "duplicationMetrics")
     type <- match.arg(type, possTypes)
+
     ## Change to title case for easier parsing below
     type <- stringr::str_split_fixed(type, pattern = "", n = nchar(type))
     type[1] <- stringr::str_to_upper(type[1])
@@ -44,7 +47,7 @@ importNgsLogs <- function(x, type, which = 1) {
     data <- suppressWarnings(lapply(x, readLines))
     names(data) <- basename(x)
 
-    ## Check validity
+    ## Check validity using the helpers defined as private functions
     vFun <- paste0(".isValid", type, "Log")
     validLogs <- vapply(data, eval(parse(text = vFun)), logical(1))
     if (any(!validLogs)) {
@@ -52,12 +55,12 @@ importNgsLogs <- function(x, type, which = 1) {
         stop(paste("Incorrect file structure for:", failed , collapse = "\n"))
     }
 
-    ## Parse the data
+    ## Parse the data using the helpers defined as private functions
     if (is.character(which)) which <- paste0("'", which, "'")
     pFun <- paste0(".parse", type, "Logs(data, which = ", which, ")")
     df <- eval(parse(text = pFun))
 
-    ## Return the tibble
+    ## Return a tibble
     as_tibble(df)
 
 }

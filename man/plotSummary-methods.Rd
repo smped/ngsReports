@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotSummary}
 \alias{plotSummary}
-\alias{plotSummary,character-method}
-\alias{plotSummary,character}
+\alias{plotSummary,ANY-method}
+\alias{plotSummary,ANY}
 \alias{plotSummary,FastqcDataList-method}
 \alias{plotSummary,FastqcDataList}
 \title{Plot the PASS/WARN/FAIL information}
@@ -12,7 +12,7 @@
 plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
   dendrogram = FALSE, ...)
 
-\S4method{plotSummary}{character}(x, usePlotly = FALSE, labels, pwfCols,
+\S4method{plotSummary}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
   cluster = FALSE, dendrogram = FALSE, ...)
 
 \S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels,
@@ -20,7 +20,8 @@ plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
   gridlineWidth = 0.2, gridlineCol = "grey20")
 }
 \arguments{
-\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or character
+vector of file paths}
 
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
@@ -53,7 +54,7 @@ Extract the PASS/WARN/FAIL summaries and plot them
 \details{
 This uses the standard ggplot2 syntax to create a three colour plot.
 The output of this function can be further modified using the standard
-ggplot2 methods.
+ggplot2 methods if required.
 }
 \examples{
 

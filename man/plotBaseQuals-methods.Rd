@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotBaseQuals}
 \alias{plotBaseQuals}
-\alias{plotBaseQuals,character-method}
-\alias{plotBaseQuals,character}
+\alias{plotBaseQuals,ANY-method}
+\alias{plotBaseQuals,ANY}
 \alias{plotBaseQuals,FastqcData-method}
 \alias{plotBaseQuals,FastqcData}
 \alias{plotBaseQuals,FastqcDataList-method}
@@ -14,19 +14,20 @@
 plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25,
   fail = 20, boxWidth = 0.8, ...)
 
-\S4method{plotBaseQuals}{character}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
+\S4method{plotBaseQuals}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
+  warn = 25, fail = 20, boxWidth = 0.8, ...)
 
 \S4method{plotBaseQuals}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
 
 \S4method{plotBaseQuals}{FastqcDataList}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 25, fail = 20, boxWidth = 0.8,
-  plotType = c("heatmap", "boxplot"), plotValue = c("Mean", "Median"),
+  plotType = c("heatmap", "boxplot"), plotValue = "Mean",
   cluster = FALSE, dendrogram = FALSE, nc = 2, ...)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or path}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or character
+vector of file paths}
 
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
@@ -49,7 +50,8 @@ respectively (i.e. percentages)}
 \code{"heatmap"}}
 
 \item{plotValue}{\code{character} Type of data to be presented. Can be
-"Mean" or "Median"}
+any of the columns returned by
+\code{getModule(x, module = "Per_base_sequence_qual")}}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -62,16 +64,24 @@ then the dendrogram will be displayed.}
 Only used if drawing boxplots for multiple files in a FastqcDataList}
 }
 \value{
-A standard ggplot2 object
+A standard ggplot2 object or an interactive plotly object
 }
 \description{
 Plot the Base Qualities for each file as separate plots
 }
 \details{
-This replicates the \code{Per base sequence quality} plots from
-FASTQC, using facets to plce them all in a single ggplot2 object.
+When acting on a \code{FastqcDataList}, this defaults to a heatmap
+using the mean Per_base_sequence_quality score. A set of plots which
+replicate those obtained through a standard FastQC html report can be
+obtained by setting \code{plotType = "boxplot"}, which uses \code{facet_wrap}
+to provide the layout as a single ggplot object.
 
-For large datasets, subsetting by R1 or R2 reads may be helpful
+When acting an a \code{FastqcData} object, this replicates the
+\code{Per base sequence quality} plots from FastQC with no faceting.
+
+For large datasets, subsetting by R1 or R2 reads may be helpful.
+
+An interactive plot can be obtained by setting \code{usePlotly = TRUE}.
 }
 \examples{
 

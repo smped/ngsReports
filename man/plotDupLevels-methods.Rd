@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotDupLevels}
 \alias{plotDupLevels}
-\alias{plotDupLevels,character-method}
-\alias{plotDupLevels,character}
+\alias{plotDupLevels,ANY-method}
+\alias{plotDupLevels,ANY}
 \alias{plotDupLevels,FastqcData-method}
 \alias{plotDupLevels,FastqcData}
 \alias{plotDupLevels,FastqcDataList-method}
@@ -13,8 +13,7 @@
 \usage{
 plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
 
-\S4method{plotDupLevels}{character}(x, usePlotly = FALSE, labels,
-  pwfCols, ...)
+\S4method{plotDupLevels}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotDupLevels}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)
@@ -64,9 +63,13 @@ FASTQC reports
 }
 \details{
 This extracts the Sequence_Duplication_Levels from the supplied object and
-generates a ggplot2 object, with a set of minimal defaults.
-The output of this function can be further modified using the standard
-ggplot2 methods.
+generates a ggplot2 object, with a set of minimal defaults. For multiple
+reports, this defaults to a heatmap with block sizes proportional to the
+percentage of reads belonging to that duplication category.
+
+If setting \code{usePlotly = FALSE}, the output of this function can be
+further modified using standard ggplot2 syntax. If setting
+\code{usePlotly = TRUE} an interactive plotly object will be produced.
 }
 \examples{
 

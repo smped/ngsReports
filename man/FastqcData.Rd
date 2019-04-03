@@ -71,7 +71,7 @@ Sequence_Duplication_Levels. Only included in later versions of FastQC}
 \item{\code{version}}{The version of FastQC used for generation of the report (if
 available)}
 
-\item{\code{path}}{Path to the FastQC report}
+\item{\code{path}}{Path to the FastQC report#'}
 }}
 
 \examples{

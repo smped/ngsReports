@@ -7,6 +7,13 @@
 #' Any possible double counting by FastQC is ignored for the purposes of a
 #' simple approximation.
 #'
+#' Plots generated from a \code{FastqcData} object will show the top \code{n}
+#' sequences grouped by their predicted source & coloured by whether the
+#' individual sequence would cause a WARN/FAIL.
+#'
+#' Plots generated from a \code{FastqcDataList} group sequences by predicted
+#' source and summarise as a percentage of the total reads.
+#'
 #' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param usePlotly \code{logical} Default \code{FALSE} will render using
 #' ggplot. If \code{TRUE} plot will be rendered with plotly
@@ -47,7 +54,6 @@
 #' @importFrom grDevices rgb
 #' @import ggplot2
 #'
-#'
 #' @name plotOverrep
 #' @rdname plotOverrep-methods
 #' @export
@@ -56,10 +62,10 @@ setGeneric("plotOverrep", function(
     standardGeneric("plotOverrep")
 }
 )
-#' @aliases plotOverrep,character
+#' @aliases plotOverrep,ANY
 #' @rdname plotOverrep-methods
 #' @export
-setMethod("plotOverrep", signature = "character", function(
+setMethod("plotOverrep", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]

@@ -2,6 +2,14 @@
 #'
 #' @description Plot Overrepresented Kmers
 #'
+#' @details As the Kmer Content module present in FastQC reports is relatively
+#' uninformative, and omitted by default in later versions of FastQC, these
+#' are rudimentary plots.
+#'
+#' Plots for \code{FastqcData} objects replicate those contained in a FastQC
+#' report, whilst the heatmap generated from \code{FastqcDataList} objects
+#' simply show the location and abundance of over-represented Kmers.
+#'
 #'
 #' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param n \code{numeric}. The number of Kmers to show.
@@ -46,10 +54,10 @@
 setGeneric("plotKmers", function(x, usePlotly = FALSE, labels, ...){
     standardGeneric("plotKmers")
 })
-#' @aliases plotKmers,character
+#' @aliases plotKmers,ANY
 #' @rdname plotKmers-methods
 #' @export
-setMethod("plotKmers", signature = "character", function(
+setMethod("plotKmers", signature = "ANY", function(
     x, usePlotly = FALSE, labels, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]

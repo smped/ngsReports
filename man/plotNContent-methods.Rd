@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotNContent}
 \alias{plotNContent}
-\alias{plotNContent,character-method}
-\alias{plotNContent,character}
+\alias{plotNContent,ANY-method}
+\alias{plotNContent,ANY}
 \alias{plotNContent,FastqcData-method}
 \alias{plotNContent,FastqcData}
 \alias{plotNContent,FastqcDataList-method}
@@ -14,7 +14,7 @@
 plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   fail = 20, ...)
 
-\S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols,
+\S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
   warn = 5, fail = 20, ...)
 
 \S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels,
@@ -55,7 +55,7 @@ then the dendrogram will be displayed.}
 A standard ggplot2 object, or an interactive plotly object
 }
 \description{
-Draw an N Content Plot across one or more FASTQC reports
+Draw an N Content Plot across one or more FastQC reports
 }
 \details{
 This extracts the N_Content from the supplied object and generates a ggplot2

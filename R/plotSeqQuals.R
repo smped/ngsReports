@@ -65,10 +65,10 @@ setGeneric("plotSeqQuals", function(
     standardGeneric("plotSeqQuals")
 }
 )
-#' @aliases plotSeqQuals,character
+#' @aliases plotSeqQuals,ANY
 #' @rdname plotSeqQuals-methods
 #' @export
-setMethod("plotSeqQuals", signature = "character", function(
+setMethod("plotSeqQuals", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
     x <- FastqcDataList(x)

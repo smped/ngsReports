@@ -33,7 +33,8 @@
 #' @importFrom methods slotNames
 .isValidFastqcData <- function(object){
     ## At minimum, this should contain slots for Summary, Basic_Statistics,
-    ## version & path. The remainder of the modules may be missing
+    ## version & path. The remainder of the modules may be missing, although
+    ## they will stil be present, just as empty data.frame objects.
     reqSlots <- c("Summary", "Basic_Statistics", "version", "path")
     all(reqSlots %in% slotNames(object))
 }

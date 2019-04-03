@@ -3,29 +3,29 @@
 \docType{methods}
 \name{getGcDistn}
 \alias{getGcDistn}
-\alias{getGcDistn,character-method}
-\alias{getGcDistn,character}
+\alias{getGcDistn,ANY-method}
+\alias{getGcDistn,ANY}
 \alias{getGcDistn,DNAStringSet-method}
 \alias{getGcDistn,DNAStringSet}
 \title{Generate a GC Content Distribution From Sequences}
 \usage{
-getGcDistn(x, n = 1e+06, readLength = 100, fragLength = 200,
+getGcDistn(x, n = 1e+06, rl = 100, fl = 200, fragSd = 30,
+  bins = 101)
+
+\S4method{getGcDistn}{ANY}(x, n = 1e+06, rl = 100, fl = 200,
   fragSd = 30, bins = 101)
 
-\S4method{getGcDistn}{character}(x, n = 1e+06, readLength = 100,
-  fragLength = 200, fragSd = 30, bins = 101)
-
-\S4method{getGcDistn}{DNAStringSet}(x, n = 1e+06, readLength = 100,
-  fragLength = 200, fragSd = 30, bins = 101)
+\S4method{getGcDistn}{DNAStringSet}(x, n = 1e+06, rl = 100, fl = 200,
+  fragSd = 30, bins = 101)
 }
 \arguments{
 \item{x}{\code{DNAStringSet} or path to a fasta file}
 
 \item{n}{The number of reads to sample}
 
-\item{readLength}{Read Lengths to sample}
+\item{rl}{Read Lengths to sample}
 
-\item{fragLength}{The mean of the fragment lengths sequenced}
+\item{fl}{The mean of the fragment lengths sequenced}
 
 \item{fragSd}{The standard deviation of the fragment lengths being sequenced}
 

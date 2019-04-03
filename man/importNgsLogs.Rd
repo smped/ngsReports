@@ -11,12 +11,13 @@ importNgsLogs(x, type, which = 1)
 same type. Duplicate file paths will be silently ignored.}
 
 \item{type}{\code{character}. The type of file being imported. Can be one of
-\code{bowtie}, \code{bowtie2}, \code{hisat2} or \code{star}}
+\code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star} or
+\code{duplicationMetrics}}
 
 \item{which}{Which element of the parsed object to return. Ignored in all
-file types except duplication metrics which can return either the metrics
-or the data supplied as a histogram. Defaults to the metrics data in this
-case.}
+file types except \code{type = "duplicationMetrics"}, which can return
+either the metrics or the data supplied as a histogram. Defaults to the
+metrics data.}
 }
 \value{
 A \code{tibble}.
@@ -29,7 +30,8 @@ stderr
 }
 \details{
 Imports one or more log files as output by tools such as:
-\code{bowtie}, \code{bowtie2}, \code{Hisat2} or \code{STAR}.
+\code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR} or
+\code{picard MarkDuplicates}
 }
 \examples{
 f <- c("bowtiePE.txt", "bowtieSE.txt")

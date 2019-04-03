@@ -6,8 +6,8 @@
 #' \code{Percent of total reads}
 #'
 #' @param x Can be a \code{FastqcData} or \code{FastqcDataList}
-#' @param path Path to export the fasta file to. Reverts to a default if not
-#' supplied
+#' @param path Path to export the fasta file to. Reverts to a default in the
+#' working directory if not supplied
 #' @param n The number of sequences to output
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
@@ -44,7 +44,7 @@ setGeneric("overRep2Fasta", function(
 #' @rdname overRep2Fasta-methods
 #' @export
 setMethod("overRep2Fasta", signature = "FastqcData", function(
-    x, path,  n = 10, labels, noAdapters = TRUE, ...){
+    x, path, n = 10, labels, noAdapters = TRUE, ...){
 
     df <- getModule(x, "Overrepresented_sequences")
 
@@ -76,7 +76,7 @@ setMethod("overRep2Fasta", signature = "FastqcData", function(
 #' @rdname overRep2Fasta-methods
 #' @export
 setMethod("overRep2Fasta", signature = "FastqcDataList", function(
-    x, path,  n = 10, labels, noAdapters = TRUE, ...){
+    x, path, n = 10, labels, noAdapters = TRUE, ...){
 
     df <- getModule(x, "Overrepresented_sequences")
     labels <- .makeLabels(df, labels, ...)
