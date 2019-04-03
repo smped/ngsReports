@@ -262,7 +262,7 @@ done by setting `plotType = "line"`.
 Again, discretion should be shown when choosing this option for many samples.
 
 ```{r}
-r2 <- grepl("R2", fileName(fdl))
+r2 <- grepl("R2", names(fdl))
 plotSeqQuals(fdl[r2], plotType = "line")
 ```
 

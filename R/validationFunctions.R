@@ -30,6 +30,7 @@
     TRUE
 }
 
+#' @importFrom methods slotNames
 .isValidFastqcData <- function(object){
     ## At minimum, this should contain slots for Summary, Basic_Statistics,
     ## version & path. The remainder of the modules may be missing
@@ -37,6 +38,7 @@
     all(reqSlots %in% slotNames(object))
 }
 
+#' @importFrom methods is
 .isValidFastqcDataList <- function(object){
     ## This is very rudimentary & may need more thought
     cls <- vapply(object, is, logical(1), "FastqcData")

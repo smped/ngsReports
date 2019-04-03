@@ -6,5 +6,12 @@ Changes in version 0.99.1 (2019-02-03)
 + Removed Remotes from DESCRIPTION
 + Added getGcDistribution to enable calculation of GC Content Distributions from FastaFiles
 
-Changes in version 0.99.7 (2019-03-23)
+Changes in version 0.99.7 (2019-04-03)
++ This is a breaking change!
 + Extracting modules is no longer performed by individual functions, but is now performed using the function getModule
++ FastqcFileLists objects are no longer implemented and the class FastqcFile has been made into the private class .FastqcFile
++ FastqcDataList objects have names attributes and can now be subset using names
++ The function fileName has been renamed as fqName to clarify that it refers to the underlying Fastq file for a Fastqc report
++ All log file imports are now handled by the single function importNgsLogs
++ Most plot functions have been renamed with shorter names, e.g. plotOverrepresentedSequences is now plotOverrep
++ The FastQC version is now obtained using fqcVersion not Version
