@@ -27,36 +27,39 @@
 #' @examples
 #' faDir <- system.file("extdata", package = "ngsReports")
 #' faFile <- list.files(faDir, pattern = "fasta", full.names = TRUE)
-#' gen_df <- getGcDistn(faFile, n = 200)
+#' df <- getGcDistn(faFile, n = 200)
 #'
-#' @importFrom stats rnorm runif lm.fit
+#' @importFrom Biostrings readDNAStringSet DNAStringSet
 #' @importFrom XVector subseq
 #' @importFrom truncnorm rtruncnorm
-#' @importClassesFrom Biostrings DNAStringSet
+#' @importFrom stats rnorm runif lm.fit
 #'
 #' @export
-#' @rdname getGcDistn-methods
-setGeneric("getGcDistn", function(
-    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101){
-    standardGeneric("getGcDistn")
-})
-#' @rdname getGcDistn-methods
-#' @aliases getGcDistn,ANY
+getGcDistn <-
+    function(x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101) {
+        UseMethod("getGcDistn")
+    }
 #' @export
-setMethod("getGcDistn", "ANY", function(
-    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101){
+getGcDistn.character <-
+    function(x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101) {
 
-    ## This will error for non-character inputs & check the file path otherwise
-    stopifnot(file.exists(x))
-    x <- tryCatch(readDNAStringSet(x))
-    getGcDistn(x, n, rl, fl, fragSd, bins)
+        stopifnot(file.exists(x))
+        errMsg <- "Supplied File not in FASTA format"
+        x <- tryCatch(
+            readDNAStringSet(x, format = "fasta"),
+            error = function(e) {stop(errMsg)}
+        )
+        getGcDistn.DNAStringSet(x, n, rl, fl, fragSd, bins)
 
-})
-#' @rdname getGcDistn-methods
-#' @aliases getGcDistn,DNAStringSet
+}
 #' @export
-setMethod("getGcDistn", "DNAStringSet", function(
-    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101){
+getGcDistn.default <- function(x, ...){
+    cl <- class(x)
+    message("No method defined for objects of class ", cl)
+}
+#' @export
+getGcDistn.DNAStringSet <-
+    function(x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101){
 
     ## Check the arguments & convert to integers
     n <- tryCatch(as.integer(n))
@@ -65,13 +68,14 @@ setMethod("getGcDistn", "DNAStringSet", function(
     bins <- tryCatch(as.integer(bins))
     stopifnot(rl <= fl)
     stopifnot(is.numeric(fragSd))
-    stopifnot(fragSd > 0)
+    stopifnot(fragSd >= 0)
 
     ## Randomly select sequences for the fragments
     idx <- sample(seq_along(x), n, replace = TRUE)
     molecules <- x[idx]
 
-    ## Sample a set of fragments with variable length uing the truncated norm
+    ## Sample a set of fragments with variable length using the truncated norm
+    ## Upper & lower limits are set as 1 & sequence length respectively
     fragSizes <- rtruncnorm(n, 1, width(molecules), fl, fragSd)
     fragSizes <- floor(fragSizes)
 
@@ -79,22 +83,18 @@ setMethod("getGcDistn", "DNAStringSet", function(
     starts <- runif(n, 1, width(molecules) - fragSizes)
     starts <- floor(starts)
 
-    ## Find any molecules shorter than the sample fragment length
-    keep <- (width(molecules) - starts) > fragSizes
-    if (any(!keep)) message(paste(sum(!keep), "fragments will be skipped"))
-    molecules <- molecules[keep]
-    fragSizes <- fragSizes[keep]
-    starts <- starts[keep]
+    ## Set the end points
+    ends <- starts + fragSizes - 1
+    ends[ends > width(molecules)] <- width(molecules)[ends > width(molecules)]
 
-    ## Generate the reads
-    frags <- subseq(molecules, start = starts, width = fragSizes)
+    ## Generate the fragments
+    frags <- subseq(molecules, start = starts, end = ends)
 
-    ## Now sample reads. Where frags are < readLength sample the shorter value
-    ends <- rep(rl, sum(keep))
-    ## Where RL > the sampled FL, keep the bases up to the sampled FL
-    shortFrags <- ends > width(frags)
-    ends[shortFrags] <- width(frags)[shortFrags]
-    reads <- subseq(frags, start = 1, end = ends)
+    ## Now sample down to reads.
+    ## Where frags are < readLength, sample the shorter value
+    rdEnds <- width(frags)
+    rdEnds[rdEnds > rl] <- rl
+    reads <- subseq(frags, start = 1, end = rdEnds)
 
     ## Find the GC content for each read
     gc <- as.vector(Biostrings::letterFrequency(reads, "GC"))
@@ -104,11 +104,13 @@ setMethod("getGcDistn", "DNAStringSet", function(
     ## Form into bins based on RL
     breaks <- seq(0, rl) / rl
     gcCut <- table(cut(gc.content, breaks = breaks, include.lowest = FALSE))
-    freq <- c(sum(gc.content == 0), gcCut) / sum(keep)
+    freq <- c(sum(gc.content == 0), gcCut) / length(frags)
 
     ## Now we'll interpolate using sets of three points to fit regression lines
     ## This deals with the issues trying to obtain a continuous distribution
-    ## when dividing by an effectively discrete denominator
+    ## when dividing by a discrete denominator
+    ## Unfortunately this is necessary as FastQC only provides values for
+    ## percentages from 0 to 100 in integer steps
     splits <- seq(1, length(breaks) - 2)
     lmFits <- lapply(splits, function(x){
         vals <- seq(x, x + 2)
@@ -126,5 +128,4 @@ setMethod("getGcDistn", "DNAStringSet", function(
         }, numeric(1)))
 
     df
-
-})
+}

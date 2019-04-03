@@ -3,7 +3,7 @@
 \docType{methods}
 \name{runFastQC}
 \alias{runFastQC}
-\alias{runFastQC,ALL-method}
+\alias{runFastQC,ANY-method}
 \alias{runFastQC,FastqFile-method}
 \alias{runFastQC,FastqFileList-method}
 \alias{runFastQC,BamFile-method}
@@ -15,7 +15,7 @@ runFastQC(object, outPath, threads = 1L, casava = FALSE,
   min_length = 1, contaminants = c(), adapters = c(), kmers = 7,
   exec)
 
-\S4method{runFastQC}{ALL}(object, outPath, threads = 1L,
+\S4method{runFastQC}{ANY}(object, outPath, threads = 1L,
   casava = FALSE, nofilter = FALSE, extract = FALSE,
   nogroup = FALSE, min_length = 1, contaminants = c(),
   adapters = c(), kmers = 7, exec)

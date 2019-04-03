@@ -50,6 +50,7 @@
 #' }
 #'
 #' @importFrom parallel detectCores
+#' @importFrom methods is
 #' @importClassesFrom ShortRead FastqFile FastqFileList
 #' @importClassesFrom Rsamtools BamFile BamFileList
 #'
@@ -62,15 +63,21 @@ setGeneric("runFastQC", function(
     standardGeneric("runFastQC")
 }
 )
-#' @aliases runFastQC,ALL-method
+#' @aliases runFastQC,ANY-method
 #' @rdname runFastQC-methods
 #' @export
-setMethod("runFastQC", "ALL", function(
+setMethod("runFastQC", "ANY", function(
     object, outPath, threads=1L, casava = FALSE, nofilter = FALSE,
     extract = FALSE, nogroup = FALSE, min_length = 1, contaminants = c(),
     adapters = c(), kmers = 7, exec){
 
-    stopifnot(file.exists(object))
+    ## Cursory checks
+    if (!is(object, "character"))
+        stop("runFastQC not implemented for objects of class ", class(object))
+    if (!all(file.exists(object)))
+        stop("Object must specify valid filepaths")
+
+    ## Determine the file type
     fq <- all(grepl("(fq|fastq|fq.gz|fastq.gz|txt)$", basename(object)))
     bam <- all(grepl("bam$", basename(object)))
 

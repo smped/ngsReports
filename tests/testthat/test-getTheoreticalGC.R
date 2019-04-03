@@ -22,5 +22,5 @@ test_that("DNAStringSet method works as expected",{
 
 test_that("Key parameters error correctly",{
     expect_error(getGcDistn(faFile, n = 100, rl = 60, fl = 50))
-    expect_error(getGcDistn(faFile, n = 100, rl = 50, fl = 60, fragSd = 0))
+    expect_error(getGcDistn(faFile, n = 100, rl = 50, fl = 60, fragSd = -1))
 })

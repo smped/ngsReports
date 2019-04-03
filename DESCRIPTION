@@ -64,7 +64,7 @@ Collate:
     'fqName.R'
     'fqcVersion.R'
     'getColours.R'
-    'getGcDistn.R'
+    'getGCDistn.R'
     'getModule.R'
     'getSummary.R'
     'helpers.R'
