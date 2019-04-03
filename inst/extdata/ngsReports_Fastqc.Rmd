@@ -11,7 +11,7 @@ output:
 params:
     tgtsFile: "targets.csv"
     usePlotly: TRUE
-    dataType: "Transcriptome"
+    gcType: "Transcriptome"
     species: "Hsapiens"
     nOver: 30
     nKmer: 30
@@ -48,7 +48,7 @@ globals <- list(
     cluster = TRUE,
     dendrogram = TRUE,
     theoreticalGC = TRUE,
-    theoreticalType = params$dataType,
+    gcType = params$gcType,
     species = params$species
     )
 ```
@@ -142,13 +142,13 @@ plotSeqContent(fastqcData, labels = plotLabels, cluster = globals$cluster, dendr
 
 ## Per Sequence GC Content
 
-```{r plotGCHeat, fig.cap = paste("GC Content Heatmap normalised to theoretical GC content in the", globals$species, globals$theoreticalType)}
-plotGcContent(fastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, theoreticalType = globals$theoreticalType, species = globals$species, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+```{r plotGCHeat, fig.cap = paste("GC Content Heatmap normalised to theoretical GC content in the", globals$species, globals$gcType)}
+plotGcContent(fastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, gcType = globals$gcType, species = globals$species, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 
-```{r plotGCLine, fig.cap = paste("GC Content Distributions for all reads showing theoretical GC content from the", globals$species, globals$theoreticalType)}
-plotGcContent(fastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, theoreticalType = globals$theoreticalType, species = globals$species, plotType = "line", usePlotly = globals$usePlotly)
+```{r plotGCLine, fig.cap = paste("GC Content Distributions for all reads showing theoretical GC content from the", globals$species, globals$gcType)}
+plotGcContent(fastqcData, labels = plotLabels, theoreticalGC = globals$theoreticalGC, gcType = globals$gcType, species = globals$species, plotType = "line", usePlotly = globals$usePlotly)
 ```
 
 ## Sequence Length Distribution

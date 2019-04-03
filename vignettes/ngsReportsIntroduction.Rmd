@@ -346,12 +346,11 @@ object `gcTheoretical`, which has been defined with the additional `S4` class
 `TheoreticalGC`.
 GC content was calculated using scripts obtained from  
 https://github.com/mikelove/fastqcTheoreticalGC.
-Available genomes and transcriptomes can be obtained using the functions 
-`genomes()` and `transcriptomes()` on the object `gcTheoretical`
+Available genomes and transcriptomes can be obtained using the function 
+`gcAvail()` on the object `gcTheoretical` and specifying the type.
 
-```{r, eval=FALSE}
-transcriptomes(gcTheoretical)
-genomes(gcTheoretical)
+```{r}
+gcAvail(gcTheoretical, "Genome")
 ```
 
 ### Inspecting GC Content
@@ -364,7 +363,7 @@ This empirically determined content is shown as the Theoretical GC content
 line.
 
 ```{r, fig.cap = "Example GC Content plot using the Hsapiens Transcriptome for the theoretical distribution."}
-plotGcContent(fdl[[1]], species = "Hsapiens", theoreticalType = "transcriptome")
+plotGcContent(fdl[[1]], species = "Hsapiens", gcType = "Transcriptome")
 ```
 
 Again, data is summarised as a heatmap when plotting across multiple reports, 
@@ -379,7 +378,7 @@ Line plots can also be produce an alternative viewpoint, with read totals
 displayed as percentages instead of raw counts.
 
 ```{r, fig.cap = "Example GC content plot represented as a line plot instead of a heatmap."}
-plotGcContent(fdl, plotType = "line",  theoreticalType = "Transcriptome")
+plotGcContent(fdl, plotType = "line",  gcType = "Transcriptome")
 ```
 
 Customized theoretical GC content can be generated using input DNA sequences 

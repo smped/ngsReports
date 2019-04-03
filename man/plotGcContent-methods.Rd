@@ -12,20 +12,20 @@
 \title{Plot the Per Sequence GC Content}
 \usage{
 plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-  theoreticalType = "Genome", species = "Hsapiens", GCobject,
-  Fastafile, n = 1e+06, ...)
+  gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
+  GCobject, Fastafile, n = 1e+06, ...)
 
 \S4method{plotGcContent}{ANY}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, theoreticalType = "Genome",
+  theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
 
 \S4method{plotGcContent}{FastqcData}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, theoreticalType = "Genome",
+  theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06,
   counts = FALSE, lineCols = c("red", "blue"), ...)
 
 \S4method{plotGcContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, theoreticalType = "Genome",
+  theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06,
   plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
   dendrogram = FALSE, ...)
@@ -46,7 +46,7 @@ GC content, set to \code{TRUE} to normalize values of GC_Content by the
 theoretical values using \code{\link{gcTheoretical}}. \code{species} must be
 specified.}
 
-\item{theoreticalType}{\code{character} Select type of data to normalize GC
+\item{gcType}{\code{character} Select type of data to normalize GC
 content against. Accepts either "Genome" (default) or "Transcriptome".}
 
 \item{species}{\code{character} if \code{gcTheory} is \code{TRUE} it must be

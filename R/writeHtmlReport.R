@@ -6,7 +6,7 @@
 #' @param template The template file which will be copied into \code{fastqcDir}
 #' @param usePlotly Generate interactive plots?
 #' @param species Species/closely related species of sequenced samples
-#' @param dataType Is the data "Transcriptomic" or "Genomic" in nature?
+#' @param gcType Is the data "Transcriptomic" or "Genomic" in nature?
 #' @param nOver The maximum number of Overrepresented Sequences to show
 #' @param nKmer The maximum number of Kmers to show
 #' @param targetsDF A data.frame with at least two columns named
@@ -39,7 +39,7 @@
 #' @export
 writeHtmlReport <- function(
     fastqcDir, template, usePlotly = TRUE, species = "Hsapiens",
-    dataType = "Transcriptome", nOver = 30, nKmer = 30, targetsDF,
+    gcType = c("Genome", "Transcriptome"), nOver = 30, nKmer = 30, targetsDF,
     overwrite = FALSE, quiet = TRUE){
 
     ## Maybe include checks for the package webshot & PhantomJS
@@ -88,14 +88,14 @@ writeHtmlReport <- function(
 
     ## Check the remaining arguments
     stopifnot(is.logical(usePlotly))
-    dataType <- match.arg(dataType, c("Transcriptome", "Genome"))
     nOver <- suppressWarnings(as.integer(nOver[1]))
     nKmer <- suppressWarnings(as.integer(nKmer[1]))
     stopifnot(!is.na(c(nOver, nKmer)))
-    gcFun <- match.arg(tolower(dataType), c("genomes","transcriptomes"))
+
     ## Include the namesapce for gcTheoretical as that allows running without
     ## loading the package, which is a pretty common use case
-    avail <- do.call(gcFun, list(object = ngsReports::gcTheoretical))
+    gcType <- match.arg(gcType)
+    avail <- gcAvail(ngsReports::gcTheoretical, gcType)
     species <- match.arg(species, avail$Name)
 
     ## Compile the document in the directory
@@ -110,7 +110,7 @@ writeHtmlReport <- function(
         quiet = quiet,
         params = list(
             usePlotly = usePlotly,
-            dataType = dataType,
+            gcType = gcType,
             species = species,
             nOver = nOver,
             nKmer = nKmer)

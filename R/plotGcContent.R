@@ -29,7 +29,7 @@
 #' GC content, set to \code{TRUE} to normalize values of GC_Content by the
 #' theoretical values using \code{\link{gcTheoretical}}. \code{species} must be
 #' specified.
-#' @param theoreticalType \code{character} Select type of data to normalize GC
+#' @param gcType \code{character} Select type of data to normalize GC
 #' content against. Accepts either "Genome" (default) or "Transcriptome".
 #' @param GCobject an object of class GCTheoretical.
 #'  Defaults to the gcTheoretical object supplied with the package
@@ -83,8 +83,8 @@
 #' @export
 setGeneric("plotGcContent", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, ...){
+    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
+    GCobject, Fastafile, n = 1e+6, ...){
     standardGeneric("plotGcContent")
 }
 )
@@ -93,12 +93,12 @@ setGeneric("plotGcContent", function(
 #' @export
 setMethod("plotGcContent", signature = "ANY", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, ...){
+    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
+    GCobject, Fastafile, n = 1e+6, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
     plotGcContent(
-        x, usePlotly, labels, theoreticalGC, theoreticalType, species,
+        x, usePlotly, labels, theoreticalGC, gcType, species,
         GCobject, Fastafile, n, ...
     )
 }
@@ -108,8 +108,9 @@ setMethod("plotGcContent", signature = "ANY", function(
 #' @export
 setMethod("plotGcContent", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n = 1e+6, counts = FALSE, lineCols = c("red", "blue"), ...){
+    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
+    GCobject, Fastafile, n = 1e+6, counts = FALSE, lineCols = c("red", "blue"),
+    ...){
 
     df <- getModule(x, "Per_sequence_GC_content")
 
@@ -148,17 +149,15 @@ setMethod("plotGcContent", signature = "FastqcData", function(
                 paste("Theoretical Distribution based on file", Fastafile)
         }
         else{
-            gcFun <- match.arg(
-                tolower(theoreticalType), c("genomes","transcriptomes")
-            )
-            avail <- do.call(gcFun, list(object = GCobject))
-            stopifnot(species %in% avail$Name)
-            gcTheoryDF <- getGC(GCobject, species,theoreticalType)
+            gcType <- match.arg(gcType)
+            avail <- gcAvail(GCobject, gcType)
+            species <- match.arg(species, avail$Name)
+            gcTheoryDF <- getGC(GCobject, species, gcType)
             names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
             subTitle <- paste(
                 "Theoretical Distribution based on the",
                 species,
-                theoreticalType
+                gcType
             )
         }
         gcTheoryDF$Type <- "Theoretical Distribution"
@@ -246,9 +245,9 @@ setMethod("plotGcContent", signature = "FastqcData", function(
 #' @export
 setMethod("plotGcContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    theoreticalType = "Genome", species = "Hsapiens", GCobject, Fastafile,
-    n=1e+6, plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
-    dendrogram = FALSE, ...){
+    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
+    GCobject, Fastafile, n=1e+6, plotType = c("heatmap", "line"), pwfCols,
+    cluster = FALSE, dendrogram = FALSE, ...){
 
     df <- getModule(x, "Per_sequence_GC_content")
 
@@ -292,21 +291,18 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
         else {
             ## Tidy up the GC content variables
             if (missing(GCobject)) GCobject <- gcTheoretical
-            gcFun <- match.arg(
-                tolower(theoreticalType),
-                c("genomes","transcriptomes")
-            )
-            avail <- do.call(gcFun, list(object = GCobject))
+            gcType <- match.arg(gcType)
+            avail <- gcAvail(GCobject, gcType)
             species <- match.arg(species, avail$Name)
             gcTheoryDF <- getGC(
                 GCobject,
                 name = species,
-                type = theoreticalType
+                type = gcType
             )
             names(gcTheoryDF)[names(gcTheoryDF) == species] <- "Freq"
             subTitle <- paste(
                 "Theoretical Distribution based on the",
-                species, theoreticalType
+                species, gcType
             )
         }
         gcTheoryDF$Filename <- "Theoretical Distribution"

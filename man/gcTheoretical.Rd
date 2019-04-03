@@ -15,8 +15,7 @@ provided species, for both the genome and transcriptome, where available.
 \details{
 The object is defined with the S4 class \code{TheoreticalGC}.
 Species for which information is available can be found using
-the commands \code{genomes(gcTheoretical)}
-or \code{transcriptomes(gcTheoretical)}.
+the command \code{gcAvail(gcTheoretical)} and selecting the appropriate type.
 
 Metadata is accessible using \code{mData(gcTheoretical)}.
 
@@ -27,11 +26,14 @@ generated using 100bp reads/fragments and 1e6 reads.
 }
 \examples{
 ## Check which genomes are included
-genomes(gcTheoretical)
+gcAvail(gcTheoretical, "Genome")
 
 ## Check which transcriptomes are included
-transcriptomes(gcTheoretical)
+gcAvail(gcTheoretical, "Transcriptome")
 
 
+}
+\seealso{
+gcAvail
 }
 \keyword{datasets}

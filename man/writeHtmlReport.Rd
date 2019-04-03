@@ -5,8 +5,9 @@
 \title{Write an HTML Summary Report}
 \usage{
 writeHtmlReport(fastqcDir, template, usePlotly = TRUE,
-  species = "Hsapiens", dataType = "Transcriptome", nOver = 30,
-  nKmer = 30, targetsDF, overwrite = FALSE, quiet = TRUE)
+  species = "Hsapiens", gcType = c("Genome", "Transcriptome"),
+  nOver = 30, nKmer = 30, targetsDF, overwrite = FALSE,
+  quiet = TRUE)
 }
 \arguments{
 \item{fastqcDir}{A directory containing zipped, or extracted FastQC reports}
@@ -17,7 +18,7 @@ writeHtmlReport(fastqcDir, template, usePlotly = TRUE,
 
 \item{species}{Species/closely related species of sequenced samples}
 
-\item{dataType}{Is the data "Transcriptomic" or "Genomic" in nature?}
+\item{gcType}{Is the data "Transcriptomic" or "Genomic" in nature?}
 
 \item{nOver}{The maximum number of Overrepresented Sequences to show}
 

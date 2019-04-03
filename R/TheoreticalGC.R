@@ -58,59 +58,42 @@ setGeneric("mData", function(object){standardGeneric("mData")})
 #' @aliases mData,TheoreticalGC-method
 setMethod("mData", "TheoreticalGC", function(object){object@mData})
 
-#' @title List Available Genomes
+#' @title List Genomes or Transcriptomes with Theoretical GC Content
 #'
-#' @description List available genomes in a TheoreticalGC object
+#' @description
+#' List available genomes or transcriptomes in a TheoreticalGC object
 #'
-#' @param object An object of class Theoretical GC
+#' @details
+#' An object of class TheoreticalGC can hold the theoretical GC content for one
+#' or more species, for either the genome or transriptome.
+#' This function checks which species are available in the given object, for
+#' either the genome or transcriptome, as supplied to the parameter \code{type}.
 #'
-#' @return A \code{tibble} object
-#'
-#' @examples
-#' genomes(gcTheoretical)
-#'
-#' @export
-#' @name genomes
-#' @rdname genomes
-setGeneric("genomes", function(object){standardGeneric("genomes")})
-
-
-#' @importFrom methods slot
-#' @export
-#' @rdname genomes
-#' @aliases genomes,TheoreticalGC-method
-setMethod("genomes", "TheoreticalGC", function(object){
-    gn <- object@mData$Genome
-    dplyr::select(object@mData[gn,], -tidyselect::ends_with("ome"))
-})
-
-#' @title List Available Transcriptomes
-#'
-#' @description List available transcriptomes in a TheoreticalGC object
-#'
-#' @param object An object of class Theoretical GC
+#' @param object An object of class TheoreticalGC
+#' @param type character indicating either Genome or Transcriptome
 #'
 #' @return A \code{tibble} object
 #'
 #' @examples
-#' transcriptomes(gcTheoretical)
+#' gcAvail(gcTheoretical, "Genome")
 #'
 #' @export
-#' @name transcriptomes
-#' @rdname transcriptomes
-setGeneric("transcriptomes", function(object){
-    standardGeneric("transcriptomes")
-}
-)
+setGeneric("gcAvail", function(object, type){standardGeneric("gcAvail")})
+
 
 #' @importFrom methods slot
 #' @export
-#' @rdname transcriptomes
-#' @aliases transcriptomes,TheoreticalGC-method
-setMethod("transcriptomes", "TheoreticalGC", function(object){
-    tr <- object@mData$Transcriptome
-    dplyr::select(object@mData[tr,], -tidyselect::ends_with("ome"))
-})
+#' @rdname gcAvail
+#' @aliases gcAvail,TheoreticalGC-method
+setMethod(
+    "gcAvail",
+    "TheoreticalGC",
+    function(object, type){
+        type <- match.arg(type, c("Genome", "Transcriptome"))
+        ln <- slot(object, "mData")[[type]]
+        df <- slot(object, "mData")[ln,]
+        dplyr::select(df, -tidyselect::ends_with("ome"))
+    })
 
 #' @title Get Theoretical GC content
 #'
