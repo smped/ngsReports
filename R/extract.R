@@ -30,14 +30,49 @@
 #' fdl[[1]]
 #'
 #' @name [
-#' @aliases [,FastqcDataList,ANY,missing,ANY-method
+#' @aliases [,FastqcDataList,numeric,missing,ANY-method
 #' @rdname extract-methods
 #' @export
 setMethod(
     f = "[",
+    signature = c(x = "FastqcDataList", i = "numeric", j = "missing"),
+    definition = function(x, i, j, ..., drop = TRUE){
+        x <- x@.Data[as.integer(i)]
+        if (length(x) == 0) stop("Object cannot be of length 0")
+        new("FastqcDataList", x)
+    }
+)
+#' @aliases [,FastqcDataList,character,missing,ANY-method
+#' @rdname extract-methods
+setMethod(
+    f = "[",
+    signature = c(x = "FastqcDataList", i = "character", j = "missing"),
+    definition = function(x, i, j, ..., drop = TRUE){
+        i <- match(i, names(x))
+        if (anyNA(i)) stop("One or more supplied names not found in object")
+        x[i]
+    }
+)
+#' @aliases [,FastqcDataList,logical,missing,ANY-method
+#' @rdname extract-methods
+setMethod(
+    f = "[",
+    signature = c(x = "FastqcDataList", i = "logical", j = "missing"),
+    definition = function(x, i, j, ..., drop = TRUE){
+        if (length(i) != length(x)) stop("x & i are of different lengths")
+        x <- x@.Data[i]
+        if (length(x) == 0) stop("Object cannot be of length 0")
+        new("FastqcDataList", x)
+    }
+)
+#' @aliases [,FastqcDataList,ANY,missing,ANY-method
+#' @rdname extract-methods
+setMethod(
+    f = "[",
     signature = c(x = "FastqcDataList", i = "ANY", j = "missing"),
     definition = function(x, i, j, ..., drop = TRUE){
-        new("FastqcDataList", x@.Data[i])
+        cl <- class(i)
+        message("Subsetting not implemented for objects of class ", cl)
     }
 )
 

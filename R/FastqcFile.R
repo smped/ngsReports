@@ -35,6 +35,7 @@ setValidity(".FastqcFile", .isValidFastqcFile)
 .FastqcFile <- function(x){
 
     ## Ensure only a single file/directory that exists is parsed
+    stopifnot(!is.null(x))
     stopifnot(is.character(x), length(x) == 1)
     stopifnot(file.exists(x))
     new(".FastqcFile", path = x)

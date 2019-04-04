@@ -83,6 +83,7 @@ setValidity("FastqcData", .isValidFastqcData)
 #' @rdname FastqcData
 #' @export
 FastqcData <- function(x){
+    stopifnot(!is.null(x))
     fl <- .FastqcFile(x)
     as(fl, "FastqcData")
 }

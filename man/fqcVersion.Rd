@@ -5,11 +5,14 @@
 \alias{fqcVersion,FastqcData-method}
 \alias{fqcVersion}
 \alias{fqcVersion,FastqcDataList-method}
+\alias{fqcVersion,ANY-method}
 \title{Get the FASTQC version}
 \usage{
 \S4method{fqcVersion}{FastqcData}(object)
 
 \S4method{fqcVersion}{FastqcDataList}(object)
+
+\S4method{fqcVersion}{ANY}(object)
 }
 \arguments{
 \item{object}{An object of class \code{FastqcData} or \code{FastqcDataList}}

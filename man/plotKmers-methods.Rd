@@ -4,16 +4,16 @@
 \name{plotKmers}
 \alias{plotKmers}
 \alias{plotKmers,ANY-method}
-\alias{plotKmers,ANY}
+\alias{plotKmers,character-method}
 \alias{plotKmers,FastqcData-method}
-\alias{plotKmers,FastqcData}
 \alias{plotKmers,FastqcDataList-method}
-\alias{plotKmers,FastqcDataList}
 \title{Plot Overrepresented Kmers}
 \usage{
 plotKmers(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotKmers}{ANY}(x, usePlotly = FALSE, labels, ...)
+
+\S4method{plotKmers}{character}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, labels, n = 6,
   ..., lineWidth = 0.5, pal = c("red", "blue", "green", "black",

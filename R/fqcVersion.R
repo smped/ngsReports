@@ -38,3 +38,9 @@ setMethod("fqcVersion", "FastqcDataList", function(object){
     )
 })
 
+#' @export
+#' @rdname fqcVersion
+#' @aliases fqcVersion
+setMethod("fqcVersion", "ANY", function(object){
+    .errNotImp(object)
+})

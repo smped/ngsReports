@@ -49,6 +49,8 @@
 #' # Another example which isn't ideal
 #' plotOverrep(fdl)
 #'
+#' @docType methods
+#'
 #' @importFrom tidyr spread
 #' @importFrom plotly layout
 #' @importFrom grDevices rgb
@@ -62,17 +64,22 @@ setGeneric("plotOverrep", function(
     standardGeneric("plotOverrep")
 }
 )
-#' @aliases plotOverrep,ANY
 #' @rdname plotOverrep-methods
 #' @export
 setMethod("plotOverrep", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, pwfCols, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotOverrep-methods
+#' @export
+setMethod("plotOverrep", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
     plotOverrep(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotOverrep,FastqcData
 #' @rdname plotOverrep-methods
 #' @export
 setMethod("plotOverrep", signature = "FastqcData", function(
@@ -173,7 +180,6 @@ setMethod("plotOverrep", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotOverrep,FastqcDataList
 #' @rdname plotOverrep-methods
 #' @export
 setMethod("plotOverrep", signature = "FastqcDataList", function(

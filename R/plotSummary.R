@@ -38,6 +38,7 @@
 #' # Check the overall PASS/WARN/FAIL status
 #' plotSummary(fdl)
 #'
+#' @docType methods
 #'
 #' @importFrom dplyr bind_cols
 #' @importFrom grid unit
@@ -51,10 +52,17 @@ setGeneric("plotSummary", function(
     standardGeneric("plotSummary")
 }
 )
-#' @aliases plotSummary,ANY
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
+    ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotSummary-methods
+#' @export
+setMethod("plotSummary", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
     ...){
     if (length(x) == 1)
@@ -63,7 +71,6 @@ setMethod("plotSummary", signature = "ANY", function(
     plotSummary(x, usePlotly, labels, pwfCols, cluster, dendrogram, ...)
 }
 )
-#' @aliases plotSummary,FastqcDataList
 #' @rdname plotSummary-methods
 #' @export
 setMethod("plotSummary", signature = "FastqcDataList", function(

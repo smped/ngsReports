@@ -71,6 +71,7 @@
 #' # Plot a single FastqcData object
 #' plotGcContent(fdl[[1]])
 #'
+#' @docType methods
 #'
 #' @importFrom viridisLite inferno
 #' @importFrom grDevices colorRampPalette
@@ -88,10 +89,18 @@ setGeneric("plotGcContent", function(
     standardGeneric("plotGcContent")
 }
 )
-#' @aliases plotGcContent,ANY
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
+    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
+    GCobject, Fastafile, n = 1e+6, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotGcContent-methods
+#' @export
+setMethod("plotGcContent", signature = "character", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
     GCobject, Fastafile, n = 1e+6, ...){
@@ -103,7 +112,6 @@ setMethod("plotGcContent", signature = "ANY", function(
     )
 }
 )
-#' @aliases plotGcContent,FastqcData
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "FastqcData", function(
@@ -240,7 +248,6 @@ setMethod("plotGcContent", signature = "FastqcData", function(
     gcPlot
 }
 )
-#' @aliases plotGcContent,FastqcDataList
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "FastqcDataList", function(

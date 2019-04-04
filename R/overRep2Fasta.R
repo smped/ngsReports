@@ -32,6 +32,7 @@
 #' faOut <- file.path(tempdir(), "top10.fa")
 #' overRep2Fasta(fdl, path = faOut)
 #'
+#' @docType methods
 #'
 #' @name overRep2Fasta
 #' @rdname overRep2Fasta-methods
@@ -40,7 +41,13 @@ setGeneric("overRep2Fasta", function(
     x, path, n = 10, labels, noAdapters = TRUE, ...){
     standardGeneric("overRep2Fasta")
 })
-#' @aliases overRep2Fasta,FastqcData
+#' @rdname overRep2Fasta-methods
+#' @export
+setMethod("overRep2Fasta", signature = "ANY", function(
+    x, ...){
+    .errNotImp(x)
+}
+)
 #' @rdname overRep2Fasta-methods
 #' @export
 setMethod("overRep2Fasta", signature = "FastqcData", function(
@@ -72,7 +79,6 @@ setMethod("overRep2Fasta", signature = "FastqcData", function(
     invisible(fasta)
 }
 )
-#' @aliases overRep2Fasta,FastqcDataList
 #' @rdname overRep2Fasta-methods
 #' @export
 setMethod("overRep2Fasta", signature = "FastqcDataList", function(

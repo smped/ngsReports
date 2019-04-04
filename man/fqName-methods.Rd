@@ -3,10 +3,15 @@
 \docType{methods}
 \name{fqName}
 \alias{fqName}
+\alias{fqName,ANY-method}
 \alias{fqName,FastqcData-method}
 \alias{fqName,FastqcDataList-method}
 \title{Return the Underlying Fastq File Names from FastqcData* Objects}
 \usage{
+fqName(object)
+
+\S4method{fqName}{ANY}(object)
+
 \S4method{fqName}{FastqcData}(object)
 
 \S4method{fqName}{FastqcDataList}(object)

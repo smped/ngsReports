@@ -50,6 +50,7 @@
 #' r1 <- grepl("R1", fqName(fdl))
 #' plotSeqQuals(fdl[r1])
 #'
+#' @docType methods
 #'
 #' @importFrom dplyr vars funs
 #' @importFrom stats hclust dist
@@ -65,10 +66,17 @@ setGeneric("plotSeqQuals", function(
     standardGeneric("plotSeqQuals")
 }
 )
-#' @aliases plotSeqQuals,ANY
 #' @rdname plotSeqQuals-methods
 #' @export
 setMethod("plotSeqQuals", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
+    warn = 30, fail = 20, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotSeqQuals-methods
+#' @export
+setMethod("plotSeqQuals", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, ...){
     x <- FastqcDataList(x)
@@ -77,7 +85,6 @@ setMethod("plotSeqQuals", signature = "ANY", function(
         x, usePlotly, labels, pwfCols, counts, alpha, warn, fail, ...)
 }
 )
-#' @aliases plotSeqQuals,FastqcData
 #' @rdname plotSeqQuals-methods
 #' @export
 setMethod("plotSeqQuals", signature = "FastqcData", function(
@@ -225,7 +232,6 @@ setMethod("plotSeqQuals", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotSeqQuals,FastqcDataList
 #' @rdname plotSeqQuals-methods
 #' @export
 setMethod("plotSeqQuals", signature = "FastqcDataList", function(

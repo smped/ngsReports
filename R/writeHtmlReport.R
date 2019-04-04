@@ -51,7 +51,10 @@ writeHtmlReport <- function(
             "ngsReports_Fastqc.Rmd",
             package = "ngsReports"
         )
-    if (!file.exists(template)) stop("Could not find template file", template)
+    if (!file.exists(template))
+        stop("Could not find template file", template)
+    if (!grepl("Rmd$", template))
+        stop("Supplied template must be an rmarkdown file")
 
     ## Copy the template file to fastqcDir
     if (!dir.exists(fastqcDir)) stop("Could not find directory", fastqcDir)

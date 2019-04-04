@@ -4,16 +4,16 @@
 \name{plotSeqContent}
 \alias{plotSeqContent}
 \alias{plotSeqContent,ANY-method}
-\alias{plotSeqContent,ANY}
+\alias{plotSeqContent,character-method}
 \alias{plotSeqContent,FastqcData-method}
-\alias{plotSeqContent,FastqcData}
 \alias{plotSeqContent,FastqcDataList-method}
-\alias{plotSeqContent,FastqcDataList}
 \title{Plot the per base content as a heatmap}
 \usage{
 plotSeqContent(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqContent}{ANY}(x, usePlotly = FALSE, labels, ...)
+
+\S4method{plotSeqContent}{character}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
 
@@ -78,6 +78,5 @@ fdl <- FastqcDataList(fl)
 
 # The default plot
 plotSeqContent(fdl)
-
 
 }

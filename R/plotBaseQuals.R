@@ -58,6 +58,8 @@
 #' # The default plot for a single library is the standard boxplot
 #' plotBaseQuals(fdl[[1]])
 #'
+#' @docType methods
+#'
 #' @import ggplot2
 #' @importFrom stats as.dendrogram order.dendrogram na.omit hclust dist
 #' @importFrom zoo na.locf
@@ -71,10 +73,17 @@ setGeneric("plotBaseQuals", function(
     standardGeneric("plotBaseQuals")
 }
 )
-#' @aliases plotBaseQuals,ANY
 #' @rdname plotBaseQuals-methods
 #' @export
 setMethod("plotBaseQuals", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
+    boxWidth = 0.8, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotBaseQuals-methods
+#' @export
+setMethod("plotBaseQuals", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
     x <- FastqcDataList(x)
@@ -82,7 +91,6 @@ setMethod("plotBaseQuals", signature = "ANY", function(
     plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
 }
 )
-#' @aliases plotBaseQuals,FastqcData
 #' @rdname plotBaseQuals-methods
 #' @export
 setMethod("plotBaseQuals", signature = "FastqcData", function(
@@ -221,7 +229,6 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
     qualPlot
 }
 )
-#' @aliases plotBaseQuals,FastqcDataList
 #' @rdname plotBaseQuals-methods
 #' @export
 setMethod("plotBaseQuals", signature = "FastqcDataList", function(

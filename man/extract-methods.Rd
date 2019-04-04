@@ -3,9 +3,21 @@
 \docType{methods}
 \name{[}
 \alias{[}
+\alias{[,FastqcDataList,numeric,missing,ANY-method}
+\alias{[,FastqcDataList,character,missing,ANY-method}
+\alias{[,FastqcDataList,logical,missing,ANY-method}
 \alias{[,FastqcDataList,ANY,missing,ANY-method}
 \title{Extract Elements}
 \usage{
+\S4method{[}{FastqcDataList,numeric,missing,ANY}(x, i, j, ...,
+  drop = TRUE)
+
+\S4method{[}{FastqcDataList,character,missing,ANY}(x, i, j, ...,
+  drop = TRUE)
+
+\S4method{[}{FastqcDataList,logical,missing,ANY}(x, i, j, ...,
+  drop = TRUE)
+
 \S4method{[}{FastqcDataList,ANY,missing,ANY}(x, i, j, ..., drop = TRUE)
 }
 \arguments{

@@ -4,9 +4,8 @@
 \name{plotReadTotals}
 \alias{plotReadTotals}
 \alias{plotReadTotals,ANY-method}
-\alias{plotReadTotals,ANY}
+\alias{plotReadTotals,character-method}
 \alias{plotReadTotals,FastqcDataList-method}
-\alias{plotReadTotals,FastqcDataList}
 \title{Draw a barplot of read totals}
 \usage{
 plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
@@ -14,6 +13,11 @@ plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
   expand.x = expand_scale(mult = c(0, 0.02)), ...)
 
 \S4method{plotReadTotals}{ANY}(x, usePlotly = FALSE, labels,
+  duplicated = TRUE, bars = c("stacked", "adjacent"),
+  barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
+  0.02)), ...)
+
+\S4method{plotReadTotals}{character}(x, usePlotly = FALSE, labels,
   duplicated = TRUE, bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
   0.02)), ...)

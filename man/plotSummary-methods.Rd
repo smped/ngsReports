@@ -4,15 +4,17 @@
 \name{plotSummary}
 \alias{plotSummary}
 \alias{plotSummary,ANY-method}
-\alias{plotSummary,ANY}
+\alias{plotSummary,character-method}
 \alias{plotSummary,FastqcDataList-method}
-\alias{plotSummary,FastqcDataList}
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
 plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
   dendrogram = FALSE, ...)
 
 \S4method{plotSummary}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
+  cluster = FALSE, dendrogram = FALSE, ...)
+
+\S4method{plotSummary}{character}(x, usePlotly = FALSE, labels, pwfCols,
   cluster = FALSE, dendrogram = FALSE, ...)
 
 \S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels,
@@ -67,6 +69,5 @@ fdl <- FastqcDataList(fl)
 
 # Check the overall PASS/WARN/FAIL status
 plotSummary(fdl)
-
 
 }

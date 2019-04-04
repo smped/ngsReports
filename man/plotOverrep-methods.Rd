@@ -4,16 +4,17 @@
 \name{plotOverrep}
 \alias{plotOverrep}
 \alias{plotOverrep,ANY-method}
-\alias{plotOverrep,ANY}
+\alias{plotOverrep,character-method}
 \alias{plotOverrep,FastqcData-method}
-\alias{plotOverrep,FastqcData}
 \alias{plotOverrep,FastqcDataList-method}
-\alias{plotOverrep,FastqcDataList}
 \title{Plot a summary of Over-represented Sequences}
 \usage{
 plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotOverrep}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
+
+\S4method{plotOverrep}{character}(x, usePlotly = FALSE, labels, pwfCols,
+  ...)
 
 \S4method{plotOverrep}{FastqcData}(x, usePlotly = FALSE, labels, pwfCols,
   n = 10, ..., expand.x = expand_scale(mult = c(0, 0.05)),

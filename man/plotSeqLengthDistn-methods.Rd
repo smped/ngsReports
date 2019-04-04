@@ -4,16 +4,17 @@
 \name{plotSeqLengthDistn}
 \alias{plotSeqLengthDistn}
 \alias{plotSeqLengthDistn,ANY-method}
-\alias{plotSeqLengthDistn,ANY}
+\alias{plotSeqLengthDistn,character-method}
 \alias{plotSeqLengthDistn,FastqcData-method}
-\alias{plotSeqLengthDistn,FastqcData}
 \alias{plotSeqLengthDistn,FastqcDataList-method}
-\alias{plotSeqLengthDistn,FastqcDataList}
 \title{Plot the Sequence Length Distribution}
 \usage{
 plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqLengthDistn}{ANY}(x, usePlotly = FALSE, labels, ...)
+
+\S4method{plotSeqLengthDistn}{character}(x, usePlotly = FALSE, labels,
+  ...)
 
 \S4method{plotSeqLengthDistn}{FastqcData}(x, usePlotly = FALSE, labels,
   plotType = c("line", "cumulative"), ..., expand.x = expand_scale(0,

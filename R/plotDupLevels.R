@@ -51,6 +51,8 @@
 #'
 #' plotDupLevels(fdl)
 #'
+#' @docType methods
+#'
 #' @import ggplot2
 #' @importFrom stats hclust dist
 #' @importFrom viridisLite inferno
@@ -63,17 +65,22 @@ setGeneric("plotDupLevels", function(
     standardGeneric("plotDupLevels")
 }
 )
-#' @aliases plotDupLevels,ANY
 #' @rdname plotDupLevels-methods
 #' @export
 setMethod("plotDupLevels", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, pwfCols, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotDupLevels-methods
+#' @export
+setMethod("plotDupLevels", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
     plotDupLevels(x, usePlotly, labels, pwfCols, ...)
 }
 )
-#' @aliases plotDupLevels,FastqcData
 #' @rdname plotDupLevels-methods
 #' @export
 setMethod("plotDupLevels", signature = "FastqcData", function(
@@ -193,7 +200,6 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotDupLevels,FastqcDataList
 #' @rdname plotDupLevels-methods
 #' @export
 setMethod("plotDupLevels",signature = "FastqcDataList", function(

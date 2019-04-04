@@ -17,7 +17,15 @@
 #' fdl <- FastqcDataList(fl)
 #' fqName(fdl)
 #'
-
+#' @export
+#' @rdname fqName-methods
+setGeneric("fqName", function(object){standardGeneric("fqName")})
+#' @export
+#' @rdname fqName-methods
+setMethod("fqName", "ANY", function(object){
+    cl <- class(object)
+    message("Method 'fqName' not implemented for objects of class ", cl)
+})
 #' @export
 #' @name fqName
 #' @aliases fqName,FastqcData-method
@@ -25,7 +33,6 @@
 setMethod("fqName", "FastqcData", function(object){
     object@Summary$Filename[1]
 })
-
 #' @export
 #' @name fqName
 #' @aliases fqName,FastqcDataList-method

@@ -55,6 +55,8 @@
 #' # Or plot the cumulative value
 #' plotSeqLengthDistn(fdl, plotType = "cumulative")
 #'
+#' @docType methods
+#'
 #' @importFrom dplyr vars
 #' @importFrom plotly ggplotly
 #' @importFrom plotly layout
@@ -70,17 +72,22 @@ setGeneric("plotSeqLengthDistn", function(
     standardGeneric("plotSeqLengthDistn")
 }
 )
-#' @aliases plotSeqLengthDistn,ANY
 #' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod("plotSeqLengthDistn", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotSeqLengthDistn-methods
+#' @export
+setMethod("plotSeqLengthDistn", signature = "character", function(
     x, usePlotly = FALSE, labels, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
     plotSeqLengthDistn(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSeqLengthDistn,FastqcData
 #' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
@@ -165,7 +172,6 @@ setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotSeqLengthDistn,FastqcDataList
 #' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod(

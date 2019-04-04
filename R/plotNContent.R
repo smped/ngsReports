@@ -45,6 +45,7 @@
 #' # The default plot
 #' plotNContent(fdl[[1]])
 #'
+#' @docType methods
 #'
 #' @import ggplot2
 #' @importFrom dplyr vars funs
@@ -58,17 +59,22 @@ setGeneric("plotNContent", function(
     standardGeneric("plotNContent")
 }
 )
-#' @aliases plotNContent,ANY
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotNContent-methods
+#' @export
+setMethod("plotNContent", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
     plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )
-#' @aliases plotNContent,FastqcData
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "FastqcData", function(
@@ -176,7 +182,6 @@ setMethod("plotNContent", signature = "FastqcData", function(
     nPlot
 }
 )
-#' @aliases plotNContent,FastqcDataList
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "FastqcDataList", function(

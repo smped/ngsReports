@@ -4,11 +4,9 @@
 \name{plotBaseQuals}
 \alias{plotBaseQuals}
 \alias{plotBaseQuals,ANY-method}
-\alias{plotBaseQuals,ANY}
+\alias{plotBaseQuals,character-method}
 \alias{plotBaseQuals,FastqcData-method}
-\alias{plotBaseQuals,FastqcData}
 \alias{plotBaseQuals,FastqcDataList-method}
-\alias{plotBaseQuals,FastqcDataList}
 \title{Plot the Base Qualities for each file}
 \usage{
 plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25,
@@ -16,6 +14,9 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25,
 
 \S4method{plotBaseQuals}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
   warn = 25, fail = 20, boxWidth = 0.8, ...)
+
+\S4method{plotBaseQuals}{character}(x, usePlotly = FALSE, labels,
+  pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
 
 \S4method{plotBaseQuals}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)

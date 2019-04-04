@@ -30,6 +30,7 @@ setValidity("FastqcDataList", .isValidFastqcDataList)
 #' @export
 FastqcDataList <- function(x){
 
+    stopifnot(length(x) > 0)
     fls <- lapply(x, .FastqcFile)
     fdl <- lapply(fls, as, "FastqcData")
     names(fdl) <- basename(x)

@@ -47,6 +47,7 @@
 #' # The default plot
 #' plotSeqContent(fdl)
 #'
+#' @docType methods
 #'
 #' @importFrom grDevices rgb
 #' @importFrom dplyr mutate_at vars funs
@@ -60,17 +61,22 @@ setGeneric("plotSeqContent", function(x, usePlotly = FALSE, labels, ...){
     standardGeneric("plotSeqContent")
 }
 )
-#' @aliases plotSeqContent,ANY
 #' @rdname plotSeqContent-methods
 #' @export
 setMethod("plotSeqContent", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotSeqContent-methods
+#' @export
+setMethod("plotSeqContent", signature = "character", function(
     x, usePlotly = FALSE, labels, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
     plotSeqContent(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotSeqContent,FastqcData
 #' @rdname plotSeqContent-methods
 #' @export
 setMethod("plotSeqContent", signature = "FastqcData", function(
@@ -151,7 +157,6 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotSeqContent,FastqcDataList
 #' @rdname plotSeqContent-methods
 #' @export
 setMethod("plotSeqContent", signature = "FastqcDataList", function(

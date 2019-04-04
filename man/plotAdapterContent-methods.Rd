@@ -4,11 +4,9 @@
 \name{plotAdapterContent}
 \alias{plotAdapterContent}
 \alias{plotAdapterContent,ANY-method}
-\alias{plotAdapterContent,ANY}
+\alias{plotAdapterContent,character-method}
 \alias{plotAdapterContent,FastqcData-method}
-\alias{plotAdapterContent,FastqcData}
 \alias{plotAdapterContent,FastqcDataList-method}
-\alias{plotAdapterContent,FastqcDataList}
 \title{Draw an Adapter Content Plot}
 \usage{
 plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
@@ -16,6 +14,9 @@ plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
 
 \S4method{plotAdapterContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
   warn = 5, fail = 10, ...)
+
+\S4method{plotAdapterContent}{character}(x, usePlotly = FALSE, labels,
+  pwfCols, warn = 5, fail = 10, ...)
 
 \S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 5, fail = 10, ...)

@@ -8,6 +8,7 @@
 #' @param fl The mean of the fragment lengths sequenced
 #' @param fragSd The standard deviation of the fragment lengths being sequenced
 #' @param bins The number of bins to estimate
+#' @param ... Not used
 #'
 #' @details
 #' The function takes the supplied object and returns the theoretical GC
@@ -17,7 +18,7 @@
 #'
 #' The returned values are obtained by interpolating the values obtained during
 #' sampling. This avoids returned distributions with gaps and jumps as would be
-#' obtained setting readLengths at values < 100.
+#' obtained setting readLengths at values not in multiples of 100.
 #'
 #' Based heavily on https://github.com/mikelove/fastqcTheoreticalGC
 #'
@@ -29,37 +30,45 @@
 #' faFile <- list.files(faDir, pattern = "fasta", full.names = TRUE)
 #' df <- getGcDistn(faFile, n = 200)
 #'
+#' @docType methods
+#'
 #' @importFrom Biostrings readDNAStringSet DNAStringSet
 #' @importFrom XVector subseq
 #' @importFrom truncnorm rtruncnorm
 #' @importFrom stats rnorm runif lm.fit
 #'
 #' @export
-getGcDistn <-
-    function(x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101) {
-        UseMethod("getGcDistn")
-    }
+#' @rdname getGcDistn
+setGeneric("getGcDistn", function(
+    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
+    standardGeneric("getGcDistn")
+})
 #' @export
-getGcDistn.character <-
-    function(x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101) {
-
-        stopifnot(file.exists(x))
-        errMsg <- "Supplied File not in FASTA format"
-        x <- tryCatch(
-            readDNAStringSet(x, format = "fasta"),
-            error = function(e) {stop(errMsg)}
-        )
-        getGcDistn.DNAStringSet(x, n, rl, fl, fragSd, bins)
-
-}
-#' @export
-getGcDistn.default <- function(x, ...){
+#' @rdname getGcDistn
+#' @aliases getGcDistn
+setMethod("getGcDistn", "ANY", function(x, ...){
     cl <- class(x)
     message("No method defined for objects of class ", cl)
-}
+})
 #' @export
-getGcDistn.DNAStringSet <-
-    function(x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101){
+#' @rdname getGcDistn
+#' @aliases getGcDistn
+setMethod("getGcDistn", "character", function(
+    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
+
+    stopifnot(file.exists(x))
+    errMsg <- "Supplied File not in FASTA format"
+    x <- tryCatch(
+        readDNAStringSet(x, format = "fasta"),
+        error = function(e) {stop(errMsg)}
+    )
+    getGcDistn(x, n, rl, fl, fragSd, bins)
+})
+#' @export
+#' @rdname getGcDistn
+#' @aliases getGcDistn
+setMethod("getGcDistn", "DNAStringSet", function(
+    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
 
     ## Check the arguments & convert to integers
     n <- tryCatch(as.integer(n))
@@ -129,3 +138,4 @@ getGcDistn.DNAStringSet <-
 
     df
 }
+)

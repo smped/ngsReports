@@ -4,17 +4,18 @@
 \name{plotSeqQuals}
 \alias{plotSeqQuals}
 \alias{plotSeqQuals,ANY-method}
-\alias{plotSeqQuals,ANY}
+\alias{plotSeqQuals,character-method}
 \alias{plotSeqQuals,FastqcData-method}
-\alias{plotSeqQuals,FastqcData}
 \alias{plotSeqQuals,FastqcDataList-method}
-\alias{plotSeqQuals,FastqcDataList}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
 plotSeqQuals(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE,
   alpha = 0.1, warn = 30, fail = 20, ...)
 
 \S4method{plotSeqQuals}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
+  counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
+
+\S4method{plotSeqQuals}{character}(x, usePlotly = FALSE, labels, pwfCols,
   counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
 
 \S4method{plotSeqQuals}{FastqcData}(x, usePlotly = FALSE, labels,
@@ -88,6 +89,5 @@ plotSeqQuals(fdl)
 # Also subset the reads to just the R1 files
 r1 <- grepl("R1", fqName(fdl))
 plotSeqQuals(fdl[r1])
-
 
 }

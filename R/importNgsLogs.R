@@ -349,7 +349,9 @@ importNgsLogs <- function(x, type, which = 1) {
 #' @keywords internal
 .parseDuplicationMetricsLogs <- function(data, which = 1){
 
-    stopifnot(which %in% c(1, 2, "metrics", "histogram"))
+    if (is.character(which))
+        which <- match.arg(which, c("metrics", "histogram"))
+    if (is.numeric(which)) stopifnot(which %in% c(1, 2))
 
     ## Collect the metrics from all files as a tibble
     metrics <- lapply(data, function(x){

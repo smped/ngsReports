@@ -54,17 +54,27 @@ test_that("importStarLogs loads correctly",{
     expect_equal(basename(starLog), df$Filename)
 })
 
+nm <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
+        "SECONDARY_OR_SUPPLEMENTARY_RDS", "UNMAPPED_READS",
+        "UNPAIRED_READ_DUPLICATES", "READ_PAIR_DUPLICATES",
+        "READ_PAIR_OPTICAL_DUPLICATES", "PERCENT_DUPLICATION",
+        "ESTIMATED_LIBRARY_SIZE")
 test_that("importDupMetrics loads correctly",{
+
     dup <- importNgsLogs(dupLogs, "duplicationMetrics", 1)
-    nm <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
-            "SECONDARY_OR_SUPPLEMENTARY_RDS", "UNMAPPED_READS",
-            "UNPAIRED_READ_DUPLICATES", "READ_PAIR_DUPLICATES",
-            "READ_PAIR_OPTICAL_DUPLICATES", "PERCENT_DUPLICATION",
-            "ESTIMATED_LIBRARY_SIZE")
     expect_equal(colnames(dup), nm)
+
     dup <- importNgsLogs(dupLogs, "duplicationMetrics", 2)
-    nm <- c("LIBRARY", "BIN", "VALUE")
+    expect_equal(colnames(dup), c("LIBRARY", "BIN", "VALUE"))
+})
+
+test_that("importDupMetrics handles which as a character",{
+
+    dup <- importNgsLogs(dupLogs, "duplicationMetrics", "metrics")
     expect_equal(colnames(dup), nm)
+
+    dup <- importNgsLogs(dupLogs, "duplicationMetrics", "hist")
+    expect_equal(colnames(dup), c("LIBRARY", "BIN", "VALUE"))
 })
 
 test_that("importBowtieLogs errors correctly",{

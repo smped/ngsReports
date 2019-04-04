@@ -4,17 +4,18 @@
 \name{plotNContent}
 \alias{plotNContent}
 \alias{plotNContent,ANY-method}
-\alias{plotNContent,ANY}
+\alias{plotNContent,character-method}
 \alias{plotNContent,FastqcData-method}
-\alias{plotNContent,FastqcData}
 \alias{plotNContent,FastqcDataList-method}
-\alias{plotNContent,FastqcDataList}
 \title{Draw an N Content Plot}
 \usage{
 plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
   fail = 20, ...)
 
 \S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
+  warn = 5, fail = 20, ...)
+
+\S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols,
   warn = 5, fail = 20, ...)
 
 \S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels,
@@ -78,6 +79,5 @@ fdl <- FastqcDataList(fl)
 
 # The default plot
 plotNContent(fdl[[1]])
-
 
 }

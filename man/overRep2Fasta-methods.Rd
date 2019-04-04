@@ -3,13 +3,15 @@
 \docType{methods}
 \name{overRep2Fasta}
 \alias{overRep2Fasta}
+\alias{overRep2Fasta,ANY-method}
 \alias{overRep2Fasta,FastqcData-method}
-\alias{overRep2Fasta,FastqcData}
 \alias{overRep2Fasta,FastqcDataList-method}
-\alias{overRep2Fasta,FastqcDataList}
 \title{Write fasta of Over-Represented sequences.}
 \usage{
 overRep2Fasta(x, path, n = 10, labels, noAdapters = TRUE, ...)
+
+\S4method{overRep2Fasta}{ANY}(x, path, n = 10, labels,
+  noAdapters = TRUE, ...)
 
 \S4method{overRep2Fasta}{FastqcData}(x, path, n = 10, labels,
   noAdapters = TRUE, ...)
@@ -57,6 +59,5 @@ fdl <- FastqcDataList(fl)
 # Export the top10 Overrepresented Sequences as a single fasta file
 faOut <- file.path(tempdir(), "top10.fa")
 overRep2Fasta(fdl, path = faOut)
-
 
 }

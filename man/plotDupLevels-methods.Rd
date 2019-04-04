@@ -4,16 +4,17 @@
 \name{plotDupLevels}
 \alias{plotDupLevels}
 \alias{plotDupLevels,ANY-method}
-\alias{plotDupLevels,ANY}
+\alias{plotDupLevels,character-method}
 \alias{plotDupLevels,FastqcData-method}
-\alias{plotDupLevels,FastqcData}
 \alias{plotDupLevels,FastqcDataList-method}
-\alias{plotDupLevels,FastqcDataList}
 \title{Plot the combined Sequence_Duplication_Levels information}
 \usage{
 plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotDupLevels}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
+
+\S4method{plotDupLevels}{character}(x, usePlotly = FALSE, labels,
+  pwfCols, ...)
 
 \S4method{plotDupLevels}{FastqcData}(x, usePlotly = FALSE, labels,
   pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)

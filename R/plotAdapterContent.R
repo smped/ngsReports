@@ -64,6 +64,8 @@
 #' facet_wrap(~Filename) +
 #' guides(colour = FALSE)
 #'
+#' @docType methods
+#'
 #' @import ggplot2
 #' @import tibble
 #' @importFrom plotly plotly_empty ggplotly
@@ -78,18 +80,22 @@ setGeneric("plotAdapterContent", function(
     standardGeneric("plotAdapterContent")
 }
 )
-#' @aliases plotAdapterContent,ANY
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotAdapterContent-methods
+#' @export
+setMethod("plotAdapterContent", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
     plotAdapterContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )
-
-#' @aliases plotAdapterContent,FastqcData
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcData", function(
@@ -201,7 +207,6 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
 
 }
 )
-#' @aliases plotAdapterContent,FastqcDataList
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod("plotAdapterContent", signature = "FastqcDataList", function(

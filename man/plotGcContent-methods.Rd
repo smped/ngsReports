@@ -4,11 +4,9 @@
 \name{plotGcContent}
 \alias{plotGcContent}
 \alias{plotGcContent,ANY-method}
-\alias{plotGcContent,ANY}
+\alias{plotGcContent,character-method}
 \alias{plotGcContent,FastqcData-method}
-\alias{plotGcContent,FastqcData}
 \alias{plotGcContent,FastqcDataList-method}
-\alias{plotGcContent,FastqcDataList}
 \title{Plot the Per Sequence GC Content}
 \usage{
 plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
@@ -16,6 +14,10 @@ plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
   GCobject, Fastafile, n = 1e+06, ...)
 
 \S4method{plotGcContent}{ANY}(x, usePlotly = FALSE, labels,
+  theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
+
+\S4method{plotGcContent}{character}(x, usePlotly = FALSE, labels,
   theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
   species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
 
@@ -118,6 +120,5 @@ plotGcContent(fdl)
 
 # Plot a single FastqcData object
 plotGcContent(fdl[[1]])
-
 
 }

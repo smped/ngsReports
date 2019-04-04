@@ -43,6 +43,8 @@
 #'
 #' @return Returns a ggplot or plotly object
 #'
+#' @docType methods
+#'
 #' @import ggplot2
 #' @importFrom dplyr bind_rows
 #'
@@ -57,10 +59,17 @@ setGeneric("plotReadTotals", function(
     standardGeneric("plotReadTotals")
 }
 )
-#' @aliases plotReadTotals,ANY
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod("plotReadTotals", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, duplicated = TRUE,
+    bars = c("stacked", "adjacent"), barCols = c("red","blue"),
+    expand.x = expand_scale(mult = c(0, 0.02)), ...){
+    .errNotImp(x)
+})
+#' @rdname plotReadTotals-methods
+#' @export
+setMethod("plotReadTotals", signature = "character", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
     expand.x = expand_scale(mult = c(0, 0.02)), ...){
@@ -73,7 +82,6 @@ setMethod("plotReadTotals", signature = "ANY", function(
         x, usePlotly, labels, duplicated, bars,  barCols, expand.x, ...)
 }
 )
-#' @aliases plotReadTotals,FastqcDataList
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod("plotReadTotals", signature = "FastqcDataList", function(

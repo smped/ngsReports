@@ -45,6 +45,8 @@
 #' fdl <- FastqcDataList(fl)
 #' plotKmers(fdl[[1]])
 #'
+#' @docType methods
+#'
 #' @importFrom dplyr desc
 #' @import ggplot2
 #'
@@ -54,17 +56,22 @@
 setGeneric("plotKmers", function(x, usePlotly = FALSE, labels, ...){
     standardGeneric("plotKmers")
 })
-#' @aliases plotKmers,ANY
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "ANY", function(
+    x, usePlotly = FALSE, labels, ...){
+    .errNotImp(x)
+}
+)
+#' @rdname plotKmers-methods
+#' @export
+setMethod("plotKmers", signature = "character", function(
     x, usePlotly = FALSE, labels, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
     plotKmers(x, usePlotly, labels, ...)
 }
 )
-#' @aliases plotKmers,FastqcData
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcData", function(
@@ -214,7 +221,6 @@ setMethod("plotKmers", signature = "FastqcData", function(
     kMerPlot
 }
 )
-#' @aliases plotKmers,FastqcDataList
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcDataList", function(
