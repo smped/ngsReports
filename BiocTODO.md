@@ -36,13 +36,14 @@ as helper functions
 name instead of a simple constructor function (FastqcFile).
     - Thanks for pointing this out. I'd misunderstood the normal approach for this. Of course the constructors are now `FastqcData()` and `FastqcDataList()`
 - [x] Why not use the established path generic rather than creating fileName?
-    - We actually have used the path generic. The function `fileName` returned the name of the underlying Fastq file the report was generated from, and has now been changed to `fqName()` to avoid any confusion
+    - We actually have used the path generic but I see the point of confusion. The function `fileName` returned the name of the underlying Fastq file the report was generated from, and has now been changed to `fqName()` to avoid any confusion
 - [x] Create a coercion method instead of a class method to move from one class
 representation to another
 - [ ] Only set methods for classes that are your own
-    - I haven't done this based on Martin's response to my question on the Bioc-devel list which contradicted my understanding of your request. I'd already moved getGcDistn() to S3 dispatch, so haven't moved it back as it does work using that approach. 
+    - I haven't done this based on Martin's response to my question on the Bioc-devel list. 
 - [x] Use the ANY class for setting methods for vectors.
-- [x] It looks like you're not taking advantage of existing Bioconductor classes. Your main class in use is the tibble.
-    - `DataFrame` objects play poorly with `ggplot2` and as that is the primary role of this package, this would impede ease of use. This would mean that every parsed object would require an extra line of code converting back to a data.frame before it was able to be used for plotting by users, and would serve no purpose beyond being user-unfriendly and adding numerous lines of unnecessary code to existing plot functions. I could possibly change these outputs to data.frame objects, but they're not as user-friendly & honestly I can't see any functional advantage that would give to package users.
+    - Hopefully I've done this correctly now. I've basically just given them all an error message for classes not implemented
+- [ ] It looks like you're not taking advantage of existing Bioconductor classes. Your main class in use is the tibble.
+    - `DataFrame` objects play poorly with `ggplot2` and as that is the primary role of this package, I believe this would impede ease of use. Every parsed `DataFrame` would require an extra line of code converting back to a data.frame before it was able to be used for plotting by users, and would serve no purpose beyond being user-unfriendly and adding numerous lines of unnecessary code to existing plot functions. I could possibly change these outputs to data.frame objects, but they're not as user-friendly & honestly I can't see any functional advantage this would give to package users.
 - [x] Is there functionality that you could use from the ShortRead package?
     - Not really. This current package is about simply parsing outputs from stand-alone tools and not about performing any new analysis (with the exception of `runFastQC()`). It's possible that at a later date, plot methods may be plausibly implemented for `ShortRead` outputs but that is not our current intent. However, as mentioned, we have used the `FastqFile` and `FastqFileList` object classes from `ShortRead` (and `BamFile`/`BamFileList` classes from `Rsamtools`), and the structure of these formed the basis of package design.

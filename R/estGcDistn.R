@@ -1,6 +1,7 @@
-#' @title Generate a GC Content Distribution From Sequences
+#' @title Estimate a GC Content Distribution From Sequences
 #'
-#' @description Generate a GC Content Distribution From Sequences
+#' @description Generate a GC content distribution from sequences for a given
+#' read length and fragment length
 #'
 #' @param x \code{DNAStringSet} or path to a fasta file
 #' @param n The number of reads to sample
@@ -28,7 +29,7 @@
 #' @examples
 #' faDir <- system.file("extdata", package = "ngsReports")
 #' faFile <- list.files(faDir, pattern = "fasta", full.names = TRUE)
-#' df <- getGcDistn(faFile, n = 200)
+#' df <- estGcDistn(faFile, n = 200)
 #'
 #' @docType methods
 #'
@@ -38,22 +39,22 @@
 #' @importFrom stats rnorm runif lm.fit
 #'
 #' @export
-#' @rdname getGcDistn
-setGeneric("getGcDistn", function(
+#' @rdname estGcDistn
+setGeneric("estGcDistn", function(
     x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
-    standardGeneric("getGcDistn")
+    standardGeneric("estGcDistn")
 })
 #' @export
-#' @rdname getGcDistn
-#' @aliases getGcDistn
-setMethod("getGcDistn", "ANY", function(x, ...){
+#' @rdname estGcDistn
+#' @aliases estGcDistn
+setMethod("estGcDistn", "ANY", function(x, ...){
     cl <- class(x)
     message("No method defined for objects of class ", cl)
 })
 #' @export
-#' @rdname getGcDistn
-#' @aliases getGcDistn
-setMethod("getGcDistn", "character", function(
+#' @rdname estGcDistn
+#' @aliases estGcDistn
+setMethod("estGcDistn", "character", function(
     x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
 
     stopifnot(file.exists(x))
@@ -62,12 +63,12 @@ setMethod("getGcDistn", "character", function(
         readDNAStringSet(x, format = "fasta"),
         error = function(e) {stop(errMsg)}
     )
-    getGcDistn(x, n, rl, fl, fragSd, bins)
+    estGcDistn(x, n, rl, fl, fragSd, bins)
 })
 #' @export
-#' @rdname getGcDistn
-#' @aliases getGcDistn
-setMethod("getGcDistn", "DNAStringSet", function(
+#' @rdname estGcDistn
+#' @aliases estGcDistn
+setMethod("estGcDistn", "DNAStringSet", function(
     x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
 
     ## Check the arguments & convert to integers

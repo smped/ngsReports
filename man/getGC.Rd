@@ -3,9 +3,15 @@
 \docType{methods}
 \name{getGC}
 \alias{getGC}
+\alias{getGC,ANY-method}
+\alias{getGC,TheoreticalGC-method}
 \title{Get Theoretical GC content}
 \usage{
 getGC(object, name, type)
+
+\S4method{getGC}{ANY}(object, type)
+
+\S4method{getGC}{TheoreticalGC}(object, name, type)
 }
 \arguments{
 \item{object}{An object of class Theoretical GC}

@@ -32,7 +32,7 @@ object}
 ## How to form an object using your own fasta file
 faDir <- system.file("extdata", package = "ngsReports")
 faFile <- list.files(faDir, pattern = "fasta", full.names = TRUE)
-gen_df <- getGcDistn(faFile, n = 200)
+gen_df <- estGcDistn(faFile, n = 200)
 gen_df <- dplyr::rename(gen_df, Athaliana = Freq)
 mData_df <-
     data.frame(Name = "Athaliana", Genome = TRUE, Transcriptome = FALSE)
