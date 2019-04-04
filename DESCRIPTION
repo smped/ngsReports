@@ -1,5 +1,5 @@
 Package: ngsReports
-Version: 0.99.8
+Version: 0.99.9
 Date: 2019/04/04
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
@@ -9,7 +9,6 @@ Authors@R: c(
         email = "christopher.ward@adelaide.edu.au", role = c("aut")),
     person("Thu-Hien", "To", email = "tothuhien@gmail.com", role = c("aut"))
     )
-Maintainer: Steve Pederson <stephen.pederson@adelaide.edu.au>
 Description: This package provides methods and object classes for parsing 
     FastQC reports and output summaries from other NGS tools into R, as well as 
     visualising the data loaded from these files.
