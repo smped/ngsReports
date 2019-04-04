@@ -6,7 +6,7 @@ Changes in version 0.99.1 (2019-02-03)
 + Removed Remotes from DESCRIPTION
 + Added getGcDistribution to enable calculation of GC Content Distributions from FastaFiles
 
-Changes in version 0.99.7 (2019-04-03)
+Changes in version 0.99.8 (2019-04-03)
 + **This is a breaking change!** Significant changes to most functions have been implemented
 + Extracting modules is no longer performed by individual functions, but is now performed using the function getModule
 + FastqcFileLists objects are no longer defined and the class FastqcFile has been made into the private class .FastqcFile
@@ -16,3 +16,4 @@ Changes in version 0.99.7 (2019-04-03)
 + Most plot functions have been renamed with shorter names, e.g. plotOverrepresentedSequences is now plotOverrep
 + The FastQC version is now obtained using fqcVersion not Version
 + The functions genomes() and transcriptomes() have been removed and this information is now obtained using gcAvail(object, type)
++ The function getGcDistn() has been renamed as estGcDistn() to avoid any confusion with getGC() which works on TheoreticalGC objects.
