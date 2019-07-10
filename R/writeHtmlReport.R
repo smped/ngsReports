@@ -8,7 +8,6 @@
 #' @param species Species/closely related species of sequenced samples
 #' @param gcType Is the data "Transcriptomic" or "Genomic" in nature?
 #' @param nOver The maximum number of Overrepresented Sequences to show
-#' @param nKmer The maximum number of Kmers to show
 #' @param targetsDF A data.frame with at least two columns named
 #' \code{Filename}  and \code{Label}.
 #' The filenames should match the original fastq files, and the labels should
@@ -39,7 +38,7 @@
 #' @export
 writeHtmlReport <- function(
     fastqcDir, template, usePlotly = TRUE, species = "Hsapiens",
-    gcType = c("Genome", "Transcriptome"), nOver = 30, nKmer = 30, targetsDF,
+    gcType = c("Genome", "Transcriptome"), nOver = 30, targetsDF,
     overwrite = FALSE, quiet = TRUE){
 
     ## Maybe include checks for the package webshot & PhantomJS
@@ -92,8 +91,7 @@ writeHtmlReport <- function(
     ## Check the remaining arguments
     stopifnot(is.logical(usePlotly))
     nOver <- suppressWarnings(as.integer(nOver[1]))
-    nKmer <- suppressWarnings(as.integer(nKmer[1]))
-    stopifnot(!is.na(c(nOver, nKmer)))
+    stopifnot(!is.na(nOver))
 
     ## Include the namesapce for gcTheoretical as that allows running without
     ## loading the package, which is a pretty common use case
@@ -115,8 +113,8 @@ writeHtmlReport <- function(
             usePlotly = usePlotly,
             gcType = gcType,
             species = species,
-            nOver = nOver,
-            nKmer = nKmer)
+            nOver = nOver
+        )
     )
     message("done")
 

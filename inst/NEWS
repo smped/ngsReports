@@ -1,10 +1,6 @@
-Changes in version 0.99.0 (2019-02-01)
-+ Submitted to Bioconductor
-+ Shiny App has been moved to a separate package, located at https://github.com/UofABioinformaticsHub/shinyNgsReports
-
-Changes in version 0.99.1 (2019-02-03)
-+ Removed Remotes from DESCRIPTION
-+ Added getGcDistribution to enable calculation of GC Content Distributions from FastaFiles
+Changes in version 1.1.1
++ Table in default FastQC template now scroll for larger datasets
++ Kmers removed from default FastQC template
 
 Changes in version 0.99.8 (2019-04-03)
 + **This is a breaking change!** Significant changes to most functions have been implemented
@@ -17,3 +13,11 @@ Changes in version 0.99.8 (2019-04-03)
 + The FastQC version is now obtained using fqcVersion not Version
 + The functions genomes() and transcriptomes() have been removed and this information is now obtained using gcAvail(object, type)
 + The function getGcDistn() has been renamed as estGcDistn() to avoid any confusion with getGC() which works on TheoreticalGC objects.
+
+Changes in version 0.99.1 (2019-02-03)
++ Removed Remotes from DESCRIPTION
++ Added getGcDistribution to enable calculation of GC Content Distributions from FastaFiles
+
+Changes in version 0.99.0 (2019-02-01)
++ Submitted to Bioconductor
++ Shiny App has been moved to a separate package, located at https://github.com/UofABioinformaticsHub/shinyNgsReports

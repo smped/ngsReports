@@ -65,7 +65,7 @@ plotLabels <- structure(
 
 ```{r outputParams}
 n <- length(fastqcData)
-fh <- 0.25*n
+fh <- max(0.25*n, 6)
 ```
 
 

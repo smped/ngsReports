@@ -6,8 +6,7 @@
 \usage{
 writeHtmlReport(fastqcDir, template, usePlotly = TRUE,
   species = "Hsapiens", gcType = c("Genome", "Transcriptome"),
-  nOver = 30, nKmer = 30, targetsDF, overwrite = FALSE,
-  quiet = TRUE)
+  nOver = 30, targetsDF, overwrite = FALSE, quiet = TRUE)
 }
 \arguments{
 \item{fastqcDir}{A directory containing zipped, or extracted FastQC reports}
@@ -21,8 +20,6 @@ writeHtmlReport(fastqcDir, template, usePlotly = TRUE,
 \item{gcType}{Is the data "Transcriptomic" or "Genomic" in nature?}
 
 \item{nOver}{The maximum number of Overrepresented Sequences to show}
-
-\item{nKmer}{The maximum number of Kmers to show}
 
 \item{targetsDF}{A data.frame with at least two columns named
 \code{Filename}  and \code{Label}.

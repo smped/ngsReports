@@ -222,6 +222,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
     )
     df <- df[c("Filename", "Duplication_Level", type)]
     df[[type]] <- round(df[[type]], 2)
+    Duplication_Level <- c() # Here to avoid R CMD check issues
 
     ## These will begin in order, but may not stay this way
     ## in the following code
@@ -252,7 +253,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
     df$Duplication_Level <- factor(df$Duplication_Level, levels = dupLevels)
 
     ## Setup to plot in tiles for easier plotly compatability
-    df <-  dplyr::arrange_(df, "Filename", "Duplication_Level")
+    df <-  dplyr::arrange(df, Filename, Duplication_Level)
     df <- split(df, f = df[["Filename"]])
     df <- lapply(df, function(x){
         x$xmax <- cumsum(x[["Percentage_of_total"]])
