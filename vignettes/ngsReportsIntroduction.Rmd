@@ -50,7 +50,7 @@ for interactive viewing of FastQC reports.
 This can be installed using:
 
 ```
-remotes::install_github(UofABioinformaticsHub/fastqcRshiny)
+remotes::install_github("UofABioinformaticsHub/fastqcRshiny")
 ```
 
 A vignette for this app will be installed with the `fastqcRshiny` package.
