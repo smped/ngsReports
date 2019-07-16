@@ -49,6 +49,7 @@
 #'
 #' @importFrom dplyr desc
 #' @import ggplot2
+#' @import tibble
 #'
 #' @name plotKmers
 #' @rdname plotKmers-methods
@@ -113,7 +114,7 @@ setMethod("plotKmers", signature = "FastqcData", function(
     ## These values can then be incorporated in the final df
     ## for accurate plotting & labelling
     refForX <- unique(getModule(x, "Per_base_sequence_quality")$Base)
-    refForX <- tibble::tibble(
+    refForX <- tibble(
         Base = as.character(refForX),
         Position = gsub("([0-9]*)-[0-9]*", "\\1", Base)
     )
@@ -254,7 +255,7 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
 
     ## Setup the x-axis
     refForX <- unique(getModule(x, "Per_base_sequence_quality")$Base)
-    refForX <- tibble::tibble(
+    refForX <- tibble(
         Base = as.character(refForX),
         Position = gsub("([0-9]*)-[0-9]*", "\\1", Base)
     )

@@ -82,15 +82,17 @@ setGeneric("gcAvail", function(object, type){standardGeneric("gcAvail")})
 
 
 #' @importFrom methods slot
+#' @importFrom tidyselect ends_with
+#' @importFrom stringr str_to_title
 #' @export
 #' @rdname gcAvail
 #' @aliases gcAvail,TheoreticalGC-method
 setMethod("gcAvail", "TheoreticalGC", function(object, type){
 
-        type <- match.arg(type, c("Genome", "Transcriptome"))
+        type <- match.arg(str_to_title(type), c("Genome", "Transcriptome"))
         ln <- slot(object, "mData")[[type]]
         df <- slot(object, "mData")[ln,]
-        dplyr::select(df, -tidyselect::ends_with("ome"))
+        dplyr::select(df, -ends_with("ome"))
     })
 
 setMethod("show", "TheoreticalGC", function(object){

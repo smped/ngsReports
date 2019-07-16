@@ -28,11 +28,12 @@
 #' @aliases fqcVersion
 setMethod("fqcVersion", "FastqcData", function(object){object@version})
 
+#' @import tibble
 #' @export
 #' @rdname fqcVersion
 #' @aliases fqcVersion
 setMethod("fqcVersion", "FastqcDataList", function(object){
-    tibble::tibble(
+    tibble(
         Filename = fqName(object),
         version = vapply(object@.Data, fqcVersion, character(1))
     )

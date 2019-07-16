@@ -50,6 +50,7 @@
 #' @import ggplot2
 #' @importFrom dplyr vars
 #' @importFrom zoo na.locf
+#' @import tibble
 #'
 #' @name plotNContent
 #' @rdname plotNContent-methods
@@ -106,7 +107,7 @@ setMethod("plotNContent", signature = "FastqcData", function(
     df$xValue <- as.integer(df$Base)
 
     ## Setup the BG colours
-    rects <- tibble::tibble(
+    rects <- tibble(
         xmin = 0,
         xmax = max(df$xValue),
         ymin = c(0, warn, fail),

@@ -63,6 +63,7 @@
 #' @import ggplot2
 #' @importFrom stats as.dendrogram order.dendrogram na.omit hclust dist
 #' @importFrom zoo na.locf
+#' @import tibble
 #'
 #' @name plotBaseQuals
 #' @rdname plotBaseQuals-methods
@@ -133,7 +134,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
     ## Set the limits & rectangles
     ylim <- c(0, max(df$`90th_Percentile`) + 1)
     expand_x <- round(0.015*(max(df$Position) - min(df$Position)), 1)
-    rects <- tibble::tibble(
+    rects <- tibble(
         xmin = min(df$Position) - expand_x,
         xmax = max(df$Position) + expand_x,
         ymin = c(0, fail, warn),
@@ -282,7 +283,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
         ## Set the limits & rectangles
         ylim <- c(0, max(df$`90th_Percentile`) + 1)
         expand_x <- round(0.015*(max(df$Position) - min(df$Position)), 1)
-        rects <- tibble::tibble(
+        rects <- tibble(
             xmin = min(df$Position) - expand_x,
             xmax = max(df$Position) + expand_x,
             ymin = c(0, fail, warn),

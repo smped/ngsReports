@@ -27,6 +27,7 @@
 #' df <- importNgsLogs(bowtieLogs, type = "bowtie")
 #'
 #' @importFrom lubridate dminutes dhours dseconds parse_date_time
+#' @importFrom tidyselect contains everything starts_with ends_with
 #'
 #' @export
 importNgsLogs <- function(x, type, which = 1) {
@@ -192,15 +193,10 @@ importNgsLogs <- function(x, type, which = 1) {
     })
     ## Add the filename, reorder the columns & return a tibble
     df$Filename <- names(data)
-    df <- dplyr::select(
-        df,
-        "Filename",
-        tidyselect::contains("Reads"),
-        tidyselect::contains("Time"),
-        tidyselect::everything()
+    dplyr::select(
+        df, "Filename", contains("Reads"), contains("Time"), everything()
     )
 
-    df
 }
 
 #' @title Parse data from HISAT2 log files
@@ -263,10 +259,10 @@ importNgsLogs <- function(x, type, which = 1) {
     dplyr::select(
         df,
         "Filename",
-        tidyselect::ends_with("Reads"),
-        tidyselect::contains("Unique"),
-        tidyselect::contains("Multiple"),
-        tidyselect::everything()
+        ends_with("Reads"),
+        contains("Unique"),
+        contains("Multiple"),
+        everything()
     )
 
 }
@@ -328,13 +324,13 @@ importNgsLogs <- function(x, type, which = 1) {
     dplyr::select(
         df,
         "Filename",
-        tidyselect::starts_with("Total"),
-        tidyselect::contains("Input"),
-        tidyselect::contains("Mapped"),
-        tidyselect::contains("Splice"),
-        tidyselect::ends_with("On"),
-        tidyselect::contains("Mapping"),
-        tidyselect::everything()
+        starts_with("Total"),
+        contains("Input"),
+        contains("Mapped"),
+        contains("Splice"),
+        ends_with("On"),
+        contains("Mapping"),
+        everything()
     )
 
 }
@@ -388,7 +384,7 @@ importNgsLogs <- function(x, type, which = 1) {
         x <- x[!grepl("^$", x)]
         df <- .splitByTab(x)
         df$LIBRARY <- basename(libName)
-        dplyr::select(df, "LIBRARY", tidyselect::everything())
+        dplyr::select(df, "LIBRARY", everything())
     })
     histData <- dplyr::bind_rows(histData)
     ## Ensure the correct types

@@ -1,5 +1,5 @@
 #' @importFrom methods as
-#' @importFrom tidyselect one_of
+#' @importFrom tidyselect one_of contains ends_with
 setAs(".FastqcFile", "FastqcData", function(from){
 
     ## Import each line as an element in a character vector then detect the
@@ -199,8 +199,8 @@ setAs(".FastqcFile", "FastqcData", function(from){
         df,
         "Filename",
         "Total_Sequences",
-        tidyselect::contains("quality"),
-        tidyselect::ends_with("sequence"),
+        contains("quality"),
+        ends_with("sequence"),
         one_of("%GC", "File_type", "Encoding")
     )
 

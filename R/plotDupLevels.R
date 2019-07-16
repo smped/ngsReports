@@ -56,6 +56,8 @@
 #' @import ggplot2
 #' @importFrom stats hclust dist
 #' @importFrom viridisLite inferno
+#' @importFrom tidyselect contains
+#' @import tibble
 #'
 #' @name plotDupLevels
 #' @rdname plotDupLevels-methods
@@ -95,12 +97,8 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
         return(dupPlot)
     }
 
-    df <- tidyr::gather(
-        df,
-        key = "Type",
-        value = "Percentage",
-        tidyselect::contains("Percentage")
-    )
+    ## Convert from wide to long
+    df <- tidyr::gather(df, "Type", "Percentage", contains("Percentage"))
     df$Duplication_Level <- factor(
         df$Duplication_Level,
         levels = unique(df$Duplication_Level)
@@ -128,7 +126,7 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
     pwfCols <- setAlpha(pwfCols, 0.2)
 
     ## Set the background rectangles
-    rects <- tibble::tibble(
+    rects <- tibble(
         xmin = 0.5,
         xmax = max(df$x) + 0.5,
         ymin = c(0, 100 - fail, 100 - warn),
