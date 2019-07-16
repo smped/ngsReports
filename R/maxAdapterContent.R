@@ -38,7 +38,7 @@ maxAdapterContent <- function(x, asPercent = TRUE){
     adapters <- setdiff(colnames(ac), c("Filename", "Position"))
     ac <- tidyr::gather(ac, "Type", "value", tidyselect::one_of(adapters))
     ac <- dplyr::group_by(ac, Filename, Type)
-    ac <- dplyr::summarise_at(ac, dplyr::vars("value"), dplyr::funs("max"))
+    ac <- dplyr::summarise_at(ac, dplyr::vars("value"), max)
 
     ## Format & return the output
     if (asPercent) ac$value <- scales::percent_format(0.01, 1)(ac$value)
