@@ -47,7 +47,7 @@
 #'
 #' @import ggplot2
 #' @importFrom dplyr bind_rows
-#'
+#' @importFrom tidyselect one_of
 #'
 #' @name plotReadTotals
 #' @rdname plotReadTotals-methods
@@ -147,7 +147,7 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
         df$Unique <- round(df$Unique, 0)
         df$Duplicated <- df$Total_Sequences - df$Unique
         df <- df[c("Filename", types)]
-        df <- tidyr::gather(df, "Type", "Total", tidyselect::one_of(types))
+        df <- tidyr::gather(df, "Type", "Total", one_of(types))
 
         barPos <- c(adjacent = "dodge", stacked = "stack")[bars]
 

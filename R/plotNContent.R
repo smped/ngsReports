@@ -48,7 +48,7 @@
 #' @docType methods
 #'
 #' @import ggplot2
-#' @importFrom dplyr vars funs
+#' @importFrom dplyr vars
 #' @importFrom zoo na.locf
 #'
 #' @name plotNContent
@@ -197,7 +197,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
     if (!length(df)) msg <- "No N Content Module Detected"
     if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
     if (!is.null(msg)) {
-        nPlot <- ngsReports:::.emptyPlot(msg)
+        nPlot <- .emptyPlot(msg)
         if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
         return(nPlot)
     }
@@ -274,8 +274,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
         status <- dplyr::summarise_at(
             dplyr::group_by(df, Filename),
             vars("Percentage"),
-            funs(Percentage = max),
-            na.rm = TRUE
+            max, na.rm = TRUE
         )
         status$Status <- cut(
             status$Percentage,

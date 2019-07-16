@@ -26,6 +26,8 @@
 #' # Get the maxAdapterContent
 #' maxAdapterContent(fdl)
 #'
+#' @importFrom tidyselect one_of
+#'
 #' @export
 maxAdapterContent <- function(x, asPercent = TRUE){
 
@@ -36,7 +38,7 @@ maxAdapterContent <- function(x, asPercent = TRUE){
 
     ## Perform the summary
     adapters <- setdiff(colnames(ac), c("Filename", "Position"))
-    ac <- tidyr::gather(ac, "Type", "value", tidyselect::one_of(adapters))
+    ac <- tidyr::gather(ac, "Type", "value", one_of(adapters))
     ac <- dplyr::group_by(ac, Filename, Type)
     ac <- dplyr::summarise_at(ac, dplyr::vars("value"), max)
 

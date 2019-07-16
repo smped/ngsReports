@@ -71,6 +71,7 @@
 #' @importFrom plotly plotly_empty ggplotly
 #' @importFrom stats hclust dist
 #' @importFrom zoo na.locf
+#' @importFrom tidyselect one_of
 #'
 #' @name plotAdapterContent
 #' @rdname plotAdapterContent-methods
@@ -133,9 +134,7 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
     ## Change to long form and remove the _ symbols between words
-    df <- tidyr::gather(
-        df, key = "Type", value = "Percent", tidyselect::one_of(valueCols)
-    )
+    df <- tidyr::gather(df, key = "Type", value = "Percent", one_of(valueCols))
     df$Type <- gsub("_", " ", df$Type)
 
     ## Set the positions as a factor
@@ -240,7 +239,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     labels <- .makeLabels(df, labels, ...)
 
     ## Change to long form
-    df <- tidyr::gather(df, "Type", "Percent", tidyselect::one_of(valueCols))
+    df <- tidyr::gather(df, "Type", "Percent", one_of(valueCols))
     ## Set the position as a factor
     df$Position <- factor(df$Position, levels = unique(df$Position))
 
@@ -252,12 +251,8 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     if (adapterType == "Total_Adapter_Content") {
         ## Sum the adapters by filename& position
         df <- dplyr::group_by(df, Filename, Position)
-        df <- dplyr::summarise_at(
-            df,
-            dplyr::vars("Percent"),
-            dplyr::funs(Percent = sum),
-            na.rm = TRUE
-        )
+        df <-
+            dplyr::summarise_at(df, dplyr::vars("Percent"), sum, na.rm = TRUE)
         df <- dplyr::ungroup(df)
     }
     else{
@@ -359,7 +354,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
             status <- dplyr::summarise_at(
                 dplyr::group_by(df, Filename),
                 dplyr::vars("Percent"),
-                dplyr::funs(Percent = max),
+                max,
                 na.rm = TRUE)
             status$Status <- cut(
                 status$Percent,

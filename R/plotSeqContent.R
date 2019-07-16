@@ -50,7 +50,7 @@
 #' @docType methods
 #'
 #' @importFrom grDevices rgb
-#' @importFrom dplyr mutate_at vars funs
+#' @importFrom dplyr mutate_at vars
 #' @importFrom tidyselect one_of
 #' @import ggplot2
 #'
@@ -99,7 +99,7 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
     acgt <- c("T", "C", "A", "G")
 
     df$Filename <- labels[df$Filename]
-    df <- tidyr::gather(df, "Base", "Percent", tidyselect::one_of(acgt))
+    df <- tidyr::gather(df, "Base", "Percent", one_of(acgt))
     df$Base <- factor(df$Base, levels = acgt)
     df$Percent <- round(df$Percent, 2)
     df$x <- as.integer(df$Position)
@@ -172,10 +172,10 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
         return(scPlot)
     }
 
+    ## Convert the Base to Start & End columns
     df$Start <- gsub("([0-9]*)-[0-9]*", "\\1", df$Base)
     df$End <- gsub("[0-9]*-([0-9]*)", "\\1", df$Base)
-    df$Start <- as.integer(df$Start)
-    df$End <- as.integer(df$End)
+    df <- mutate_at(df, c("Start", "End"), as.integer)
 
     plotType <- match.arg(plotType)
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
@@ -200,9 +200,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
 
         ## Round to 2 digits to reduce the complexity of the colour
         ## palette
-        df <- dplyr::mutate_at(
-            df, vars(one_of(acgt)), funs(round), digits = 2
-        )
+        df <- dplyr::mutate_at(df, acgt, round, digits = 2)
         maxBase <- max(vapply(acgt, function(x){max(df[[x]])}, numeric(1)))
         ## Set the colours, using opacity for G
         df$opacity <- 1 - df$G / maxBase
@@ -226,9 +224,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
         ## Now define the order for a dendrogram if required
         key <- names(labels)
         if (cluster) {
-            df_gath <- tidyr::gather(
-                df, "Base", "Percent", tidyselect::one_of(acgt)
-            )
+            df_gath <- tidyr::gather(df, "Base", "Percent", one_of(acgt))
             df_gath$Start <- paste(df_gath$Start, df_gath$Base, sep = "_")
             df_gath <- df_gath[c("Filename", "Start", "Percent")]
             clusterDend <-
@@ -252,7 +248,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
             paste0(df$Start, "-", df$End, "bp")
         )
         ## Add percentage signs to ACGT for prettier labels
-        df <- dplyr::mutate_at(df, vars(acgt), funs(.addPercent))
+        df <- dplyr::mutate_at(df, acgt, .addPercent)
 
         yBreaks <- seq_along(levels(df$Filename))
         scPlot <- ggplot(
@@ -322,7 +318,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     if (plotType == "line") {
         df$Filename <- labels[df$Filename]
         df <- df[!colnames(df) == "Base"]
-        df <- tidyr::gather(df, "Base", "Percent", tidyselect::one_of(acgt))
+        df <- tidyr::gather(df, "Base", "Percent", one_of(acgt))
         df$Base <- factor(df$Base, levels = acgt)
         df$Percent <- round(df$Percent, 2)
         df$Position <- ifelse(

@@ -23,7 +23,7 @@ Depends:
 Imports:
   Biostrings,
   checkmate,
-  dplyr (>= 0.7.5),
+  dplyr (>= 0.8.0),
   ggdendro,
   grDevices, 
   grid,

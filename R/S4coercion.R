@@ -1,4 +1,5 @@
 #' @importFrom methods as
+#' @importFrom tidyselect one_of
 setAs(".FastqcFile", "FastqcData", function(from){
 
     ## Import each line as an element in a character vector then detect the
@@ -200,7 +201,7 @@ setAs(".FastqcFile", "FastqcData", function(from){
         "Total_Sequences",
         tidyselect::contains("quality"),
         tidyselect::ends_with("sequence"),
-        tidyselect::one_of("%GC", "File_type", "Encoding")
+        one_of("%GC", "File_type", "Encoding")
     )
 
 }

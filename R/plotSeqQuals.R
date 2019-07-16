@@ -52,7 +52,6 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr vars funs
 #' @importFrom stats hclust dist
 #' @importFrom scales percent comma percent_format
 #' @import ggplot2
