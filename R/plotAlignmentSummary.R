@@ -21,29 +21,30 @@
 plotAlignmentSummary <- function(
     x,
     type = c("star", "bowtie", "bowtie2", "hisat2"),
-    usePlotly = FALSE
+    usePlotly = FALSE,
+    ...,
+    fill = c("red", "yellow", "blue", rgb(0, 0.5, 1))
 ){
     ## Set the main arguments
     type <- match.arg(type)
 
     ## Set the tooltip
-    if (type == "star") {
-        tt <- c("x", "fill", "Percent", "Reads")
-    }
-    else{
-        stop("not done yet")
-    }
+    tt <- c("x", "fill", "Percent", "Reads")
 
     ## Import the data
     df <- tryCatch(importNgsLogs(x, type))
     pFun <- paste0(".plot", str_to_title(type), "Alignment")
     args <- list(
-        df = df
+        df = df,
+        fill = fill
     )
     p <- do.call(pFun, args)
     if (usePlotly) {
         p <- plotly::ggplotly(
-            p + theme(legend.position = "none"),
+            p + theme(
+                axis.title.y = element_blank(),
+                legend.position = "none"
+            ),
             tooltip = tt
         )
     }
@@ -52,10 +53,7 @@ plotAlignmentSummary <- function(
     p
 }
 
-.plotStarAlignment <- function(
-    df,
-    fill =rgb(c(1, 1, 0, 0), c(0, 1, 0, 0.5), c(0, 0, 1, 1))
-){
+.plotStarAlignment <- function(df, fill){
 
     cols <- c(
         "Filename",
@@ -83,6 +81,84 @@ plotAlignmentSummary <- function(
     df$Type <- factor(df$Type, levels = rev(lv))
     df$Percent = percent(df$Total / df$Number_Of_Input_Reads)
     df$Reads <- comma(df$Total)
+
+    ggplot(
+        df,
+        aes_string(
+            x = "Filename",
+            y = "Total",
+            fill = "Type",
+            label1 = "Percent",
+            label2 = "Reads"
+        )
+    ) +
+        geom_bar(stat = "identity") +
+        labs(y = "Total Reads") +
+        scale_y_continuous(labels = comma, expand = expand_scale(c(0, 0.05))) +
+        scale_fill_manual(values = fill) +
+        coord_flip() +
+        theme_bw()
+
+}
+
+.plotHisat2Alignment <- function(df, fill){
+
+    df <- dplyr::select(df, -one_of("Paired_Reads", "Alignment_Rate"))
+    df <- tidyr::gather(df, "Type", "Total", -(1:2))
+    df$Percent <- percent(df$Total / df$Total_Reads)
+    df$Filename <- stringr::str_remove_all(df$Filename, ".(log|info|txt)$")
+    df$Reads <- comma(df$Total)
+    lv <-  c(
+        "Unique_In_Pairs",
+        "Unique_Unpaired",
+        "Unique_Discordant_Pairs",
+        "Multiple_Unpaired",
+        "Multiple_In_Pairs",
+        "Not_Aligned"
+    )
+    lv <- intersect(lv, df$Type)
+    df$Type <- factor(df$Type, levels = rev(lv))
+    fill <- grDevices::colorRampPalette(fill)(length(lv))
+
+    ggplot(
+        df,
+        aes_string(
+            x = "Filename",
+            y = "Total",
+            fill = "Type",
+            label1 = "Percent",
+            label2 = "Reads"
+        )
+    ) +
+        geom_bar(stat = "identity") +
+        labs(y = "Total Reads") +
+        scale_y_continuous(labels = comma, expand = expand_scale(c(0, 0.05))) +
+        scale_fill_manual(values = fill) +
+        coord_flip() +
+        theme_bw()
+
+}
+
+.plotBowtie2Alignment <- .plotHisat2Alignment
+
+#' @importFrom tidyselect contains
+.plotBowtieAlignment <- function(df, fill){
+
+    df <- dplyr::select(df, -contains("Time"), -contains("Index"))
+    df <- tidyr::gather(df, "Type", "Total", -(1:2))
+    df <- dplyr::filter(df, !is.na(Total))
+    df$Percent <- percent(df$Total / df$Reads_Processed)
+    df$Filename <- stringr::str_remove_all(df$Filename, ".(log|info|txt)$")
+    df$Reads <- comma(df$Total)
+
+    df$Type <- factor(df$Type, levels = rev(unique(df$Type)))
+    nLevels <- length(levels(df$Type))
+    if (nLevels <= length(fill)) {
+        fill <- fill[seq_len(nLevels)]
+    }
+    else {
+        fill <- grDevices::colorRampPalette(fill)(nLevels)
+    }
 
     ggplot(
         df,

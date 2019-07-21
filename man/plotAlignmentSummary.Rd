@@ -5,7 +5,8 @@
 \title{Plot a summary of alignments}
 \usage{
 plotAlignmentSummary(x, type = c("star", "bowtie", "bowtie2", "hisat2"),
-  usePlotly = FALSE)
+  usePlotly = FALSE, ..., fill = c("red", "yellow", "blue", rgb(0, 0.5,
+  1)))
 }
 \arguments{
 \item{x}{Paths to one or more alignment log files}
