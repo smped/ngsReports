@@ -1,3 +1,23 @@
+#' @title Plot a summary of alignments
+#'
+#' @description Plot a summary of alignments from a set of log files
+#'
+#' @details Loads a set of alignment log files and creates a default plot.
+#' Implemented aligners are \code{bowtie}, \code{bowtie2}, \code{Hisat2} and
+#'  \code{STAR}.
+#'
+#' @param x Paths to one or more alignment log files
+#' @param type The aligner used. Can be one of star, bowtie, bowtie2 or hisat2
+#' @param usePlotly logical. If TRUE an interactive plot will be generated.
+#' If FALSE a ggplot object will be output
+#'
+#' @return
+#' A ggplot2 object, or a plotly object
+#'
+#' @importFrom scales comma percent
+#' @import ggplot2
+#'
+#' @export
 plotAlignmentSummary <- function(
     x,
     type = c("star", "bowtie", "bowtie2", "hisat2"),
@@ -10,21 +30,26 @@ plotAlignmentSummary <- function(
     if (type == "star") {
         tt <- c("x", "fill", "Percent", "Reads")
     }
+    else{
+        stop("not done yet")
+    }
 
     ## Import the data
     df <- tryCatch(importNgsLogs(x, type))
     pFun <- paste0(".plot", str_to_title(type), "Alignment")
     args <- list(
-        df = df,
+        df = df
     )
     p <- do.call(pFun, args)
-    if (usePlotly){
+    if (usePlotly) {
         p <- plotly::ggplotly(
             p + theme(legend.position = "none"),
             tooltip = tt
         )
     }
 
+    ## And return the plot
+    p
 }
 
 .plotStarAlignment <- function(
@@ -43,11 +68,12 @@ plotAlignmentSummary <- function(
     df$Unmapped_Other <- df$Number_Of_Input_Reads - rowSums(df[,3:5])
 
     ## Remove the Log.final.out suffix
-    df$Filename <- str_remove_all(df$Filename, ".Log.final.out")
+    df$Filename <- stringr::str_remove_all(df$Filename, ".Log.final.out")
     ## Now gather for plotting
     df <- tidyr::gather(df, "Type", "Total", -(1:2))
     ## Remove the Percent/Number text from the Type column
-    df$Type <- str_remove_all(df$Type, "(.+Of_Reads_|_Number$|_Percent$)")
+    df$Type <-
+        stringr::str_remove_all(df$Type, "(.+Of_Reads_|_Number$|_Percent$)")
     lv <-  c(
         "Uniquely_Mapped_Reads",
         "Mapped_To_Multiple_Loci",

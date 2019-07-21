@@ -77,6 +77,7 @@ Collate:
     'overRep2Fasta.R'
     'path.R'
     'plotAdapterContent.R'
+    'plotAlignmentSummary.R'
     'plotBaseQuals.R'
     'plotDupLevels.R'
     'plotGcContent.R'
