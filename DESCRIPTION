@@ -27,8 +27,10 @@ Imports:
   ggdendro,
   grDevices, 
   grid,
+  kableExtra,
   lubridate,
   methods,
+  pander,
   parallel,
   plotly,
   readr,
@@ -94,8 +96,6 @@ VignetteBuilder: knitr
 Suggests: 
   BiocStyle, 
   Cairo,
-  kableExtra,
   knitr, 
-  pander,
   testthat
 biocViews: QualityControl, ReportWriting

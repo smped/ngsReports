@@ -35,6 +35,8 @@
 #' writeHtmlReport(tempdir())
 #' }
 #'
+#' @importFrom pander pander
+#' @importFrom kableExtra kable_styling scroll_box
 #' @export
 writeHtmlReport <- function(
     fastqcDir, template, usePlotly = TRUE, species = "Hsapiens",
