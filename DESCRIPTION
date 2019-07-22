@@ -80,6 +80,7 @@ Collate:
     'plotAlignmentSummary.R'
     'plotBaseQuals.R'
     'plotDupLevels.R'
+    'plotFastqcPCA.R'
     'plotGcContent.R'
     'plotKmers.R'
     'plotNContent.R'
