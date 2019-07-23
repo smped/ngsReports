@@ -29,6 +29,7 @@ Imports:
   grid,
   kableExtra,
   lubridate,
+  mclust,
   methods,
   pander,
   parallel,

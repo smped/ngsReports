@@ -13,8 +13,6 @@
 #'  the desired FastQC module (eg. c("Per_base_sequence_quality","Per_base_sequence_content"))
 #' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly
 #' object.
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
-#' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default
@@ -30,8 +28,15 @@
 #' @docType methods
 #'
 #' @importFrom dplyr left_join
+#' @importFrom dplyr group_by
+#' @importFrom dplyr ungroup
+#' @importFrom dplyr slice
+#' @importFrom grDevices chull
+#' @importFrom mclust Mclust
+#' @importFrom reshape2 dcast
+#' @importFrom stats kmeans
+#' @importFrom stats prcomp
 #' @import ggplot2
-#' @import mclust 
 #' @import tibble
 #' 
 #'
@@ -39,30 +44,30 @@
 #' @rdname plotFastqcPCA-methods
 #' @export
 setGeneric("plotFastqcPCA", function(
-    x, usePlotly = FALSE, labels, pwfCols, plotValue, cluster = FALSE, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE, ...){
     standardGeneric("plotFastqcPCA")
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "ANY", function(
-    x, usePlotly = FALSE, labels, pwfCols, plotValue, cluster = FALSE, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE, ...){
     .errNotImp(x)
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "character", function(
-    x, usePlotly = FALSE, labels, pwfCols, plotValue, cluster = FALSE, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
-    plotFastqcPCA(x, usePlotly, labels, plotValue, pwfCols, cluster, ...)
+    plotFastqcPCA(x, module, usePlotly, labels, cluster, ...)
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
-    x, usePlotly = FALSE, labels, pwfCols, plotValue, module, cluster = FALSE, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE, ...){
     
     # if(modules == "all") modules <- c("Per_base_sequence_quality", "Per_tile_sequence_quality", 
     #                                    "Per_sequence_quality_scores", "Per_base_sequence_content", 
@@ -72,71 +77,136 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     #                                    "Total_Deduplicated_Percentage")
     
     
-    pFun <- paste0(".generate", str_to_title(module), "PCA")
+    ## Get any arguments for dotArgs that have been set manually
+    dotArgs <- list(...)
+    allowed <- names(formals(theme))
+    keepArgs <- which(names(dotArgs) %in% allowed)
+    userTheme <- c()
+    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+    
+    pFun <- paste0(".generate", module, "PCA")
     args <- list(
         x = x)
     
     df <- do.call(pFun, args)
+    
     pca <- prcomp(df, scale. = TRUE)
-    
-    scores <- as_tibble(pca$x) 
-    
-    dis <- scores[1:2]
-    Distance <- dist(dis)
+    variance <- summary(pca)$importance[2,]
+    scores <- as.data.frame(pca$x) 
     
     
-    #https://www.statmethods.net/advstats/cluster.html
-    k <- Mclust(scores[1:2])$G
-    kM <- kmeans(Distance, centers = k)
     
-    
-    kM <- kM$cluster 
-    
-    splitClus <- split(names(kM), kM)
-    
-    clusterDF <- lapply(1:length(splitClus), function(x){
-        
-        data.frame(Filename = splitClus[[x]], cluster = as.character(x))
+    if(cluster) {
+        dis <- scores[1:2]
+        Distance <- dist(dis)
         
         
-    }) 
-    
-    clusterDF <- bind_rows(clusterDF)
-    
-    
-    scores <- rownames_to_column(scores, "Filename")
-    
-    data <- left_join(scores, clusterDF, by = "Filename")
-    
-    
-    ## get convex edges
-    find_hull <- function(data) data[chull(data$PC2, data$PC1), ]
-    
-    hulls <- plyr::ddply(data, "cluster", find_hull)
-    hulls$cluster <- factor(hulls$cluster, levels = unique(hulls$cluster))
-    
-    
-    p <- ggplot(data = data) +
-        geom_polygon(data = hulls, aes(x = PC1, y = PC2, fill = cluster), alpha = 0.2) +
-        geom_point(aes(group = Filename, x = PC1, y = PC2)) +
-        geom_hline(yintercept=0, colour="darkgrey") + 
-        geom_vline(xintercept=0, colour="darkgrey") 
-    
-    plotlyPlot <- ggplotly(p)
-    
-    s <- split(data, data$cluster)
-    
-    plotlyPlot$x$data[1:k] <- lapply(1:k, function(j){
+        #https://www.statmethods.net/advstats/cluster.html
         
-        names <- s[[j]]$Filename
-        names <- paste(names, collapse = "<br>")
         
-        plotlyPlot$x$data[[j]]$text <- names
-        plotlyPlot$x$data[[j]]
-    })
+        k <- Mclust(dis)$G
+        set.seed(1)
+        kM <- kmeans(Distance, centers = k, iter.max=500, nstart=1, algorithm = "MacQueen")
+        
+        
+        kM <- kM$cluster 
+        
+        splitClus <- split(names(kM), kM)
+        
+        clusterDF <- lapply(1:length(splitClus), function(x){
+            
+            data.frame(Filename = splitClus[[x]], cluster = as.character(x), stringsAsFactors = FALSE)
+            
+            
+        }) 
+        
+        
+        clusterDF <- bind_rows(clusterDF)
+        
+        scores <- rownames_to_column(scores, "Filename")
+        
+        data <- left_join(clusterDF, scores, by = "Filename")
+        data$PCAkey <- data$Filename
+        labels <- .makeLabels(data, labels, ...)
+        data$Filename <- labels[data$Filename]
+        
+        ## get convex edges
+        hulls <- group_by(data, cluster)
+        
+        PC1 <- c()
+        PC2 <- c()
+        hulls <- slice(hulls, chull(PC2, PC1))
+        hulls <- ungroup(hulls)
+        hulls$cluster <- factor(hulls$cluster, levels = unique(hulls$cluster))
+        
+        
+        
+        PCA <- ggplot(data = data) +
+            geom_polygon(data = hulls, aes(x = PC1, y = PC2, fill = cluster, colour = cluster), alpha = 0.4) +
+            geom_point(aes(group = Filename, x = PC1, y = PC2)) +
+            geom_hline(yintercept=0, colour="darkgrey") + 
+            geom_vline(xintercept=0, colour="darkgrey") + 
+            theme_bw() +
+            theme(
+                panel.background = element_blank()
+            ) + 
+            labs(x = paste0("Principal Component 1 (", variance[1], ")"), y = paste0("Principal Component 2 (", variance[2], ")"))
+        
+        if (!is.null(userTheme)) nPlot <- nPlot + userTheme
+        
+        
+        if(usePlotly){
+            PCA <- ggplotly(PCA)
+            
+            s <- split(data, data$cluster)
+            
+            PCA$x$data[1:k] <- lapply(1:k, function(j){
+                
+                names <- s[[j]]$Filename
+                names <- paste(names, collapse = "<br>")
+                
+                PCA$x$data[[j]]$text <- names
+                PCA$x$data[[j]]$hoveron <- "lines"
+                
+                ## add key
+                
+                #PCA$x$data[[j]] <- c(PCA$x$data[[j]], PCAkey = paste(s$`1`$PCAkey, collapse = " "))
+                PCA$x$data[[j]]
+                
+            })  
+            
+            PCA$x$data[[k+1]]$hoverinfo <- "none"
+            
+        }
+        
+    }
+    else{
+        
+        PCA <- ggplot(data = data) +
+            geom_point(aes(group = Filename, x = PC1, y = PC2)) +
+            geom_hline(yintercept=0, colour="darkgrey") + 
+            geom_vline(xintercept=0, colour="darkgrey") + 
+            theme_bw() +
+            theme(
+                panel.background = element_blank()
+            ) + 
+            labs(x = paste0("Principal Component 1 (", variance[1], ")"), y = paste0("Principal Component 2 (", variance[2], ")"))
+        
+        
+        if (!is.null(userTheme)) nPlot <- nPlot + userTheme
+        
+        
+        if(usePlotly){
+            PCA <- ggplotly(PCA)
+            
+            
+            
+        }}
     
-    plotlyPlot
+    
+    PCA
 }
+
 )
 
 
@@ -231,6 +301,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     })
     
     df <- Reduce(function(dtf1,dtf2) left_join(dtf1,dtf2,by="Filename"), t)
+    df <- column_to_rownames(df, "Filename")
 }  
 
 .generateSequence_Length_DistributionPCA <- function(x){
@@ -255,5 +326,3 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     
     df 
 } 
-
-

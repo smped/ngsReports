@@ -8,20 +8,23 @@
 \alias{plotFastqcPCA,FastqcDataList-method}
 \title{Draw a PCA plot for Fast QC modules}
 \usage{
-plotFastqcPCA(x, usePlotly = FALSE, labels, pwfCols, plotValue,
+plotFastqcPCA(x, module, usePlotly = FALSE, labels, cluster = FALSE,
+  ...)
+
+\S4method{plotFastqcPCA}{ANY}(x, module, usePlotly = FALSE, labels,
   cluster = FALSE, ...)
 
-\S4method{plotFastqcPCA}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
-  plotValue, cluster = FALSE, ...)
+\S4method{plotFastqcPCA}{character}(x, module, usePlotly = FALSE, labels,
+  cluster = FALSE, ...)
 
-\S4method{plotFastqcPCA}{character}(x, usePlotly = FALSE, labels,
-  pwfCols, plotValue, cluster = FALSE, ...)
-
-\S4method{plotFastqcPCA}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, plotValue, cluster = FALSE, ...)
+\S4method{plotFastqcPCA}{FastqcDataList}(x, module, usePlotly = FALSE,
+  labels, cluster = FALSE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
+
+\item{module}{\code{character} vector containing 
+the desired FastQC module (eg. c("Per_base_sequence_quality","Per_base_sequence_content"))}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
 object.}
@@ -30,16 +33,10 @@ object.}
 All filenames must be present in the names.
 File extensions are dropped by default}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
-for PASS/WARN/FAIL}
-
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
-
-\item{modules}{\code{character} vector containing 
-the desired FastQC module (eg. c("Per_base_sequence_quality","Per_base_sequence_content"))}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
