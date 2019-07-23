@@ -98,7 +98,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     
     if(cluster) {
         dis <- scores[1:2]
-        Distance <- dist(dis)
+        Distance <- dist(dis,  method = "euclidean")
         
         
         #https://www.statmethods.net/advstats/cluster.html
@@ -106,10 +106,18 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         
         k <- Mclust(dis)$G
         set.seed(1)
-        kM <- kmeans(Distance, centers = k, iter.max=500, nstart=1, algorithm = "MacQueen")
         
         
-        kM <- kM$cluster 
+
+        
+        # k means
+        
+        #kM <- kmeans(scores, centers = k, iter.max=500, algorithm = "MacQueen")
+        #kM <- kM$cluster 
+        clust <- hclust(Distance, method = "ward.D2")
+        kM <- cutree(clust, k = k)
+        
+        
         
         splitClus <- split(names(kM), kM)
         
