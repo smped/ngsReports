@@ -24,6 +24,7 @@ Imports:
   Biostrings,
   checkmate,
   dplyr (>= 0.8.0),
+  FactoMineR,
   ggdendro,
   grDevices, 
   grid,
@@ -80,6 +81,7 @@ Collate:
     'plotAlignmentSummary.R'
     'plotBaseQuals.R'
     'plotDupLevels.R'
+    'plotFastqcPCA.R'
     'plotGcContent.R'
     'plotKmers.R'
     'plotNContent.R'
