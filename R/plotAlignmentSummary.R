@@ -17,6 +17,7 @@
 #' A ggplot2 object, or a plotly object
 #'
 #' @importFrom scales comma percent
+#' @importFrom tidyselect one_of
 #' @import ggplot2
 #'
 #' @export
@@ -76,12 +77,13 @@ plotAlignmentSummary <- function(
         "Number_Of_Reads_Mapped_To_Too_Many_Loci"
     )
     df <- df[cols]
-    df$Unmapped_Other <- df$Number_Of_Input_Reads - rowSums(df[,3:5])
+    subCols <- seq(3, 5)
+    df$Unmapped_Other <- df$Number_Of_Input_Reads - rowSums(df[subCols])
 
     ## Remove the Log.final.out suffix
     df$Filename <- stringr::str_remove_all(df$Filename, ".Log.final.out")
     ## Now gather for plotting
-    df <- tidyr::gather(df, "Type", "Total", -(1:2))
+    df <- tidyr::gather(df, "Type", "Total", one_of(subCols))
     ## Remove the Percent/Number text from the Type column
     df$Type <-
         stringr::str_remove_all(df$Type, "(.+Of_Reads_|_Number$|_Percent$)")
@@ -116,8 +118,10 @@ plotAlignmentSummary <- function(
 
 .plotHisat2Alignment <- function(df, fill){
 
+
     df <- dplyr::select(df, -one_of("Paired_Reads", "Alignment_Rate"))
-    df <- tidyr::gather(df, "Type", "Total", -(1:2))
+    keepCols <- names(df)[-seq_len(2)]
+    df <- tidyr::gather(df, "Type", "Total", one_of(keepCols))
     df$Percent <- percent(df$Total / df$Total_Reads)
     df$Filename <- stringr::str_remove_all(df$Filename, ".(log|info|txt)$")
     df$Reads <- comma(df$Total)
@@ -158,7 +162,8 @@ plotAlignmentSummary <- function(
 .plotBowtieAlignment <- function(df, fill){
 
     df <- dplyr::select(df, -contains("Time"), -contains("Index"))
-    df <- tidyr::gather(df, "Type", "Total", -(1:2))
+    keepCols <- names(df)[-seq_len(2)]
+    df <- tidyr::gather(df, "Type", "Total", one_of(keepCols))
     df <- dplyr::filter(df, !is.na(Total))
     df$Percent <- percent(df$Total / df$Reads_Processed)
     df$Filename <- stringr::str_remove_all(df$Filename, ".(log|info|txt)$")
