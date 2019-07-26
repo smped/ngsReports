@@ -31,3 +31,10 @@ Loads a set of alignment log files and creates a default plot.
 Implemented aligners are \code{bowtie}, \code{bowtie2}, \code{Hisat2} and
  \code{STAR}.
 }
+\examples{
+
+f <- c("bowtie2PE.txt", "bowtie2SE.txt")
+bowtie2Logs <- system.file("extdata", f, package = "ngsReports")
+plotAlignmentSummary(bowtie2Logs, "bowtie2")
+
+}

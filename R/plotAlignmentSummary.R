@@ -16,6 +16,12 @@
 #' @return
 #' A ggplot2 object, or a plotly object
 #'
+#' @examples
+#'
+#' f <- c("bowtie2PE.txt", "bowtie2SE.txt")
+#' bowtie2Logs <- system.file("extdata", f, package = "ngsReports")
+#' plotAlignmentSummary(bowtie2Logs, "bowtie2")
+#'
 #' @importFrom scales comma percent
 #' @importFrom tidyselect one_of
 #' @import ggplot2
