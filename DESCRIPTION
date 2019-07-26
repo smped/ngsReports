@@ -14,7 +14,7 @@ Description: This package provides methods and object classes for parsing
     visualising the data loaded from these files.
 URL: https://github.com/UofABioinformaticsHub/ngsReports
 BugReports: https://github.com/UofABioinformaticsHub/ngsReports/issues
-License: LGPL (>= 3)
+License: file LICENSE
 Encoding: UTF-8
 Depends:
   BiocGenerics,

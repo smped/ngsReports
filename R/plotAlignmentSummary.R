@@ -10,6 +10,8 @@
 #' @param type The aligner used. Can be one of star, bowtie, bowtie2 or hisat2
 #' @param usePlotly logical. If TRUE an interactive plot will be generated.
 #' If FALSE a ggplot object will be output
+#' @param ... Used to pass additional attributes to theme() and between methods
+#' @param fill Colours used to fill the bars. Passed to scale_fill_manual.
 #'
 #' @return
 #' A ggplot2 object, or a plotly object
@@ -28,8 +30,12 @@ plotAlignmentSummary <- function(
     ## Set the main arguments
     type <- match.arg(type)
 
-    ## Set the tooltip
-    tt <- c("x", "fill", "Percent", "Reads")
+    ## Get any arguments for dotArgs that have been set manually
+    dotArgs <- list(...)
+    allowed <- names(formals(theme))
+    keepArgs <- which(names(dotArgs) %in% allowed)
+    userTheme <- c()
+    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
     ## Import the data
     df <- tryCatch(importNgsLogs(x, type))
@@ -38,8 +44,15 @@ plotAlignmentSummary <- function(
         df = df,
         fill = fill
     )
+
+    ## Generate the plot and add any theme information
     p <- do.call(pFun, args)
+    if (!is.null(userTheme)) p <- p + userTheme
+
     if (usePlotly) {
+        ## Set the tooltip
+        tt <- c("x", "fill", "Percent", "Reads")
+        ## Make interactive
         p <- plotly::ggplotly(
             p + theme(
                 axis.title.y = element_blank(),
@@ -49,7 +62,7 @@ plotAlignmentSummary <- function(
         )
     }
 
-    ## And return the plot
+    ## Return the plot
     p
 }
 

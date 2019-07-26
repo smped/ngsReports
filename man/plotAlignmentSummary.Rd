@@ -15,6 +15,10 @@ plotAlignmentSummary(x, type = c("star", "bowtie", "bowtie2", "hisat2"),
 
 \item{usePlotly}{logical. If TRUE an interactive plot will be generated.
 If FALSE a ggplot object will be output}
+
+\item{...}{Used to pass additional attributes to theme() and between methods}
+
+\item{fill}{Colours used to fill the bars. Passed to scale_fill_manual.}
 }
 \value{
 A ggplot2 object, or a plotly object

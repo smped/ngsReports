@@ -9,16 +9,16 @@
 \title{Draw a PCA plot for Fast QC modules}
 \usage{
 plotFastqcPCA(x, module, usePlotly = FALSE, labels, cluster = FALSE,
-  ...)
+  groups = NULL, ...)
 
 \S4method{plotFastqcPCA}{ANY}(x, module, usePlotly = FALSE, labels,
-  cluster = FALSE, ...)
+  cluster = FALSE, groups = NULL, ...)
 
 \S4method{plotFastqcPCA}{character}(x, module, usePlotly = FALSE, labels,
-  cluster = FALSE, ...)
+  cluster = FALSE, groups = NULL, ...)
 
 \S4method{plotFastqcPCA}{FastqcDataList}(x, module, usePlotly = FALSE,
-  labels, cluster = FALSE, ...)
+  labels, cluster = FALSE, groups = NULL, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
@@ -33,8 +33,11 @@ object.}
 All filenames must be present in the names.
 File extensions are dropped by default}
 
-\item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
-fastqc data will be clustered using hierarchical clustering}
+\item{cluster}{\code{logical} default \code{FALSE}. If \code{groups} argument is not set
+fastqc data will be clustered using hierarchical clustering.}
+
+\item{groups}{named \code{list} of predefined sample groups (eg. R1 and R2 or Sequencing Lanes)
+to cluster by}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 }
