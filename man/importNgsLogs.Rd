@@ -4,20 +4,19 @@
 \alias{importNgsLogs}
 \title{Import Various NGS-related log files}
 \usage{
-importNgsLogs(x, type, which = 1)
+importNgsLogs(x, type, which)
 }
 \arguments{
 \item{x}{\code{character}. Vector of filenames. All log files must be of the
 same type. Duplicate file paths will be silently ignored.}
 
 \item{type}{\code{character}. The type of file being imported. Can be one of
-\code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star} or
-\code{duplicationMetrics}}
+\code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
+\code{duplicationMetrics} or \code{adapterRemoval}}
 
 \item{which}{Which element of the parsed object to return. Ignored in all
-file types except \code{type = "duplicationMetrics"}, which can return
-either the metrics or the data supplied as a histogram. Defaults to the
-metrics data.}
+file types except when \code{type} is set to duplicationMetrics or
+adapterRemoval.}
 }
 \value{
 A \code{tibble}.
@@ -30,8 +29,19 @@ stderr
 }
 \details{
 Imports one or more log files as output by tools such as:
-\code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR} or
-\code{picard MarkDuplicates}
+\code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR},
+\code{picard MarkDuplicates} or \code{Adapter Removal}
+
+Whilst most log files return a single tibble, some are more complex
+with multiple modules.
+
+\code{duplicationMetrics} will return either the metrics of histogram.
+These can be requested by setting which as 1 or 2, or naming either module.
+
+\code{adapterRemoval} can return one of four modules (which = 1:4),.
+When calling by name, the possible values are sequences, settings,
+statistics or distribution.
+Partial matching is implemented.
 }
 \examples{
 f <- c("bowtiePE.txt", "bowtieSE.txt")

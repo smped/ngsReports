@@ -4,18 +4,28 @@
 #' stderr
 #'
 #' @details Imports one or more log files as output by tools such as:
-#' \code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR} or
-#' \code{picard MarkDuplicates}
+#' \code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR},
+#' \code{picard MarkDuplicates} or \code{Adapter Removal}
+#'
+#' Whilst most log files return a single tibble, some are more complex
+#' with multiple modules.
+#'
+#' \code{duplicationMetrics} will return either the metrics of histogram.
+#' These can be requested by setting which as 1 or 2, or naming either module.
+#'
+#' \code{adapterRemoval} can return one of four modules (which = 1:4),.
+#' When calling by name, the possible values are sequences, settings,
+#' statistics or distribution.
+#' Partial matching is implemented.
 #'
 #' @param x \code{character}. Vector of filenames. All log files must be of the
 #' same type. Duplicate file paths will be silently ignored.
 #' @param type \code{character}. The type of file being imported. Can be one of
-#' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star} or
-#' \code{duplicationMetrics}
+#' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
+#' \code{duplicationMetrics} or \code{adapterRemoval}
 #' @param which Which element of the parsed object to return. Ignored in all
-#' file types except \code{type = "duplicationMetrics"}, which can return
-#' either the metrics or the data supplied as a histogram. Defaults to the
-#' metrics data.
+#' file types except when \code{type} is set to duplicationMetrics or
+#' adapterRemoval.
 #'
 #' @return A \code{tibble}.
 #' Column names are broadly similar to the text in supplied files,
@@ -30,14 +40,30 @@
 #' @importFrom tidyselect contains everything starts_with ends_with
 #'
 #' @export
-importNgsLogs <- function(x, type, which = 1) {
+importNgsLogs <- function(x, type, which) {
 
     x <- unique(x) # Remove any  duplicates
     stopifnot(file.exists(x)) # Check they all exist
 
     ## Check for a valid filetype
-    possTypes <- c("bowtie", "bowtie2", "hisat2", "star", "duplicationMetrics")
+    possTypes <- c(
+        "adapterRemoval",
+        "bowtie",
+        "bowtie2",
+        "duplicationMetrics",
+        "hisat2",
+        "star"
+    )
     type <- match.arg(type, possTypes)
+
+    ## Sort out the which argument
+    if (missing(which)) {
+        which <- 1L
+        if (type == "adapterRemoval") {
+            message("Defaulting to the statistics module for Adapter Removal")
+            which <- 3L
+        }
+    }
 
     ## Change to title case for easier parsing below
     type <- stringr::str_split_fixed(type, pattern = "", n = nchar(type))
@@ -149,6 +175,31 @@ importNgsLogs <- function(x, type, which = 1) {
 
     all(checkMetCols, checkHistCols)
 }
+
+#' @title Check for a valid Duplication Metrics log
+#' @description Checks internal structure of the parsed log file
+#' @param x Character vector containing parsed log file using the function
+#' readLines
+#' @return logical(1)
+#' @keywords internal
+.isValidAdapterRemovalLog <- function(x){
+
+    ## Checkk the first line begins with AdapterRemoval
+    checkAR <- grepl("AdapterRemoval", x[[1]])
+
+    ## This should contain four modules, all of which are contained
+    ## between square brackets
+    modNames <- c(
+        "[Adapter sequences]",
+        "[Adapter trimming]",
+        "[Trimming statistics]",
+        "[Length distribution]"
+    )
+    checkModNames <- stringr::str_subset(x[[1]], "^\\[.+") == modNames
+
+    all(checkAR, checkModNames)
+}
+
 
 #' @title Parse data from Bowtie log files
 #' @description Parse data from Bowtie log files
@@ -335,12 +386,12 @@ importNgsLogs <- function(x, type, which = 1) {
 
 }
 
-#' @title Parse data from STAR log files
-#' @description Parse data from STAR log files
+#' @title Parse data from Picard duplicationMetrics log files
+#' @description Parse data from Picard duplicationMetrics log files
 #' @details Checks for structure will have been performed
 #' @param data List of lines read using readLines on one or more files
-#' @param which which element of the log file to return. Can be 1:2, "metrics"
-#' or "histogram"
+#' @param which which element of the log file to return.
+#' Can be 1:2, "metrics" or "histogram"
 #' @return tibble
 #' @keywords internal
 .parseDuplicationMetricsLogs <- function(data, which = 1){
@@ -400,4 +451,99 @@ importNgsLogs <- function(x, type, which = 1) {
         x
     })
     out[[which]]
+}
+
+#' @title Parse data from Adapter Removal log files
+#' @description Parse data from Adapter Removal log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param which which element of the log file to return.
+#' Can be 1:4, "sequences", "settings", "statistics" or "distribution"
+#' @return tibble
+#' @keywords internal
+#' @importFrom stringr str_split_fixed
+.parseAdapterRemovalLogs <- function(data, which = 3){
+
+    ## These are renamed for easier understanding.
+    ## The full mapping of titles are:
+    ## 1: sequences = Adapter sequences
+    ## 2: settings = Adapter trimming
+    ## 3: statistics =  Trimming statistics
+    ## 4: distribution = Length distribution
+    ## No parsing of the version number has been implemented (1st row)
+    ## Note that for each file, 'distribution' will return a tibble
+    ## with nrow > 1
+    modNames <- c("sequences", "settings", "statistics", "distribution")
+    if (is.character(which)) which <- match.arg(which, modNames)
+    if (is.numeric(which)) stopifnot(which %in% seq_len(4))
+
+    .parseArSingle <- function(x, which){
+        ## Remove the blank elements
+        x <- setdiff(x, "")
+        ## Find where the modules start
+        vals2Mods <- cumsum(stringr::str_detect(x, "^\\["))
+
+        ## Just do the modules manually
+        ## Start with the sequences
+        sequences <- str_split_fixed(
+            string = x[vals2Mods == 1][-1],
+            pattern = ": ",
+            n =  2
+        )
+        sequences <- as_tibble(
+            split(sequences[,2], f = sequences[,1])
+        )
+        ## Now the settings
+        settings <- str_split_fixed(
+            string = x[vals2Mods == 2][-1],
+            pattern = ": ",
+            n =  2
+        )
+        settings <- split(
+            x = settings[,2],
+            f = factor(settings[,1], levels = settings[,1])
+        )
+        ## Convert to the correct value type
+        intCols <- grepl("(score |value|length|Minimum)", names(settings))
+        intCols <- intCols & !grepl("Maximum", names(settings))
+        settings[intCols] <- lapply(settings[intCols], as.integer)
+        numCols <- grepl("threshold", names(settings))
+        settings[numCols] <- lapply(settings[numCols], as.numeric)
+        settings <- as_tibble(settings)
+        settings[["RNG seed"]] <- ifelse(
+            settings[["RNG seed"]] == "NA",
+            NA_integer_,
+            as.integer(settings[["RNG seed"]])
+        )
+        ## Statistics
+        statistics <- str_split_fixed(x[vals2Mods == 3][-1], ": ", 2)
+        statistics <- split(
+            x = statistics[,2],
+            f = factor(statistics[,1], levels = statistics[,1])
+        )
+        statistics <- lapply(statistics, as.numeric)
+        statistics <- as_tibble(statistics)
+        ## Distribution
+        distribution <- .splitByTab(x[vals2Mods == 4][-1])
+        distribution <- lapply(distribution, as.integer)
+        distribution <- as_tibble(distribution)
+
+        ## Setup the output, then format the column names
+        out <- list(
+            sequences = sequences,
+            settings = settings,
+            statistics = statistics,
+            distribution = distribution
+        )
+        out[[which]]
+    }
+
+    arOut <- lapply(data, .parseArSingle, which = which)
+    arOut <- lapply(names(arOut), function(x){
+        x <- dplyr::mutate(arOut[[x]], Filename = x)
+        dplyr::select(x, Filename, everything())
+    })
+    ## Now bind all tibbles & returns
+    bind_rows(arOut)
+
 }

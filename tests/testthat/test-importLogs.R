@@ -4,6 +4,7 @@ bowtieLogs <- system.file("extdata", c("bowtiePE.txt", "bowtieSE.txt"), package 
 bowtie2Logs <- system.file("extdata", c("bowtie2PE.txt", "bowtie2SE.txt"), package = "ngsReports")
 dupLogs <- system.file("extdata", "Sample1_Dedup_metrics.txt", package = "ngsReports")
 starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
+arFile <- system.file("extdata", "adapterRemoval.settings", package = "ngsReports")
 
 test_that("importBowtieLogs works correctly",{
     df <- importNgsLogs(bowtieLogs, type = "bowtie")
@@ -95,4 +96,15 @@ test_that("importStarLogs errors correctly",{
 test_that("importDupMetrics errors correctly",{
     ## These are bowtie2 logs so should error
     expect_error(importNgsLogs(bowtie2Logs, type = "duplicationMetrics"))
+})
+
+test_that("parseAdapterRemovalLogs errors correctly",{
+    expect_error(importNgsLogs(bowtie2Logs, type = "adapterRemoval"))
+})
+
+test_that("parseAdapterRemovalLogs parses correctly", {
+    expect_equal(nrow(importNgsLogs(arFile, "adapter", "settings")), 1L)
+    expect_equal(nrow(importNgsLogs(arFile, "adapter", "sequence")), 1L)
+    expect_equal(nrow(importNgsLogs(arFile, "adapter", "statistics")), 1L)
+    expect_equal(nrow(importNgsLogs(arFile, "adapter", "distribution")), 77L)
 })
