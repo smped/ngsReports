@@ -1,0 +1,12 @@
+Status	/data/biohub/20190129_Lardelli_FMR1_RNASeq/2_alignedData/bams/S4_Aligned.sortedByCoord.out.bam	/data/biohub/20190129_Lardelli_FMR1_RNASeq/2_alignedData/bams/S2_Aligned.sortedByCoord.out.bam	/data/biohub/20190129_Lardelli_FMR1_RNASeq/2_alignedData/bams/S5_Aligned.sortedByCoord.out.bam	/data/biohub/20190129_Lardelli_FMR1_RNASeq/2_alignedData/bams/L_Aligned.sortedByCoord.out.bam	/data/biohub/20190129_Lardelli_FMR1_RNASeq/2_alignedData/bams/G_Aligned.sortedByCoord.out.bam	/data/biohub/20190129_Lardelli_FMR1_RNASeq/2_alignedData/bams/D_Aligned.sortedByCoord.out.bam	/data/biohub/20190129_Lardelli_FMR1_RNASeq/2_alignedData/bams/A_Aligned.sortedByCoord.out.bam	/data/biohub/20190129_Lardelli_FMR1_RNASeq/2_alignedData/bams/S8_Aligned.sortedByCoord.out.bam
+Assigned	29726950	31122824	30501828	29296538	33165593	33205738	32624379	29971741
+Unassigned_Ambiguity	133641	141464	145497	139449	153801	155646	154967	138609
+Unassigned_MultiMapping	0	0	0	0	0	0	0	0
+Unassigned_NoFeatures	51167644	52725512	50303268	49180801	56410186	55484282	52222761	51147812
+Unassigned_Unmapped	0	0	0	0	0	0	0	0
+Unassigned_MappingQuality	7465292	8465712	7346540	7116324	8189536	8333934	8174504	8481582
+Unassigned_FragmentLength	0	0	0	0	0	0	0	0
+Unassigned_Chimera	0	0	0	0	0	0	0	0
+Unassigned_Secondary	0	0	0	0	0	0	0	0
+Unassigned_Nonjunction	0	0	0	0	0	0	0	0
+Unassigned_Duplicate	0	0	0	0	0	0	0	0

@@ -5,6 +5,7 @@ bowtie2Logs <- system.file("extdata", c("bowtie2PE.txt", "bowtie2SE.txt"), packa
 dupLogs <- system.file("extdata", "Sample1_Dedup_metrics.txt", package = "ngsReports")
 starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
 arFile <- system.file("extdata", "adapterRemoval.settings", package = "ngsReports")
+fcFile <- system.file("extdata", "featureCounts.summary", package = "ngsReports")
 
 test_that("importBowtieLogs works correctly",{
     df <- importNgsLogs(bowtieLogs, type = "bowtie")
@@ -98,7 +99,7 @@ test_that("importDupMetrics errors correctly",{
     expect_error(importNgsLogs(bowtie2Logs, type = "duplicationMetrics"))
 })
 
-test_that("parseAdapterRemovalLogs errors correctly",{
+test_that("importAdapterRemovalLogs errors correctly",{
     expect_error(importNgsLogs(bowtie2Logs, type = "adapterRemoval"))
 })
 
@@ -108,3 +109,21 @@ test_that("parseAdapterRemovalLogs parses correctly", {
     expect_equal(nrow(importNgsLogs(arFile, "adapter", "statistics")), 1L)
     expect_equal(nrow(importNgsLogs(arFile, "adapter", "distribution")), 77L)
 })
+
+test_that("importFeatureCountsLogs errors correctly", {
+    expect_error(importNgsLogs(bowtie2Logs, type = "featureCounts"))
+})
+
+test_that("parseAdapterRemovalLogs parses correctly", {
+    cols <- c(
+        "Filename", "Sample", "Assigned", "Unassigned_Ambiguity",
+        "Unassigned_MultiMapping", "Unassigned_NoFeatures",
+        "Unassigned_Unmapped", "Unassigned_MappingQuality",
+        "Unassigned_FragmentLength", "Unassigned_Chimera",
+        "Unassigned_Secondary", "Unassigned_Nonjunction",
+        "Unassigned_Duplicate")
+    expect_equal(nrow(importNgsLogs(fcFile, "feature")), 8L)
+    expect_equal(ncol(importNgsLogs(fcFile, "feature")), 13L)
+    expect_equal(colnames(importNgsLogs(fcFile, "feature")), cols)
+})
+

@@ -30,7 +30,10 @@ stderr
 \details{
 Imports one or more log files as output by tools such as:
 \code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR},
-\code{picard MarkDuplicates} or \code{Adapter Removal}
+\code{picard MarkDuplicates} or \code{Adapter Removal}.
+
+The featureCoonts log file corresponds to the \code{counts.out.summary},
+not the main \code{counts.out} file.
 
 Whilst most log files return a single tibble, some are more complex
 with multiple modules.

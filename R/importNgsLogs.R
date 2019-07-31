@@ -5,7 +5,10 @@
 #'
 #' @details Imports one or more log files as output by tools such as:
 #' \code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR},
-#' \code{picard MarkDuplicates} or \code{Adapter Removal}
+#' \code{picard MarkDuplicates} or \code{Adapter Removal}.
+#'
+#' The featureCoonts log file corresponds to the \code{counts.out.summary},
+#' not the main \code{counts.out} file.
 #'
 #' Whilst most log files return a single tibble, some are more complex
 #' with multiple modules.
@@ -51,6 +54,7 @@ importNgsLogs <- function(x, type, which) {
         "bowtie",
         "bowtie2",
         "duplicationMetrics",
+        "featureCounts",
         "hisat2",
         "star"
     )
@@ -200,6 +204,33 @@ importNgsLogs <- function(x, type, which) {
     all(checkAR, checkModNames)
 }
 
+#' @title Check for a valid featureCounts Summary
+#' @description Checks internal structure of the parsed file
+#' @param x Character vector containing parsed log file using the function
+#' readLines
+#' @return logical(1)
+#' @keywords internal
+.isValidFeatureCountsLog <- function(x){
+
+    ## Check the Status column
+    x <- .splitByTab(x)
+    chkCol1 <- colnames(x)[[1]] == "Status"
+    chkTypes <- FALSE
+    if (chkCol1) {
+        ## We can only do this if the Status column checks out
+        vals <- c(
+            "Assigned", "Unassigned_Ambiguity", "Unassigned_MultiMapping",
+            "Unassigned_NoFeatures", "Unassigned_Unmapped",
+            "Unassigned_MappingQuality",
+            "Unassigned_FragmentLength", "Unassigned_Chimera",
+            "Unassigned_Secondary", "Unassigned_Nonjunction",
+            "Unassigned_Duplicate"
+        )
+        chkTypes <- all(vals %in% x[["Status"]])
+    }
+
+    all(chkTypes, chkCol1)
+}
 
 #' @title Parse data from Bowtie log files
 #' @description Parse data from Bowtie log files
@@ -546,4 +577,31 @@ importNgsLogs <- function(x, type, which) {
     ## Now bind all tibbles & returns
     bind_rows(arOut)
 
+}
+
+#' @title Parse data from featureCounts summary files
+#' @description Parse data from featureCounts summary files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
+#' Can be 1:4, "sequences", "settings", "statistics" or "distribution"
+#' @return tibble
+#' @keywords internal
+.parseFeatureCountsLogs <- function(data, ...){
+
+    out <- lapply(data, function(x){
+        x <- .splitByTab(x)
+        Status <- c() # Avoiding an R CMD check error
+        x <- tidyr::gather(x, "Sample", "Total", -Status)
+        x$Sample <- basename(x$Sample)
+        x$Total <- as.integer(x$Total)
+        x$Status <- factor(x$Status, levels = unique(x$Status))
+        tidyr::spread(x, "Status", "Total")
+    })
+
+    out <- lapply(names(data), function(x){
+        out[[x]]$Filename = x
+        dplyr::select(out[[x]], Filename, everything())
+    })
+    bind_rows(out)
 }
