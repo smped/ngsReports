@@ -79,6 +79,7 @@ Collate:
     'path.R'
     'plotAdapterContent.R'
     'plotAlignmentSummary.R'
+    'plotAssemblyStats.R'
     'plotBaseQuals.R'
     'plotDupLevels.R'
     'plotFastqcPCA.R'

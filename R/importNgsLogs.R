@@ -5,7 +5,8 @@
 #'
 #' @details Imports one or more log files as output by tools such as:
 #' \code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR},
-#' \code{picard MarkDuplicates} or \code{Adapter Removal}.
+#' \code{picard MarkDuplicates} \code{Adapter Removal},
+#' \code{quast} or \code{busco}.
 #'
 #' The featureCoonts log file corresponds to the \code{counts.out.summary},
 #' not the main \code{counts.out} file.
@@ -25,7 +26,8 @@
 #' same type. Duplicate file paths will be silently ignored.
 #' @param type \code{character}. The type of file being imported. Can be one of
 #' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
-#' \code{duplicationMetrics} or \code{adapterRemoval}
+#' \code{duplicationMetrics} \code{adapterRemoval},
+#' \code{quast} or \code{busco}
 #' @param which Which element of the parsed object to return. Ignored in all
 #' file types except when \code{type} is set to duplicationMetrics or
 #' adapterRemoval.
@@ -56,7 +58,9 @@ importNgsLogs <- function(x, type, which) {
         "duplicationMetrics",
         "featureCounts",
         "hisat2",
-        "star"
+        "star",
+        "busco",
+        "quast"
     )
     type <- match.arg(type, possTypes)
 
@@ -230,6 +234,49 @@ importNgsLogs <- function(x, type, which) {
     }
 
     all(chkTypes, chkCol1)
+}
+
+#' @title Check for correct structure of supplied BUSCO log files
+#' @description Check for correct structure of supplied BUSCO log files after
+#' reading in using readLines.
+#' @details Checks for all the required fields in the lines provided
+#' @param x Character vector as output when readLines to a supplied log file
+#' @return logical(1)
+#' @keywords internal
+.isValidBuscoLog<- function(x){
+    nLines <- length(x)
+    fields <- c(
+        "# BUSCO version is:",
+        "# The lineage dataset is:",
+        "# To reproduce this run:",
+        "# Summarized benchmarking in BUSCO notation for file ",
+        "# BUSCO was run in mode:"
+    )
+    chk <- vapply(fields, function(f){any(grepl(f, x))}, logical(1))
+    all(chk)
+}
+
+#' @title Check for correct structure of supplied Quast log files
+#' @description Check for correct structure of supplied Quast log files after
+#' reading in using readLines.
+#' @details Checks for all the required fields in the lines provided
+#' @param x Character vector as output when readLines to a supplied log file
+#' @return logical(1)
+#' @keywords internal
+.isValidQuastLog<- function(x){
+    nLines <- length(x)
+    fields <- c(
+        "# contigs",
+        "Largest contig",
+        "N50",
+        "N75",
+        "Total length",
+        "L50",
+        "L75",
+        "# N's per 100 kbp"
+    )
+    chk <- vapply(fields, function(f){any(grepl(f, x))}, logical(1))
+    all(chk)
 }
 
 #' @title Parse data from Bowtie log files
@@ -604,4 +651,88 @@ importNgsLogs <- function(x, type, which) {
         dplyr::select(out[[x]], Filename, everything())
     })
     bind_rows(out)
+}
+
+
+#' @title Parse data from BUSCO log files
+#' @description Parse data from BUSCO log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
+#' @return data.frame
+#' @keywords internal
+.parseBuscoLogs <- function(data, ...){
+    
+    ## This will have already been through the validity checks
+    df <- lapply(data, function(x){
+        x <- gsub("# ", "", x)
+        ## get numbers of each feild from lines
+        single <- grep("Complete and single-copy BUSCOs \\(S\\)", x = x, value = TRUE)
+        single <- as.integer(gsub(".*\t(.+)\tComp.*", "\\1", single))
+           
+        duplicated <- grep("Complete and duplicated BUSCOs \\(D\\)", x = x, value = TRUE)
+        duplicated <- as.integer(gsub(".*\t(.+)\tComp.*", "\\1", duplicated))
+        
+        fragmented <- grep("Fragmented BUSCOs \\(F\\)", x = x, value = TRUE)
+        fragmented <- as.integer(gsub(".*\t(.+)\tFrag.*", "\\1", fragmented))
+        
+        missing <- grep("Missing BUSCOs \\(M\\)", x = x, value = TRUE)
+        missing <- as.integer(gsub(".*\t(.+)\tMiss.*", "\\1", missing))
+        
+        total <- sum(single, duplicated, fragmented, missing)
+        
+        name <- grep("Summarized benchmarking in BUSCO notation for file ", x = x, value = TRUE)
+        name <- gsub(".*file ", "\\1", name)
+        df <- tibble(name = name,
+                     completeSingleCopy = single, 
+                     completeDuplicated = duplicated,
+                     fragmented = fragmented,
+                     missing = missing)
+    })
+    df <- dplyr::bind_rows(df)
+    
+}
+
+#' @title Parse data from BUSCO log files
+#' @description Parse data from BUSCO log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
+#' @return data.frame
+#' @keywords internal
+.parseQuastLogs <- function(data, ...){
+    
+    ## This will have already been through the validity checks
+    df <- lapply(data, function(x){
+        x <- gsub("# ", "", x)
+        ## get Assembly stats from lines
+        totalL <- grep("Total length\t", x = x, value = TRUE)
+        totalL <- as.integer(gsub(".*\t(.+)", "\\1", totalL))
+        
+        N50 <- grep("N50\t", x = x, value = TRUE)
+        N50 <- as.integer(gsub(".*\t(.+)", "\\1", N50))
+        
+        N75 <- grep("N75\t", x = x, value = TRUE)
+        N75 <- as.integer(gsub(".*\t(.+)", "\\1", N75))
+        
+        L50 <- grep("L50\t", x = x, value = TRUE)
+        L50 <- as.integer(gsub(".*\t(.+)", "\\1", L50))
+        
+        L75 <- grep("L75\t", x = x, value = TRUE)
+        L75 <- as.integer(gsub(".*\t(.+)", "\\1", L75))
+        
+        longest <- grep("Largest contig\t", x = x, value = TRUE)
+        longest <- as.integer(gsub(".*\t(.+)", "\\1", longest))
+    
+        df <- tibble(totalLength = totalL,
+                     longestTig = longest,
+                     N50 = N50,
+                     N75 = N75,
+                     L50 = L50,
+                     L75 = L75)
+    })
+    df <- dplyr::bind_rows(df)
+    
+    dplyr::bind_cols(tibble(fileNames = names(data)), df)
+    
 }
