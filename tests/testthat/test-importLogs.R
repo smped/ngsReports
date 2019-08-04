@@ -6,6 +6,7 @@ dupLogs <- system.file("extdata", "Sample1_Dedup_metrics.txt", package = "ngsRep
 starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
 arFile <- system.file("extdata", "adapterRemoval.settings", package = "ngsReports")
 fcFile <- system.file("extdata", "featureCounts.summary", package = "ngsReports")
+caFiles <- system.file("extdata", c("cutadapt_full.txt", "cutadapt_minimal.txt"), package = "ngsReports")
 
 test_that("importBowtieLogs works correctly",{
     df <- importNgsLogs(bowtieLogs, type = "bowtie")
@@ -127,3 +128,32 @@ test_that("parseAdapterRemovalLogs parses correctly", {
     expect_equal(colnames(importNgsLogs(fcFile, "feature")), cols)
 })
 
+test_that("importCutadapt errors correctly", {
+    expect_error(importNgsLogs(bowtie2Logs, "cutadapt"))
+    expect_error(importNgsLogs(caFiles, "cutadapt"))
+    expect_error(importNgsLogs(caFiles[[1]], "cutadapt", which = 3))
+    expect_error(importNgsLogs(caFiles[[1]], "cutadapt", which = 4))
+    expect_message(importNgsLogs(caFiles[[2]], "cutadapt", which = 2))
+})
+
+test_that("parseCutadaptLogs parses correctly",{
+    expect_equal(
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = 1)), c(1, 9)
+    )
+    expect_equal(
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "summary")), c(1, 9)
+    )
+    expect_equal(
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = 2)), c(1, 8)
+    )
+    expect_equal(
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "adapter1")), c(1, 8)
+    )
+    expect_equal(
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = 5)), c(49, 6)
+    )
+    expect_equal(
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "overview")), c(49, 6)
+    )
+
+})

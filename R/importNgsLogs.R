@@ -4,31 +4,41 @@
 #' stderr
 #'
 #' @details Imports one or more log files as output by tools such as:
-#' \code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR},
-#' \code{picard MarkDuplicates} or \code{Adapter Removal}.
+#' \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
+#' \code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt} or
+#' \code{Adapter Removal}.
 #'
-#' The featureCoonts log file corresponds to the \code{counts.out.summary},
+#' The featureCounts log file corresponds to the \code{counts.out.summary},
 #' not the main \code{counts.out} file.
 #'
 #' Whilst most log files return a single tibble, some are more complex
 #' with multiple modules.
-#'
-#' \code{duplicationMetrics} will return either the metrics of histogram.
-#' These can be requested by setting which as 1 or 2, or naming either module.
 #'
 #' \code{adapterRemoval} can return one of four modules (which = 1:4),.
 #' When calling by name, the possible values are sequences, settings,
 #' statistics or distribution.
 #' Partial matching is implemented.
 #'
+#' \code{cutadapt} can return one of five modules (which = 1:5).
+#' When calling by name the possible modules are summary, adapter1, adapter2,
+#' adapter3 or overview.
+#' Note that adapter2/3 may be missing from these files depending on the nature
+#' of your data.
+#' If cutadapt log files are obtained using \code{report=minimal}, all supplied
+#' log files must be of this format and no modules can be returned.
+#'
+#' \code{duplicationMetrics} will return either the metrics of histogram.
+#' These can be requested by setting which as 1 or 2, or naming either module.
+#'
 #' @param x \code{character}. Vector of filenames. All log files must be of the
 #' same type. Duplicate file paths will be silently ignored.
 #' @param type \code{character}. The type of file being imported. Can be one of
 #' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
-#' \code{duplicationMetrics} or \code{adapterRemoval}
+#' \code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt} or
+#' \code{adapterRemoval}
 #' @param which Which element of the parsed object to return. Ignored in all
 #' file types except when \code{type} is set to duplicationMetrics or
-#' adapterRemoval.
+#' adapterRemoval. See details for possible values
 #'
 #' @return A \code{tibble}.
 #' Column names are broadly similar to the text in supplied files,
@@ -53,6 +63,7 @@ importNgsLogs <- function(x, type, which) {
         "adapterRemoval",
         "bowtie",
         "bowtie2",
+        "cutadapt",
         "duplicationMetrics",
         "featureCounts",
         "hisat2",
@@ -84,6 +95,19 @@ importNgsLogs <- function(x, type, which) {
     if (any(!validLogs)) {
         failed <- names(validLogs)[!validLogs]
         stop(paste("Incorrect file structure for:", failed , collapse = "\n"))
+    }
+
+    ## The two types of cutadapt output also need to be checked for consistency
+    if (type == "Cutadapt") {
+        ln <- vapply(data, length, integer(1))
+        nMinimal <- sum(ln == 2) # nLines for a minimal report
+        if (!nMinimal %in% c(0, length(data))) stop(
+            paste0(
+                "Some, but not all, reports are minimal format.\n",
+                "Please load different format reports separately"
+            )
+        )
+
     }
 
     ## Parse the data using the helpers defined as private functions
@@ -180,7 +204,7 @@ importNgsLogs <- function(x, type, which) {
     all(checkMetCols, checkHistCols)
 }
 
-#' @title Check for a valid Duplication Metrics log
+#' @title Check for a valid AdapterRemoval log
 #' @description Checks internal structure of the parsed log file
 #' @param x Character vector containing parsed log file using the function
 #' readLines
@@ -188,7 +212,7 @@ importNgsLogs <- function(x, type, which) {
 #' @keywords internal
 .isValidAdapterRemovalLog <- function(x){
 
-    ## Checkk the first line begins with AdapterRemoval
+    ## Check the first line begins with AdapterRemoval
     checkAR <- grepl("AdapterRemoval", x[[1]])
 
     ## This should contain four modules, all of which are contained
@@ -202,6 +226,47 @@ importNgsLogs <- function(x, type, which) {
     checkModNames <- stringr::str_subset(x[[1]], "^\\[.+") == modNames
 
     all(checkAR, checkModNames)
+}
+
+#' @title Check for a valid cutadapt log
+#' @description Checks internal structure of the parsed log file
+#' @param x Character vector containing parsed log file using the function
+#' readLines
+#' @return logical(1)
+#' @keywords internal
+.isValidCutadaptLog <- function(x){
+
+    ## These can take two forms, minimal & full
+    ## The minimal report is like a tab-delimited data.frame
+    ## whilst the full report has a more complex structure
+    isMinimal <- length(x) == 2
+    reqCols <- c(
+        "status", "in_reads", "in_bp", "too_short", "too_long",
+        "too_many_n",  "out_reads", "w/adapters", "qualtrim_bp", "out_bp"
+    )
+    if (isMinimal) {
+        ## As this is essentially a df, just check the columns
+        df <- tryCatch(.splitByTab(x))
+        chkCols <- all(reqCols %in% colnames(df))
+        return(TRUE)
+    }
+    ## Check the complete file
+    chkCutAdapt <- grepl("cutadapt", x[[1]])
+    chkCols <- list(
+        status = any(grepl("Finished in", x)),
+        in_reads = any(grepl("Total reads processed", x)),
+        in_bp = any(grepl("Total basepairs processed", x)),
+        too_short = any(grepl("Reads that were too short", x)),
+        ## Too long may not be in the file
+        too_many_n = any(grepl("Reads with too many N", x)),
+        out_reads = any(grepl("Reads written \\(passing filters\\)", x)),
+        `w/adapters` = any(grepl("Reads with adapters", x)),
+        qualtrim_bp = any(grepl("Quality-trimmed", x)),
+        out_bp = any(grepl("Total written \\(filtered\\)", x))
+    )
+    chkCols <- unlist(chkCols)
+    all(c(chkCutAdapt, chkCols))
+
 }
 
 #' @title Check for a valid featureCounts Summary
@@ -576,6 +641,155 @@ importNgsLogs <- function(x, type, which) {
     })
     ## Now bind all tibbles & returns
     bind_rows(arOut)
+
+}
+
+#' @title Parse data from cutadapt log files
+#' @description Parse data from cutadapt log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param which which element of the log file to return.
+#' Can be summary, adapter1, adapter2, adapter3 or overview, or any integrer in
+#' 1:5
+#' @return tibble
+#' @keywords internal
+#' @importFrom tidyselect everything
+#' @importFrom dplyr mutate_at mutate_if
+#' @importFrom stringr str_replace_all str_remove_all str_extract
+.parseCutadaptLogs <- function(data, which = 1){
+
+    ## Possible modules for the full version are:
+    ## 1: summary (this is identical to minimal)
+    ## 2: adapter1/2/3
+    ## 5: overview
+    ## No parsing of the version number has been implemented (1st row)
+    modNames <- c(
+        "summary", "adapter1", "adapter2", "adapter3", "overview"
+    )
+    if (is.character(which)) which <- match.arg(which, modNames)
+    if (is.numeric(which)) {
+        stopifnot(which %in% seq_len(5))
+        which <- modNames[which]
+    }
+
+    .parseCutAdaptSingle <- function(x, which){
+
+        ## Check if it is a minimal report & return the df if TRUE
+        isMinimal <- length(x) == 2
+        if (isMinimal) {
+            df <- .splitByTab(x)
+            ## Values may sometimes be > 2^31 so convert to doubles
+            df <- dplyr::mutate_if(df, colnames(df) != "status", as.numeric)
+            if (which != 1) message(
+                paste0(
+                    "Minimal report provided.",
+                    "The 'which' argument will be ignored"
+                )
+            )
+            return(df)
+        }
+
+        ## Otherwise parse the modules:
+        ## Remove the blank elements
+        x <- setdiff(x, "")
+        ## Find where the modules start
+        mods <- grepl("(=== Summary|=== Adapter|Overview)", x)
+        foundMods <- tolower(str_remove_all(x[mods],"[= ]"))
+        foundMods <- gsub("overview.+", "overview", foundMods)
+        ## Check the requested module exists as there is some variability
+        modExists <- which %in% foundMods
+        if (!modExists) stop("The requested module (", which, ") is missing")
+
+        ## Now split into the modules
+        x <- split(x, f = cumsum(mods))
+        ## Remove the first value from each
+        x <- lapply(x, function(x){x[-1]})
+        names(x) <- c("header", foundMods)
+
+        ## Just do the modules manually
+        out <- vector("list", length(x) - 1)
+        names(out) <- names(x)[-1]
+
+        ## Start with the summary (i.e. minimal)
+        vals <- str_replace_all(x$summary, ".+ +([0-9,]+).+", "\\1")
+        vals <- str_remove_all(vals, ",")
+        vals <- as.numeric(vals)
+        names(vals) <- str_replace_all(x$summary, "(.+):.+", "\\1")
+        reqCols <- c(
+            "in_reads", "in_bp", "too_short", "too_long",
+            "too_many_n",  "out_reads", "w/adapters", "qualtrim_bp", "out_bp"
+        )
+        fullText <- c(
+            "Total reads processed", "Total basepairs processed",
+            "Reads that were too short", "Reads that were too long",
+            "Reads with too many N", "Reads written (passing filters)",
+            "Reads with adapters", "Quality-trimmed",
+            "Total written (filtered)"
+        )
+        names(vals) <- reqCols[match(names(vals), fullText)]
+        out[["summary"]] <-
+            as_tibble(as.list(vals))[intersect(reqCols, names(vals))]
+
+        ## Now the adapters
+        out[grep("adapter", names(out))] <- lapply(
+            x[grepl("adapter", names(x))],
+            function(a){
+                tibble(
+                    sequence = str_extract(
+                        a[grepl("Sequence", a)], "[ACGTN]+"
+                    ),
+                    type = str_replace_all(
+                        a[grepl("Type", a)],
+                        ".+Type: (.+); Length.+",
+                        "\\1"
+                    ),
+                    length = as.integer(
+                        str_replace_all(
+                            a[grepl("Length", a)],
+                            ".+Length: (.+); Trimmed.+",
+                            "\\1"
+                        )
+                    ),
+                    A = as.numeric(
+                        str_extract(a[grepl("A:", a)], "[0-9\\.]+")
+                    ) / 100,
+                    C = as.numeric(
+                        str_extract(a[grepl("C:", a)], "[0-9\\.]+")
+                    ) / 100,
+                    G = as.numeric(
+                        str_extract(a[grepl("G:", a)], "[0-9\\.]+")
+                    ) / 100,
+                    `T` = as.numeric(
+                        str_extract(a[grepl("T:", a)], "[0-9\\.]+")
+                    ) / 100
+                )
+            }
+        )
+
+        ## The overview
+        out[["overview"]] <- .splitByTab(x$overview)
+        out[["overview"]] <- dplyr::mutate_if(
+            out[["overview"]],
+            vapply(
+                out[["overview"]],
+                function(x){suppressWarnings(all(!is.na(as.numeric(x))))},
+                logical(1)
+            ),
+            as.numeric
+        )
+        out[["overview"]] <- as_tibble(out[["overview"]])
+
+        ## Return the required module
+        out[[which]]
+    }
+
+    caOut <- lapply(data, .parseCutAdaptSingle, which = which)
+    caOut <- lapply(names(caOut), function(x){
+        x <- dplyr::mutate(caOut[[x]], Filename = x)
+        dplyr::select(x, Filename, everything())
+    })
+    ## Now bind all tibbles & returns
+    bind_rows(caOut)
 
 }
 

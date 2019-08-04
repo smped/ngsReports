@@ -12,11 +12,12 @@ same type. Duplicate file paths will be silently ignored.}
 
 \item{type}{\code{character}. The type of file being imported. Can be one of
 \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
-\code{duplicationMetrics} or \code{adapterRemoval}}
+\code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt} or
+\code{adapterRemoval}}
 
 \item{which}{Which element of the parsed object to return. Ignored in all
 file types except when \code{type} is set to duplicationMetrics or
-adapterRemoval.}
+adapterRemoval. See details for possible values}
 }
 \value{
 A \code{tibble}.
@@ -29,22 +30,31 @@ stderr
 }
 \details{
 Imports one or more log files as output by tools such as:
-\code{bowtie}, \code{bowtie2}, \code{Hisat2} \code{STAR},
-\code{picard MarkDuplicates} or \code{Adapter Removal}.
+\code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
+\code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt} or
+\code{Adapter Removal}.
 
-The featureCoonts log file corresponds to the \code{counts.out.summary},
+The featureCounts log file corresponds to the \code{counts.out.summary},
 not the main \code{counts.out} file.
 
 Whilst most log files return a single tibble, some are more complex
 with multiple modules.
 
-\code{duplicationMetrics} will return either the metrics of histogram.
-These can be requested by setting which as 1 or 2, or naming either module.
-
 \code{adapterRemoval} can return one of four modules (which = 1:4),.
 When calling by name, the possible values are sequences, settings,
 statistics or distribution.
 Partial matching is implemented.
+
+\code{cutadapt} can return one of five modules (which = 1:5).
+When calling by name the possible modules are summary, adapter1, adapter2,
+adapter3 or overview.
+Note that adapter2/3 may be missing from these files depending on the nature
+of your data.
+If cutadapt log files are obtained using \code{report=minimal}, all supplied
+log files must be of this format and no modules can be returned.
+
+\code{duplicationMetrics} will return either the metrics of histogram.
+These can be requested by setting which as 1 or 2, or naming either module.
 }
 \examples{
 f <- c("bowtiePE.txt", "bowtieSE.txt")
