@@ -63,13 +63,13 @@ importNgsLogs <- function(x, type, which) {
         "adapterRemoval",
         "bowtie",
         "bowtie2",
+        "busco",
         "cutadapt",
         "duplicationMetrics",
         "featureCounts",
         "hisat2",
-        "star",
-        "busco",
-        "quast"
+        "quast",
+        "star"
     )
     type <- match.arg(type, possTypes)
 
