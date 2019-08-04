@@ -52,7 +52,3 @@ This carries out PCA on all or a subset of FastQC modules and plots the
 output using either ggplot or plotly. Clustering of the PCA can be carried
 out using a k-means approach.
 }
-\examples{
-
-
-}

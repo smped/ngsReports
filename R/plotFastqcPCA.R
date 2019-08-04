@@ -24,9 +24,6 @@
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
-#' @examples
-#'
-#'
 #' @docType methods
 #'
 #' @importFrom dplyr left_join
@@ -134,7 +131,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             cluster <- HCPC(pca, nb.clust=0, consol = 0, min=2, max=10, graph = FALSE)
             
             cluster <- cluster$call$X
-            k <- max(as.integer(as.character(cluster$clust)))
+            k <- max(as.integer(as.character(cluster[["clust"]])))
             cluster <- cluster[c("Dim.1", "Dim.2", "clust")]
             
             # splitClus <- split(names(kM), kM)
@@ -170,21 +167,22 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         data$PCAkey <- data$Filename
         labels <- .makeLabels(data, labels, ...)
         data$Filename <- labels[data$Filename]
+        clust <- c()
         data$clust <- as.character(data$clust)
         ## get convex edges
         hulls <- group_by(data, clust)
         
-        PC1 <- c()
-        PC2 <- c()
+        Dim.1 <- c()
+        Dim.2 <- c()
         hulls <- slice(hulls, chull(Dim.1, Dim.2))
         hulls <- ungroup(hulls)
         hulls$cluster <- factor(hulls$clust, levels = unique(hulls$clust))
         
         
         
-        PCA <- ggplot(data = data) +
-            geom_point(aes(group = Filename, x = Dim.1, y = Dim.2), size = 0.2) +
-            geom_polygon(data = hulls, aes(x = Dim.1, y = Dim.2, fill = clust), alpha = 0.4) +
+        PCA <- ggplot() +
+            geom_point(data = data, aes_string(group = "Filename", x = "Dim.1", y = "Dim.2"), size = 0.2) +
+            geom_polygon(data = hulls, aes_string(x = "Dim.1", y = "Dim.2", fill = "clust"), alpha = 0.4) +
             geom_hline(yintercept=0, colour="darkgrey") + 
             geom_vline(xintercept=0, colour="darkgrey") + 
             theme_bw() +
@@ -218,8 +216,8 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     }
     else{
         
-        PCA <- ggplot(data = data) +
-            geom_point(aes(group = Filename, x = Dim.1, y = Dim.2)) +
+        PCA <- ggplot() +
+            geom_point(data = data, aes_string(group = "Filename", x = "Dim.1", y = 'Dim.2')) +
             geom_hline(yintercept=0, colour="darkgrey") + 
             geom_vline(xintercept=0, colour="darkgrey") + 
             theme_bw() +
