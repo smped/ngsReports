@@ -56,6 +56,7 @@
 importNgsLogs <- function(x, type, which) {
 
     x <- unique(x) # Remove any  duplicates
+    stopifnot(as.logical(length(x))) # Check a non-empty vector is passed
     stopifnot(file.exists(x)) # Check they all exist
 
     ## Check for a valid filetype

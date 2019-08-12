@@ -8,6 +8,10 @@ arFile <- system.file("extdata", "adapterRemoval.settings", package = "ngsReport
 fcFile <- system.file("extdata", "featureCounts.summary", package = "ngsReports")
 caFiles <- system.file("extdata", c("cutadapt_full.txt", "cutadapt_minimal.txt"), package = "ngsReports")
 
+test_that("importNgsLogs fails on empty",{
+    expect_error(importNgsLogs(bowtieLogs[0], "bowtie"))
+})
+
 test_that("importBowtieLogs works correctly",{
     df <- importNgsLogs(bowtieLogs, type = "bowtie")
     nm <- c("Filename", "Reads_Processed",
