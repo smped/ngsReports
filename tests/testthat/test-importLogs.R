@@ -2,8 +2,10 @@ context("Check all import functions behave and error correctly")
 
 bowtieLogs <- system.file("extdata", c("bowtiePE.txt", "bowtieSE.txt"), package = "ngsReports")
 bowtie2Logs <- system.file("extdata", c("bowtie2PE.txt", "bowtie2SE.txt"), package = "ngsReports")
+buscoFiles <- system.file("extdata", c("short_summary_Dmelanogaster_Busco.txt", "short_summary_Zcucurbitae_Busco.txt"), package = "ngsReports")
 dupLogs <- system.file("extdata", "Sample1_Dedup_metrics.txt", package = "ngsReports")
 starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
+quastFiles <- system.file("extdata", c("quast1.tsv", "quast2.tsv"), package = "ngsReports")
 arFile <- system.file("extdata", "adapterRemoval.settings", package = "ngsReports")
 fcFile <- system.file("extdata", "featureCounts.summary", package = "ngsReports")
 caFiles <- system.file("extdata", c("cutadapt_full.txt", "cutadapt_minimal.txt"), package = "ngsReports")
@@ -59,6 +61,50 @@ test_that("importStarLogs loads correctly",{
     ## Just check for the expected colnames & filenames
     expect_equal(colnames(df), nm)
     expect_equal(basename(starLog), df$Filename)
+})
+
+
+test_that("importQuastLog loads correctly", {
+    df <- importNgsLogs(quastFiles, type = "quast")
+    nm <- c("fileNames", "totalLength", "longestTig", "N50", "N75", "L50", "L75")
+    expect_equal(colnames(df), nm)
+})
+
+test_that("importBuscoLog loads correctly", {
+    df <- importNgsLogs(buscoFiles, type = "busco")
+    nm <- c("name", "completeSingleCopy", "completeDuplicated", "fragmented", "missing")
+    expect_equal(colnames(df), nm)
+})
+
+
+test_that("autodetect works", {
+    x <- c(bowtieLogs, bowtie2Logs, buscoFiles, dupLogs, starLog, quastFiles, arFile, fcFile, caFiles)
+    possTypes <- c(
+        "adapterRemoval",
+        "bowtie",
+        "bowtie2",
+        "busco",
+        "cutadapt",
+        "duplicationMetrics",
+        "featureCounts",
+        "hisat2",
+        "quast",
+        "star"
+    )
+    
+    data <- suppressWarnings(lapply(x, readLines))
+    
+    names(data) <- x
+    
+    type <- unlist(lapply(data, function(y){.getToolName(y, possTypes = possTypes)}))
+    
+    tools <- c("bowtie", "bowtie", "bowtie2", "bowtie2", "busco",
+               "duplicationMetrics", "star", "quast", "quast", 
+               "adapterRemoval", "featureCounts", "cutadapt", "cutadapt")
+    
+    expect_equal(unname(type), tools)
+    expect_equal(names(type), x)
+    
 })
 
 nm <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",

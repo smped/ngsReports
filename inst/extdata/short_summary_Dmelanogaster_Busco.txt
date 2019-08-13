@@ -1,0 +1,15 @@
+# BUSCO version is: 2.0.1 
+# The lineage dataset is: diptera_odb9 (Creation date: 2016-02-13, number of species: 25, number of BUSCOs: 2799)
+# To reproduce this run: python /apps/software/BUSCO/2.0.1-foss-2016uofa-Python-2.7.11/bin/BUSCO.py -i Dmelanogaster.cds -o Dmelanogaster_Busco -l ../diptera_odb9/ -m tran -c 5 -t ./Dmelanogaster_tmp -sp fly
+#
+# Summarized benchmarking in BUSCO notation for file Dmelanogaster.cds
+# BUSCO was run in mode: tran
+
+	C:98.9%[S:84.9%,D:14.0%],F:0.4%,M:0.7%,n:2799
+
+	2770	Complete BUSCOs (C)
+	2377	Complete and single-copy BUSCOs (S)
+	393	Complete and duplicated BUSCOs (D)
+	10	Fragmented BUSCOs (F)
+	19	Missing BUSCOs (M)
+	2799	Total BUSCO groups searched
