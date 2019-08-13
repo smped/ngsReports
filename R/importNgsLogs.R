@@ -6,8 +6,8 @@
 #' @details Imports one or more log files as output by tools such as:
 #' \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
 #' \code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt},
-#' \code{Adapter Removal}, \code{quast} or \code{busco}. 
-#' \code{autodetect} can be used to detect the log type by parsing the file.
+#' \code{Adapter Removal}, \code{quast} or \code{busco}.
+#' \code{auto} can also be used to detect the log type by parsing the file.
 #'
 #' The featureCounts log file corresponds to the \code{counts.out.summary},
 #' not the main \code{counts.out} file.
@@ -34,7 +34,7 @@
 #' @param x \code{character}. Vector of filenames. All log files must be of the
 #' same type. Duplicate file paths will be silently ignored.
 #' @param type \code{character}. The type of file being imported. Can be one of
-#' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
+#' \code{auto}, \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
 #' \code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt},
 #' \code{adapterRemoval}, \code{quast} or \code{busco}
 #' @param which Which element of the parsed object to return. Ignored in all
@@ -54,7 +54,7 @@
 #' @importFrom tidyselect contains everything starts_with ends_with
 #'
 #' @export
-importNgsLogs <- function(x, type, which) {
+importNgsLogs <- function(x, type = "auto", which) {
 
     x <- unique(x) # Remove any  duplicates
     stopifnot(as.logical(length(x))) # Check a non-empty vector is passed
@@ -73,10 +73,10 @@ importNgsLogs <- function(x, type, which) {
         "quast",
         "star"
     )
-    
-    type <- match.arg(type, c("autoDetect", possTypes))
 
-    
+    type <- match.arg(type, c("auto", possTypes))
+
+
     ## Sort out the which argument
     if (missing(which)) {
         which <- 1L
@@ -85,21 +85,18 @@ importNgsLogs <- function(x, type, which) {
             which <- 3L
         }
     }
-    
+
     ## Load the data
     data <- suppressWarnings(lapply(x, readLines))
     names(data) <- basename(x)
-    
+
     ## adding auto detect
-    if(type == "autoDetect"){
-        type <- unlist(lapply(data, function(y){.getToolName(y, possTypes = possTypes)}))
+    if (type == "auto") {
+        type <- vapply(data, .getToolName, character(1), possTypes = possTypes)
         type <- unique(type)
-        # ## have to add this for autoDetect to work
-        # if(all(type %in% c("hisat2", "bowtie2"))) type <- "bowtie2"
-        # ## add test to see if multiple logs are present from auto detect
-        # if(length(type)!= 1) stop("Multiple log types passed to function.")
+        if (length(type) != 1) stop("Multiple file types detected.\n")
     }
-    
+
     ## Change to title case for easier parsing below
     type <- stringr::str_split_fixed(type, pattern = "", n = nchar(type))
     type[1] <- stringr::str_to_upper(type[1])
@@ -138,29 +135,29 @@ importNgsLogs <- function(x, type, which) {
 
 
 
-#' @title Identify tool name 
+#' @title Identify tool name
 #' @description Identify tool name for log files after
 #' reading in using readLines.
 #' @details Checks for all the required fields in the lines provided
 #' @param x Character vector as output when readLines to a supplied log file
 #' @return logical(1)
 #' @keywords internal
-.getToolName<- function(x, possTypes){
-    
-    logiList <- lapply(possTypes, function(types){
+.getToolName <- function(x, possTypes){
+
+    logiList <- lapply(possTypes, function(y){
         ## Change to title case for easier parsing below
-        types <- stringr::str_split_fixed(types, pattern = "", n = nchar(types))
-        types[1] <- stringr::str_to_upper(types[1])
-        types <- paste(types, collapse = "")   
-        vFun <- paste0(".isValid", types, "Log(x)")
+        y <- stringr::str_split_fixed(y, pattern = "", n = nchar(y))
+        y[1] <- stringr::str_to_upper(y[1])
+        y <- paste(y, collapse = "")
+        vFun <- paste0(".isValid", y, "Log(x)")
         validLogs <- eval(parse(text = paste0(vFun)))
-        
+
     })
     logi <- unlist(logiList)
 
     type <- possTypes[logi]
-    ## added for autodetect purposes
-    if(all(c("hisat2", "bowtie2") %in% type)) type <- "bowtie2"
+    ## added for auto purposes
+    if (all(c("hisat2", "bowtie2") %in% type)) type <- "bowtie2"
     type
 }
 
@@ -232,7 +229,7 @@ importNgsLogs <- function(x, type, which) {
 
     ## Check the METRICS CLASS data
     metricsHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
-    
+
     if(length(metricsHeader) == 1){ # Must appear only once
         metricCols <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
                         "SECONDARY_OR_SUPPLEMENTARY_RDS", "UNMAPPED_READS",
@@ -241,17 +238,17 @@ importNgsLogs <- function(x, type, which) {
                         "ESTIMATED_LIBRARY_SIZE")
         ## Check the column names in the log match the expected columns
         checkMetCols <- all(names(.splitByTab(x[metricsHeader + 1])) == metricCols)
-        
+
         ## Check the HISTOGRAM data
         histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
         stopifnot(length(histHeader) == 1) # Must appear only once
         histCols <- c("BIN", "VALUE")
         checkHistCols <- all(names(.splitByTab(x[histHeader + 1])) == histCols)
-        
+
         all(checkMetCols, checkHistCols)
-        
+
     } else FALSE #give false value if missing
-    
+
 }
 
 #' @title Check for a valid AdapterRemoval log
@@ -327,9 +324,9 @@ importNgsLogs <- function(x, type, which) {
 #' @keywords internal
 .isValidFeatureCountsLog <- function(x){
 
-    if(all(grepl("\t", x))){ ### check all lines have a tab, 
+    if(all(grepl("\t", x))){ ### check all lines have a tab,
         ## required by .splitbyTab
-        
+
         ## Check the Status column
         x <- .splitByTab(x)
         chkCol1 <- colnames(x)[[1]] == "Status"
@@ -346,11 +343,11 @@ importNgsLogs <- function(x, type, which) {
             )
             chkTypes <- all(vals %in% x[["Status"]])
         }
-        
+
         all(chkTypes, chkCol1)
     }
     else FALSE ## print false if not
-    
+
 }
 
 #' @title Check for correct structure of supplied BUSCO log files

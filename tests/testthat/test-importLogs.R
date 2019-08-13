@@ -76,6 +76,9 @@ test_that("importBuscoLog loads correctly", {
     expect_equal(colnames(df), nm)
 })
 
+test_that("autodetect errors on multiple log types", {
+    expect_error(importNgsLogs(c(bowtie2Logs, bowtieLogs), "auto"))
+})
 
 test_that("autodetect works", {
     x <- c(bowtieLogs, bowtie2Logs, buscoFiles, dupLogs, starLog, quastFiles, arFile, fcFile, caFiles)
@@ -91,20 +94,23 @@ test_that("autodetect works", {
         "quast",
         "star"
     )
-    
     data <- suppressWarnings(lapply(x, readLines))
-    
-    names(data) <- x
-    
-    type <- unlist(lapply(data, function(y){.getToolName(y, possTypes = possTypes)}))
-    
-    tools <- c("bowtie", "bowtie", "bowtie2", "bowtie2", "busco",
-               "duplicationMetrics", "star", "quast", "quast", 
-               "adapterRemoval", "featureCounts", "cutadapt", "cutadapt")
-    
-    expect_equal(unname(type), tools)
-    expect_equal(names(type), x)
-    
+    names(data) <- basename(x)
+    type <- vapply(data, .getToolName, character(1), possTypes = possTypes)
+    tools <- c(
+        rep("bowtie", length(bowtieLogs)),
+        rep("bowtie2", length(bowtie2Logs)),
+        rep("busco", length(buscoFiles)),
+        rep("duplicationMetrics", length(dupLogs)),
+        rep("star", length(starLog)),
+        rep("quast", length(quastFiles)),
+        rep("adapterRemoval", length(arFile)),
+        rep("featureCounts", length(fcFile)),
+        rep("cutadapt", length(caFiles))
+    )
+
+    expect_equal(as.character(type), tools)
+
 })
 
 nm <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
