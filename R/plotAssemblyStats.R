@@ -11,7 +11,7 @@
 #' @param type The tool used. Can be one of quast or busco
 #' @param usePlotly logical. If TRUE an interactive plot will be generated.
 #' If FALSE a ggplot object will be output
-#' @param plotType \code{character}. Plot type to output, one of bar or paracoord.
+#' @param plotType \code{character}. Plot type to output, one of bar or parcoord.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return
@@ -25,7 +25,7 @@
 plotAssemblyStats <- function(x, type = "quast", usePlotly = FALSE, plotType = "bar", ...){
     
     ## Set the main arguments
-    type <- match.arg(type)
+   # type <- match.arg(type)
     
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
@@ -73,7 +73,7 @@ plotAssemblyStats <- function(x, type = "quast", usePlotly = FALSE, plotType = "
                             "variable", 
                             "Value", 
                             2:7)
-    varaible <- c()
+    variable <- c()
     
     dfLong$fileNames <- factor(dfLong$fileNames, 
                                levels = unique(dfLong$fileNames))
@@ -166,7 +166,7 @@ plotAssemblyStats <- function(x, type = "quast", usePlotly = FALSE, plotType = "
     
 }
 
-.plotBuscoStats <- function(df, usePlotly){
+.plotBuscoStats <- function(df, usePlotly, ...){
     
     #df <- importNgsLogs(x, type = "busco")
     

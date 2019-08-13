@@ -71,8 +71,10 @@ importNgsLogs <- function(x, type, which) {
         "quast",
         "star"
     )
-    type <- match.arg(type, possTypes)
+    
+    type <- match.arg(type, c("autoDetect", possTypes))
 
+    
     ## Sort out the which argument
     if (missing(which)) {
         which <- 1L
@@ -81,15 +83,25 @@ importNgsLogs <- function(x, type, which) {
             which <- 3L
         }
     }
-
+    
+    ## Load the data
+    data <- suppressWarnings(lapply(x, readLines))
+    names(data) <- basename(x)
+    
+    ## adding auto detect
+    if(type == "autoDetect"){
+        type <- unlist(lapply(data, function(y){.getToolName(y, possTypes = possTypes)}))
+        type <- unique(type)
+        # ## have to add this for autoDetect to work
+        # if(all(type %in% c("hisat2", "bowtie2"))) type <- "bowtie2"
+        # ## add test to see if multiple logs are present from auto detect
+        # if(length(type)!= 1) stop("Multiple log types passed to function.")
+    }
+    
     ## Change to title case for easier parsing below
     type <- stringr::str_split_fixed(type, pattern = "", n = nchar(type))
     type[1] <- stringr::str_to_upper(type[1])
     type <- paste(type, collapse = "")
-
-    ## Load the data
-    data <- suppressWarnings(lapply(x, readLines))
-    names(data) <- basename(x)
 
     ## Check validity using the helpers defined as private functions
     vFun <- paste0(".isValid", type, "Log")
@@ -121,6 +133,36 @@ importNgsLogs <- function(x, type, which) {
     as_tibble(df)
 
 }
+
+
+
+#' @title Identify tool name 
+#' @description Identify tool name for log files after
+#' reading in using readLines.
+#' @details Checks for all the required fields in the lines provided
+#' @param x Character vector as output when readLines to a supplied log file
+#' @return logical(1)
+#' @keywords internal
+.getToolName<- function(x, possTypes){
+    
+    logiList <- lapply(possTypes, function(types){
+        ## Change to title case for easier parsing below
+        types <- stringr::str_split_fixed(types, pattern = "", n = nchar(types))
+        types[1] <- stringr::str_to_upper(types[1])
+        types <- paste(types, collapse = "")   
+        vFun <- paste0(".isValid", types, "Log(x)")
+        validLogs <- eval(parse(text = paste0(vFun)))
+        
+    })
+    logi <- unlist(logiList)
+
+    type <- possTypes[logi]
+    ## added for autodetect purposes
+    if(all(c("hisat2", "bowtie2") %in% type)) type <- "bowtie2"
+    type
+}
+
+
 
 #' @title Check for correct structure of supplied Bowtie log files
 #' @description Check for correct structure of supplied Bowtie log files after
@@ -188,22 +230,26 @@ importNgsLogs <- function(x, type, which) {
 
     ## Check the METRICS CLASS data
     metricsHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
-    stopifnot(length(metricsHeader) == 1) # Must appear only once
-    metricCols <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
-                    "SECONDARY_OR_SUPPLEMENTARY_RDS", "UNMAPPED_READS",
-                    "UNPAIRED_READ_DUPLICATES", "READ_PAIR_DUPLICATES",
-                    "READ_PAIR_OPTICAL_DUPLICATES", "PERCENT_DUPLICATION",
-                    "ESTIMATED_LIBRARY_SIZE")
-    ## Check the column names in the log match the expected columns
-    checkMetCols <- all(names(.splitByTab(x[metricsHeader + 1])) == metricCols)
-
-    ## Check the HISTOGRAM data
-    histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
-    stopifnot(length(histHeader) == 1) # Must appear only once
-    histCols <- c("BIN", "VALUE")
-    checkHistCols <- all(names(.splitByTab(x[histHeader + 1])) == histCols)
-
-    all(checkMetCols, checkHistCols)
+    
+    if(length(metricsHeader) == 1){ # Must appear only once
+        metricCols <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
+                        "SECONDARY_OR_SUPPLEMENTARY_RDS", "UNMAPPED_READS",
+                        "UNPAIRED_READ_DUPLICATES", "READ_PAIR_DUPLICATES",
+                        "READ_PAIR_OPTICAL_DUPLICATES", "PERCENT_DUPLICATION",
+                        "ESTIMATED_LIBRARY_SIZE")
+        ## Check the column names in the log match the expected columns
+        checkMetCols <- all(names(.splitByTab(x[metricsHeader + 1])) == metricCols)
+        
+        ## Check the HISTOGRAM data
+        histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
+        stopifnot(length(histHeader) == 1) # Must appear only once
+        histCols <- c("BIN", "VALUE")
+        checkHistCols <- all(names(.splitByTab(x[histHeader + 1])) == histCols)
+        
+        all(checkMetCols, checkHistCols)
+        
+    } else FALSE #give false value if missing
+    
 }
 
 #' @title Check for a valid AdapterRemoval log
@@ -279,24 +325,30 @@ importNgsLogs <- function(x, type, which) {
 #' @keywords internal
 .isValidFeatureCountsLog <- function(x){
 
-    ## Check the Status column
-    x <- .splitByTab(x)
-    chkCol1 <- colnames(x)[[1]] == "Status"
-    chkTypes <- FALSE
-    if (chkCol1) {
-        ## We can only do this if the Status column checks out
-        vals <- c(
-            "Assigned", "Unassigned_Ambiguity", "Unassigned_MultiMapping",
-            "Unassigned_NoFeatures", "Unassigned_Unmapped",
-            "Unassigned_MappingQuality",
-            "Unassigned_FragmentLength", "Unassigned_Chimera",
-            "Unassigned_Secondary", "Unassigned_Nonjunction",
-            "Unassigned_Duplicate"
-        )
-        chkTypes <- all(vals %in% x[["Status"]])
+    if(all(grepl("\t", x))){ ### check all lines have a tab, 
+        ## required by .splitbyTab
+        
+        ## Check the Status column
+        x <- .splitByTab(x)
+        chkCol1 <- colnames(x)[[1]] == "Status"
+        chkTypes <- FALSE
+        if (chkCol1) {
+            ## We can only do this if the Status column checks out
+            vals <- c(
+                "Assigned", "Unassigned_Ambiguity", "Unassigned_MultiMapping",
+                "Unassigned_NoFeatures", "Unassigned_Unmapped",
+                "Unassigned_MappingQuality",
+                "Unassigned_FragmentLength", "Unassigned_Chimera",
+                "Unassigned_Secondary", "Unassigned_Nonjunction",
+                "Unassigned_Duplicate"
+            )
+            chkTypes <- all(vals %in% x[["Status"]])
+        }
+        
+        all(chkTypes, chkCol1)
     }
-
-    all(chkTypes, chkCol1)
+    else FALSE ## print false if not
+    
 }
 
 #' @title Check for correct structure of supplied BUSCO log files

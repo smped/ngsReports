@@ -15,7 +15,7 @@ plotAssemblyStats(x, type = "quast", usePlotly = FALSE,
 \item{usePlotly}{logical. If TRUE an interactive plot will be generated.
 If FALSE a ggplot object will be output}
 
-\item{plotType}{\code{character}. Plot type to output, one of bar or paracoord.}
+\item{plotType}{\code{character}. Plot type to output, one of bar or parcoord.}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 }

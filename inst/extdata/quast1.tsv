@@ -1,0 +1,22 @@
+Assembly	Aassec.ctg
+# contigs (>= 0 bp)	198775
+# contigs (>= 1000 bp)	96110
+# contigs (>= 5000 bp)	10188
+# contigs (>= 10000 bp)	2007
+# contigs (>= 25000 bp)	109
+# contigs (>= 50000 bp)	4
+Total length (>= 0 bp)	322103156
+Total length (>= 1000 bp)	260920591
+Total length (>= 5000 bp)	84097413
+Total length (>= 10000 bp)	29417272
+Total length (>= 25000 bp)	3530478
+Total length (>= 50000 bp)	246615
+# contigs	159821
+Largest contig	64539
+Total length	306620931
+GC (%)	36.85
+N50	2693
+N75	1379
+L50	29463
+L75	69749
+# N's per 100 kbp	0.00

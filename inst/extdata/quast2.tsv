@@ -1,0 +1,22 @@
+Assembly	Pxylostella-contigs
+# contigs (>= 0 bp)	1620878
+# contigs (>= 1000 bp)	50582
+# contigs (>= 5000 bp)	3837
+# contigs (>= 10000 bp)	684
+# contigs (>= 25000 bp)	14
+# contigs (>= 50000 bp)	2
+Total length (>= 0 bp)	477492543
+Total length (>= 1000 bp)	128620966
+Total length (>= 5000 bp)	30402212
+Total length (>= 10000 bp)	9353063
+Total length (>= 25000 bp)	492537
+Total length (>= 50000 bp)	107341
+# contigs	189561
+Largest contig	57324
+Total length	222620861
+GC (%)	38.18
+N50	1534
+N75	725
+L50	37056
+L75	96105
+# N's per 100 kbp	63.18

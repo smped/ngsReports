@@ -95,6 +95,7 @@ Collate:
     'pwf.R'
     'readTotals.R'
     'runFastQC.R'
+    'toolsToList.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr
 Suggests: 
