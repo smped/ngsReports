@@ -4,8 +4,8 @@
 \alias{plotAssemblyStats}
 \title{Plot a summary of assembly logs}
 \usage{
-plotAssemblyStats(x, type = "quast", usePlotly = FALSE,
-  plotType = "bar", ...)
+plotAssemblyStats(x, type = c("quast", "busco"), usePlotly = FALSE,
+  plotType = c("bar", "busco"), ...)
 }
 \arguments{
 \item{x}{Paths to one or more log files}
@@ -15,7 +15,7 @@ plotAssemblyStats(x, type = "quast", usePlotly = FALSE,
 \item{usePlotly}{logical. If TRUE an interactive plot will be generated.
 If FALSE a ggplot object will be output}
 
-\item{plotType}{\code{character}. Plot type to output, one of bar or parcoord.}
+\item{plotType}{\code{character}. Plot type to output, one of bar or paracoord.}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 }
