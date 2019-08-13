@@ -5,7 +5,10 @@
 #' @details
 #' This carries out PCA on all or a subset of FastQC modules and plots the
 #' output using either ggplot or plotly. Clustering of the PCA can be carried
-#' out using a k-means approach.
+#' out using a heirachial clustering approach. Current modules for PCA are 
+#' Per_base_sequence_quality, Per_sequence_quality_scores, Per_sequence_GC_content,
+#' Per_base_sequence_content, and Sequence_Length_Distribution.
+#' 
 #'
 #'
 #' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths

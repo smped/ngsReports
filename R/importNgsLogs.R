@@ -6,7 +6,8 @@
 #' @details Imports one or more log files as output by tools such as:
 #' \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
 #' \code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt},
-#' \code{Adapter Removal}, \code{quast} or \code{busco}.
+#' \code{Adapter Removal}, \code{quast} or \code{busco}. 
+#' \code{autodetect} can be used to detect the log type by parsing the file.
 #'
 #' The featureCounts log file corresponds to the \code{counts.out.summary},
 #' not the main \code{counts.out} file.
