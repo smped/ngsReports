@@ -1,0 +1,9 @@
+TrimmomaticSE: Started with arguments:
+ -threads 2 Sample2_R1.fq Sample2_R1_trimmed.fq ILLUMINACLIP:adapter_list.fa:2:30:10 TRAILING:5 SLIDINGWINDOW:4:15 MINLEN:75
+Using Long Clipping Sequence: 'GATCGGAAGAGCACACGTCTGAACTCCAGTCACATTCCTTTATCTCGTATGCCGTCTTCTGCTTG'
+Using Long Clipping Sequence: 'GATCGGAAGAGCACACGTCTGAACTCCAGTCACGTGGCCTTATCTCGTATGCCGTCTTCTGCTTG'
+Using Long Clipping Sequence: 'AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT'
+ILLUMINACLIP: Using 0 prefix pairs, 3 forward/reverse sequences, 0 forward only sequences, 0 reverse only sequences
+Quality encoding detected as phred33
+Input Reads: 10000 Surviving: 9672 (96.72%) Dropped: 328 (3.28%)
+TrimmomaticSE: Completed successfully

@@ -9,6 +9,7 @@ quastFiles <- system.file("extdata", c("quast1.tsv", "quast2.tsv"), package = "n
 arFile <- system.file("extdata", "adapterRemoval.settings", package = "ngsReports")
 fcFile <- system.file("extdata", "featureCounts.summary", package = "ngsReports")
 caFiles <- system.file("extdata", c("cutadapt_full.txt", "cutadapt_minimal.txt"), package = "ngsReports")
+trimoFiles <- system.file("extdata", "Sample1.trimmomaticPE.txt", package = "ngsReports")
 
 test_that("importNgsLogs fails on empty",{
     expect_error(importNgsLogs(bowtieLogs[0], "bowtie"))
@@ -212,4 +213,16 @@ test_that("parseCutadaptLogs parses correctly",{
         dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "overview")), c(49, 6)
     )
 
+})
+
+test_that("parseTimmomaticLogs behaves correctly",{
+    df <- importNgsLogs(trimoFiles, "trimmomatic")
+    expCols <- c(
+        "Filename", "Type", "Input_Read_Pairs", "Both_Surviving",
+        "Forward_Only_Surviving", "Reverse_Only_Surviving", "Dropped",
+        "Illumina_Clip", "Min_Len", "Quality_Encoding", "Sliding_Window",
+        "Trailing"
+    )
+    expect_error(importNgsLogs(caFiles, "trimmomatic"))
+    expect_equal(colnames(df), expCols)
 })

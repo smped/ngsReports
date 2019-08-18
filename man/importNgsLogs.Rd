@@ -11,12 +11,14 @@ importNgsLogs(x, type = "auto", which)
 same type. Duplicate file paths will be silently ignored.}
 
 \item{type}{\code{character}. The type of file being imported. Can be one of
-\code{auto}, \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
+\code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
 \code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt},
-\code{adapterRemoval}, \code{quast} or \code{busco}}
+\code{adapterRemoval}, \code{quast} or \code{busco}.
+Defaults to \code{type = "auto"} which will automatically detect the file
+type for all implemented types.}
 
 \item{which}{Which element of the parsed object to return. Ignored in all
-file types except when \code{type} is set to duplicationMetrics or
+file types except when \code{type} is set to duplicationMetrics, cutadapt or
 adapterRemoval. See details for possible values}
 }
 \value{
@@ -32,8 +34,8 @@ stderr
 Imports one or more log files as output by tools such as:
 \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
 \code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt},
-\code{Adapter Removal}, \code{quast} or \code{busco}.
-\code{auto} can also be used to detect the log type by parsing the file.
+\code{Adapter Removal}, \code{trimmomatic} \code{quast} or \code{busco}.
+\code{autoDetect} can be used to detect the log type by parsing the file.
 
 The featureCounts log file corresponds to the \code{counts.out.summary},
 not the main \code{counts.out} file.

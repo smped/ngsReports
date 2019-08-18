@@ -1,5 +1,5 @@
 TrimmomaticPE: Started with arguments:
- -threads 2 /data/raw/Sample1_R1.fastq.gz /data/raw/Sample1_R2.fastq.gz /data/trim/Sample1_paired_R1.fastq.gz /data/trim/Sample1_orphan_R1.fastq.gz /data/trim/Sample1_paired_R2.fastq.gz /data/trim/Sample1_orphan_R2.fastq.gz ILLUMINACLIP:/data/adapter_list:2:30:10 TRAILING:5 SLIDINGWINDOW:4:15 MINLEN:75
+ -threads 2 /data/raw/Sample1_R1.fastq.gz /data/raw/Sample1_R2.fastq.gz /data/trim/Sample1_paired_R1.fastq.gz /data/trim/Sample1_orphan_R1.fastq.gz /data/trim/Sample1_paired_R2.fastq.gz /data/trim/Sample1_orphan_R2.fastq.gz ILLUMINACLIP:adapter_list.fa:2:30:10 TRAILING:5 SLIDINGWINDOW:4:15 MINLEN:75
 Using Long Clipping Sequence: 'GATCGGAAGAGCACACGTCTGAACTCCAGTCACATTCCTTTATCTCGTATGCCGTCTTCTGCTTG'
 Using Long Clipping Sequence: 'GATCGGAAGAGCACACGTCTGAACTCCAGTCACGTGGCCTTATCTCGTATGCCGTCTTCTGCTTG'
 Using Long Clipping Sequence: 'AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT'

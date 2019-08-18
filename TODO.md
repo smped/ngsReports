@@ -1,17 +1,16 @@
 ## Chris
 - **Test on outlier FastQC reports (1 sequence etc)**
 - Start commenting all functions better so Steve can understand them
-- Generate SE trimmomatic log
 - Tidy up PCA
 - Shiny vignette
 - importNgsLogs vignette
+- Add updates to NEWS
 
 ## Steve
 
 - Tidy up `scale_fill_pwf()`
-- Finish trimmomatic imports
 - importNgsLogs vignette
-- Fix NEWS
+- Add updates to NEWS
 
 # Future Plans
 

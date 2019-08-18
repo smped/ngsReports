@@ -23,7 +23,7 @@ plotFastqcPCA(x, module, usePlotly = FALSE, labels, cluster = FALSE,
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
-\item{module}{\code{character} vector containing 
+\item{module}{\code{character} vector containing
 the desired FastQC module (eg. c("Per_base_sequence_quality",
 "Per_base_sequence_content"))}
 
@@ -37,7 +37,7 @@ File extensions are dropped by default}
 \item{cluster}{\code{logical} default \code{FALSE}. If \code{groups} argument
 is not set fastqc data will be clustered using hierarchical clustering.}
 
-\item{groups}{named \code{list} of predefined sample groups 
+\item{groups}{named \code{list} of predefined sample groups
 (eg. R1 and R2 or Sequencing Lanes) to cluster by}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
@@ -51,8 +51,21 @@ Draw a PCA plot for Fast QC modules across multiple samples
 \details{
 This carries out PCA on all or a subset of FastQC modules and plots the
 output using either ggplot or plotly. Clustering of the PCA can be carried
-out using a heirachial clustering approach. Current modules for PCA are 
+out using a heirachial clustering approach. Current modules for PCA are
 Per_base_sequence_quality, Per_sequence_quality_scores,
-Per_sequence_GC_content, Per_base_sequence_content, and 
+Per_sequence_GC_content, Per_base_sequence_content, and
 Sequence_Length_Distribution.
+}
+\examples{
+
+# Get the files included with the package
+packageDir <- system.file("extdata", package = "ngsReports")
+fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
+
+# Load the FASTQC data as a FastqcDataList object
+fdl <- FastqcDataList(fl)
+plotFastqcPCA(fdl, x, module = "Per_sequence_quality_scores",
+usePlotly = FALSE, cluster = TRUE, groups = NULL)
+
+
 }

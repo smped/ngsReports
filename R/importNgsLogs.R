@@ -6,8 +6,8 @@
 #' @details Imports one or more log files as output by tools such as:
 #' \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
 #' \code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt},
-#' \code{Adapter Removal}, \code{quast} or \code{busco}. 
-#' \code{autodetect} can be used to detect the log type by parsing the file.
+#' \code{Adapter Removal}, \code{trimmomatic} \code{quast} or \code{busco}.
+#' \code{autoDetect} can be used to detect the log type by parsing the file.
 #'
 #' The featureCounts log file corresponds to the \code{counts.out.summary},
 #' not the main \code{counts.out} file.
@@ -36,9 +36,11 @@
 #' @param type \code{character}. The type of file being imported. Can be one of
 #' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
 #' \code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt},
-#' \code{adapterRemoval}, \code{quast} or \code{busco}
+#' \code{adapterRemoval}, \code{quast} or \code{busco}.
+#' Defaults to \code{type = "auto"} which will automatically detect the file
+#' type for all implemented types.
 #' @param which Which element of the parsed object to return. Ignored in all
-#' file types except when \code{type} is set to duplicationMetrics or
+#' file types except when \code{type} is set to duplicationMetrics, cutadapt or
 #' adapterRemoval. See details for possible values
 #'
 #' @return A \code{tibble}.
@@ -54,9 +56,10 @@
 #' @importFrom tidyselect contains everything starts_with ends_with
 #'
 #' @export
-importNgsLogs <- function(x, type, which) {
+importNgsLogs <- function(x, type = "auto", which) {
 
     x <- unique(x) # Remove any  duplicates
+    stopifnot(length(x) > 0) # Fail on empty vector
     stopifnot(file.exists(x)) # Check they all exist
 
     ## Check for a valid filetype
@@ -70,12 +73,13 @@ importNgsLogs <- function(x, type, which) {
         "featureCounts",
         "hisat2",
         "quast",
-        "star"
+        "star",
+        "trimmomatic"
     )
-    
+
     type <- match.arg(type, c("autoDetect", possTypes))
 
-    
+
     ## Sort out the which argument
     if (missing(which)) {
         which <- 1L
@@ -84,13 +88,13 @@ importNgsLogs <- function(x, type, which) {
             which <- 3L
         }
     }
-    
+
     ## Load the data
     data <- suppressWarnings(lapply(x, readLines))
     names(data) <- basename(x)
-    
+
     ## adding auto detect
-    if(type == "autoDetect"){
+    if (type == "autoDetect") {
         type <- unlist(lapply(data, function(y){.getToolName(y, possTypes = possTypes)}))
         type <- unique(type)
         # ## have to add this for autoDetect to work
@@ -98,7 +102,7 @@ importNgsLogs <- function(x, type, which) {
         # ## add test to see if multiple logs are present from auto detect
         # if(length(type)!= 1) stop("Multiple log types passed to function.")
     }
-    
+
     ## Change to title case for easier parsing below
     type <- stringr::str_split_fixed(type, pattern = "", n = nchar(type))
     type[1] <- stringr::str_to_upper(type[1])
@@ -137,29 +141,29 @@ importNgsLogs <- function(x, type, which) {
 
 
 
-#' @title Identify tool name 
+#' @title Identify tool name
 #' @description Identify tool name for log files after
 #' reading in using readLines.
 #' @details Checks for all the required fields in the lines provided
 #' @param x Character vector as output when readLines to a supplied log file
 #' @return logical(1)
 #' @keywords internal
-.getToolName<- function(x, possTypes){
-    
+.getToolName <- function(x, possTypes){
+
     logiList <- lapply(possTypes, function(types){
         ## Change to title case for easier parsing below
         types <- stringr::str_split_fixed(types, pattern = "", n = nchar(types))
         types[1] <- stringr::str_to_upper(types[1])
-        types <- paste(types, collapse = "")   
+        types <- paste(types, collapse = "")
         vFun <- paste0(".isValid", types, "Log(x)")
         validLogs <- eval(parse(text = paste0(vFun)))
-        
+
     })
     logi <- unlist(logiList)
 
     type <- possTypes[logi]
     ## added for autodetect purposes
-    if(all(c("hisat2", "bowtie2") %in% type)) type <- "bowtie2"
+    if (all(c("hisat2", "bowtie2") %in% type)) type <- "bowtie2"
     type
 }
 
@@ -231,26 +235,27 @@ importNgsLogs <- function(x, type, which) {
 
     ## Check the METRICS CLASS data
     metricsHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
-    
-    if(length(metricsHeader) == 1){ # Must appear only once
-        metricCols <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
-                        "SECONDARY_OR_SUPPLEMENTARY_RDS", "UNMAPPED_READS",
-                        "UNPAIRED_READ_DUPLICATES", "READ_PAIR_DUPLICATES",
-                        "READ_PAIR_OPTICAL_DUPLICATES", "PERCENT_DUPLICATION",
-                        "ESTIMATED_LIBRARY_SIZE")
+
+    if (length(metricsHeader) == 1) { # Must appear only once
+        metricCols <- c("LIBRARY", "UNPAIRED_READS_EXAMINED",
+                        "READ_PAIRS_EXAMINED", "SECONDARY_OR_SUPPLEMENTARY_RDS",
+                        "UNMAPPED_READS", "UNPAIRED_READ_DUPLICATES",
+                        "READ_PAIR_DUPLICATES", "READ_PAIR_OPTICAL_DUPLICATES",
+                        "PERCENT_DUPLICATION", "ESTIMATED_LIBRARY_SIZE")
         ## Check the column names in the log match the expected columns
-        checkMetCols <- all(names(.splitByTab(x[metricsHeader + 1])) == metricCols)
-        
+        checkMetCols <-
+            all(names(.splitByTab(x[metricsHeader + 1])) == metricCols)
+
         ## Check the HISTOGRAM data
         histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
         stopifnot(length(histHeader) == 1) # Must appear only once
         histCols <- c("BIN", "VALUE")
         checkHistCols <- all(names(.splitByTab(x[histHeader + 1])) == histCols)
-        
+
         all(checkMetCols, checkHistCols)
-        
+
     } else FALSE #give false value if missing
-    
+
 }
 
 #' @title Check for a valid AdapterRemoval log
@@ -326,9 +331,9 @@ importNgsLogs <- function(x, type, which) {
 #' @keywords internal
 .isValidFeatureCountsLog <- function(x){
 
-    if(all(grepl("\t", x))){ ### check all lines have a tab, 
+    if (all(grepl("\t", x))){ ### check all lines have a tab,
         ## required by .splitbyTab
-        
+
         ## Check the Status column
         x <- .splitByTab(x)
         chkCol1 <- colnames(x)[[1]] == "Status"
@@ -345,11 +350,11 @@ importNgsLogs <- function(x, type, which) {
             )
             chkTypes <- all(vals %in% x[["Status"]])
         }
-        
+
         all(chkTypes, chkCol1)
     }
     else FALSE ## print false if not
-    
+
 }
 
 #' @title Check for correct structure of supplied BUSCO log files
@@ -360,7 +365,7 @@ importNgsLogs <- function(x, type, which) {
 #' @return logical(1)
 #' @keywords internal
 .isValidBuscoLog <- function(x){
-    nLines <- length(x)
+
     fields <- c(
         "# BUSCO version is:",
         "# The lineage dataset is:",
@@ -372,6 +377,22 @@ importNgsLogs <- function(x, type, which) {
     all(chk)
 }
 
+#' @title Check for correct structure of supplied Trimmomatic log files
+#' @description Check for correct structure of supplied Trimmomatic log files
+#' after reading in using readLines.
+#' @details Checks for all the required fields in the lines provided
+#' @param x Character vector as output when readLines to a supplied log file
+#' @return logical(1)
+#' @keywords internal
+.isValidTrimmomaticLog <- function(x){
+    n <- length(x)
+    checkL1 <- grepl("Trimmomatic[PS]E: Started with arguments", x[[1]])
+    checkMain <- grepl("Input.+ Surviving.+ Dropped.+", x[[n - 1]])
+    checkLast <- grepl("Trimmomatic[PS]E: Completed successfully", x[[n]])
+    all(checkL1, checkMain, checkLast)
+}
+
+
 #' @title Check for correct structure of supplied Quast log files
 #' @description Check for correct structure of supplied Quast log files after
 #' reading in using readLines.
@@ -380,7 +401,7 @@ importNgsLogs <- function(x, type, which) {
 #' @return logical(1)
 #' @keywords internal
 .isValidQuastLog <- function(x){
-    nLines <- length(x)
+
     fields <- c(
         "# contigs",
         "Largest contig",
@@ -957,6 +978,151 @@ importNgsLogs <- function(x, type, which) {
     df <- dplyr::bind_rows(df)
 
 }
+
+#' @title Parse data from trimmomatic log files
+#' @description Parse data from trimmomatic log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... not used
+#' @return tibble
+#' @keywords internal
+#' @importFrom tidyselect everything starts_with contains
+.parseTrimmomaticLogs <- function(data, ...){
+
+    .parseTrimmoSingle <- function(x){
+
+        ## Initialise values which may or may not be present
+        Input_Reads <- Input_Read_Pairs <- Surviving <- Both_Surviving <- NA
+        Forward_Only_Surviving <- Reverse_Only_Surviving <- NA
+
+        readType <- gsub(".+(PE|SE).+", "\\1", x[[1]])
+        Illumina_Clip <- ifelse(
+            grepl("ILLUMINACLIP", x[[2]]),
+            gsub(".+ILLUMINACLIP:([^ ]+).+", "\\1", x[[2]]),
+            NA
+        )
+        Leading <- ifelse(
+            grepl("LEADING", x[[2]]),
+            as.integer(gsub(".+LEADING:([0-9:]+).+", "\\1", x[[2]])),
+            NA_integer_
+        )
+        Trailing <- ifelse(
+            grepl("TRAILING", x[[2]]),
+            as.integer(gsub(".+TRAILING:([0-9:]+).+", "\\1", x[[2]])),
+            NA_integer_
+        )
+        Crop <- ifelse(
+            grepl(" CROP", x[[2]]),
+            as.integer(gsub(".+ CROP:([0-9:]+).+", "\\1", x[[2]])),
+            NA_integer_
+        )
+        Head_Crop <- ifelse(
+            grepl("HEADCROP", x[[2]]),
+            as.integer(gsub(".+HEADCROP:([0-9:]+).+", "\\1", x[[2]])),
+            NA_integer_
+        )
+        Sliding_Window <- ifelse(
+            grepl("SLIDINGWINDOW", x[[2]]),
+            gsub(".+SLIDINGWINDOW:([0-9:]+).+", "\\1", x[[2]]),
+            NA
+        )
+        Min_Len <- ifelse(
+            grepl("MINLEN", x[[2]]),
+            gsub(".+MINLEN:([0-9:]+).+", "\\1", x[[2]]),
+            NA
+        )
+        Max_Info <- ifelse(
+            grepl("MAXINFO", x[[2]]),
+            gsub(".+MAXINFO:([^ ]+).+", "\\1", x[[2]]),
+            NA
+        )
+        Avg_Qual <- ifelse(
+            grepl("AVGQUAL", x[[2]]),
+            as.integer(gsub(".*AVGQUAL:([0-9]+).*", "\\1", x[[2]])),
+            NA_integer_
+        )
+        Quality_Encoding <- grep("Quality encoding", x, value = TRUE)
+        Quality_Encoding <-
+            gsub("Quality encoding detected as ", "", Quality_Encoding)
+
+        ## Get the line with the summary values
+        valLine <- x[[length(x) - 1]]
+
+        if (readType == "SE") {
+
+            Input_Reads <- gsub("Input Reads: ([0-9]+).+", "\\1", valLine)
+            Input_Reads <- as.integer(Input_Reads)
+
+            Surviving <- gsub(".+Surviving: ([0-9]+).+", "\\1", valLine)
+            Surviving <- as.integer(Surviving)
+
+        }
+        if (readType == "PE") {
+
+            Input_Read_Pairs <-
+                gsub("Input Read Pairs: ([0-9]+).+", "\\1", valLine)
+            Input_Read_Pairs <- as.integer(Input_Read_Pairs)
+
+            Both_Surviving <-
+                gsub(".+Both Surviving: ([0-9]+).+", "\\1", valLine)
+            Both_Surviving <- as.integer(Both_Surviving)
+
+            Forward_Only_Surviving <-
+                gsub(".+Forward Only Surviving: ([0-9]+).+", "\\1", valLine)
+            Forward_Only_Surviving <- as.integer(Forward_Only_Surviving)
+
+            Reverse_Only_Surviving <-
+                gsub(".+Reverse Only Surviving: ([0-9]+).+", "\\1", valLine)
+            Reverse_Only_Surviving <- as.integer(Reverse_Only_Surviving)
+        }
+        Dropped <- gsub(".+Dropped: ([0-9]+).+", "\\1", valLine)
+        Dropped <- as.integer(Dropped)
+
+        tibble(
+            Type = readType,
+            Input_Reads,
+            Input_Read_Pairs,
+            Surviving,
+            Both_Surviving,
+            Forward_Only_Surviving,
+            Reverse_Only_Surviving,
+            Dropped,
+            Illumina_Clip,
+            Sliding_Window,
+            Max_Info,
+            Leading,
+            Trailing,
+            Crop,
+            Head_Crop,
+            Min_Len,
+            Avg_Qual,
+            Quality_Encoding
+        )
+
+    }
+
+    out <- lapply(data, .parseTrimmoSingle)
+    out <- dplyr::bind_rows(out)
+    out$Filename <- names(data)
+
+    ## Many of the above values may be missing.
+    ## Remove them if so using a quick tidy
+    out <- tidyr::gather(out, "key", "value", -1)
+    out <- dplyr::filter(out, !is.na(value))
+    out <- tidyr::spread(out, "key", "value")
+
+    ## Return the final output
+    dplyr::select(
+        out,
+        "Filename",
+        "Type",
+        starts_with("Input"),
+        contains("Surviving"),
+        everything()
+    )
+
+}
+
 
 #' @title Parse data from BUSCO log files
 #' @description Parse data from BUSCO log files

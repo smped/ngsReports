@@ -1,6 +1,15 @@
 Changes in version 1.1.1
++ Added plotAlignmentSummary()
++ Added quast, busco, cutadapt, featureCounts & AdapterRemoval to importNgsLogs
+
+Changes in version 1.0.1
 + Table in default FastQC template now scroll for larger datasets
 + Kmers removed from default FastQC template
++ Typos in vignette corrected, seperate LICENSE file added & dplyr updates corrected
++ Corrected dependencies for writeHtmlReport
+
+Changes in version 1.0.0
++ Initial Bioconductor release version
 
 Changes in version 0.99.8 (2019-04-03)
 + **This is a breaking change!** Significant changes to most functions have been implemented
