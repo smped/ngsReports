@@ -17,6 +17,14 @@
 #' @return
 #' A ggplot2 object, or a plotly object
 #'
+#' @examples
+#'
+#' #getquast log filenames
+#' quastFiles <- system.file("extdata", 
+#' c("quast1.tsv", "quast2.tsv"), package = "ngsReports")
+#' 
+#' # The default plot
+#' plotAssemblyStats(quastFiles)
 #'
 #' @import ggplot2
 #' @importFrom dplyr mutate
@@ -25,19 +33,19 @@
 #' @export
 plotAssemblyStats <- function(
     x, type = c("quast", "busco"), usePlotly = FALSE,
-    plotType = c("bar", "busco"), ...){
-
+    plotType = c("bar", "paracoord"), ...){
+    
     ## Set the main arguments
     type <- match.arg(type)
     plotType <- match.arg(plotType)
-
+    
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
     allowed <- names(formals(theme))
     keepArgs <- which(names(dotArgs) %in% allowed)
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
+    
     ## Import the data
     df <- tryCatch(importNgsLogs(x,  type))
     pFun <- paste0(".plot", str_to_title(type), "Stats")
@@ -46,27 +54,27 @@ plotAssemblyStats <- function(
         usePlotly = usePlotly,
         plotType = plotType
     )
-
+    
     ## Generate the plot and add any theme information
     p <- do.call(pFun, args)
     # if (!is.null(userTheme)) p <- p + userTheme
-
+    
     ## Return the plot
     p
-
-
+    
+    
 }
 
 .plotQuastStats <- function(df, usePlotly, plotType){
-
+    
     #df <- importNgsLogs(x, type = "quast")
     labels <- .makeLabels(df, pattern = ".tsv", col = "fileNames")
     df$fileNames <- labels[df$fileNames]
-
-
+    
+    
     dfLong <- tidyr::gather(df, "variable", "Value", 2:7)
     variable <- Value <- c()
-
+    
     dfLong$fileNames <- factor(
         dfLong$fileNames,
         levels = unique(dfLong$fileNames)
@@ -75,11 +83,11 @@ plotAssemblyStats <- function(
         dfLong$variable,
         levels = unique(dfLong$variable)
     )
-
-
+    
+    
     if (plotType == "paracoord") {
-
-
+        
+        
         dfLong <- dplyr::group_by(dfLong, variable)
         dfLong <- dplyr::mutate(
             dfLong,
@@ -126,19 +134,19 @@ plotAssemblyStats <- function(
         if (usePlotly) p <- ggplotly(p, tooltip = c("Value", "group"))
         else{
             # set up min max values for axis annotations
-            minMaxL <- lapply(c("min", "max"), function(pass){
-                sapply(colnames(df)[2:7],  function(y){
+            minMaxL <- lapply(c("min", "max"), FUN = function(pass){
+                vapply(colnames(df)[2:7], FUN.VALUE = character(1), FUN = function(y){
                     n <- do.call(pass, list(df[[y]]))
                     if (n > 100000) paste(round(n/1000000, 2), "Mb")
                     else paste(round(n/1000, 2), "Kb")
                 })
             })
-            minDf <- tibble(x = rep(1:6 + 0.04, 2),
+            minDf <- tibble(x = rep(seq_len(6) + 0.04, 2),
                             y = rep(0:1, each = 6),
                             label = unlist(minMaxL),
                             hjust = rep(-0.05, 12),
                             vjust = rep(c(1.5,-0.5), each = 6))
-
+            
             p <- p +
                 geom_text(
                     data = minDf,
@@ -151,10 +159,10 @@ plotAssemblyStats <- function(
                     )
                 )
         }
-
+        
     }
     else{
-
+        
         p <- ggplot() +
             geom_bar(
                 data = dfLong,
@@ -169,15 +177,15 @@ plotAssemblyStats <- function(
             facet_wrap(~variable, scales = "free_y") +
             theme_bw() +
             scale_fill_brewer(palette = "Dark2")
-
+        
     }
-
+    
     p
-
+    
 }
 
 .plotBuscoStats <- function(df, usePlotly, ...){
-
+    
     df <- tidyr::gather(df, "Status", "Count", 2:5)
     df[["name"]] <- factor(df[["name"]], levels = unique(df[["name"]]))
     df[["Status"]] <- factor(df[["Status"]],
@@ -185,7 +193,7 @@ plotAssemblyStats <- function(
                                         "fragmented",
                                         "completeDuplicated",
                                         "completeSingleCopy"))
-
+    
     p <- ggplot() +
         geom_bar(data = df,
                  aes_string(x = "name",
@@ -200,6 +208,6 @@ plotAssemblyStats <- function(
                                      missing = "darkred")) +
         theme_bw()
     if (usePlotly) p <- ggplotly(p,  tooltip = c("Count", "group"))
-
+    
     p
 }

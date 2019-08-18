@@ -5,7 +5,7 @@
 \title{Plot a summary of assembly logs}
 \usage{
 plotAssemblyStats(x, type = c("quast", "busco"), usePlotly = FALSE,
-  plotType = c("bar", "busco"), ...)
+  plotType = c("bar", "paracoord"), ...)
 }
 \arguments{
 \item{x}{Paths to one or more log files}
@@ -30,4 +30,14 @@ Loads a set of assembly log files and creates a default plot.
 Implemented tools are \code{quast} and \code{BUSCO}.
 quast will plot a parralel coordinate plot of some assembly statistics
 BUSCO will plot a stacked barplot of completeness statistics
+}
+\examples{
+
+#getquast log filenames
+quastFiles <- system.file("extdata", 
+c("quast1.tsv", "quast2.tsv"), package = "ngsReports")
+
+# The default plot
+plotAssemblyStats(quastFiles)
+
 }

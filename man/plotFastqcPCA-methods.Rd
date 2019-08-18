@@ -24,7 +24,8 @@ plotFastqcPCA(x, module, usePlotly = FALSE, labels, cluster = FALSE,
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
 
 \item{module}{\code{character} vector containing 
-the desired FastQC module (eg. c("Per_base_sequence_quality","Per_base_sequence_content"))}
+the desired FastQC module (eg. c("Per_base_sequence_quality",
+"Per_base_sequence_content"))}
 
 \item{usePlotly}{\code{logical}. Output as ggplot2 (default) or plotly
 object.}
@@ -33,11 +34,11 @@ object.}
 All filenames must be present in the names.
 File extensions are dropped by default}
 
-\item{cluster}{\code{logical} default \code{FALSE}. If \code{groups} argument is not set
-fastqc data will be clustered using hierarchical clustering.}
+\item{cluster}{\code{logical} default \code{FALSE}. If \code{groups} argument
+is not set fastqc data will be clustered using hierarchical clustering.}
 
-\item{groups}{named \code{list} of predefined sample groups (eg. R1 and R2 or Sequencing Lanes)
-to cluster by}
+\item{groups}{named \code{list} of predefined sample groups 
+(eg. R1 and R2 or Sequencing Lanes) to cluster by}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 }
@@ -51,6 +52,7 @@ Draw a PCA plot for Fast QC modules across multiple samples
 This carries out PCA on all or a subset of FastQC modules and plots the
 output using either ggplot or plotly. Clustering of the PCA can be carried
 out using a heirachial clustering approach. Current modules for PCA are 
-Per_base_sequence_quality, Per_sequence_quality_scores, Per_sequence_GC_content,
-Per_base_sequence_content, and Sequence_Length_Distribution.
+Per_base_sequence_quality, Per_sequence_quality_scores,
+Per_sequence_GC_content, Per_base_sequence_content, and 
+Sequence_Length_Distribution.
 }
