@@ -51,7 +51,7 @@
 #'
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- FastqcDataList(fl)
-#' plotFastqcPCA(fdl, x, module = "Per_sequence_quality_scores",
+#' plotFastqcPCA(fdl, module = "Per_sequence_quality_scores",
 #' usePlotly = FALSE, cluster = TRUE, groups = NULL)
 #'
 #'
@@ -92,26 +92,23 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
     pFun <- paste0(".generate", module, "PCA")
-    args <- list(
-        x = x)
+    args <- list(x = x)
 
     df <- do.call(pFun, args)
 
-    pca <- PCA(df,scale.unit=TRUE, ncp=2, graph = FALSE)
-
+    pca <- PCA(df,scale.unit = TRUE, ncp = 2, graph = FALSE)
     variance <- round(pca$eig[,2][seq_len(2)], 2)
 
     data <- as.data.frame(pca$ind$coord)
     data <- rownames_to_column(data, "Filename")
 
-    if(cluster) {
-
-
-        if(is.null(groups)){
+    if (cluster) {
+        if (is.null(groups)) {
             ### with factoMineR
             set.seed(1)
-            cluster <- HCPC(pca, nb.clust=0, consol = 0,
-                            min=2, max=10, graph = FALSE)
+            cluster <- HCPC(
+                pca, nb.clust = 0, consol = 0, min = 2, max = 10, graph = FALSE
+            )
 
             cluster <- cluster$call$X
             k <- max(as.integer(as.character(cluster[["clust"]])))
@@ -122,12 +119,13 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         }
         else{
 
-            groupDF <- lapply(seq_len(length(groups)), function(x){
+            groupDF <- lapply(seq_along(groups), function(x){
 
-                data.frame(Filename = groups[[x]],
-                           clust = names(groups)[x],
-                           stringsAsFactors = FALSE)
-
+                data.frame(
+                    Filename = groups[[x]],
+                    clust = names(groups)[x],
+                    stringsAsFactors = FALSE
+                    )
 
             })
 
@@ -152,69 +150,72 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         hulls <- ungroup(hulls)
         hulls$cluster <- factor(hulls$clust, levels = unique(hulls$clust))
 
-
-
         PCA <- ggplot() +
-            geom_point(data = data, aes_string(group = "Filename",
-                                               x = "Dim.1", y = "Dim.2"),
-                       size = 0.2) +
-            geom_polygon(data = hulls, aes_string(x = "Dim.1", y = "Dim.2",
-                                                  fill = "clust"),
-                         alpha = 0.4) +
-            geom_hline(yintercept=0, colour="darkgrey") +
-            geom_vline(xintercept=0, colour="darkgrey") +
+            geom_point(
+                data,
+                aes_string(x = "Dim.1", y = "Dim.2",group = "Filename"),
+                size = 0.2
+                ) +
+            geom_polygon(
+                data = hulls,
+                aes_string(x = "Dim.1", y = "Dim.2", fill = "clust"),
+                alpha = 0.4
+            ) +
+            geom_hline(yintercept = 0, colour = "darkgrey") +
+            geom_vline(xintercept = 0, colour = "darkgrey") +
             theme_bw() +
             theme(
                 panel.background = element_blank()
             ) +
-            labs(x = paste0("PC1 (", variance[1], "%)"),
-                 y = paste0("PC2 (", variance[2], "%)"))
+            labs(
+                x = paste0("PC1 (", variance[1], "%)"),
+                y = paste0("PC2 (", variance[2], "%)")
+            )
 
         if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
 
-        if(usePlotly){
+        if (usePlotly) {
             PCA <- ggplotly(PCA)
 
             s <- split(data, data$clust)
 
-            PCA$x$data[2:(k+1)] <- lapply(seq_len(k), function(j){
+            PCA$x$data[2:(k + 1)] <- lapply(seq_len(k), function(j){
 
                 names <- s[[j]]$Filename
                 names <- paste(names, collapse = "<br>")
-                PCA$x$data[[j+1]]$text <- names
+                PCA$x$data[[j + 1]]$text <- names
                 ## add key
-                PCA$x$data[[j+1]]
+                PCA$x$data[[j + 1]]
 
             })
         }
-
     }
     else{
 
         PCA <- ggplot() +
-            geom_point(data = data, aes_string(group = "Filename",
-                                               x = "Dim.1", y = 'Dim.2')) +
-            geom_hline(yintercept=0, colour="darkgrey") +
-            geom_vline(xintercept=0, colour="darkgrey") +
+            geom_point(
+                data = data,
+                aes_string(x = "Dim.1", y = "Dim.2", group = "Filename")
+            ) +
+            geom_hline(yintercept = 0, colour = "darkgrey") +
+            geom_vline(xintercept = 0, colour = "darkgrey") +
             theme_bw() +
             theme(
                 panel.background = element_blank()
             ) +
-            labs(x = paste0("PC1 (", variance[1], "%)"),
-                 y = paste0("PC2 (", variance[2], "%)"))
+            labs(
+                x = paste0("PC1 (", variance[1], "%)"),
+                y = paste0("PC2 (", variance[2], "%)")
+            )
 
 
         if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
 
-        if(usePlotly){
+        if (usePlotly) {
             PCA <- ggplotly(PCA)
-
-
-
         }}
-
 
     PCA
 }
@@ -227,39 +228,44 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     df <- getModule(x, "Per_base_sequence_quality")
     df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
 
-
     ## Adjust the data for files with varying read lengths
     ## This will fill NA values with the previous values
-    df <- lapply(split(df, f = df$Filename), function(y){
-        Longest_sequence <-
-            gsub(".*-([0-9]*)", "\\1", as.character(y$Base))
-        Longest_sequence <- max(as.integer(Longest_sequence))
-        dfFill <- data.frame(Start = seq_len(Longest_sequence))
-        y <- dplyr::right_join(y, dfFill, by = "Start")
-        na.locf(y)
-    })
+    df <- lapply(
+        split(df, f = df$Filename),
+        function(y){
+            Longest_sequence <-
+                gsub(".*-([0-9]*)", "\\1", as.character(y$Base))
+            Longest_sequence <- max(as.integer(Longest_sequence))
+            dfFill <- data.frame(Start = seq_len(Longest_sequence))
+            y <- dplyr::right_join(y, dfFill, by = "Start")
+            na.locf(y)
+        }
+    )
 
     df <- dplyr::bind_rows(df)[c("Filename", "Start", "Mean")]
 
+    #####################################################
+    ## This needs to be changed to tidyr from reshape2! #
+    #####################################################
     df <- dcast(df, Filename ~ factor(as.character(df$Start),
                                       levels = unique(as.character(df$Start))),
                 value.var = "Mean", fill = 0)
     df <- column_to_rownames(df, "Filename")
-
     df
 }
 
 .generatePer_sequence_quality_scoresPCA <- function(x){
 
     df <- getModule(x, "Per_sequence_quality_scores")
-
+    #####################################################
+    ## This needs to be changed to tidyr from reshape2! #
+    #####################################################
     df <- reshape2::dcast(df, Filename ~ factor(as.character(df$Quality),
                                                 levels = unique(
                                                     as.character(df$Quality))
     ),
     value.var = "Count", fill = 0)
     df <- column_to_rownames(df, "Filename")
-
     df
 }
 
@@ -267,14 +273,15 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 .generatePer_sequence_GC_contentPCA <- function(x){
 
     df <- getModule(x, "Per_sequence_GC_content")
-
+    #####################################################
+    ## This needs to be changed to tidyr from reshape2! #
+    #####################################################
     df <- dcast(df, Filename ~ factor(as.character(df$GC_Content),
                                       levels = unique(
                                           as.character(df$GC_Content))
     ),
     value.var = "Count", fill = 0)
     df <- column_to_rownames(df, "Filename")
-
     df
 }
 
@@ -282,9 +289,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 .generatePer_base_sequence_contentPCA <- function(x){
 
     df <- getModule(x, "Per_base_sequence_content")
-
     df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
-
 
     ## Adjust the data for files with varying read lengths
     ## This will fill NA values with the previous values
@@ -300,6 +305,9 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     df <- dplyr::bind_rows(df)[c("Filename", "Start", "G", "A", "T", "C")]
 
     t <- lapply(c("G", "A", "T", "C"), function(x){
+        #####################################################
+        ## This needs to be changed to tidyr from reshape2! #
+        #####################################################
         df <- dcast(df, Filename ~ factor(as.character(df$Start),
                                           levels = unique(
                                               as.character(df$Start))
@@ -328,7 +336,9 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     })
 
     df <- dplyr::bind_rows(df)[c("Filename", "Lower", "Count")]
-
+    #####################################################
+    ## This needs to be changed to tidyr from reshape2! #
+    #####################################################
     df <- dcast(df, Filename ~ factor(as.character(df$Lower),
                                       levels = unique(as.character(df$Lower))),
                 value.var = "Count", fill = 0)

@@ -1,7 +1,7 @@
 ## Chris
 - **Test on outlier FastQC reports (1 sequence etc)**
 - Start commenting all functions better so Steve can understand them
-- Tidy up PCA
+- Fix plotFastqcPCA
 - Shiny vignette
 - importNgsLogs vignette
 - Add updates to NEWS

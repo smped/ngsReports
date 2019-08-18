@@ -95,12 +95,8 @@ importNgsLogs <- function(x, type = "auto", which) {
 
     ## adding auto detect
     if (type == "autoDetect") {
-        type <- unlist(lapply(data, function(y){.getToolName(y, possTypes = possTypes)}))
+        type <- unlist(lapply(data, .getToolName, possTypes = possTypes))
         type <- unique(type)
-        # ## have to add this for autoDetect to work
-        # if(all(type %in% c("hisat2", "bowtie2"))) type <- "bowtie2"
-        # ## add test to see if multiple logs are present from auto detect
-        # if(length(type)!= 1) stop("Multiple log types passed to function.")
     }
 
     ## Change to title case for easier parsing below
@@ -953,10 +949,12 @@ importNgsLogs <- function(x, type = "auto", which) {
     df <- lapply(data, function(x){
         x <- gsub("# ", "", x)
         ## get numbers of each feild from lines
-        single <- grep("Complete and single-copy BUSCOs \\(S\\)", x = x, value = TRUE)
+        single <-
+            grep("Complete and single-copy BUSCOs \\(S\\)", x = x, value = TRUE)
         single <- as.integer(gsub(".*\t(.+)\tComp.*", "\\1", single))
 
-        duplicated <- grep("Complete and duplicated BUSCOs \\(D\\)", x = x, value = TRUE)
+        duplicated <-
+            grep("Complete and duplicated BUSCOs \\(D\\)", x = x, value = TRUE)
         duplicated <- as.integer(gsub(".*\t(.+)\tComp.*", "\\1", duplicated))
 
         fragmented <- grep("Fragmented BUSCOs \\(F\\)", x = x, value = TRUE)
@@ -967,13 +965,19 @@ importNgsLogs <- function(x, type = "auto", which) {
 
         total <- sum(single, duplicated, fragmented, missing)
 
-        name <- grep("Summarized benchmarking in BUSCO notation for file ", x = x, value = TRUE)
+        name <- grep(
+            "Summarized benchmarking in BUSCO notation for file ",
+            x = x,
+            value = TRUE
+        )
         name <- gsub(".*file ", "\\1", name)
-        df <- tibble(name = name,
-                     completeSingleCopy = single,
-                     completeDuplicated = duplicated,
-                     fragmented = fragmented,
-                     missing = missing)
+        df <- tibble(
+            name = name,
+            completeSingleCopy = single,
+            completeDuplicated = duplicated,
+            fragmented = fragmented,
+            missing = missing
+        )
     })
     df <- dplyr::bind_rows(df)
 
@@ -1107,6 +1111,7 @@ importNgsLogs <- function(x, type = "auto", which) {
 
     ## Many of the above values may be missing.
     ## Remove them if so using a quick tidy
+    value <- c() # Avoiding an R CMD check NOTE
     out <- tidyr::gather(out, "key", "value", -1)
     out <- dplyr::filter(out, !is.na(value))
     out <- tidyr::spread(out, "key", "value")
@@ -1155,12 +1160,14 @@ importNgsLogs <- function(x, type = "auto", which) {
         longest <- grep("Largest contig\t", x = x, value = TRUE)
         longest <- as.integer(gsub(".*\t(.+)", "\\1", longest))
 
-        df <- tibble(totalLength = totalL,
-                     longestTig = longest,
-                     N50 = N50,
-                     N75 = N75,
-                     L50 = L50,
-                     L75 = L75)
+        df <- tibble(
+            totalLength = totalL,
+            longestTig = longest,
+            N50 = N50,
+            N75 = N75,
+            L50 = L50,
+            L75 = L75
+        )
     })
     df <- dplyr::bind_rows(df)
 

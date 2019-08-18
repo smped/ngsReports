@@ -64,7 +64,7 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
-plotFastqcPCA(fdl, x, module = "Per_sequence_quality_scores",
+plotFastqcPCA(fdl, module = "Per_sequence_quality_scores",
 usePlotly = FALSE, cluster = TRUE, groups = NULL)
 
 

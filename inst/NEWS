@@ -1,6 +1,6 @@
 Changes in version 1.1.1
 + Added plotAlignmentSummary()
-+ Added quast, busco, cutadapt, featureCounts & AdapterRemoval to importNgsLogs
++ Added quast, busco, cutadapt, featureCounts, trimmomatic & AdapterRemoval to importNgsLogs
 
 Changes in version 1.0.1
 + Table in default FastQC template now scroll for larger datasets
