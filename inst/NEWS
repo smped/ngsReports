@@ -1,4 +1,4 @@
-Changes in version 1.0.1
+Changes in version 1.1.1
 + Table in default FastQC template now scroll for larger datasets
 + Kmers removed from default FastQC template
 + Typos in vignette corrected, seperate LICENSE file added & dplyr updates corrected
