@@ -152,7 +152,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 
         PCA <- ggplot() +
             geom_point(
-                data,
+                data = data,
                 aes_string(x = "Dim.1", y = "Dim.2",group = "Filename"),
                 size = 0.2
                 ) +
