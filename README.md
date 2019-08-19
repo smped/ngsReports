@@ -27,7 +27,7 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 ### Quality control
 - FastQC
 ### Adapter removal and trimming
-- AdapterRemover
+- AdapterRemoval
 - CutAdapt
 - Trimmomatic
 ### Mapping and alignment 
@@ -36,12 +36,11 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 - HISAT2
 - STAR
 - Picard
-### Trascript quantificaiton
+### Transcript/gene quantificaiton
 - Feature counts
 ### Genome assembly
 - BUSCO
 - Quast
-
 
 # Citation 
 
