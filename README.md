@@ -23,6 +23,26 @@ library(ngsReports)
 
 A Graphical User Interface (Shiny App) has been developed for interactive inspection of many FastQC reports. The ngsReports shiny app can be installed [here](https://github.com/UofABioinformaticsHub/shinyNgsReports).
 
+## Tool Support
+### Quality control
+- FastQC
+### Adapter removal and trimming
+- CutAdapt
+- Trimmomatic
+- AdapterRemover
+### Mapping and alignment 
+- Bowtie
+- Bowtie2
+- HISAT2
+- STAR
+- Picard
+### Trascript quantificaiton
+- Feature counts
+### Genome assembly
+- BUSCO
+- Quast
+
+
 # Citation 
 
 Please cite our [preprint](https://www.biorxiv.org/content/early/2018/05/02/313148):
