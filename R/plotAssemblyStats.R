@@ -54,24 +54,23 @@ plotAssemblyStats <- function(
         df = df,
         usePlotly = usePlotly,
         plotType = plotType
+        ###############################################################
+        ## dotArgs need to go here to handle themes within each plot ##
+        ###############################################################
     )
 
     ## Generate the plot and add any theme information
     p <- do.call(pFun, args)
-    # if (!is.null(userTheme)) p <- p + userTheme
 
     ## Return the plot
     p
 
-
 }
 
-.plotQuastStats <- function(df, usePlotly, plotType){
+.plotQuastStats <- function(df, usePlotly, plotType, ...){
 
-    #df <- importNgsLogs(x, type = "quast")
     labels <- .makeLabels(df, pattern = ".tsv", col = "fileNames")
     df$fileNames <- labels[df$fileNames]
-
 
     dfLong <- tidyr::gather(df, "variable", "Value", 2:7)
     variable <- Value <- c()
@@ -85,9 +84,7 @@ plotAssemblyStats <- function(
         levels = unique(dfLong$variable)
     )
 
-
     if (plotType == "paracoord") {
-
 
         dfLong <- dplyr::group_by(dfLong, variable)
         dfLong <- dplyr::mutate(
@@ -139,7 +136,7 @@ plotAssemblyStats <- function(
                 c("min", "max"),
                 FUN = function(pass){
                     vapply(
-                        colnames(df)[2:7],
+                        colnames(df)[seq(2, 7, by = 1)],
                         FUN.VALUE = character(1),
                         FUN = function(y){
                             n <- do.call(pass, list(df[[y]]))
@@ -151,7 +148,7 @@ plotAssemblyStats <- function(
             )
             minDf <- tibble(
                 x = rep(seq_len(6) + 0.04, 2),
-                y = rep(0:1, each = 6),
+                y = rep(c(0, 1), each = 6),
                 label = unlist(minMaxL),
                 hjust = rep(-0.05, 12),
                 vjust = rep(c(1.5,-0.5), each = 6)
@@ -196,7 +193,7 @@ plotAssemblyStats <- function(
 
 .plotBuscoStats <- function(df, usePlotly, ...){
 
-    df <- tidyr::gather(df, "Status", "Count", 2:5)
+    df <- tidyr::gather(df, "Status", "Count", seq(2, 5))
     df[["name"]] <- factor(df[["name"]], levels = unique(df[["name"]]))
     df[["Status"]] <- factor(
         df[["Status"]],

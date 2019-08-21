@@ -134,7 +134,6 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         }
 
 
-
         #data <- left_join(clusterDF, scores, by = "Filename")
         data$PCAkey <- data$Filename
         labels <- .makeLabels(data, labels, ...)
@@ -180,6 +179,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 
             s <- split(data, data$clust)
 
+            ## Where have k & j been initialised?
             PCA$x$data[2:(k + 1)] <- lapply(seq_len(k), function(j){
 
                 names <- s[[j]]$Filename
@@ -243,13 +243,8 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     )
 
     df <- dplyr::bind_rows(df)[c("Filename", "Start", "Mean")]
-
-    #####################################################
-    ## This needs to be changed to tidyr from reshape2! #
-    #####################################################
-    df <- dcast(df, Filename ~ factor(as.character(df$Start),
-                                      levels = unique(as.character(df$Start))),
-                value.var = "Mean", fill = 0)
+    df <- tidyr::spread(df, "Start", "Mean", fill = 0)
+    df <- as.data.frame(df)
     df <- column_to_rownames(df, "Filename")
     df
 }
@@ -257,14 +252,8 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 .generatePer_sequence_quality_scoresPCA <- function(x){
 
     df <- getModule(x, "Per_sequence_quality_scores")
-    #####################################################
-    ## This needs to be changed to tidyr from reshape2! #
-    #####################################################
-    df <- reshape2::dcast(df, Filename ~ factor(as.character(df$Quality),
-                                                levels = unique(
-                                                    as.character(df$Quality))
-    ),
-    value.var = "Count", fill = 0)
+    df <- tidyr::spread(df, "Quality", "Count", fill = 0)
+    df <- as.data.frame(df)
     df <- column_to_rownames(df, "Filename")
     df
 }
@@ -273,14 +262,8 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 .generatePer_sequence_GC_contentPCA <- function(x){
 
     df <- getModule(x, "Per_sequence_GC_content")
-    #####################################################
-    ## This needs to be changed to tidyr from reshape2! #
-    #####################################################
-    df <- dcast(df, Filename ~ factor(as.character(df$GC_Content),
-                                      levels = unique(
-                                          as.character(df$GC_Content))
-    ),
-    value.var = "Count", fill = 0)
+    df <- tidyr::spread(df, "GC_Content", "Count", fill = 0)
+    df <- as.data.frame(df)
     df <- column_to_rownames(df, "Filename")
     df
 }
@@ -301,7 +284,6 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         y <- dplyr::right_join(y, dfFill, by = "Start")
         na.locf(y)
     })
-
     df <- dplyr::bind_rows(df)[c("Filename", "Start", "G", "A", "T", "C")]
 
     t <- lapply(c("G", "A", "T", "C"), function(x){
@@ -318,6 +300,10 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         df
     })
 
+    #########################################
+    ## The objects dtf1 & dtf2 don't exist ##
+    #########################################
+    ## This also doesn't work & just returns data for a single sample
     df <- Reduce(function(dtf1,dtf2) left_join(dtf1,dtf2,by="Filename"), t)
     df <- column_to_rownames(df, "Filename")
 }
@@ -325,7 +311,6 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 .generateSequence_Length_DistributionPCA <- function(x){
 
     df <- getModule(x, "Sequence_Length_Distribution")
-
     df <- lapply(split(df, f = df$Filename), function(y){
         Longest_sequence <-
             gsub(".*-([0-9]*)", "\\1", as.character(y$Length))
@@ -334,15 +319,8 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         y <- dplyr::right_join(y, dfFill, by = "Lower")
         na.locf(y)
     })
-
     df <- dplyr::bind_rows(df)[c("Filename", "Lower", "Count")]
-    #####################################################
-    ## This needs to be changed to tidyr from reshape2! #
-    #####################################################
-    df <- dcast(df, Filename ~ factor(as.character(df$Lower),
-                                      levels = unique(as.character(df$Lower))),
-                value.var = "Count", fill = 0)
+    df <- tidyr::spread(df, "Lower", "Count", fill = 0)
     df <- column_to_rownames(df, "Filename")
-
     df
 }
