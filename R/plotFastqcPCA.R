@@ -111,7 +111,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             )
 
             cluster <- cluster$call$X
-            k <- max(as.integer(as.character(cluster[["clust"]])))
+            nClust <- max(as.integer(as.character(cluster[["clust"]])))
             cluster <- cluster[c("Dim.1", "Dim.2", "clust")]
 
             data <- rownames_to_column(cluster, "Filename")
@@ -180,7 +180,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             s <- split(data, data$clust)
 
             ## Where have k & j been initialised?
-            PCA$x$data[2:(k + 1)] <- lapply(seq_len(k), function(j){
+            PCA$x$data[2:(nClust + 1)] <- lapply(seq_len(nClust), function(j){
 
                 names <- s[[j]]$Filename
                 names <- paste(names, collapse = "<br>")
@@ -286,25 +286,19 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     })
     df <- dplyr::bind_rows(df)[c("Filename", "Start", "G", "A", "T", "C")]
 
-    t <- lapply(c("G", "A", "T", "C"), function(x){
-        #####################################################
-        ## This needs to be changed to tidyr from reshape2! #
-        #####################################################
-        df <- dcast(df, Filename ~ factor(as.character(df$Start),
-                                          levels = unique(
-                                              as.character(df$Start))
-        ),
-        value.var = x, fill = 0)
+    perBaseList <- lapply(c("G", "A", "T", "C"), function(y){
+        spreadDF <- df[c("Filename", "Start", y)]
 
-        colnames(df)[2:ncol(df)] <- paste0(colnames(df)[2:ncol(df)], ".", x)
-        df
+        spreadDF <- tidyr::spread(spreadDF, "Start", y, fill = 0)
+        
+        colnames(spreadDF)[2:ncol(spreadDF)] <- 
+            paste0(colnames(spreadDF)[2:ncol(spreadDF)], ".", y)
+        spreadDF
     })
-
-    #########################################
-    ## The objects dtf1 & dtf2 don't exist ##
-    #########################################
-    ## This also doesn't work & just returns data for a single sample
-    df <- Reduce(function(dtf1,dtf2) left_join(dtf1,dtf2,by="Filename"), t)
+    
+    ## i and j are functional variables spawned from perBaseList in order to 
+    ## join each base by filename
+    df <- Reduce(function(i,j) dplyr::left_join(i,j,by="Filename"), perBaseList)
     df <- column_to_rownames(df, "Filename")
 }
 
