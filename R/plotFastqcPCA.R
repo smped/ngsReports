@@ -22,6 +22,9 @@
 #' File extensions are dropped by default
 #' @param cluster \code{logical} default \code{FALSE}. If \code{groups} argument
 #' is not set fastqc data will be clustered using hierarchical clustering.
+#' @param clusterType One of "color" or "hulls". Default is "colors" and will 
+#' color points based on cluster/group, "hulls" will draw a polygon around each
+#'  cluster.
 #' @param groups named \code{list} of predefined sample groups
 #' (eg. R1 and R2 or Sequencing Lanes) to cluster by
 #' @param ... Used to pass additional attributes to theme() and between methods
@@ -59,30 +62,34 @@
 #' @rdname plotFastqcPCA-methods
 #' @export
 setGeneric("plotFastqcPCA", function(
-    x, module, usePlotly = FALSE, labels, cluster = FALSE, groups = NULL, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE, clusterType, groups = NULL, ...){
     standardGeneric("plotFastqcPCA")
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "ANY", function(
-    x, module, usePlotly = FALSE, labels, cluster = FALSE, groups = NULL, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE, 
+    clusterType = "color", groups = NULL, ...){
     .errNotImp(x)
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "character", function(
-    x, module, usePlotly = FALSE, labels, cluster = FALSE, groups = NULL, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE, 
+    clusterType = "color", groups = NULL, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
-    plotFastqcPCA(x, module, usePlotly, labels, cluster, groups, ...)
+    plotFastqcPCA(x, module, usePlotly, labels, cluster, 
+                  clusterType = "color", groups, ...)
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
-    x, module, usePlotly = FALSE, labels, cluster = FALSE, groups = NULL, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE,
+    clusterType = "color", groups = NULL, ...){
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
@@ -100,7 +107,6 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     variance <- round(pca$eig[,2][seq_len(2)], 2)
 
     data <- as.data.frame(pca$ind$coord)
-    data <- rownames_to_column(data, "Filename")
 
     if (cluster) {
         if (is.null(groups)) {
@@ -113,6 +119,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             cluster <- cluster$call$X
             nClust <- max(as.integer(as.character(cluster[["clust"]])))
             cluster <- cluster[c("Dim.1", "Dim.2", "clust")]
+            colnames(cluster) <- c("Dim.1", "Dim.2", "Cluster")
 
             data <- rownames_to_column(cluster, "Filename")
 
@@ -123,7 +130,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 
                 data.frame(
                     Filename = groups[[x]],
-                    clust = names(groups)[x],
+                    Cluster = names(groups)[x],
                     stringsAsFactors = FALSE
                     )
 
@@ -132,34 +139,18 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             groupDF <- bind_rows(groupDF)
             data <- left_join(data, groupDF, by = "Filename")
         }
-
-
+        
+        
         #data <- left_join(clusterDF, scores, by = "Filename")
         data$PCAkey <- data$Filename
         labels <- .makeLabels(data, labels, ...)
         data$Filename <- labels[data$Filename]
         clust <- c()
-        data$clust <- as.character(data$clust)
+        data$Cluster <- as.character(data$Cluster)
         ## get convex edges
-        hulls <- group_by(data, clust)
-
-        Dim.1 <- c()
-        Dim.2 <- c()
-        hulls <- slice(hulls, chull(Dim.1, Dim.2))
-        hulls <- ungroup(hulls)
-        hulls$cluster <- factor(hulls$clust, levels = unique(hulls$clust))
-
+        
+        
         PCA <- ggplot() +
-            geom_point(
-                data = data,
-                aes_string(x = "Dim.1", y = "Dim.2",group = "Filename"),
-                size = 0.2
-                ) +
-            geom_polygon(
-                data = hulls,
-                aes_string(x = "Dim.1", y = "Dim.2", fill = "clust"),
-                alpha = 0.4
-            ) +
             geom_hline(yintercept = 0, colour = "darkgrey") +
             geom_vline(xintercept = 0, colour = "darkgrey") +
             theme_bw() +
@@ -170,6 +161,45 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
                 x = paste0("PC1 (", variance[1], "%)"),
                 y = paste0("PC2 (", variance[2], "%)")
             )
+        
+        if (clusterType == "hulls"){
+            
+            hulls <- group_by(data, Cluster)
+            
+            Dim.1 <- c()
+            Dim.2 <- c()
+            hulls <- slice(hulls, chull(Dim.1, Dim.2))
+            hulls <- ungroup(hulls)
+            hulls$Cluster <- factor(hulls$Cluster, 
+                                    levels = unique(hulls$Cluster))
+            
+            PCA <- PCA +
+                geom_point(
+                    data = data,
+                    aes_string(x = "Dim.1", y = "Dim.2",group = "Filename"),
+                    size = 0.7
+                ) +
+                geom_polygon(
+                    data = hulls,
+                    aes_string(x = "Dim.1", y = "Dim.2", fill = "Cluster"),
+                    alpha = 0.4
+                )
+            
+        }
+        else {
+            
+            PCA <- PCA +
+                geom_point(
+                    data = data,
+                    aes_string(x = "Dim.1", y = "Dim.2", group = "Filename", 
+                               colour = "Cluster"),
+                    size = 0.7
+                )
+            
+        }
+        
+        
+
 
         if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
@@ -192,12 +222,9 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         }
     }
     else{
-
+        data <- rownames_to_column(data, "Filename")
+        
         PCA <- ggplot() +
-            geom_point(
-                data = data,
-                aes_string(x = "Dim.1", y = "Dim.2", group = "Filename")
-            ) +
             geom_hline(yintercept = 0, colour = "darkgrey") +
             geom_vline(xintercept = 0, colour = "darkgrey") +
             theme_bw() +
@@ -207,7 +234,11 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             labs(
                 x = paste0("PC1 (", variance[1], "%)"),
                 y = paste0("PC2 (", variance[2], "%)")
-            )
+            ) +
+            geom_point(
+                data = data,
+                aes_string(x = "Dim.1", y = "Dim.2", group = "Filename")
+            ) 
 
 
         if (!is.null(userTheme)) nPlot <- nPlot + userTheme
