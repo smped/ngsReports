@@ -1,3 +1,6 @@
+Changes in version 1.0.2
++ Added Transcriptomic GC Content for A.thaliana to default gcTheoretical object
+
 Changes in version 1.0.1
 + Table in default FastQC template now scroll for larger datasets
 + Kmers removed from default FastQC template
