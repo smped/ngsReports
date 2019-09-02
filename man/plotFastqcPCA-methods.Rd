@@ -9,16 +9,16 @@
 \title{Draw a PCA plot for Fast QC modules}
 \usage{
 plotFastqcPCA(x, module, usePlotly = FALSE, labels, cluster = FALSE,
-  groups = NULL, ...)
+  clusterType, groups = NULL, ...)
 
 \S4method{plotFastqcPCA}{ANY}(x, module, usePlotly = FALSE, labels,
-  cluster = FALSE, groups = NULL, ...)
+  cluster = FALSE, clusterType = "color", groups = NULL, ...)
 
 \S4method{plotFastqcPCA}{character}(x, module, usePlotly = FALSE, labels,
-  cluster = FALSE, groups = NULL, ...)
+  cluster = FALSE, clusterType = "color", groups = NULL, ...)
 
 \S4method{plotFastqcPCA}{FastqcDataList}(x, module, usePlotly = FALSE,
-  labels, cluster = FALSE, groups = NULL, ...)
+  labels, cluster = FALSE, clusterType = "color", groups = NULL, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
@@ -36,6 +36,10 @@ File extensions are dropped by default}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If \code{groups} argument
 is not set fastqc data will be clustered using hierarchical clustering.}
+
+\item{clusterType}{One of "color" or "hulls". Default is "colors" and will 
+color points based on cluster/group, "hulls" will draw a polygon around each
+ cluster.}
 
 \item{groups}{named \code{list} of predefined sample groups
 (eg. R1 and R2 or Sequencing Lanes) to cluster by}

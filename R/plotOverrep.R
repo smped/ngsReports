@@ -183,7 +183,7 @@ setMethod("plotOverrep", signature = "FastqcData", function(
 #' @rdname plotOverrep-methods
 #' @export
 setMethod("plotOverrep", signature = "FastqcDataList", function(
-    x, usePlotly = FALSE, labels, pwfCols, cluster = TRUE, dendrogram = TRUE,
+    x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
     ..., paletteName = "Set1", expand.x = expand_scale(mult = c(0, 0.05)),
     expand.y = expand_scale(0, 0)){
 
