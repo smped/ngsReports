@@ -73,6 +73,7 @@ Collate:
     'getSummary.R'
     'helpers.R'
     'importNgsLogs.R'
+    'importSamtoolsStats.R'
     'isCompressed.R'
     'maxAdapterContent.R'
     'overRep2Fasta.R'

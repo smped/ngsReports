@@ -73,6 +73,7 @@ importNgsLogs <- function(x, type = "auto", which) {
         "featureCounts",
         "hisat2",
         "quast",
+        "samtoolsStats",
         "star",
         "trimmomatic"
     )
