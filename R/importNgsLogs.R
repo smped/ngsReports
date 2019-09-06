@@ -5,7 +5,7 @@
 #'
 #' @details Imports one or more log files as output by tools such as:
 #' \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
-#' \code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt},
+#' \code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt}, \code{flagstat},
 #' \code{Adapter Removal}, \code{trimmomatic} \code{quast} or \code{busco}.
 #' \code{autoDetect} can be used to detect the log type by parsing the file.
 #'
@@ -34,7 +34,7 @@
 #' @param x \code{character}. Vector of filenames. All log files must be of the
 #' same type. Duplicate file paths will be silently ignored.
 #' @param type \code{character}. The type of file being imported. Can be one of
-#' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
+#' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star}, \code{flagstat},
 #' \code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt},
 #' \code{adapterRemoval}, \code{quast} or \code{busco}.
 #' Defaults to \code{type = "auto"} which will automatically detect the file
@@ -71,6 +71,7 @@ importNgsLogs <- function(x, type = "auto", which) {
         "cutadapt",
         "duplicationMetrics",
         "featureCounts",
+        "flagstat",
         "hisat2",
         "quast",
         "star",
@@ -410,6 +411,22 @@ importNgsLogs <- function(x, type = "auto", which) {
     )
     chk <- vapply(fields, function(f){any(grepl(f, x))}, logical(1))
     all(chk)
+}
+
+#' @title Check for correct structure of supplied flagstat
+#' @description Check for correct structure of supplied flagstat files
+#' @details Checks for all the required fields in the lines provided
+#' @param x Character vector as output when readLines to a supplied file
+#' @return logical(1)
+#' @keywords internal
+.isValidFlagstatLog <- function(x){
+
+    ## Every line must have a '+' symbol
+    nLines <- length(x)
+    allPlus <- sum(grepl("\\+", x)) == nLines
+    ## Check for required text in the first line
+    firstLine <- grepl("QC-passed reads", x[[1]])
+    all(allPlus, firstLine)
 }
 
 #' @title Parse data from Bowtie log files
@@ -935,7 +952,6 @@ importNgsLogs <- function(x, type = "auto", which) {
     bind_rows(out)
 }
 
-
 #' @title Parse data from BUSCO log files
 #' @description Parse data from BUSCO log files
 #' @details Checks for structure will have been performed
@@ -1128,7 +1144,6 @@ importNgsLogs <- function(x, type = "auto", which) {
 
 }
 
-
 #' @title Parse data from BUSCO log files
 #' @description Parse data from BUSCO log files
 #' @details Checks for structure will have been performed
@@ -1172,5 +1187,37 @@ importNgsLogs <- function(x, type = "auto", which) {
     df <- dplyr::bind_rows(df)
 
     dplyr::bind_cols(tibble(fileNames = names(data)), df)
+
+}
+
+#' @title Parse data from samtools flagstat files
+#' @description Parse data from samtools flagstat files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
+#' @return data.frame
+#' @keywords internal
+.parseFlagstatLogs <- function(data, ...){
+
+    .parseFlagstatSingle <- function(data){
+        df <- gsub("([0-9]+) \\+ ([0-9]+) (.+)", "\\1\t\\2\t\\3", data)
+        df <- .splitByTab(df, FALSE)
+        colnames(df) <- c("QC-passed", "QC-failed", "flag")
+        df[["flag"]] <- gsub("([a-z ]+) \\(.+", "\\1", df[["flag"]])
+        df[["flag"]][nrow(df)] <-
+            paste(df[["flag"]][nrow(df)], "(mapQ>=5)")
+        df[["QC-passed"]] <- as.integer(df[["QC-passed"]])
+        df[["QC-failed"]] <- as.integer(df[["QC-failed"]])
+        df
+    }
+
+    out <- lapply(data, .parseFlagstatSingle)
+    out <- lapply(names(out), function(x){
+        out[[x]]$Filename <- x
+        out[[x]]
+    })
+    out <- bind_rows(out)
+    dplyr::select(out, "Filename", everything())
+
 
 }

@@ -10,6 +10,7 @@ arFile <- system.file("extdata", "adapterRemoval.settings", package = "ngsReport
 fcFile <- system.file("extdata", "featureCounts.summary", package = "ngsReports")
 caFiles <- system.file("extdata", c("cutadapt_full.txt", "cutadapt_minimal.txt"), package = "ngsReports")
 trimoFiles <- system.file("extdata", "Sample1.trimmomaticPE.txt", package = "ngsReports")
+flagFile <- system.file("extdata", "flagstat.txt", package = "ngsReports")
 
 test_that("importNgsLogs fails on empty",{
     expect_error(importNgsLogs(bowtieLogs[0], "bowtie"))
@@ -215,7 +216,7 @@ test_that("parseCutadaptLogs parses correctly",{
 
 })
 
-test_that("parseTimmomaticLogs behaves correctly",{
+test_that("parseTrimmomaticLogs behaves correctly",{
     df <- importNgsLogs(trimoFiles, "trimmomatic")
     expCols <- c(
         "Filename", "Type", "Input_Read_Pairs", "Both_Surviving",
@@ -224,5 +225,13 @@ test_that("parseTimmomaticLogs behaves correctly",{
         "Trailing"
     )
     expect_error(importNgsLogs(caFiles, "trimmomatic"))
+    expect_equal(colnames(df), expCols)
+})
+
+test_that("parseFlagstatLogs behaves correctly", {
+
+    df <- importNgsLogs(flagFile, "flagstat")
+    expCols <- c("Filename", "QC-passed", "QC-failed", "flag")
+    expect_equal(dim(df), c(13, 4))
     expect_equal(colnames(df), expCols)
 })

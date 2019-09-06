@@ -11,7 +11,7 @@ importNgsLogs(x, type = "auto", which)
 same type. Duplicate file paths will be silently ignored.}
 
 \item{type}{\code{character}. The type of file being imported. Can be one of
-\code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star},
+\code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star}, \code{flagstat},
 \code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt},
 \code{adapterRemoval}, \code{quast} or \code{busco}.
 Defaults to \code{type = "auto"} which will automatically detect the file
@@ -33,7 +33,7 @@ stderr
 \details{
 Imports one or more log files as output by tools such as:
 \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
-\code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt},
+\code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt}, \code{flagstat},
 \code{Adapter Removal}, \code{trimmomatic} \code{quast} or \code{busco}.
 \code{autoDetect} can be used to detect the log type by parsing the file.
 
