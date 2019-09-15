@@ -2,6 +2,7 @@
 
 export(FastqcData)
 export(FastqcDataList)
+export(SamtoolsStats)
 export(estGcDistn)
 export(fqName)
 export(gcAvail)

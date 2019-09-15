@@ -3,7 +3,14 @@
 \docType{class}
 \name{SamtoolsStats-class}
 \alias{SamtoolsStats-class}
+\alias{SamtoolsStats}
 \title{The SamtoolsStats Object Class}
+\usage{
+SamtoolsStats(x)
+}
+\arguments{
+\item{x}{Path to a single samtools stats report}
+}
 \value{
 An object of class SamtoolsStats
 }
