@@ -22,9 +22,9 @@
 #' File extensions are dropped by default
 #' @param cluster \code{logical} default \code{FALSE}. If \code{groups} argument
 #' is not set fastqc data will be clustered using hierarchical clustering.
-#' @param clusterType One of "color" or "hulls". Default is "colors" and will 
-#' color points based on cluster/group, "hulls" will draw a polygon around each
-#'  cluster.
+#' @param clusterType One of "color/colour" or "hulls". Default is "colours"
+#' and will colour points based on cluster/group, "hulls" will draw a polygon
+#' around each cluster.
 #' @param groups named \code{list} of predefined sample groups
 #' (eg. R1 and R2 or Sequencing Lanes) to cluster by
 #' @param ... Used to pass additional attributes to theme() and between methods
@@ -62,34 +62,36 @@
 #' @rdname plotFastqcPCA-methods
 #' @export
 setGeneric("plotFastqcPCA", function(
-    x, module, usePlotly = FALSE, labels, cluster = FALSE, clusterType, groups = NULL, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE,
+    clusterType = "colour", groups = NULL, ...){
     standardGeneric("plotFastqcPCA")
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "ANY", function(
-    x, module, usePlotly = FALSE, labels, cluster = FALSE, 
-    clusterType = "color", groups = NULL, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE,
+    clusterType = "colour", groups = NULL, ...){
     .errNotImp(x)
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "character", function(
-    x, module, usePlotly = FALSE, labels, cluster = FALSE, 
-    clusterType = "color", groups = NULL, ...){
+    x, module, usePlotly = FALSE, labels, cluster = FALSE,
+    clusterType = "colour", groups = NULL, ...){
     x <- FastqcDataList(x)
     if (length(x) == 1) x <- x[[1]]
-    plotFastqcPCA(x, module, usePlotly, labels, cluster, 
-                  clusterType = "color", groups, ...)
+    plotFastqcPCA(
+        x, module, usePlotly, labels, cluster, clusterType, groups, ...
+    )
 }
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
 setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     x, module, usePlotly = FALSE, labels, cluster = FALSE,
-    clusterType = "color", groups = NULL, ...){
+    clusterType = "colour", groups = NULL, ...){
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
@@ -109,6 +111,11 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     data <- as.data.frame(pca$ind$coord)
 
     if (cluster) {
+
+        Cluster <- c() # Avoiding an R CMD NOTE
+        clusterType <- match.arg(clusterType, c("colour", "color", "hulls"))
+        clusterType <- stringr::str_replace(clusterType, "color", "colour")
+
         if (is.null(groups)) {
             ### with factoMineR
             set.seed(1)
@@ -139,8 +146,8 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             groupDF <- bind_rows(groupDF)
             data <- left_join(data, groupDF, by = "Filename")
         }
-        
-        
+
+
         #data <- left_join(clusterDF, scores, by = "Filename")
         data$PCAkey <- data$Filename
         labels <- .makeLabels(data, labels, ...)
@@ -148,8 +155,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         clust <- c()
         data$Cluster <- as.character(data$Cluster)
         ## get convex edges
-        
-        
+
         PCA <- ggplot() +
             geom_hline(yintercept = 0, colour = "darkgrey") +
             geom_vline(xintercept = 0, colour = "darkgrey") +
@@ -161,18 +167,18 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
                 x = paste0("PC1 (", variance[1], "%)"),
                 y = paste0("PC2 (", variance[2], "%)")
             )
-        
-        if (clusterType == "hulls"){
-            
+
+        if (clusterType == "hulls") {
+
             hulls <- group_by(data, Cluster)
-            
+
             Dim.1 <- c()
             Dim.2 <- c()
             hulls <- slice(hulls, chull(Dim.1, Dim.2))
             hulls <- ungroup(hulls)
-            hulls$Cluster <- factor(hulls$Cluster, 
-                                    levels = unique(hulls$Cluster))
-            
+            hulls$Cluster <-
+                factor(hulls$Cluster, levels = unique(hulls$Cluster))
+
             PCA <- PCA +
                 geom_point(
                     data = data,
@@ -184,32 +190,29 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
                     aes_string(x = "Dim.1", y = "Dim.2", fill = "Cluster"),
                     alpha = 0.4
                 )
-            
+
         }
-        else {
-            
+        if (clusterType == "colour") {
+
             PCA <- PCA +
                 geom_point(
                     data = data,
-                    aes_string(x = "Dim.1", y = "Dim.2", group = "Filename", 
-                               colour = "Cluster"),
+                    aes_string(
+                        "Dim.1", "Dim.2", group = "Filename", colour = "Cluster"
+                    ),
                     size = 0.7
                 )
-            
-        }
-        
-        
 
+        }
 
         if (!is.null(userTheme)) nPlot <- nPlot + userTheme
-
 
         if (usePlotly) {
             PCA <- ggplotly(PCA)
 
             s <- split(data, data$clust)
 
-            ## Where have k & j been initialised?
+            ## tidy up the html output for the interactive plot
             PCA$x$data[2:(nClust + 1)] <- lapply(seq_len(nClust), function(j){
 
                 names <- s[[j]]$Filename
@@ -223,14 +226,12 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     }
     else{
         data <- rownames_to_column(data, "Filename")
-        
+
         PCA <- ggplot() +
             geom_hline(yintercept = 0, colour = "darkgrey") +
             geom_vline(xintercept = 0, colour = "darkgrey") +
             theme_bw() +
-            theme(
-                panel.background = element_blank()
-            ) +
+            theme(panel.background = element_blank()) +
             labs(
                 x = paste0("PC1 (", variance[1], "%)"),
                 y = paste0("PC2 (", variance[2], "%)")
@@ -238,11 +239,10 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             geom_point(
                 data = data,
                 aes_string(x = "Dim.1", y = "Dim.2", group = "Filename")
-            ) 
+            )
 
 
         if (!is.null(userTheme)) nPlot <- nPlot + userTheme
-
 
         if (usePlotly) {
             PCA <- ggplotly(PCA)
@@ -321,13 +321,13 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         spreadDF <- df[c("Filename", "Start", y)]
 
         spreadDF <- tidyr::spread(spreadDF, "Start", y, fill = 0)
-        
-        colnames(spreadDF)[2:ncol(spreadDF)] <- 
+
+        colnames(spreadDF)[2:ncol(spreadDF)] <-
             paste0(colnames(spreadDF)[2:ncol(spreadDF)], ".", y)
         spreadDF
     })
-    
-    ## i and j are functional variables spawned from perBaseList in order to 
+
+    ## i and j are functional variables spawned from perBaseList in order to
     ## join each base by filename
     df <- Reduce(function(i,j) dplyr::left_join(i,j,by="Filename"), perBaseList)
     df <- column_to_rownames(df, "Filename")
