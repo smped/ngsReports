@@ -13,7 +13,7 @@
 #' more details.
 #'
 #' @slot Summary Summary of PASS/WARN/FAIL status for each module
-#' @slot Basic_Statistics The Basic_Statstics table from the top of a FastQC
+#' @slot Basic_Statistics The Basic_Statistics table from the top of a FastQC
 #' html report
 #' @slot Per_base_sequence_quality The underlying data from the
 #' Per_base_sequence_quality module

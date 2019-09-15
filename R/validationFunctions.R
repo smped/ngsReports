@@ -98,3 +98,25 @@
     TRUE
 
 }
+
+.isValidSamtoolsStats <- function(object){
+
+    reqSlots <- c(
+        "Summary_Numbers",
+        "First_Fragment_Qualities",
+        "Last_Fragment_Qualities",
+        "GC_Content_of_first_fragments",
+        "GC_Content_of_last_fragments",
+        "ACGT_content_per_cycle",
+        "ACGT_content_for_first_fragments",
+        "ACGT_content_for_last_fragments",
+        "Insert_sizes",
+        "Read_lengths",
+        "Read_lengths_first_fragments",
+        "Read_lengths_last_fragments",
+        "Indels_per_cycle",
+        "Coverage_distribution",
+        "GC_depth"
+        )
+    all(reqSlots %in% slotNames(object))
+}

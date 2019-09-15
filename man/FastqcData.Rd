@@ -34,7 +34,7 @@ more details.
 \describe{
 \item{\code{Summary}}{Summary of PASS/WARN/FAIL status for each module}
 
-\item{\code{Basic_Statistics}}{The Basic_Statstics table from the top of a FastQC
+\item{\code{Basic_Statistics}}{The Basic_Statistics table from the top of a FastQC
 html report}
 
 \item{\code{Per_base_sequence_quality}}{The underlying data from the

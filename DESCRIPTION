@@ -59,6 +59,7 @@ Collate:
     'FastqcFile.R'
     'PwfCols.R'
     'S4coercion.R'
+    'SamtoolsStats.R'
     'TheoreticalGC.R'
     'aaa.R'
     'data.R'
