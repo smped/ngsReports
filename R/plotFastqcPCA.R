@@ -205,23 +205,22 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 
         }
 
-        if (!is.null(userTheme)) nPlot <- nPlot + userTheme
+        if (!is.null(userTheme)) PCA <- PCA + userTheme
 
         if (usePlotly) {
-            PCA <- ggplotly(PCA)
-
-            s <- split(data, data$clust)
-
-            ## tidy up the html output for the interactive plot
-            PCA$x$data[2:(nClust + 1)] <- lapply(seq_len(nClust), function(j){
-
-                names <- s[[j]]$Filename
-                names <- paste(names, collapse = "<br>")
-                PCA$x$data[[j + 1]]$text <- names
-                ## add key
-                PCA$x$data[[j + 1]]
-
-            })
+            PCA <- plotly::ggplotly(PCA)
+            
+            if(clusterType == "hulls"){
+                s <- split(data, data$Cluster)
+                ## tidy up the html output for the interactive plot
+                PCA$x$data[2:(nClust + 1)] <- lapply(seq_len(nClust), function(j){
+                    names <- s[[j]]$Filename
+                    names <- paste(names, collapse = "<br>")
+                    PCA$x$data[[j + 1]]$text <- names
+                    ## add key
+                    PCA$x$data[[j + 1]]
+                })
+            }
         }
     }
     else{
@@ -242,10 +241,10 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
             )
 
 
-        if (!is.null(userTheme)) nPlot <- nPlot + userTheme
+        if (!is.null(userTheme)) PCA <- PCA + userTheme
 
         if (usePlotly) {
-            PCA <- ggplotly(PCA)
+            PCA <- plotly::ggplotly(PCA)
         }}
 
     PCA
