@@ -21,7 +21,7 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
   expand.y = expand_scale(0, 0.6))
 
 \S4method{plotOverrep}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, cluster = TRUE, dendrogram = TRUE, ...,
+  pwfCols, cluster = FALSE, dendrogram = FALSE, ...,
   paletteName = "Set1", expand.x = expand_scale(mult = c(0, 0.05)),
   expand.y = expand_scale(0, 0))
 }

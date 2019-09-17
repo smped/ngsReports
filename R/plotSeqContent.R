@@ -161,7 +161,7 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
 #' @export
 setMethod("plotSeqContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, plotType = c("heatmap", "line"),
-    cluster = TRUE, dendrogram = TRUE, ..., nc = 2){
+    cluster = FALSE, dendrogram = FALSE, ..., nc = 2){
 
     ## Get the SequenceContent
     df <- getModule(x, "Per_base_sequence_content")

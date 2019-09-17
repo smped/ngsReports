@@ -1,6 +1,6 @@
 Package: ngsReports
-Version: 1.0.1
-Date: 2019/08/18
+Version: 1.1.1
+Date: 2019/09/15
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Steve", "Pederson", 
@@ -17,6 +17,7 @@ BugReports: https://github.com/UofABioinformaticsHub/ngsReports/issues
 License: file LICENSE
 Encoding: UTF-8
 Depends:
+  R (>= 3.6.0),
   BiocGenerics,
   ggplot2,
   tibble (>= 1.3.1)
@@ -24,6 +25,7 @@ Imports:
   Biostrings,
   checkmate,
   dplyr (>= 0.8.0),
+  FactoMineR,
   ggdendro,
   grDevices, 
   grid,
@@ -77,8 +79,11 @@ Collate:
     'overRep2Fasta.R'
     'path.R'
     'plotAdapterContent.R'
+    'plotAlignmentSummary.R'
+    'plotAssemblyStats.R'
     'plotBaseQuals.R'
     'plotDupLevels.R'
+    'plotFastqcPCA.R'
     'plotGcContent.R'
     'plotKmers.R'
     'plotNContent.R'

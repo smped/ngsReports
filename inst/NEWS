@@ -1,3 +1,9 @@
+Changes in version 1.1.1
++ Added plotAlignmentSummary()
++ Added plotFastqcPCA()
++ Added quast, busco, cutadapt, featureCounts, trimmomatic, flagstats & AdapterRemoval support to importNgsLogs()
++ Enabled auto detection for report type for importNgsLogs()
+
 Changes in version 1.0.2
 + Added Transcriptomic GC Content for A.thaliana to default gcTheoretical object
 

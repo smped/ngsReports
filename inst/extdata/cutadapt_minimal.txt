@@ -1,0 +1,2 @@
+status	in_reads	in_bp	too_short	too_long	too_many_n	out_reads	w/adapters	qualtrim_bp	out_bp
+OK	26265811	1983343442	485311	0	9219	25771281	1282083	47643936	1791873727
