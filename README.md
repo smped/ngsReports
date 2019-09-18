@@ -18,6 +18,9 @@ install.packages("BiocManager")
 BiocManager::install("UofABioinformaticsHub/ngsReports")
 library(ngsReports)
 ```
+## Usage 
+For a detailed usage guide please see [here](https://bioconductor.org/packages/release/bioc/vignettes/ngsReports/inst/doc/ngsReportsIntroduction.html).
+
 
 ## ShinyApp
 
