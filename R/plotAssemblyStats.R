@@ -140,8 +140,12 @@ plotAssemblyStats <- function(
                         FUN.VALUE = character(1),
                         FUN = function(y){
                             n <- do.call(pass, list(df[[y]]))
-                            if (n > 100000) paste(round(n/1000000, 2), "Mb")
-                            else paste(round(n/1000, 2), "Kb")
+                            if(y %in% colnames(df)[seq(2, 5, by = 1)]){
+                                if (n > 100000) paste(round(n/1000000, 2), "Mb")
+                                else paste(round(n/1000, 2), "Kb")
+                            } 
+                            else as.character(n)
+                            
                         }
                     )
                 }
