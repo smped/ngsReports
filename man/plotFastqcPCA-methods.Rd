@@ -42,8 +42,10 @@ is not set fastqc data will be clustered using hierarchical clustering.}
 and will colour points based on cluster/group, "hulls" will draw a polygon
 around each cluster.}
 
-\item{groups}{named \code{list} of predefined sample groups
-(eg. R1 and R2 or Sequencing Lanes) to cluster by}
+\item{groups}{Optional data.frame (or tibble) with columns \code{Filename}
+and \code{Group}. Values in the Filename column should correspond to the
+values returned by fqName(x). If not supplied and \code{cluster = TRUE},
+clusters will be automatically generated using HCPC from FactoMiner}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 }
@@ -56,7 +58,7 @@ Draw a PCA plot for Fast QC modules across multiple samples
 \details{
 This carries out PCA on all or a subset of FastQC modules and plots the
 output using either ggplot or plotly. Clustering of the PCA can be carried
-out using a heirachial clustering approach. Current modules for PCA are
+out using a hierarchical clustering approach. Current modules for PCA are
 Per_base_sequence_quality, Per_sequence_quality_scores,
 Per_sequence_GC_content, Per_base_sequence_content, and
 Sequence_Length_Distribution.
@@ -69,8 +71,7 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
-plotFastqcPCA(fdl, module = "Per_sequence_quality_scores",
-usePlotly = FALSE, cluster = TRUE, groups = NULL)
+plotFastqcPCA(fdl, module = "Per_sequence_quality_scores", cluster = TRUE)
 
 
 }

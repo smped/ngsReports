@@ -5,7 +5,7 @@
 #' @details
 #' This carries out PCA on all or a subset of FastQC modules and plots the
 #' output using either ggplot or plotly. Clustering of the PCA can be carried
-#' out using a heirachial clustering approach. Current modules for PCA are
+#' out using a hierarchical clustering approach. Current modules for PCA are
 #' Per_base_sequence_quality, Per_sequence_quality_scores,
 #' Per_sequence_GC_content, Per_base_sequence_content, and
 #' Sequence_Length_Distribution.
@@ -25,8 +25,10 @@
 #' @param clusterType One of "color/colour" or "hulls". Default is "colours"
 #' and will colour points based on cluster/group, "hulls" will draw a polygon
 #' around each cluster.
-#' @param groups named \code{list} of predefined sample groups
-#' (eg. R1 and R2 or Sequencing Lanes) to cluster by
+#' @param groups Optional data.frame (or tibble) with columns \code{Filename}
+#' and \code{Group}. Values in the Filename column should correspond to the
+#' values returned by fqName(x). If not supplied and \code{cluster = TRUE},
+#' clusters will be automatically generated using HCPC from FactoMiner
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -36,7 +38,6 @@
 #' @importFrom dplyr left_join
 #' @importFrom dplyr group_by
 #' @importFrom dplyr ungroup
-#' @importFrom dplyr slice
 #' @importFrom FactoMineR HCPC
 #' @importFrom FactoMineR PCA
 #' @importFrom grDevices chull
@@ -54,8 +55,7 @@
 #'
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- FastqcDataList(fl)
-#' plotFastqcPCA(fdl, module = "Per_sequence_quality_scores",
-#' usePlotly = FALSE, cluster = TRUE, groups = NULL)
+#' plotFastqcPCA(fdl, module = "Per_sequence_quality_scores", cluster = TRUE)
 #'
 #'
 #' @name plotFastqcPCA
@@ -93,6 +93,20 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     x, module, usePlotly = FALSE, labels, cluster = FALSE,
     clusterType = "colour", groups = NULL, ...){
 
+    stopifnot(!missing(module))
+    module <- match.arg(
+        module, c(
+            "Per_base_sequence_quality",
+            "Per_sequence_quality_scores",
+            "Per_sequence_GC_content",
+            "Per_base_sequence_content",
+            "Sequence_Length_Distribution"
+        )
+    )
+
+    ## Set dummy variables to avoid R CMD check notes
+    Dim.1 <- Dim.2 <- Cluster <- c()
+
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
     allowed <- names(formals(theme))
@@ -100,53 +114,46 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     userTheme <- c()
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
+    ## Check for any point size arguments
+    sz <- 0.7
+    if ("size" %in% names(dotArgs)) sz <- dotArgs[["size"]]
+
     pFun <- paste0(".generate", module, "PCA")
     args <- list(x = x)
 
     df <- do.call(pFun, args)
 
-    pca <- PCA(df,scale.unit = TRUE, ncp = 2, graph = FALSE)
+    pca <- PCA(df, scale.unit = TRUE, ncp = 2, graph = FALSE)
     variance <- round(pca$eig[,2][seq_len(2)], 2)
 
     data <- as.data.frame(pca$ind$coord)
 
     if (cluster) {
 
-        Cluster <- c() # Avoiding an R CMD NOTE
         clusterType <- match.arg(clusterType, c("colour", "color", "hulls"))
         clusterType <- stringr::str_replace(clusterType, "color", "colour")
 
-        if (is.null(groups)) {
-            ### with factoMineR
-            set.seed(1)
-            cluster <- HCPC(
-                pca, nb.clust = 0, consol = 0, min = 2, max = 10, graph = FALSE
-            )
+        ### with factoMineR
+        set.seed(1)
+        cluster <- HCPC(
+            pca, nb.clust = 0, consol = 0, min = 2, max = 10, graph = FALSE
+        )
+        cluster <- cluster$call$X
+        nClust <- max(as.integer(as.character(cluster[["clust"]])))
+        cluster <- cluster[c("Dim.1", "Dim.2", "clust")]
+        colnames(cluster) <- c("Dim.1", "Dim.2", "Cluster")
 
-            cluster <- cluster$call$X
-            nClust <- max(as.integer(as.character(cluster[["clust"]])))
-            cluster <- cluster[c("Dim.1", "Dim.2", "clust")]
-            colnames(cluster) <- c("Dim.1", "Dim.2", "Cluster")
+        data <- rownames_to_column(cluster, "Filename")
 
-            data <- rownames_to_column(cluster, "Filename")
+        if (!is.null(groups)) {
+
+            ## Cluster using the groups data.frame
+            stopifnot(c("Filename", "Group") %in% colnames(groups))
+            stopifnot(all(data$Filename %in% groups$Filename))
+            data <- left_join(data, groups, by = "Filename")
+            data <- dplyr::rename(data, "Cluster" = "Group")
 
         }
-        else{
-
-            groupDF <- lapply(seq_along(groups), function(x){
-
-                data.frame(
-                    Filename = groups[[x]],
-                    Cluster = names(groups)[x],
-                    stringsAsFactors = FALSE
-                    )
-
-            })
-
-            groupDF <- bind_rows(groupDF)
-            data <- left_join(data, groupDF, by = "Filename")
-        }
-
 
         #data <- left_join(clusterDF, scores, by = "Filename")
         data$PCAkey <- data$Filename
@@ -171,10 +178,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
         if (clusterType == "hulls") {
 
             hulls <- group_by(data, Cluster)
-
-            Dim.1 <- c()
-            Dim.2 <- c()
-            hulls <- slice(hulls, chull(Dim.1, Dim.2))
+            hulls <- dplyr::slice(hulls, chull(Dim.1, Dim.2))
             hulls <- ungroup(hulls)
             hulls$Cluster <-
                 factor(hulls$Cluster, levels = unique(hulls$Cluster))
@@ -183,7 +187,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
                 geom_point(
                     data = data,
                     aes_string(x = "Dim.1", y = "Dim.2",group = "Filename"),
-                    size = 0.7
+                    size = sz
                 ) +
                 geom_polygon(
                     data = hulls,
@@ -200,7 +204,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
                     aes_string(
                         "Dim.1", "Dim.2", group = "Filename", colour = "Cluster"
                     ),
-                    size = 0.7
+                    size = sz
                 )
 
         }
@@ -209,17 +213,20 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 
         if (usePlotly) {
             PCA <- plotly::ggplotly(PCA)
-            
-            if(clusterType == "hulls"){
+
+            if (clusterType == "hulls") {
                 s <- split(data, data$Cluster)
                 ## tidy up the html output for the interactive plot
-                PCA$x$data[2:(nClust + 1)] <- lapply(seq_len(nClust), function(j){
-                    names <- s[[j]]$Filename
-                    names <- paste(names, collapse = "<br>")
-                    PCA$x$data[[j + 1]]$text <- names
-                    ## add key
-                    PCA$x$data[[j + 1]]
-                })
+                PCA$x$data[seq_len(nClust) + 1] <- lapply(
+                    seq_len(nClust),
+                    function(j){
+                        names <- s[[j]]$Filename
+                        names <- paste(names, collapse = "<br>")
+                        PCA$x$data[[j + 1]]$text <- names
+                        ## add key
+                        PCA$x$data[[j + 1]]
+                    }
+                )
             }
         }
     }
