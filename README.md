@@ -38,6 +38,7 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 - Bowtie
 - Bowtie2
 - HISAT2
+- Samtools flagstat
 - STAR
 - Picard MarkDuplicates
 ### Transcript/gene quantificaiton
