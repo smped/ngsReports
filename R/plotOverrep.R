@@ -195,7 +195,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
         return(overPlot)
     }
 
-    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+    if (missing(pwfCols)) pwfCols <- pwf
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(df, labels, ...)

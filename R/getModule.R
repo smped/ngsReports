@@ -109,7 +109,8 @@ setMethod("getModule", "FastqcDataList", function(object, module){
 
     ## Now handle each module as appropriate. All can simply be joined using
     ## dplyr::bind_rows()
-    dplyr::bind_rows(allDfs)
+    allDfs <- dplyr::bind_rows(allDfs)
+    as_tibble(allDfs)
 
 })
 
