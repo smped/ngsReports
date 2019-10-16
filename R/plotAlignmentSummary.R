@@ -46,7 +46,7 @@ plotAlignmentSummary <- function(
 
     ## Import the data
     df <- tryCatch(importNgsLogs(x, type))
-    pFun <- paste0(".plot", str_to_title(type), "Alignment")
+    pFun <- paste0(".plot", stringr::str_to_title(type), "Alignment")
     args <- list(
         df = df,
         fill = fill
@@ -83,7 +83,7 @@ plotAlignmentSummary <- function(
         "Number_Of_Reads_Mapped_To_Too_Many_Loci"
     )
     df <- df[cols]
-    subCols <- seq(3, 5)
+    subCols <- cols[seq(3, 5)]
     df$Unmapped_Other <- df$Number_Of_Input_Reads - rowSums(df[subCols])
 
     ## Remove the Log.final.out suffix
