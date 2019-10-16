@@ -87,7 +87,7 @@ plotAlignmentSummary <- function(
     df$Unmapped_Other <- df$Number_Of_Input_Reads - rowSums(df[subCols])
 
     ## Remove the Log.final.out suffix
-    df$Filename <- stringr::str_remove_all(df$Filename, ".Log.final.out")
+    df$Filename <- stringr::str_remove_all(df$Filename, "Log.final.out")
     ## Now gather for plotting
     df <- tidyr::gather(df, "Type", "Total", one_of(subCols))
     ## Remove the Percent/Number text from the Type column
