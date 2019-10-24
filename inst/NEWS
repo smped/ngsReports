@@ -1,3 +1,6 @@
+Changes in version 1.1.4
++ added updated vignette
+
 Changes in version 1.1.1
 + Added plotAlignmentSummary()
 + Added plotFastqcPCA()

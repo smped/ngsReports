@@ -421,32 +421,68 @@ overRep2Fasta(fdl, n = 10)
 # Importing Log Files
 
 A selection of log files as produced by tools such as `STAR`, `hisat2`, 
-`bowtie`, `bowtie2` and `picard duplicationMetrics`, can be easily imported.
-Files produced by `hisat2` and `bowtie2` have the identical format, and produce 
-identical output
+`bowtie`, `bowtie2` and `picard duplicationMetrics`, can be easily imported 
+using the `importNgsLogs()` function. 
 
-## Bowtie2
+Tool can be specified by the user using the argument `type`, however if no
+`type` is provided we will attempt to autodetect from the file's structure. 
+Note: only a single log file type can be imported at any time.
+
+The `importNgsLogs()` function currently supports log files from 
+the following tools. 
+
+Adapter removal and trimming
+
+- AdapterRemoval
+- CutAdapt
+- Trimmomatic
+
+Mapping and alignment 
+
+- Bowtie
+- Bowtie2
+- HISAT2
+- Samtools flagstat
+- STAR
+- Picard MarkDuplicates
+
+Transcript/gene quantificaiton
+
+- Feature counts
+
+Genome assembly
+
+- BUSCO
+- Quast
+
+
+## Adapter removal and trimming 
+
 
 ```{r}
-fl <- c("bowtie2PE.txt", "bowtie2SE.txt")
-bowtie2Logs <- system.file("extdata", fl, package = "ngsReports")
-df <- importNgsLogs(bowtie2Logs, type = "bowtie2")
+fl <- c("Sample1.trimmomaticPE.txt")
+trimmomaticLogs <- system.file("extdata", fl, package = "ngsReports")
+df <- importNgsLogs(trimmomaticLogs)
 ```
 
 ```{r}
 df %>%
-    dplyr::select("Filename", ends_with("Reads"), contains("Unique")) %>%
+    dplyr::select("Filename", contains("Surviving"), "Dropped") %>%
     pander(
         split.tables = Inf,
         style = "rmarkdown", 
         big.mark = ",",
-        caption = "Select columns as an example of output from bowtie 2."
+        caption = "Select columns as an example of output from trimmomatic."
     )
 ```
 
-## Bowtie
 
-`Bowtie` provides different output to both `hisat2` and `bowtie2`
+
+## Mapping and alignment 
+
+### Log file import 
+
+Bowtie log files can be parsed and imported  
 
 ```{r}
 fls <- c("bowtiePE.txt", "bowtieSE.txt")
@@ -465,9 +501,7 @@ df %>%
     )
 ```
 
-## STAR
-
-Different information again is contained in STAR alignment logs.
+STAR log files can be parsed and imported  
 
 ```{r}
 starLog <- system.file("extdata", "log.final.out", package = "ngsReports")
@@ -485,7 +519,22 @@ df %>%
     )
 ```
 
-## Duplication Metrics (Picard)
+The output of the SAMtools flagstat module can be parsed and imported
+
+```{r}
+flagstatLog <- system.file("extdata", "flagstat.txt", package = "ngsReports")
+df <- importNgsLogs(flagstatLog, type = "flagstat")
+```
+
+```{r, echo=FALSE}
+df %>% 
+    pander(
+        split.tables = Inf,
+        style = "rmarkdown", 
+        big.mark = ",",
+        caption = "Flagstat output for a single file"
+    )
+```
 
 In addition to the files produced by the above alignment tools, the output 
 from Duplication Metrics (picard) can also be imported.
@@ -500,6 +549,41 @@ dupMetrics <- importNgsLogs(fl, type = "duplicationMetrics", which = "metrics")
 str(dupMetrics)
 ```
 
+
+### Plot log file imports 
+
+Summaries of log files from select mapping and alignement tools can be plot 
+using the function `plotAlignemntSummary()`.
+
+```{r, fig.cap = "Example Bowtie logs for PE and SE sequencing"}
+plotAlignmentSummary(bowtieLogs, type = "bowtie")
+```
+
+```{r, fig.cap = "Example STAR aligner logs"}
+plotAlignmentSummary(starLog, type = "star")
+```
+
+
+## Genome assembly 
+
+Assembly 'completeness' and summary statistic information from the tools BUSCO 
+and quast can also be plot using the funciton `plotAssemblyStats()`
+
+```{r, fig.cap = "Example plot after running BUSCO v3 on the Drosophila melanogaster reference genome"}
+buscoLog <- system.file("extdata", "short_summary_Dmelanogaster_Busco.txt", package = "ngsReports")
+plotAssemblyStats(buscoLog, type = "busco")
+
+```
+
+```{r, fig.cap = "Example plot after running quast on two shortread assemblies"}
+fls <- c("quast1.tsv", "quast2.tsv")
+quastLog <- system.file("extdata", fls, package = "ngsReports")
+plotAssemblyStats(quastLog, type = "quast")
+```
+
+```{r, fig.cap = "Example parallel coordinate plot after running quast on two shortread assemblies"}
+plotAssemblyStats(quastLog, type = "quast", plotType = "paracoord")
+```
 
 # Session info {.unnumbered}
 
