@@ -49,15 +49,13 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 
 # Citation 
 
-Please cite our [preprint](https://www.biorxiv.org/content/early/2018/05/02/313148):
+Please cite our [paper](https://doi.org/10.1093/bioinformatics/btz937):
 
 ```
-@article{ward2018ngsreports,
-  title={ngsReports: An R Package for managing FastQC reports and other NGS related log files.},
-  author={Ward, Christopher M and To, Hien and Pederson, Stephen M},
-  journal={bioRxiv},
-  pages={313148},
-  year={2018},
-  publisher={Cold Spring Harbor Laboratory}
+@article{ward2019ngsreports,
+  title={ngsReports: A Bioconductor package for managing FastQC reports and other NGS related log files},
+  author={Ward, Christopher M and Thu-Hien, To and Pederson, Stephen M},
+  journal={Bioinformatics}
 }
+
 ```
