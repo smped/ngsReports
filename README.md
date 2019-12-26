@@ -19,6 +19,7 @@ BiocManager::install("UofABioinformaticsHub/ngsReports")
 library(ngsReports)
 ```
 ## Usage 
+The paper for the package can be found [here](https://doi.org/10.1093/bioinformatics/btz937). 
 For a detailed usage guide please see [here](https://bioconductor.org/packages/release/bioc/vignettes/ngsReports/inst/doc/ngsReportsIntroduction.html).
 
 
