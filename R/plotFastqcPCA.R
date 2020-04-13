@@ -157,7 +157,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 
         #data <- left_join(clusterDF, scores, by = "Filename")
         data$PCAkey <- data$Filename
-        labels <- .makeLabels(data, labels, ...)
+        labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
         data$Filename <- labels[data$Filename]
         clust <- c()
         data$Cluster <- as.character(data$Cluster)
