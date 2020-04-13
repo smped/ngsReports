@@ -22,7 +22,7 @@
 #' @param bars If \code{duplicated = TRUE}, show unique and deduplicated reads
 #' as "stacked" or "adjacent".
 #' @param barCols Colours for duplicated and unique reads.
-#' @param expand.x Output from \code{expand_scale()} controlling x-axis
+#' @param expand.x Output from \code{expansion()} controlling x-axis
 #' expansion. Alternatively can be a numeric vector of length 4
 #' @param ... Used to pass additional attributes to theme()
 #'
@@ -55,7 +55,7 @@
 setGeneric("plotReadTotals", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = expand_scale(mult = c(0, 0.02)), ...){
+    expand.x = expansion(mult = c(0, 0.02)), ...){
     standardGeneric("plotReadTotals")
 }
 )
@@ -64,7 +64,7 @@ setGeneric("plotReadTotals", function(
 setMethod("plotReadTotals", signature = "ANY", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = expand_scale(mult = c(0, 0.02)), ...){
+    expand.x = expansion(mult = c(0, 0.02)), ...){
     .errNotImp(x)
 })
 #' @rdname plotReadTotals-methods
@@ -72,7 +72,7 @@ setMethod("plotReadTotals", signature = "ANY", function(
 setMethod("plotReadTotals", signature = "character", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = expand_scale(mult = c(0, 0.02)), ...){
+    expand.x = expansion(mult = c(0, 0.02)), ...){
 
     if (length(x) == 1)
         stop("plotReadTotals cannot be called on a single .FastqcFile")
@@ -87,13 +87,13 @@ setMethod("plotReadTotals", signature = "character", function(
 setMethod("plotReadTotals", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, duplicated = TRUE,
     bars = c("stacked", "adjacent"), barCols = c("red","blue"),
-    expand.x = expand_scale(mult = c(0, 0.02)), ...){
+    expand.x = expansion(mult = c(0, 0.02)), ...){
 
     stopifnot(is.logical(duplicated))
     df <- readTotals(x)
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(df, labels, ...)
+    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
     df$Filename <- labels[df$Filename]
     df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 

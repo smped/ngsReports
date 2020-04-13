@@ -29,7 +29,7 @@
 #' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 #' then the dendrogram will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
-#' @param expand.x,expand.y Output from \code{expand_scale()} or numeric
+#' @param expand.x,expand.y Output from \code{expansion()} or numeric
 #' vectors of length 4. Passed to \code{scale_*_continuous()}
 #' @param paletteName Name of the palette for colouring the possible sources
 #' of the overrepresented sequences. Must be a palette name from
@@ -84,8 +84,8 @@ setMethod("plotOverrep", signature = "character", function(
 #' @export
 setMethod("plotOverrep", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols,  n = 10, ...,
-    expand.x = expand_scale(mult = c(0, 0.05)),
-    expand.y = expand_scale(0, 0.6)){
+    expand.x = expansion(mult = c(0, 0.05)),
+    expand.y = expansion(0, 0.6)){
 
     df <- getModule(x, "Overrepresented_sequences")
 
@@ -96,7 +96,7 @@ setMethod("plotOverrep", signature = "FastqcData", function(
     }
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(df, labels, ...)
+    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
     df$Filename <- labels[df$Filename]
 
     ## Get any arguments for dotArgs that have been set manually
@@ -184,8 +184,8 @@ setMethod("plotOverrep", signature = "FastqcData", function(
 #' @export
 setMethod("plotOverrep", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
-    ..., paletteName = "Set1", expand.x = expand_scale(mult = c(0, 0.05)),
-    expand.y = expand_scale(0, 0)){
+    ..., paletteName = "Set1", expand.x = expansion(mult = c(0, 0.05)),
+    expand.y = expansion(0, 0)){
 
     df <- getModule(x, "Overrepresented_sequences")
 
@@ -198,7 +198,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
     if (missing(pwfCols)) pwfCols <- pwf
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(df, labels, ...)
+    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)

@@ -10,14 +10,11 @@
 \usage{
 overRep2Fasta(x, path, n = 10, labels, noAdapters = TRUE, ...)
 
-\S4method{overRep2Fasta}{ANY}(x, path, n = 10, labels,
-  noAdapters = TRUE, ...)
+\S4method{overRep2Fasta}{ANY}(x, path, n = 10, labels, noAdapters = TRUE, ...)
 
-\S4method{overRep2Fasta}{FastqcData}(x, path, n = 10, labels,
-  noAdapters = TRUE, ...)
+\S4method{overRep2Fasta}{FastqcData}(x, path, n = 10, labels, noAdapters = TRUE, ...)
 
-\S4method{overRep2Fasta}{FastqcDataList}(x, path, n = 10, labels,
-  noAdapters = TRUE, ...)
+\S4method{overRep2Fasta}{FastqcDataList}(x, path, n = 10, labels, noAdapters = TRUE, ...)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData} or \code{FastqcDataList}}

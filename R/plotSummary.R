@@ -84,7 +84,7 @@ setMethod("plotSummary", signature = "FastqcDataList", function(
     fillCol <- getColours(pwfCols)
 
     ## Set labels
-    labels <- .makeLabels(df, labels, ...)
+    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
 
     ## Set factor levels
     df$Category <- factor(df$Category, levels = unique(df$Category))

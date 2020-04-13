@@ -28,7 +28,7 @@ By default the first element will be set as the column names.
 This is designed to take input from `readLines()`
 }
 \examples{
-x <- c("ColA\\tColB", "Value1\\tValue2")
+x <- c("ColA\tColB", "Value1\tValue2")
 ngsReports:::.splitByTab(x, firstRowToNames = TRUE)
 ngsReports:::.splitByTab(x, firstRowToNames = FALSE)
 

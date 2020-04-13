@@ -4,9 +4,17 @@
 \alias{writeHtmlReport}
 \title{Write an HTML Summary Report}
 \usage{
-writeHtmlReport(fastqcDir, template, usePlotly = TRUE,
-  species = "Hsapiens", gcType = c("Genome", "Transcriptome"),
-  nOver = 30, targetsDF, overwrite = FALSE, quiet = TRUE)
+writeHtmlReport(
+  fastqcDir,
+  template,
+  usePlotly = TRUE,
+  species = "Hsapiens",
+  gcType = c("Genome", "Transcriptome"),
+  nOver = 30,
+  targetsDF,
+  overwrite = FALSE,
+  quiet = TRUE
+)
 }
 \arguments{
 \item{fastqcDir}{A directory containing zipped, or extracted FastQC reports}

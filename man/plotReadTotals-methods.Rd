@@ -8,24 +8,49 @@
 \alias{plotReadTotals,FastqcDataList-method}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(x, usePlotly = FALSE, labels, duplicated = TRUE,
-  bars = c("stacked", "adjacent"), barCols = c("red", "blue"),
-  expand.x = expand_scale(mult = c(0, 0.02)), ...)
+plotReadTotals(
+  x,
+  usePlotly = FALSE,
+  labels,
+  duplicated = TRUE,
+  bars = c("stacked", "adjacent"),
+  barCols = c("red", "blue"),
+  expand.x = expansion(mult = c(0, 0.02)),
+  ...
+)
 
-\S4method{plotReadTotals}{ANY}(x, usePlotly = FALSE, labels,
-  duplicated = TRUE, bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
-  0.02)), ...)
+\S4method{plotReadTotals}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  duplicated = TRUE,
+  bars = c("stacked", "adjacent"),
+  barCols = c("red", "blue"),
+  expand.x = expansion(mult = c(0, 0.02)),
+  ...
+)
 
-\S4method{plotReadTotals}{character}(x, usePlotly = FALSE, labels,
-  duplicated = TRUE, bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
-  0.02)), ...)
+\S4method{plotReadTotals}{character}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  duplicated = TRUE,
+  bars = c("stacked", "adjacent"),
+  barCols = c("red", "blue"),
+  expand.x = expansion(mult = c(0, 0.02)),
+  ...
+)
 
-\S4method{plotReadTotals}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  duplicated = TRUE, bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"), expand.x = expand_scale(mult = c(0,
-  0.02)), ...)
+\S4method{plotReadTotals}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  duplicated = TRUE,
+  bars = c("stacked", "adjacent"),
+  barCols = c("red", "blue"),
+  expand.x = expansion(mult = c(0, 0.02)),
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
@@ -45,7 +70,7 @@ as "stacked" or "adjacent".}
 
 \item{barCols}{Colours for duplicated and unique reads.}
 
-\item{expand.x}{Output from \code{expand_scale()} controlling x-axis
+\item{expand.x}{Output from \code{expansion()} controlling x-axis
 expansion. Alternatively can be a numeric vector of length 4}
 
 \item{...}{Used to pass additional attributes to theme()}

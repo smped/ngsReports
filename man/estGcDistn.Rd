@@ -8,17 +8,13 @@
 \alias{estGcDistn,DNAStringSet-method}
 \title{Estimate a GC Content Distribution From Sequences}
 \usage{
-estGcDistn(x, n = 1e+06, rl = 100, fl = 200, fragSd = 30,
-  bins = 101, ...)
+estGcDistn(x, n = 1e+06, rl = 100, fl = 200, fragSd = 30, bins = 101, ...)
 
-\S4method{estGcDistn}{ANY}(x, n = 1e+06, rl = 100, fl = 200,
-  fragSd = 30, bins = 101, ...)
+\S4method{estGcDistn}{ANY}(x, n = 1e+06, rl = 100, fl = 200, fragSd = 30, bins = 101, ...)
 
-\S4method{estGcDistn}{character}(x, n = 1e+06, rl = 100, fl = 200,
-  fragSd = 30, bins = 101, ...)
+\S4method{estGcDistn}{character}(x, n = 1e+06, rl = 100, fl = 200, fragSd = 30, bins = 101, ...)
 
-\S4method{estGcDistn}{DNAStringSet}(x, n = 1e+06, rl = 100, fl = 200,
-  fragSd = 30, bins = 101, ...)
+\S4method{estGcDistn}{DNAStringSet}(x, n = 1e+06, rl = 100, fl = 200, fragSd = 30, bins = 101, ...)
 }
 \arguments{
 \item{x}{\code{DNAStringSet} or path to a fasta file}

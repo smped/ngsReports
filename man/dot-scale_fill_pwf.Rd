@@ -4,8 +4,13 @@
 \alias{.scale_fill_pwf}
 \title{Construct a scale using PwfCols}
 \usage{
-.scale_fill_pwf(vals, pwfCols, breaks = c(0, 5, 10, 100),
-  passLow = TRUE, na.value = "white")
+.scale_fill_pwf(
+  vals,
+  pwfCols,
+  breaks = c(0, 5, 10, 100),
+  passLow = TRUE,
+  na.value = "white"
+)
 }
 \arguments{
 \item{vals}{The values which need to have the scale generated}

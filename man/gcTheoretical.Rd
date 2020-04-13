@@ -4,7 +4,9 @@
 \name{gcTheoretical}
 \alias{gcTheoretical}
 \title{Theoretical GC content}
-\format{An object of class \code{TheoreticalGC} of length 1.}
+\format{
+An object of class \code{TheoreticalGC} of length 1.
+}
 \usage{
 gcTheoretical
 }

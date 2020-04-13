@@ -173,7 +173,7 @@
     }
     if (!all(df[[col]] %in% names(labels)))
         stop("Names of supplied labels must match all filenames.")
-    if (any(duplicated(labels))) stop("Labels must be unique.")
+    if (nrow(df) != length(labels)) stop("Labels must be unique.")
     ## Now return only the supplied labels which are in the df
     labels[names(labels) %in% df[[col]]]
 }
