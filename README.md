@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=master)](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=master)
+[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=devel_bioc_3_11)](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=devel_bioc_3_11)
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
 
@@ -49,15 +49,16 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 
 # Citation 
 
-Please cite our [preprint](https://www.biorxiv.org/content/early/2018/05/02/313148):
+Please cite our [article in Bioinformatics](https://doi.org/10.1093/bioinformatics/btz937):
 
 ```
 @article{ward2018ngsreports,
-  title={ngsReports: An R Package for managing FastQC reports and other NGS related log files.},
-  author={Ward, Christopher M and To, Hien and Pederson, Stephen M},
-  journal={bioRxiv},
-  pages={313148},
-  year={2018},
-  publisher={Cold Spring Harbor Laboratory}
+    author = {Ward, Christopher M and To, Thu-Hien and Pederson, Stephen M},
+    title = "{ngsReports: a Bioconductor package for managing FastQC reports and other NGS related log files}",
+    journal = {Bioinformatics},
+    year = {2019},
+    month = {12},
+    doi = {10.1093/bioinformatics/btz937},
+    url = {https://doi.org/10.1093/bioinformatics/btz937}
 }
 ```
