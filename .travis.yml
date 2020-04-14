@@ -2,7 +2,8 @@
 
 language: r
 r: bioc-devel
-sudo: false
+os: linux
+dist: bionic
 notifications:
   recipients:
     - stephen.pederson@adelaide.edu.au
