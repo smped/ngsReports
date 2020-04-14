@@ -4,14 +4,25 @@
 \alias{writeHtmlReport}
 \title{Write an HTML Summary Report}
 \usage{
-writeHtmlReport(fastqcDir, template, usePlotly = TRUE,
-  species = "Hsapiens", gcType = c("Genome", "Transcriptome"),
-  nOver = 30, targetsDF, overwrite = FALSE, quiet = TRUE)
+writeHtmlReport(
+  fastqcDir,
+  template,
+  outDir,
+  usePlotly = TRUE,
+  species = "Hsapiens",
+  gcType = c("Genome", "Transcriptome"),
+  nOver = 30,
+  targetsDF,
+  overwrite = FALSE,
+  quiet = TRUE
+)
 }
 \arguments{
 \item{fastqcDir}{A directory containing zipped, or extracted FastQC reports}
 
 \item{template}{The template file which will be copied into \code{fastqcDir}}
+
+\item{outDir}{The directory to write the compiled document to}
 
 \item{usePlotly}{Generate interactive plots?}
 
@@ -49,8 +60,8 @@ packageDir <- system.file("extdata", package = "ngsReports")
 fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names= TRUE)
 # Copy these files to tempdir() to avoid overwriting
 # any files in the package directory
-file.copy(fileList, tempdir())
-writeHtmlReport(tempdir())
+file.copy(fileList, tempdir(), overwrite = TRUE)
+writeHtmlReport(fastqcDir = tempdir())
 }
 
 }

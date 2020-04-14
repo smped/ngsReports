@@ -4,8 +4,13 @@
 \alias{.makeLabels}
 \title{Perform the checks and return the labels}
 \usage{
-.makeLabels(df, labels, pattern = ".(fastq|fq|bam|sam|cram).*",
-  col = "Filename", ...)
+.makeLabels(
+  df,
+  labels,
+  pattern = ".(fastq|fq|bam|sam|cram).*",
+  col = "Filename",
+  ...
+)
 }
 \arguments{
 \item{df}{A data.frame with a column titled "Filename"}

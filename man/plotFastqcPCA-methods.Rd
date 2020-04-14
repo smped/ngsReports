@@ -8,18 +8,49 @@
 \alias{plotFastqcPCA,FastqcDataList-method}
 \title{Draw a PCA plot for Fast QC modules}
 \usage{
-plotFastqcPCA(x, module, usePlotly = FALSE, labels, cluster = FALSE,
-  clusterType = "colour", groups = NULL, ...)
+plotFastqcPCA(
+  x,
+  module,
+  usePlotly = FALSE,
+  labels,
+  cluster = FALSE,
+  clusterType = "colour",
+  groups = NULL,
+  ...
+)
 
-\S4method{plotFastqcPCA}{ANY}(x, module, usePlotly = FALSE, labels,
-  cluster = FALSE, clusterType = "colour", groups = NULL, ...)
+\S4method{plotFastqcPCA}{ANY}(
+  x,
+  module,
+  usePlotly = FALSE,
+  labels,
+  cluster = FALSE,
+  clusterType = "colour",
+  groups = NULL,
+  ...
+)
 
-\S4method{plotFastqcPCA}{character}(x, module, usePlotly = FALSE, labels,
-  cluster = FALSE, clusterType = "colour", groups = NULL, ...)
+\S4method{plotFastqcPCA}{character}(
+  x,
+  module,
+  usePlotly = FALSE,
+  labels,
+  cluster = FALSE,
+  clusterType = "colour",
+  groups = NULL,
+  ...
+)
 
-\S4method{plotFastqcPCA}{FastqcDataList}(x, module, usePlotly = FALSE,
-  labels, cluster = FALSE, clusterType = "colour", groups = NULL,
-  ...)
+\S4method{plotFastqcPCA}{FastqcDataList}(
+  x,
+  module,
+  usePlotly = FALSE,
+  labels,
+  cluster = FALSE,
+  clusterType = "colour",
+  groups = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}

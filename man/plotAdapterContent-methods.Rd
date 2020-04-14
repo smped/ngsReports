@@ -9,22 +9,59 @@
 \alias{plotAdapterContent,FastqcDataList-method}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
-  fail = 10, ...)
+plotAdapterContent(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 5,
+  fail = 10,
+  ...
+)
 
-\S4method{plotAdapterContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
-  warn = 5, fail = 10, ...)
+\S4method{plotAdapterContent}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 5,
+  fail = 10,
+  ...
+)
 
-\S4method{plotAdapterContent}{character}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 5, fail = 10, ...)
+\S4method{plotAdapterContent}{character}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 5,
+  fail = 10,
+  ...
+)
 
-\S4method{plotAdapterContent}{FastqcData}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 5, fail = 10, ...)
+\S4method{plotAdapterContent}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 5,
+  fail = 10,
+  ...
+)
 
-\S4method{plotAdapterContent}{FastqcDataList}(x, usePlotly = FALSE,
-  labels, pwfCols, warn = 5, fail = 10, plotType = c("heatmap",
-  "line"), adapterType = "Total", cluster = FALSE,
-  dendrogram = FALSE, ...)
+\S4method{plotAdapterContent}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 5,
+  fail = 10,
+  plotType = c("heatmap", "line"),
+  adapterType = "Total",
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, a \code{FastqcDataList} or character

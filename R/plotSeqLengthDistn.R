@@ -34,7 +34,7 @@
 #' \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme()
-#' @param expand.x Output from \code{expand_scale()} or numeric vector of
+#' @param expand.x Output from \code{expansion()} or numeric vector of
 #' length 4. Passed to \code{scale_x_discrete}
 #' @param heatCol The colour scheme for the heatmap
 #'
@@ -92,7 +92,7 @@ setMethod("plotSeqLengthDistn", signature = "character", function(
 #' @export
 setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
-    expand.x = expand_scale(0, 0.2)){
+    expand.x = expansion(0, 0.2)){
 
     df <- getModule(x, "Sequence_Length_Distribution")
     plotType <- match.arg(plotType)
@@ -103,7 +103,7 @@ setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
         return(lenPlot)
     }
 
-    labels <- .makeLabels(df, labels, ...)
+    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
     df$Filename <- labels[df$Filename]
 
     ## Add zero counts for lengths either side of the included range
@@ -179,7 +179,7 @@ setMethod(
     function(
         x, usePlotly = FALSE, labels, counts = FALSE,
         plotType = c("heatmap", "line", "cumulative"), cluster = FALSE,
-        dendrogram = FALSE, ..., expand.x = expand_scale(0, 0.2),
+        dendrogram = FALSE, ..., expand.x = expansion(0, 0.2),
         heatCol = inferno(50)){
 
         df <- getModule(x, "Sequence_Length_Distribution")
@@ -194,7 +194,7 @@ setMethod(
         plotType <- match.arg(plotType)
 
         ## Drop the suffix, or check the alternate labels
-        labels <- .makeLabels(df, labels, ...)
+        labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
 
         ## Lengths will probably be binned so define the bins then expand
         ## the range at the lower and upper limits to add zero.

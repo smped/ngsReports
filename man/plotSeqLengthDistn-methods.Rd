@@ -13,17 +13,29 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqLengthDistn}{ANY}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSeqLengthDistn}{character}(x, usePlotly = FALSE, labels,
-  ...)
+\S4method{plotSeqLengthDistn}{character}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSeqLengthDistn}{FastqcData}(x, usePlotly = FALSE, labels,
-  plotType = c("line", "cumulative"), ..., expand.x = expand_scale(0,
-  0.2))
+\S4method{plotSeqLengthDistn}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  plotType = c("line", "cumulative"),
+  ...,
+  expand.x = expansion(0, 0.2)
+)
 
-\S4method{plotSeqLengthDistn}{FastqcDataList}(x, usePlotly = FALSE,
-  labels, counts = FALSE, plotType = c("heatmap", "line",
-  "cumulative"), cluster = FALSE, dendrogram = FALSE, ...,
-  expand.x = expand_scale(0, 0.2), heatCol = inferno(50))
+\S4method{plotSeqLengthDistn}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  counts = FALSE,
+  plotType = c("heatmap", "line", "cumulative"),
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...,
+  expand.x = expansion(0, 0.2),
+  heatCol = inferno(50)
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
@@ -40,7 +52,7 @@ File extensions are dropped by default.}
 \code{plotType = "heatmap"} \code{plotType = "line"} or
 \code{plotType = "cumulative"}}
 
-\item{expand.x}{Output from \code{expand_scale()} or numeric vector of
+\item{expand.x}{Output from \code{expansion()} or numeric vector of
 length 4. Passed to \code{scale_x_discrete}}
 
 \item{counts}{\code{logical} Should distributions be shown as counts or

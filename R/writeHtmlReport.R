@@ -4,6 +4,7 @@
 #'
 #' @param fastqcDir A directory containing zipped, or extracted FastQC reports
 #' @param template The template file which will be copied into \code{fastqcDir}
+#' @param outDir The directory to write the compiled document to
 #' @param usePlotly Generate interactive plots?
 #' @param species Species/closely related species of sequenced samples
 #' @param gcType Is the data "Transcriptomic" or "Genomic" in nature?
@@ -31,15 +32,15 @@
 #' fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names= TRUE)
 #' # Copy these files to tempdir() to avoid overwriting
 #' # any files in the package directory
-#' file.copy(fileList, tempdir())
-#' writeHtmlReport(tempdir())
+#' file.copy(fileList, tempdir(), overwrite = TRUE)
+#' writeHtmlReport(fastqcDir = tempdir())
 #' }
 #'
 #' @importFrom pander pander
-#' @importFrom kableExtra kable_styling scroll_box
+#' @importFrom DT datatable formatPercentage formatRound
 #' @export
 writeHtmlReport <- function(
-    fastqcDir, template, usePlotly = TRUE, species = "Hsapiens",
+    fastqcDir, template, outDir, usePlotly = TRUE, species = "Hsapiens",
     gcType = c("Genome", "Transcriptome"), nOver = 30, targetsDF,
     overwrite = FALSE, quiet = TRUE){
 
@@ -71,6 +72,12 @@ writeHtmlReport <- function(
     file2Knit <- file.path(fastqcDir, basename(template))
     stopifnot(file.exists(file2Knit))
 
+    ## Define the output directory
+    if (missing(outDir)) {
+        outDir <- fastqcDir
+    }
+    stopifnot(dir.exists(outDir))
+
     ## Export targets.csv from targets data.frame if supplied
     if (!missing(targetsDF)) {
         chk <- vapply(
@@ -81,6 +88,7 @@ writeHtmlReport <- function(
         )
         if (all(chk)) {
             message("Exporting targets.csv")
+            ## This needs to be in the same directory as the template (for now)
             readr::write_csv(
                 targetsDF, file.path(fastqcDir, "targets.csv"), append = FALSE
             )
@@ -102,13 +110,13 @@ writeHtmlReport <- function(
     species <- match.arg(species, avail$Name)
 
     ## Compile the document in the directory
-    htmlOut <- file.path(fastqcDir, gsub(".Rmd$", ".html", basename(template)))
+    htmlOut <- file.path(outDir, gsub(".Rmd$", ".html", basename(template)))
     message(paste("Generating", htmlOut, "from template..."))
     rmarkdown::render(
         file2Knit,
         output_format = "html_document",
         output_file = basename(htmlOut),
-        output_dir = dirname(file2Knit),
+        output_dir = outDir,
         envir = new.env(),
         quiet = quiet,
         params = list(

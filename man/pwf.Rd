@@ -4,7 +4,9 @@
 \name{pwf}
 \alias{pwf}
 \title{Colours for PASS/WARN/FAIL}
-\format{An object of class \code{PwfCols} of length 1.}
+\format{
+An object of class \code{PwfCols} of length 1.
+}
 \usage{
 pwf
 }

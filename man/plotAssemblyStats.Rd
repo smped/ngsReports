@@ -4,8 +4,13 @@
 \alias{plotAssemblyStats}
 \title{Plot a summary of assembly logs}
 \usage{
-plotAssemblyStats(x, type = c("quast", "busco"), usePlotly = FALSE,
-  plotType = c("bar", "paracoord"), ...)
+plotAssemblyStats(
+  x,
+  type = c("quast", "busco"),
+  usePlotly = FALSE,
+  plotType = c("bar", "paracoord"),
+  ...
+)
 }
 \arguments{
 \item{x}{Paths to one or more log files}

@@ -9,28 +9,76 @@
 \alias{plotGcContent,FastqcDataList-method}
 \title{Plot the Per Sequence GC Content}
 \usage{
-plotGcContent(x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-  gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
-  GCobject, Fastafile, n = 1e+06, ...)
+plotGcContent(
+  x,
+  usePlotly = FALSE,
+  labels,
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  ...
+)
 
-\S4method{plotGcContent}{ANY}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
+\S4method{plotGcContent}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  ...
+)
 
-\S4method{plotGcContent}{character}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens", GCobject, Fastafile, n = 1e+06, ...)
+\S4method{plotGcContent}{character}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  ...
+)
 
-\S4method{plotGcContent}{FastqcData}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens", GCobject, Fastafile, n = 1e+06,
-  counts = FALSE, lineCols = c("red", "blue"), ...)
+\S4method{plotGcContent}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  counts = FALSE,
+  lineCols = c("red", "blue"),
+  ...
+)
 
-\S4method{plotGcContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens", GCobject, Fastafile, n = 1e+06,
-  plotType = c("heatmap", "line"), pwfCols, cluster = FALSE,
-  dendrogram = FALSE, ...)
+\S4method{plotGcContent}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  plotType = c("heatmap", "line"),
+  pwfCols,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or character

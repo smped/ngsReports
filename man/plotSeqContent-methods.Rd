@@ -17,9 +17,17 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotSeqContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotSeqContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, plotType = c("heatmap", "line"), cluster = FALSE,
-  dendrogram = FALSE, ..., nc = 2)
+\S4method{plotSeqContent}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  plotType = c("heatmap", "line"),
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...,
+  nc = 2
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}

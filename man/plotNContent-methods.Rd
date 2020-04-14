@@ -9,21 +9,34 @@
 \alias{plotNContent,FastqcDataList-method}
 \title{Draw an N Content Plot}
 \usage{
-plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5,
-  fail = 20, ...)
+plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
 
-\S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
-  warn = 5, fail = 20, ...)
+\S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
 
-\S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols,
-  warn = 5, fail = 20, ...)
+\S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
 
-\S4method{plotNContent}{FastqcData}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 5, fail = 20, ..., lineCol = "red")
+\S4method{plotNContent}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 5,
+  fail = 20,
+  ...,
+  lineCol = "red"
+)
 
-\S4method{plotNContent}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 5, fail = 20, cluster = FALSE,
-  dendrogram = FALSE, ...)
+\S4method{plotNContent}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 5,
+  fail = 20,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}

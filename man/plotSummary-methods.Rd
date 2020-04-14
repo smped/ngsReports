@@ -8,18 +8,47 @@
 \alias{plotSummary,FastqcDataList-method}
 \title{Plot the PASS/WARN/FAIL information}
 \usage{
-plotSummary(x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
-  dendrogram = FALSE, ...)
+plotSummary(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...
+)
 
-\S4method{plotSummary}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
-  cluster = FALSE, dendrogram = FALSE, ...)
+\S4method{plotSummary}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...
+)
 
-\S4method{plotSummary}{character}(x, usePlotly = FALSE, labels, pwfCols,
-  cluster = FALSE, dendrogram = FALSE, ...)
+\S4method{plotSummary}{character}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...
+)
 
-\S4method{plotSummary}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, cluster = FALSE, dendrogram = FALSE, ...,
-  gridlineWidth = 0.2, gridlineCol = "grey20")
+\S4method{plotSummary}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...,
+  gridlineWidth = 0.2,
+  gridlineCol = "grey20"
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or character

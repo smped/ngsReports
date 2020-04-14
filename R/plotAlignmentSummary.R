@@ -115,7 +115,7 @@ plotAlignmentSummary <- function(
     ) +
         geom_bar(stat = "identity") +
         labs(y = "Total Reads") +
-        scale_y_continuous(labels = comma, expand = expand_scale(c(0, 0.05))) +
+        scale_y_continuous(labels = comma, expand = expansion(c(0, 0.05))) +
         scale_fill_manual(values = fill) +
         coord_flip() +
         theme_bw()
@@ -155,7 +155,7 @@ plotAlignmentSummary <- function(
     ) +
         geom_bar(stat = "identity") +
         labs(y = "Total Reads") +
-        scale_y_continuous(labels = comma, expand = expand_scale(c(0, 0.05))) +
+        scale_y_continuous(labels = comma, expand = expansion(c(0, 0.05))) +
         scale_fill_manual(values = fill) +
         coord_flip() +
         theme_bw()
@@ -196,7 +196,7 @@ plotAlignmentSummary <- function(
     ) +
         geom_bar(stat = "identity") +
         labs(y = "Total Reads") +
-        scale_y_continuous(labels = comma, expand = expand_scale(c(0, 0.05))) +
+        scale_y_continuous(labels = comma, expand = expansion(c(0, 0.05))) +
         scale_fill_manual(values = fill) +
         coord_flip() +
         theme_bw()

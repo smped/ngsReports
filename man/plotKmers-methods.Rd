@@ -15,13 +15,26 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotKmers}{character}(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotKmers}{FastqcData}(x, usePlotly = FALSE, labels, n = 6,
-  ..., lineWidth = 0.5, pal = c("red", "blue", "green", "black",
-  "magenta", "yellow"))
+\S4method{plotKmers}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  n = 6,
+  ...,
+  lineWidth = 0.5,
+  pal = c("red", "blue", "green", "black", "magenta", "yellow")
+)
 
-\S4method{plotKmers}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  cluster = FALSE, dendrogram = FALSE, pwfCols,
-  heatCol = inferno(50), ...)
+\S4method{plotKmers}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  pwfCols,
+  heatCol = inferno(50),
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}

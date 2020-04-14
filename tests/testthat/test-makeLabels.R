@@ -17,7 +17,7 @@ test_that(".makeLabels handles label mismatches",{
 })
 
 test_that(".makeLabels handles duplicated labels",{
-    df <- data.frame(Filename = rep("file.fq", 2))
+    df <- data.frame(Filename = rep("file.fq", 2), stringsAsFactors = FALSE)
     expect_error(.makeLabels(df))
 })
 
@@ -28,8 +28,10 @@ test_that(".makeLabels correctly checks for data.frame",{
 
 test_that(".makeLabels correctly removes all suffixes",{
     suf <- c("fq", "fastq", "fq.gz", "fastq.gz", "bam", "sam", "cram")
-    df <- data.frame(Filename = paste(LETTERS[seq_along(suf)], suf, sep = "."),
-                     stringsAsFactors = FALSE)
+    df <- data.frame(
+        Filename = paste(LETTERS[seq_along(suf)], suf, sep = "."),
+        stringsAsFactors = FALSE
+    )
     trueOut <- structure(LETTERS[seq_along(suf)], names = df$Filename)
     expect_equal(.makeLabels(df), trueOut)
 })

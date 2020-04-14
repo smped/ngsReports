@@ -9,22 +9,65 @@
 \alias{plotBaseQuals,FastqcDataList-method}
 \title{Plot the Base Qualities for each file}
 \usage{
-plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25,
-  fail = 20, boxWidth = 0.8, ...)
+plotBaseQuals(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 25,
+  fail = 20,
+  boxWidth = 0.8,
+  ...
+)
 
-\S4method{plotBaseQuals}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
-  warn = 25, fail = 20, boxWidth = 0.8, ...)
+\S4method{plotBaseQuals}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 25,
+  fail = 20,
+  boxWidth = 0.8,
+  ...
+)
 
-\S4method{plotBaseQuals}{character}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
+\S4method{plotBaseQuals}{character}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 25,
+  fail = 20,
+  boxWidth = 0.8,
+  ...
+)
 
-\S4method{plotBaseQuals}{FastqcData}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 25, fail = 20, boxWidth = 0.8, ...)
+\S4method{plotBaseQuals}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 25,
+  fail = 20,
+  boxWidth = 0.8,
+  ...
+)
 
-\S4method{plotBaseQuals}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 25, fail = 20, boxWidth = 0.8,
-  plotType = c("heatmap", "boxplot"), plotValue = "Mean",
-  cluster = FALSE, dendrogram = FALSE, nc = 2, ...)
+\S4method{plotBaseQuals}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 25,
+  fail = 20,
+  boxWidth = 0.8,
+  plotType = c("heatmap", "boxplot"),
+  plotValue = "Mean",
+  cluster = FALSE,
+  dendrogram = FALSE,
+  nc = 2,
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or character

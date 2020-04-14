@@ -9,22 +9,68 @@
 \alias{plotSeqQuals,FastqcDataList-method}
 \title{Plot the Per Sequence Quality Scores}
 \usage{
-plotSeqQuals(x, usePlotly = FALSE, labels, pwfCols, counts = FALSE,
-  alpha = 0.1, warn = 30, fail = 20, ...)
+plotSeqQuals(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  counts = FALSE,
+  alpha = 0.1,
+  warn = 30,
+  fail = 20,
+  ...
+)
 
-\S4method{plotSeqQuals}{ANY}(x, usePlotly = FALSE, labels, pwfCols,
-  counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
+\S4method{plotSeqQuals}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  counts = FALSE,
+  alpha = 0.1,
+  warn = 30,
+  fail = 20,
+  ...
+)
 
-\S4method{plotSeqQuals}{character}(x, usePlotly = FALSE, labels, pwfCols,
-  counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
+\S4method{plotSeqQuals}{character}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  counts = FALSE,
+  alpha = 0.1,
+  warn = 30,
+  fail = 20,
+  ...
+)
 
-\S4method{plotSeqQuals}{FastqcData}(x, usePlotly = FALSE, labels,
-  pwfCols, counts = FALSE, alpha = 0.1, warn = 30, fail = 20, ...)
+\S4method{plotSeqQuals}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  counts = FALSE,
+  alpha = 0.1,
+  warn = 30,
+  fail = 20,
+  ...
+)
 
-\S4method{plotSeqQuals}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, counts = FALSE, alpha = 0.1, warn = 30, fail = 20,
-  plotType = c("heatmap", "line"), dendrogram = FALSE,
-  cluster = FALSE, ...)
+\S4method{plotSeqQuals}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  counts = FALSE,
+  alpha = 0.1,
+  warn = 30,
+  fail = 20,
+  plotType = c("heatmap", "line"),
+  dendrogram = FALSE,
+  cluster = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or path}

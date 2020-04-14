@@ -55,7 +55,7 @@ setMethod("overRep2Fasta", signature = "FastqcData", function(
 
     df <- getModule(x, "Overrepresented_sequences")
 
-    labels <- .makeLabels(df, labels, ...)
+    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
     df$Filename <- labels[df$Filename]
 
     if (missing(path)) path <-
@@ -85,7 +85,7 @@ setMethod("overRep2Fasta", signature = "FastqcDataList", function(
     x, path, n = 10, labels, noAdapters = TRUE, ...){
 
     df <- getModule(x, "Overrepresented_sequences")
-    labels <- .makeLabels(df, labels, ...)
+    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
     df$Filename <- labels[df$Filename]
 
     if (missing(path)) path <-

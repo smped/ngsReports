@@ -13,15 +13,30 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotDupLevels}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
 
-\S4method{plotDupLevels}{character}(x, usePlotly = FALSE, labels,
-  pwfCols, ...)
+\S4method{plotDupLevels}{character}(x, usePlotly = FALSE, labels, pwfCols, ...)
 
-\S4method{plotDupLevels}{FastqcData}(x, usePlotly = FALSE, labels,
-  pwfCols, warn = 20, fail = 50, lineCols = c("red", "blue"), ...)
+\S4method{plotDupLevels}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 20,
+  fail = 50,
+  lineCols = c("red", "blue"),
+  ...
+)
 
-\S4method{plotDupLevels}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, deduplication = c("pre", "post"), cluster = FALSE,
-  dendrogram = FALSE, heatCol = inferno(50), ...)
+\S4method{plotDupLevels}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  deduplication = c("pre", "post"),
+  cluster = FALSE,
+  dendrogram = FALSE,
+  heatCol = inferno(50),
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file path}

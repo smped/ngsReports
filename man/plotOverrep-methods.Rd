@@ -13,17 +13,31 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotOverrep}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
 
-\S4method{plotOverrep}{character}(x, usePlotly = FALSE, labels, pwfCols,
-  ...)
+\S4method{plotOverrep}{character}(x, usePlotly = FALSE, labels, pwfCols, ...)
 
-\S4method{plotOverrep}{FastqcData}(x, usePlotly = FALSE, labels, pwfCols,
-  n = 10, ..., expand.x = expand_scale(mult = c(0, 0.05)),
-  expand.y = expand_scale(0, 0.6))
+\S4method{plotOverrep}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  n = 10,
+  ...,
+  expand.x = expansion(mult = c(0, 0.05)),
+  expand.y = expansion(0, 0.6)
+)
 
-\S4method{plotOverrep}{FastqcDataList}(x, usePlotly = FALSE, labels,
-  pwfCols, cluster = FALSE, dendrogram = FALSE, ...,
-  paletteName = "Set1", expand.x = expand_scale(mult = c(0, 0.05)),
-  expand.y = expand_scale(0, 0))
+\S4method{plotOverrep}{FastqcDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  ...,
+  paletteName = "Set1",
+  expand.x = expansion(mult = c(0, 0.05)),
+  expand.y = expansion(0, 0)
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
@@ -42,7 +56,7 @@ for PASS/WARN/FAIL}
 
 \item{n}{The number of sequences to plot from an individual file}
 
-\item{expand.x, expand.y}{Output from \code{expand_scale()} or numeric
+\item{expand.x, expand.y}{Output from \code{expansion()} or numeric
 vectors of length 4. Passed to \code{scale_*_continuous()}}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
