@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=devel_bioc_3_11)](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=devel_bioc_3_11)
+[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=devel_bioc_3_11)](https://travis-ci.org/github/UofABioinformaticsHub/ngsReports/branches)
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
 

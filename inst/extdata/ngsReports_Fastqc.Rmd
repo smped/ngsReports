@@ -29,15 +29,15 @@ knitr::opts_chunk$set(
 
 ```{r}
 library(ngsReports)
-library(dplyr)
-library(ggplot2)
-library(tibble)
-library(kableExtra)
-library(pander)
-library(scales)
 library(magrittr)
 library(stringr)
+library(dplyr)
 library(readr)
+library(tibble)
+library(ggplot2)
+library(scales)
+library(DT)
+library(pander)
 ```
 
 ```{r setGlobals}
@@ -98,21 +98,31 @@ if (!file.exists(params$tgtsFile)) {
 bs <- getModule(fastqcData, "Basic_Statistics")
 bs %>%
 	mutate(
-	    Sequence_length = paste(Shortest_sequence, Longest_sequence, sep = "-")
+	    Sequence_length = paste(Shortest_sequence, Longest_sequence, sep = "-"),
+	    `%GC` = as.numeric(`%GC`) / 100
 	) %>%
-	dplyr::select(Filename, contains("sequence"), `%GC`, -contains("est")) %>%
+	dplyr::select(Filename, contains("sequence"), `%GC`, File_type, Encoding, -contains("est")) %>%
 	set_names(gsub("_", " ", names(.))) %>%
-    set_names(str_to_title(names(.))) %>%
-    set_names(gsub("Sequences", "", names(.))) %>%
-    set_names(str_trim(names(.))) %>%
+    rename_all(str_to_title) %>%
+    set_names(str_remove_all(names(.), "[Ss]equences")) %>%
+    rename_all(str_trim) %>%
     dplyr::rename(`%GC` = `%Gc`) %>%
-    kable(
-        align = "lrrrr",
+    datatable(
         caption = "Summary statistics for all libraries",
-        format.args = list(big.mark = ",")
+        rownames = FALSE,
+        options = list(
+            pageLength = 25
+        ),
+        class = "stripe"
     ) %>%
-    kable_styling(bootstrap_options = c("striped", "condensed")) %>%
-    scroll_box(height = ifelse(n > 20, "650px", "100%")) 
+    formatPercentage(
+        columns = "%GC"
+    ) %>%
+    formatRound(
+        columns = c("Total", "Flagged As Poor Quality"),
+        digits = 0,
+        mark = ","
+    )
 ```
 
 ## Read Totals
@@ -192,7 +202,7 @@ plotOverrep(fastqcData, labels = plotLabels, usePlotly = globals$usePlotly)
 
 ```{r Overrepresented_sequences, echo=FALSE, results='asis', message=TRUE}
 os <- getModule(fastqcData, "Overrepresented_sequences") 
-if (length(os) > 0) {
+if (length(os)) {
     os %>% 
         mutate(Filename = plotLabels[Filename]) %>%
         group_by(Sequence, Possible_Source) %>%
@@ -202,26 +212,37 @@ if (length(os) > 0) {
             Max_Percentage = max(Percentage/100)
         ) %>%
         ungroup() %>%
-        mutate(
-            `Overall Percentage` = percent(Total / sum(bs$Total_Sequences)),
-            Max_Percentage = percent(Max_Percentage)
-        ) %>%
         dplyr::arrange(desc(Total)) %>%
 		dplyr::slice(1:params$nOver) %>%
-        dplyr::select(
-            Sequence, Total, `Present In` = Files, `Overall Percentage`, 
-            Max_Percentage, Possible_Source
+        mutate(
+            `% Across All Files` = Total / sum(bs$Total_Sequences)
         ) %>%
-        kable(
-            align = "lrrrrl",
+        dplyr::select(
+            Sequence, Total, `Present In` = Files, `% Across All Files`, 
+            `Max Individual %` = Max_Percentage, Possible_Source
+        ) %>%
+        set_names(gsub("_", " ", names(.))) %>%
+        rename_all(str_to_title) %>%
+        datatable(
             caption = paste(
                 "Summary of the most overrepresented sequences in all files.",
-                "A maximum of", params$nOver, "sequences are shown"
+                "A maximum of", params$nOver, "sequences are given"
             ),
-            format.args = list(big.mark = ",")
+            rownames = FALSE,
+            options = list(
+                pageLength = params$nOver,
+                autoWidth = TRUE
+            )
         ) %>%
-        kable_styling(bootstrap_options = c("striped", "condensed")) %>%
-        scroll_box(width = "1200px",height = "100%")
+        formatPercentage(
+            columns = c("% Across All Files", "Max Individual %"),
+            digits = 2
+        ) %>%
+        formatRound(
+            columns = "Total",
+            digits = 0,
+            mark = ","
+        )
 }
 if (length(os) == 0) {
 	message("No overrepresented sequences were detected by FastQC")
