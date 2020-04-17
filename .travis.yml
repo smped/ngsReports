@@ -8,7 +8,7 @@ os:
   - osx
 notifications:
   recipients:
-    - stephen.pederson@adelaide.edu.au
+    - stephen.pederson.au@gmail.com
     - christopher.ward@adelaide.edu.au
   email:
     on_success: change
