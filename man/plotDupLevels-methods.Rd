@@ -31,7 +31,10 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
   usePlotly = FALSE,
   labels,
   pwfCols,
+  warn = 20,
+  fail = 50,
   deduplication = c("pre", "post"),
+  plotType = c("heatmap", "line"),
   cluster = FALSE,
   dendrogram = FALSE,
   heatCol = inferno(50),
@@ -60,6 +63,8 @@ respectively (i.e. percentages)}
 
 \item{deduplication}{Plot Duplication levels 'pre' or 'post' deduplication.
 Can only take values "pre" and "post"}
+
+\item{plotType}{Choose between "heatmap" and "line"}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}

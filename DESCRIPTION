@@ -1,5 +1,5 @@
 Package: ngsReports
-Version: 1.3.2
+Version: 1.3.3
 Date: 2020/04/14
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
@@ -27,6 +27,7 @@ Imports:
   dplyr (>= 0.8.0),
   DT,
   FactoMineR,
+  forcats,
   ggdendro,
   grDevices, 
   grid,
