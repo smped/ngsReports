@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/UofABioinformaticsHub/ngsReports.svg?branch=devel_bioc_3_11)](https://travis-ci.org/github/UofABioinformaticsHub/ngsReports/branches)
+[![Build Status](https://travis-ci.org/steveped/ngsReports.svg?branch=devel_bioc_3_11)](https://travis-ci.org/github/steveped/ngsReports.svg?branch=master)
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 
 
@@ -9,13 +9,15 @@ An R Package for managing FastQC reports and other NGS related log files inside 
 Except for some periodic minor bug fixes, this branch is the current release which is also available from [the Bioconductor website](https://bioconductor.org/packages/release/bioc/html/ngsReports.html).
 To install this package for Bioconductor <= 3.6 (R <= 3.4.4) please use the drop down menu above to change to the branch Bioc3.6, and follow the instructions there.
 
+Versions for Bioc releases 3.9 and 3.10 are also available as branches from this repository.
+
 ## Installation
 
 To install required packages follow the instructions below.
 
 ```
 install.packages("BiocManager")
-BiocManager::install("UofABioinformaticsHub/ngsReports")
+BiocManager::install("steveped/ngsReports")
 library(ngsReports)
 ```
 ## Usage 

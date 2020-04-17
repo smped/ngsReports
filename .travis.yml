@@ -2,8 +2,10 @@
 
 language: r
 r: bioc-devel
-os: linux
-dist: bionic
+os:
+  - linux
+  dist: bionic
+  - osx
 notifications:
   recipients:
     - stephen.pederson@adelaide.edu.au
