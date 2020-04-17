@@ -2,10 +2,8 @@
 
 language: r
 r: bioc-devel
-os:
-  - linux
-  dist: bionic
-  - osx
+os: linux
+dist: bionic
 notifications:
   recipients:
     - stephen.pederson.au@gmail.com
