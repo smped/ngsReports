@@ -98,8 +98,8 @@ setMethod("plotSeqQuals", signature = "FastqcData", function(
         return(qualPlot)
     }
 
-    ## Set labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, ...)
     df$Filename <- labels[df$Filename]
 
     ## Sort out the colours
@@ -260,7 +260,7 @@ setMethod("plotSeqQuals", signature = "FastqcDataList", function(
     stopifnot(warn > fail)
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
 
     ## Sort out the colours
     if (base::missing(pwfCols)) pwfCols <- pwf

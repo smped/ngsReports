@@ -95,7 +95,7 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
     df$Position <- factor(df$Position, levels = unique(df$Position))
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
     acgt <- c("T", "C", "A", "G")
 
     df$Filename <- labels[df$Filename]
@@ -181,7 +181,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)

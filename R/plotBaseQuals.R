@@ -110,7 +110,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
     }
 
     # Get the plot labels organised
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
     df$Filename <- labels[df$Filename]
 
     stopifnot(is.numeric(boxWidth))
@@ -254,7 +254,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     stopifnot(.isValidPwf(pwfCols))
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
 
     ## Get the Illumina encoding for the axis label
     enc <- getModule(x, "Basic_Statistics")$Encoding[1]

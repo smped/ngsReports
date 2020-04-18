@@ -53,13 +53,13 @@ setMethod("overRep2Fasta", signature = "ANY", function(
 setMethod("overRep2Fasta", signature = "FastqcData", function(
     x, path, n = 10, labels, noAdapters = TRUE, ...){
 
+    ## Sort out the labels
+    labels <- .makeLabels(x, labels, ...)
     df <- getModule(x, "Overrepresented_sequences")
 
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
-    df$Filename <- labels[df$Filename]
-
-    if (missing(path)) path <-
-        paste(unique(df$Filename), "top", n, "overrepresented.fa", sep = "_")
+    if (missing(path)) path <-paste(
+        fqName(x), "top", n, "overrepresented.fa", sep = "_"
+    )
 
     ## Remove any putative adapter or primer sequences
     if (noAdapters) df <- df[!grepl("(Primer|Adapter)", df$Possible_Source),]
@@ -69,7 +69,7 @@ setMethod("overRep2Fasta", signature = "FastqcData", function(
     df <- dplyr::top_n(df, n, Percentage)
     n <- nrow(df) # In case less than the requested n were present
     hdr <- paste0(
-        "> ", df$Filename,
+        "> ", labels,
         " Sequence", seq_len(n),
         " Count:", df$Count,
         " Length:", nchar(df$Sequence)
@@ -85,11 +85,10 @@ setMethod("overRep2Fasta", signature = "FastqcDataList", function(
     x, path, n = 10, labels, noAdapters = TRUE, ...){
 
     df <- getModule(x, "Overrepresented_sequences")
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
-    df$Filename <- labels[df$Filename]
 
-    if (missing(path)) path <-
-        paste("all_files", "top", n, "overrepresented.fa", sep = "_")
+    if (missing(path)) path <- paste(
+        "all_files", "top", n, "overrepresented.fa", sep = "_"
+    )
 
     ## Remove any putative adapter or primer sequences
     if (noAdapters) df <- df[!grepl("(Primer|Adapter)", df$Possible_Source),]

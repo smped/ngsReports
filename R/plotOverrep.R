@@ -96,7 +96,7 @@ setMethod("plotOverrep", signature = "FastqcData", function(
     }
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
     df$Filename <- labels[df$Filename]
 
     ## Get any arguments for dotArgs that have been set manually
@@ -198,7 +198,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
     if (missing(pwfCols)) pwfCols <- pwf
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)

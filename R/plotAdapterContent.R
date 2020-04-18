@@ -117,7 +117,7 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
     }
 
     ## Set any labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
     df$Filename <- labels[df$Filename]
 
     ## Sort out the colours & pass/warn/fail breaks
@@ -236,7 +236,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
 
     ## Check for valid plotType & labels
     plotType <- match.arg(plotType)
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
 
     ## Change to long form
     df <- tidyr::gather(df, "Type", "Percent", one_of(valueCols))

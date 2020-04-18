@@ -5,7 +5,7 @@
 \title{Perform the checks and return the labels}
 \usage{
 .makeLabels(
-  df,
+  x,
   labels,
   pattern = ".(fastq|fq|bam|sam|cram).*",
   col = "Filename",
@@ -13,7 +13,7 @@
 )
 }
 \arguments{
-\item{df}{A data.frame with a column titled "Filename"}
+\item{x}{A data.frame with a column titled "Filename"}
 
 \item{labels}{Named vector of labels for plotting}
 

@@ -145,7 +145,7 @@
 #' pattern, which defaults to removing the suffixes fastq(.gz), fq(.gz),
 #' bam, sam or cram.
 #'
-#' @param df A data.frame with a column titled "Filename"
+#' @param x A data.frame with a column titled "Filename"
 #' @param labels Named vector of labels for plotting
 #' @param pattern character Regular expression to remove from filenames
 #' @param col character Column to use for generating labels
@@ -160,22 +160,36 @@
 #'
 #' @keywords internal
 .makeLabels <- function(
-    df, labels, pattern = ".(fastq|fq|bam|sam|cram).*", col ="Filename", ...){
-    stopifnot(is.data.frame(df))
-    col <- match.arg(col, colnames(df))
-    ## If no labels are provided, just remove the file suffix as determined by
-    ## the supplied pattern
-    if (missing(labels)) {
-        labels <- structure(
-            gsub(pattern, "", unique(df[[col]])), # Remove the pattern
-            names = unique(df[[col]]) # Ensure a named vector
+    x, labels, pattern = ".(fastq|fq|bam|sam|cram).*", col = "Filename", ...){
+
+    if (is(x, "FastqcDataList") | is(x, "FastqcData")) {
+        ## Form a single column data.frame
+        x <- structure(
+            list(fqName(x)),
+            names = col,
+            row.names = seq_along(x),
+            class = "data.frame"
         )
     }
-    if (!all(df[[col]] %in% names(labels)))
+
+    stopifnot(is(x, "data.frame"))
+
+    col <- match.arg(col, colnames(x))
+
+    ## If no labels are provided, just remove the file suffix as
+    ## determined by the supplied pattern
+    if (missing(labels)) {
+        labels <- structure(
+            gsub(pattern, "", unique(x[[col]])), # Remove the pattern
+            names = unique(x[[col]]) # Ensure a named vector
+        )
+    }
+    if (!all(x[[col]] %in% names(labels)))
         stop("Names of supplied labels must match all filenames.")
-    if (nrow(df) != length(labels)) stop("Labels must be unique.")
+    if (any(duplicated(labels))) stop("Labels must be unique.")
+
     ## Now return only the supplied labels which are in the df
-    labels[names(labels) %in% df[[col]]]
+    labels[names(labels) %in% x[[col]]]
 }
 
 #' @title Shortcut for making the status sidebar

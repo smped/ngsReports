@@ -18,7 +18,7 @@ test_that(".makeLabels handles label mismatches",{
 
 test_that(".makeLabels handles duplicated labels",{
     df <- data.frame(Filename = rep("file.fq", 2), stringsAsFactors = FALSE)
-    expect_error(.makeLabels(df))
+    expect_error(.makeLabels(df, labels = c(file.fq = "file", file.fq = "file")))
 })
 
 test_that(".makeLabels correctly checks for data.frame",{

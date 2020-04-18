@@ -93,9 +93,9 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
     df <- readTotals(x)
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    labels <- .makeLabels(x, labels, ...)
     df$Filename <- labels[df$Filename]
-    df$Filename <- factor(df$Filename, levels = unique(df$Filename))
+    df$Filename <- forcats::fct_inorder(df$Filename)
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)

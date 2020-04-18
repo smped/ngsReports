@@ -101,7 +101,8 @@ setMethod("plotNContent", signature = "FastqcData", function(
     stopifnot(.isValidPwf(pwfCols))
     pwfCols <- setAlpha(pwfCols, 0.2)
 
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, ...)
     df$Filename <- labels[df$Filename]
     df$Base <- factor(df$Base, levels = unique(df$Base))
     df$xValue <- as.integer(df$Base)
@@ -207,8 +208,8 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
     stopifnot(.isValidPwf(pwfCols))
 
-    ## Get the labels organised
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, ...)
 
     ## fill bins up to the max sequence length
     df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))

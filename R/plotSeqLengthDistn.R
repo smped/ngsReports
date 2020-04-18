@@ -103,7 +103,8 @@ setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
         return(lenPlot)
     }
 
-    labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, ...)
     df$Filename <- labels[df$Filename]
 
     ## Add zero counts for lengths either side of the included range
@@ -194,7 +195,7 @@ setMethod(
         plotType <- match.arg(plotType)
 
         ## Drop the suffix, or check the alternate labels
-        labels <- .makeLabels(dplyr::distinct(df, Filename), labels, ...)
+        labels <- .makeLabels(x, labels, ...)
 
         ## Lengths will probably be binned so define the bins then expand
         ## the range at the lower and upper limits to add zero.
