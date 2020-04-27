@@ -190,30 +190,22 @@ test_that("importCutadapt errors correctly", {
     expect_error(importNgsLogs(bowtie2Logs, "cutadapt"))
     expect_error(importNgsLogs(caFiles, "cutadapt"))
     expect_error(importNgsLogs(caFiles[[1]], "cutadapt", which = 3))
-    expect_error(importNgsLogs(caFiles[[1]], "cutadapt", which = 4))
     expect_message(importNgsLogs(caFiles[[2]], "cutadapt", which = 2))
 })
 
 test_that("parseCutadaptLogs parses correctly",{
     expect_equal(
-        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = 1)), c(1, 9)
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = 1)), c(1, 10)
     )
     expect_equal(
-        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "summary")), c(1, 9)
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "summary")), c(1, 10)
     )
     expect_equal(
-        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = 2)), c(1, 8)
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = 2)), c(1, 10)
     )
     expect_equal(
-        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "adapter1")), c(1, 8)
+        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "adapter1")), c(1, 10)
     )
-    expect_equal(
-        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = 5)), c(49, 6)
-    )
-    expect_equal(
-        dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "overview")), c(49, 6)
-    )
-
 })
 
 test_that("parseTrimmomaticLogs behaves correctly",{

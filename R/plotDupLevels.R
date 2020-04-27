@@ -58,6 +58,7 @@
 #' @importFrom stats hclust dist
 #' @importFrom viridisLite inferno
 #' @importFrom tidyselect contains
+#' @importFrom forcats fct_inorder
 #' @import tibble
 #'
 #' @name plotDupLevels

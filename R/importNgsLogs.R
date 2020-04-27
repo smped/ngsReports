@@ -54,6 +54,7 @@
 #'
 #' @importFrom lubridate dminutes dhours dseconds parse_date_time
 #' @importFrom tidyselect contains everything starts_with ends_with
+#' @importFrom stringr str_replace_all str_trim str_remove_all str_extract
 #'
 #' @export
 importNgsLogs <- function(x, type = "auto", which) {
@@ -305,14 +306,13 @@ importNgsLogs <- function(x, type = "auto", which) {
     chkCutAdapt <- grepl("cutadapt", x[[1]])
     chkCols <- list(
         status = any(grepl("Finished in", x)),
-        in_reads = any(grepl("Total reads processed", x)),
+        in_reads = any(grepl("Total (reads|read pairs) processed", x)),
         in_bp = any(grepl("Total basepairs processed", x)),
-        too_short = any(grepl("Reads that were too short", x)),
+        too_short = any(grepl("(Reads|Pairs) that were too short", x)),
         ## Too long may not be in the file
-        too_many_n = any(grepl("Reads with too many N", x)),
-        out_reads = any(grepl("Reads written \\(passing filters\\)", x)),
-        `w/adapters` = any(grepl("Reads with adapters", x)),
-        qualtrim_bp = any(grepl("Quality-trimmed", x)),
+        too_many_n = any(grepl("(Reads|Pairs) with too many N", x)),
+        out_reads = any(grepl("(Reads|Pairs) written \\(passing filters\\)", x)),
+        `w/adapters` = any(grepl("Read.+ with adapter", x)),
         out_bp = any(grepl("Total written \\(filtered\\)", x))
     )
     chkCols <- unlist(chkCols)
@@ -790,19 +790,10 @@ importNgsLogs <- function(x, type = "auto", which) {
 #' @importFrom stringr str_replace_all str_remove_all str_extract
 .parseCutadaptLogs <- function(data, which = 1){
 
-    ## Possible modules for the full version are:
-    ## 1: summary (this is identical to minimal)
-    ## 2: adapter1/2/3
-    ## 5: overview
-    ## No parsing of the version number has been implemented (1st row)
-    modNames <- c(
-        "summary", "adapter1", "adapter2", "adapter3", "overview"
-    )
-    if (is.character(which)) which <- match.arg(which, modNames)
-    if (is.numeric(which)) {
-        stopifnot(which %in% seq_len(5))
-        which <- modNames[which]
-    }
+    ## Possible module names vary depending on PE/SE reads and the adapter
+    ## configuration. The only stable name is `summary`.
+    ## For this reason module name checking will be handled inside the
+    ## parsing function
 
     .parseCutAdaptSingle <- function(x, which){
 
@@ -823,50 +814,69 @@ importNgsLogs <- function(x, type = "auto", which) {
 
         ## Otherwise parse the modules:
         ## Remove the blank elements
-        x <- setdiff(x, "")
+        x <- x[x != ""]
         ## Find where the modules start
-        mods <- grepl("(=== Summary|=== Adapter|Overview)", x)
+        mods <- grepl("===", x)
         foundMods <- tolower(str_remove_all(x[mods],"[= ]"))
-        foundMods <- gsub("overview.+", "overview", foundMods)
-        ## Check the requested module exists as there is some variability
-        modExists <- which %in% foundMods
-        if (!modExists) stop("The requested module (", which, ") is missing")
+
+        ## Check the requested module
+        if (is.numeric(which) & which > length(foundMods)) stop(
+            "Invalid module selected. The maximum number is ", length(foundMods)
+        )
+        if (is.character(which) & sum(grepl(which, foundMods)) != 1) stop(
+            "Unable to determine module. Valid modules are ",
+            paste(foundMods, collapse = "/")
+        )
 
         ## Now split into the modules
         x <- split(x, f = cumsum(mods))
-        ## Remove the first value from each
-        x <- lapply(x, function(x){x[-1]})
         names(x) <- c("header", foundMods)
+        ## Grab the header as a list
+        hdr <- x[["header"]]
+        names(hdr) <- c("version", "params", "processing", "finished")
+        ## Remove the first value from each now we have the intact header
+        x <- lapply(x, function(x){x[-1]})
 
         ## Just do the modules manually
         out <- vector("list", length(x) - 1)
         names(out) <- names(x)[-1]
 
-        ## Start with the summary (i.e. minimal)
+        ## Start with the summary (i.e. minimal). Values then names
         vals <- str_replace_all(x$summary, ".+ +([0-9,]+).+", "\\1")
         vals <- str_remove_all(vals, ",")
         vals <- as.numeric(vals)
-        names(vals) <- str_replace_all(x$summary, "(.+):.+", "\\1")
-        reqCols <- c(
-            "in_reads", "in_bp", "too_short", "too_long",
-            "too_many_n",  "out_reads", "w/adapters", "qualtrim_bp", "out_bp"
+        nm <- str_trim(
+            str_replace_all(x$summary, "(.+):.+", "\\1")
         )
-        fullText <- c(
-            "Total reads processed", "Total basepairs processed",
-            "Reads that were too short", "Reads that were too long",
-            "Reads with too many N", "Reads written (passing filters)",
-            "Reads with adapters", "Quality-trimmed",
-            "Total written (filtered)"
+        ## If this is paired end, some of these will be nested and need to be
+        ## handled correctly. The first two will be processed bp, whilst
+        ## the next two will be written bp. Using the above code, they should
+        ## just appear as Read 1 and Read 2 for each set.
+        dups <- grepl("^Read [12]$", nm)
+        nm[dups] <- paste(
+            nm[dups],
+            "basepairs",
+            rep(
+                c("processed", "written"), each = sum(dups)/2
+            )
         )
-        names(vals) <- reqCols[match(names(vals), fullText)]
-        out[["summary"]] <-
-            as_tibble(as.list(vals))[intersect(reqCols, names(vals))]
+        nm <- tolower(nm)
+        nm <- str_remove_all(nm, "[\\(\\)]")
+        nm <- str_replace_all(nm, " ", "_")
+        names(vals) <- nm
+        out[["summary"]] <- as_tibble(as.list(vals))
+        out[["summary"]][["header"]] <- list(hdr)
+        out[["summary"]] <- dplyr::select(
+            out[["summary"]], "header", everything()
+        )
 
         ## Now the adapters
         out[grep("adapter", names(out))] <- lapply(
             x[grepl("adapter", names(x))],
             function(a){
-                tibble(
+                ## Avoid R CMD errors by declaring dummy variables
+                A <- C <- G <- `T` <- c()
+                main <- tibble(
                     sequence = str_extract(
                         a[grepl("Sequence", a)], "[ACGTN]+"
                     ),
@@ -893,23 +903,27 @@ importNgsLogs <- function(x, type = "auto", which) {
                     ) / 100,
                     `T` = as.numeric(
                         str_extract(a[grepl("T:", a)], "[0-9\\.]+")
-                    ) / 100
+                    ) / 100,
+                    `none/other` = round(1 - (A + C + G + `T`), 2)
                 )
+                overview <- .splitByTab(
+                    a[seq(which(grepl("^Overview", a)) + 1, length(a))]
+                )
+                overview <- dplyr::mutate_if(
+                    overview,
+                    vapply(
+                        overview,
+                        function(x){
+                            suppressWarnings(all(!is.na(as.numeric(x))))
+                        },
+                        logical(1)
+                    ),
+                    as.numeric
+                )
+                main[["overview"]] <- list(as_tibble(overview))
+                main
             }
         )
-
-        ## The overview
-        out[["overview"]] <- .splitByTab(x$overview)
-        out[["overview"]] <- dplyr::mutate_if(
-            out[["overview"]],
-            vapply(
-                out[["overview"]],
-                function(x){suppressWarnings(all(!is.na(as.numeric(x))))},
-                logical(1)
-            ),
-            as.numeric
-        )
-        out[["overview"]] <- as_tibble(out[["overview"]])
 
         ## Return the required module
         out[[which]]

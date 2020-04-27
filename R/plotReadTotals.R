@@ -48,6 +48,7 @@
 #' @import ggplot2
 #' @importFrom dplyr bind_rows
 #' @importFrom tidyselect one_of
+#' @importFrom forcats fct_inorder
 #'
 #' @name plotReadTotals
 #' @rdname plotReadTotals-methods
