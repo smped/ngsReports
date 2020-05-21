@@ -9,8 +9,7 @@
 \arguments{
 \item{data}{List of lines read using readLines on one or more files}
 
-\item{...}{Not used
-Can be 1:4, "sequences", "settings", "statistics" or "distribution"}
+\item{...}{Not used}
 }
 \value{
 tibble

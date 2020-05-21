@@ -10,7 +10,7 @@
 \item{data}{List of lines read using readLines on one or more files}
 
 \item{which}{which element of the log file to return.
-Can be summary, adapter1, adapter2, adapter3 or overview, or any integrer in
+Can be summary, adapter1, adapter2, adapter3 or overview, or any integer in
 1:5}
 }
 \value{

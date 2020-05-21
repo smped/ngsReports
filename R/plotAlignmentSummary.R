@@ -23,7 +23,7 @@
 #' plotAlignmentSummary(bowtie2Logs, "bowtie2")
 #'
 #' @importFrom scales comma percent
-#' @importFrom tidyselect one_of
+#' @importFrom tidyselect one_of all_of
 #' @import ggplot2
 #'
 #' @export
@@ -89,10 +89,16 @@ plotAlignmentSummary <- function(
     ## Remove the Log.final.out suffix
     df$Filename <- stringr::str_remove_all(df$Filename, "Log.final.out")
     ## Now gather for plotting
-    df <- tidyr::gather(df, "Type", "Total", one_of(subCols))
+    df <- tidyr::pivot_longer(
+        df,
+        cols = all_of(subCols),
+        names_to = "Type",
+        values_to = "Total"
+    )
     ## Remove the Percent/Number text from the Type column
-    df$Type <-
-        stringr::str_remove_all(df$Type, "(.+Of_Reads_|_Number$|_Percent$)")
+    df$Type <- stringr::str_remove_all(
+        df$Type, "(.+Of_Reads_|_Number$|_Percent$)"
+    )
     lv <-  c(
         "Uniquely_Mapped_Reads",
         "Mapped_To_Multiple_Loci",
