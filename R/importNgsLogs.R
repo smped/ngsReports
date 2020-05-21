@@ -338,11 +338,15 @@ importNgsLogs <- function(x, type = "auto", which) {
         if (chkCol1) {
             ## We can only do this if the Status column checks out
             vals <- c(
-                "Assigned", "Unassigned_Ambiguity", "Unassigned_MultiMapping",
-                "Unassigned_NoFeatures", "Unassigned_Unmapped",
+                "Assigned",
+                "Unassigned_Ambiguity",
+                "Unassigned_MultiMapping",
+                "Unassigned_NoFeatures",
+                "Unassigned_Unmapped",
                 "Unassigned_MappingQuality",
-                "Unassigned_FragmentLength", "Unassigned_Chimera",
-                "Unassigned_Secondary", "Unassigned_Nonjunction",
+                "Unassigned_FragmentLength",
+                "Unassigned_Chimera",
+                "Unassigned_Secondary",
                 "Unassigned_Duplicate"
             )
             chkTypes <- all(vals %in% x[["Status"]])
@@ -781,7 +785,7 @@ importNgsLogs <- function(x, type = "auto", which) {
 #' @details Checks for structure will have been performed
 #' @param data List of lines read using readLines on one or more files
 #' @param which which element of the log file to return.
-#' Can be summary, adapter1, adapter2, adapter3 or overview, or any integrer in
+#' Can be summary, adapter1, adapter2, adapter3 or overview, or any integer in
 #' 1:5
 #' @return tibble
 #' @keywords internal
@@ -944,19 +948,29 @@ importNgsLogs <- function(x, type = "auto", which) {
 #' @details Checks for structure will have been performed
 #' @param data List of lines read using readLines on one or more files
 #' @param ... Not used
-#' Can be 1:4, "sequences", "settings", "statistics" or "distribution"
 #' @return tibble
 #' @keywords internal
+#' @importFrom forcats fct_inorder
+#' @importFrom tidyselect ends_with
 .parseFeatureCountsLogs <- function(data, ...){
 
     out <- lapply(data, function(x){
         x <- .splitByTab(x)
-        Status <- c() # Avoiding an R CMD check error
-        x <- tidyr::gather(x, "Sample", "Total", -Status)
+        x <- tidyr::pivot_longer(
+            data = x,
+            cols = ends_with("bam"),
+            names_to = "Sample",
+            values_to = "Total"
+        )
         x$Sample <- basename(x$Sample)
         x$Total <- as.integer(x$Total)
-        x$Status <- factor(x$Status, levels = unique(x$Status))
-        tidyr::spread(x, "Status", "Total")
+        x$Status <- fct_inorder(x$Status)
+        tidyr::pivot_wider(
+            data = x,
+            id_cols = "Sample",
+            names_from = "Status",
+            values_from = "Total"
+        )
     })
 
     out <- lapply(names(data), function(x){
