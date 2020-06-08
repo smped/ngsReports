@@ -102,8 +102,11 @@ setMethod("overRep2Fasta", signature = "FastqcDataList", function(
     df <- dplyr::summarise(
         df,
         Total = sum(Count),
-        Percentage = mean(Percentage), nFiles = n()
+        Percentage = mean(Percentage),
+        nFiles = dplyr::n(),
+        .groups = "keep"
     )
+    df <- dplyr::ungroup(df)
     df <- dplyr::arrange(df, desc(Percentage))
     df <- dplyr::top_n(df, n, Percentage)
     n <- nrow(df) # In case less than the requested n were present

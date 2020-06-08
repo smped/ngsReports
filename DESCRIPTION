@@ -1,5 +1,5 @@
 Package: ngsReports
-Version: 1.5.1
+Version: 1.5.2
 Date: 2020/05/21
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
@@ -24,7 +24,7 @@ Depends:
 Imports:
   Biostrings,
   checkmate,
-  dplyr (>= 0.8.0),
+  dplyr (>= 1.0.0),
   DT,
   FactoMineR,
   forcats,
