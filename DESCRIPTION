@@ -52,7 +52,7 @@ Imports:
   XVector,
   zoo
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Collate: 
     'AllGenerics.R'
     'validationFunctions.R'
