@@ -90,6 +90,7 @@ setMethod("plotKmers", signature = "FastqcData", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
     df$Filename <- labels[df$Filename]
 
     ## Get the top kMers
@@ -242,6 +243,7 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
 
     colnames(df) <- gsub("Max_Obs/Exp_Position", "Base", colnames(df))
     colnames(df) <- gsub("Obs/Exp_Max", "Total", colnames(df))

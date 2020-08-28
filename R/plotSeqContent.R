@@ -96,6 +96,7 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
     acgt <- c("T", "C", "A", "G")
 
     df$Filename <- labels[df$Filename]
@@ -182,6 +183,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)

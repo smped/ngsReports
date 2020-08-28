@@ -111,6 +111,7 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
     df$Filename <- labels[df$Filename]
     df$x <- as.integer(df$Duplication_Level)
     df$Percentage <- round(df$Percentage, 2)
@@ -235,6 +236,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
     key <- names(labels)
 
     ## Get any theme arguments for dotArgs that have been set manually

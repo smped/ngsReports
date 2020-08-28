@@ -103,6 +103,7 @@ setMethod("plotNContent", signature = "FastqcData", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
     df$Filename <- labels[df$Filename]
     df$Base <- factor(df$Base, levels = unique(df$Base))
     df$xValue <- as.integer(df$Base)
@@ -210,6 +211,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
 
     ## fill bins up to the max sequence length
     df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))

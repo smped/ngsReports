@@ -52,7 +52,7 @@
 #' @docType methods
 #'
 #' @importFrom tidyr spread
-#' @importFrom plotly layout
+#' @importFrom plotly layout ggplotly
 #' @importFrom grDevices rgb
 #' @import ggplot2
 #'
@@ -97,6 +97,7 @@ setMethod("plotOverrep", signature = "FastqcData", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
     df$Filename <- labels[df$Filename]
 
     ## Get any arguments for dotArgs that have been set manually
@@ -199,6 +200,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
@@ -211,7 +213,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
     df$Possible_Source <-
         gsub(" \\([0-9]*\\% over [0-9]*bp\\)", "", df$Possible_Source)
     df <- dplyr::group_by(df, Filename, Possible_Source)
-    df <- dplyr::summarise(df, Percentage = sum(Percentage))
+    df <- dplyr::summarise(df, Percentage = sum(Percentage), .groups = "keep")
     df <- dplyr::ungroup(df)
     df$Percentage <- round(df$Percentage, 2)
     lev <- unique(dplyr::arrange(df, Percentage)$Possible_Source)
@@ -272,7 +274,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
 
     if (usePlotly) {
 
-        # Remove annotations before sending to plotly
+        ## Remove annotations before sending to plotly
         overPlot <- overPlot +
             theme(
                 legend.position = "none",
@@ -280,7 +282,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
                 axis.title.y = element_blank(),
                 axis.ticks.y = element_blank()
             )
-        # Prepare the sidebar
+        ## Prepare the sidebar
         status <- getSummary(x)
         status <- subset(status, Category == "Overrepresented sequences")
         status$Filename <- labels[status$Filename]
@@ -293,14 +295,14 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
         )
         sideBar <- .makeSidebar(status, key, pwfCols)
 
-        # Prepare the dendrogram
+        ## Prepare the dendrogram
         dendro <- plotly::plotly_empty()
         if (dendrogram) {
             dx <- ggdendro::dendro_data(clusterDend)
             dendro <- .renderDendro(dx$segments)
         }
 
-        # The final interactive plot
+        ## The final interactive plot
         overPlot <- suppressWarnings(
             suppressMessages(
                 plotly::subplot(

@@ -85,6 +85,7 @@ setMethod("plotSummary", signature = "FastqcDataList", function(
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
 
     ## Set factor levels
     df$Category <- factor(df$Category, levels = unique(df$Category))

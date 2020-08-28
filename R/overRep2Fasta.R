@@ -54,8 +54,9 @@ setMethod("overRep2Fasta", signature = "FastqcData", function(
     x, path, n = 10, labels, noAdapters = TRUE, ...){
 
     ## Sort out the labels
-    labels <- .makeLabels(x, labels, ...)
     df <- getModule(x, "Overrepresented_sequences")
+    labels <- .makeLabels(x, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
 
     if (missing(path)) path <-paste(
         fqName(x), "top", n, "overrepresented.fa", sep = "_"
