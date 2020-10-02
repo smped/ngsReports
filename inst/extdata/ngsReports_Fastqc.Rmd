@@ -176,7 +176,7 @@ plotSeqLengthDistn(fastqcData, labels = plotLabels, cluster = globals$cluster, d
 ```
 
 ```{r plotCumulativeLengthDistribution}
-plotSeqLengthDistn(fastqcData, plotType = "cumulative", labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
+plotSeqLengthDistn(fastqcData, plotType = "cdf", labels = plotLabels, cluster = globals$cluster, dendrogram = globals$dendrogram, usePlotly = globals$usePlotly)
 ```
 
 ## Sequence Duplication Levels

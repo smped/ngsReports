@@ -12,7 +12,7 @@
 #' paths to files which are coerecible to these objects can be passed.
 #'
 #' Only the common functionality of FastQC is implemented,
-#' for more fine detail pease call FastQC directly.
+#' for more fine detail please call FastQC directly.
 #'
 #' @param object A \code{FastqFileList}, \code{BamFileList}, \code{FastqFile},
 #' \code{BamFile} or character vector of file paths with all objects coercible

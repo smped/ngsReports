@@ -43,7 +43,7 @@
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param plotType Takes values "line" or "heatmap"
+#' @param plotType Takes values "line", "heatmap" or "cdf"
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for
 #' pass, warning, and fail values in plot
 #' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
@@ -254,8 +254,8 @@ setMethod("plotGcContent", signature = "FastqcData", function(
 setMethod("plotGcContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
-    GCobject, Fastafile, n=1e+6, plotType = c("heatmap", "line"), pwfCols,
-    cluster = FALSE, dendrogram = FALSE, ...){
+    GCobject, Fastafile, n=1e+6, plotType = c("heatmap", "line", "cdf"),
+    pwfCols, cluster = FALSE, dendrogram = FALSE, ...){
 
     df <- getModule(x, "Per_sequence_GC_content")
 
@@ -318,40 +318,62 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
         gcTheoryDF$Percent <- round(100*gcTheoryDF$Freq,4)
     }
 
-    ## Check for valid plotType arguments
+    ## Check for valid plotType arguments & set the x-label
     plotType <- match.arg(plotType)
-
     xLab <- "GC Content (%)"
 
-    if (plotType == "line") {
-        df$Filename <- labels[df$Filename]
+    if (plotType %in% c("cdf", "line")){
+
         ## Setup a palette with black as the first colour.
         ## Use the paired palette for easier visualisation of paired data
+        ## Onlt used for plotType = "line" or plotType = "cdf
         n <- length(x)
         lineCols <- RColorBrewer::brewer.pal(min(12, n), "Paired")
         lineCols <- colorRampPalette(lineCols)(n)
         lineCols <- c("#000000", lineCols)
 
+        ## Select axis labels and plotting values
+        ylab <- c(cdf = "Cumulative (%)", line = "Reads (%)")[plotType]
+
+        ## Set the Filename labels & add the TheoreticalGC df
+        df$Filename <- labels[df$Filename]
         df <- dplyr::bind_rows(gcTheoryDF, df)
         df$Filename <- factor(df$Filename, levels = unique(df$Filename))
-        df$Percent <- round(df$Percent, 2)
+
+        ## Calculate the CDF then rejoin if required
+        if (plotType == "cdf"){
+            df <- lapply(
+                split(df, f = df$Filename),
+                function(y){
+                    y[["Percent"]] <- cumsum(y[["Percent"]])
+                    y
+                }
+            )
+            df <- dplyr::bind_rows(df)
+        }
+
+        ## Round down to 2 decimal places for playing more nicely with plotly
+        df[["Percent"]] <- round(df[["Percent"]], 2)
 
         gcPlot <- ggplot(
-            df, aes_string("GC_Content", "Percent", colour = "Filename")
+            df,
+            aes_string("GC_Content", "Percent", colour = "Filename")
         ) +
-            geom_line(size = lineWidth) +
+            geom_line() +
             scale_x_continuous(
                 breaks = seq(0, 100, by = 10),
                 expand = c(0.02, 0)
             ) +
+            scale_y_continuous(labels = .addPercent) +
             scale_colour_manual(values = lineCols) +
-            labs(x = xLab, y = "Reads (%)", colour = c()) +
+            labs(x = xLab, y = ylab, colour = c()) +
             ggtitle(label = c(), subtitle = subTitle) +
             theme_bw() +
             theme(
                 plot.title = element_text(hjust = 0.5),
                 plot.subtitle = element_text(hjust = 0.5)
             )
+
         if (!is.null(userTheme)) gcPlot <- gcPlot + userTheme
 
         if (usePlotly) {
@@ -369,6 +391,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
                 )
             )
         }
+
     }
 
     if (plotType == "heatmap") {
@@ -467,6 +490,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
             gcPlot <- plotly::layout(gcPlot, xaxis3 = list(title = xLab))
         }
     }
+
     gcPlot
 }
 )

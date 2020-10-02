@@ -149,7 +149,7 @@ Takes a FastqFile, FastqFileList, BamFile or BamFileList. Alternatively
 paths to files which are coerecible to these objects can be passed.
 
 Only the common functionality of FastQC is implemented,
-for more fine detail pease call FastQC directly.
+for more fine detail please call FastQC directly.
 }
 \examples{
 \dontrun{

@@ -9,8 +9,8 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
-#' A cumulative plot can also be generated to provide guidance for minimum
-#' read length in some NGS workflows, by setting \code{plotType = "cumulative"}.
+#' A cdf plot can also be generated to provide guidance for minimum
+#' read length in some NGS workflows, by setting \code{plotType = "cdf"}.
 #' If all libraries have reads of identical lengths, these plots may be less
 #' informative.
 #'
@@ -21,7 +21,7 @@
 #' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
 #' @param plotType \code{character}. Can only take the values
 #' \code{plotType = "heatmap"} \code{plotType = "line"} or
-#' \code{plotType = "cumulative"}
+#' \code{plotType = "cdf"}
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
@@ -52,8 +52,8 @@
 #' # Plot as a frequency plot using lines
 #' plotSeqLengthDistn(fdl)
 #'
-#' # Or plot the cumulative value
-#' plotSeqLengthDistn(fdl, plotType = "cumulative")
+#' # Or plot the cdf
+#' plotSeqLengthDistn(fdl, plotType = "cdf")
 #'
 #' @docType methods
 #'
@@ -91,7 +91,7 @@ setMethod("plotSeqLengthDistn", signature = "character", function(
 #' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, plotType = c("line", "cumulative"), ...,
+    x, usePlotly = FALSE, labels, plotType = c("line", "cdf"), ...,
     expand.x = expansion(0, 0.2)){
 
     df <- getModule(x, "Sequence_Length_Distribution")
@@ -127,8 +127,8 @@ setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
     ## Sort out some plotting parameters
     stopifnot(is.numeric(expand.x), length(expand.x) == 4)
     xLab <- "Sequence Length (bp)"
-    yLab <- c(cumulative = "Cumulative Count", line = "Count")[plotType]
-    plotY <- c(cumulative = "Cumulative", line = "Count")[plotType]
+    yLab <- c(cdf = "Cumulative Count", line = "Count")[plotType]
+    plotY <- c(cdf = "Cumulative", line = "Count")[plotType]
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
@@ -180,7 +180,7 @@ setMethod(
     "plotSeqLengthDistn", signature = "FastqcDataList",
     function(
         x, usePlotly = FALSE, labels, counts = FALSE,
-        plotType = c("heatmap", "line", "cumulative"), cluster = FALSE,
+        plotType = c("heatmap", "line", "cdf"), cluster = FALSE,
         dendrogram = FALSE, ..., expand.x = expansion(0, 0.2),
         heatCol = inferno(50)){
 
@@ -231,7 +231,7 @@ setMethod(
         df <- droplevels(df)
         df <- dplyr::arrange(df, Filename, Length)
 
-        ## Get the cumulative count
+        ## Get the cdf count
         df <- dplyr::group_by(df, Filename)
         df <- dplyr::mutate(df, Cumulative = cumsum(Count))
         if (!counts) {
@@ -258,18 +258,18 @@ setMethod(
         ## Check axis expansion
         stopifnot(is.numeric(expand.x), length(expand.x) == 4)
 
-        if (plotType %in% c("line", "cumulative")) {
+        if (plotType %in% c("line", "cdf")) {
 
-            ## Decide whether to plot the Count or cumulative sum
+            ## Decide whether to plot the Count or cdf sum
             ## and set all labels
             plotY <- dplyr::case_when(
-                plotType == "cumulative" ~ "Cumulative",
+                plotType == "cdf" ~ "Cumulative",
                 plotType == "line" & counts ~ "Count",
                 plotType == "line" & !counts ~ "Freq"
             )
             yLab <- dplyr::case_when(
-                plotType == "cumulative" & counts ~ "Cumulative Count",
-                plotType == "cumulative" & !counts ~ "Cumulative (%)",
+                plotType == "cdf" & counts ~ "Cumulative Count",
+                plotType == "cdf" & !counts ~ "Cumulative (%)",
                 plotType == "line" & counts ~ "Count",
                 plotType == "line" & !counts ~ "Percent (%)"
             )
@@ -342,7 +342,7 @@ setMethod(
             ## Hide the legend
             lenPlot <- lenPlot + theme(legend.position = "none")
 
-            if (plotType %in% c("line", "cumulative")) {
+            if (plotType %in% c("line", "cdf")) {
 
                 ttip <- c("x", "y", "colour")
                 lenPlot <- suppressMessages(

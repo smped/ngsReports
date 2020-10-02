@@ -73,7 +73,7 @@ plotGcContent(
   GCobject,
   Fastafile,
   n = 1e+06,
-  plotType = c("heatmap", "line"),
+  plotType = c("heatmap", "line", "cdf"),
   pwfCols,
   cluster = FALSE,
   dendrogram = FALSE,
@@ -120,7 +120,7 @@ Ignored if calling the function on a FastqcDataList.}
 
 \item{lineCols}{Colors for observed and theoretical GC lines in single plots}
 
-\item{plotType}{Takes values "line" or "heatmap"}
+\item{plotType}{Takes values "line", "heatmap" or "cdf"}
 
 \item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
 pass, warning, and fail values in plot}

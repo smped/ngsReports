@@ -19,7 +19,7 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
-  plotType = c("line", "cumulative"),
+  plotType = c("line", "cdf"),
   ...,
   expand.x = expansion(0, 0.2)
 )
@@ -29,7 +29,7 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
   usePlotly = FALSE,
   labels,
   counts = FALSE,
-  plotType = c("heatmap", "line", "cumulative"),
+  plotType = c("heatmap", "line", "cdf"),
   cluster = FALSE,
   dendrogram = FALSE,
   ...,
@@ -50,7 +50,7 @@ File extensions are dropped by default.}
 
 \item{plotType}{\code{character}. Can only take the values
 \code{plotType = "heatmap"} \code{plotType = "line"} or
-\code{plotType = "cumulative"}}
+\code{plotType = "cdf"}}
 
 \item{expand.x}{Output from \code{expansion()} or numeric vector of
 length 4. Passed to \code{scale_x_discrete}}
@@ -81,8 +81,8 @@ generates a ggplot2 object, with a set of minimal defaults.
 The output of this function can be further modified using the standard
 ggplot2 methods.
 
-A cumulative plot can also be generated to provide guidance for minimum
-read length in some NGS workflows, by setting \code{plotType = "cumulative"}.
+A cdf plot can also be generated to provide guidance for minimum
+read length in some NGS workflows, by setting \code{plotType = "cdf"}.
 If all libraries have reads of identical lengths, these plots may be less
 informative.
 
@@ -101,7 +101,7 @@ fdl <- FastqcDataList(fl)
 # Plot as a frequency plot using lines
 plotSeqLengthDistn(fdl)
 
-# Or plot the cumulative value
-plotSeqLengthDistn(fdl, plotType = "cumulative")
+# Or plot the cdf
+plotSeqLengthDistn(fdl, plotType = "cdf")
 
 }

@@ -311,7 +311,9 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         too_short = any(grepl("(Reads|Pairs) that were too short", x)),
         ## Too long may not be in the file
         too_many_n = any(grepl("(Reads|Pairs) with too many N", x)),
-        out_reads = any(grepl("(Reads|Pairs) written \\(passing filters\\)", x)),
+        out_reads = any(
+            grepl("(Reads|Pairs) written \\(passing filters\\)", x)
+        ),
         `w/adapters` = any(grepl("Read.+ with adapter", x)),
         out_bp = any(grepl("Total written \\(filtered\\)", x))
     )
