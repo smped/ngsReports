@@ -42,6 +42,7 @@
 #' @param which Which element of the parsed object to return. Ignored in all
 #' file types except when \code{type} is set to duplicationMetrics, cutadapt or
 #' adapterRemoval. See details for possible values
+#' @param stripPaths logical(1). Remove paths from the Filename column
 #'
 #' @return A \code{tibble}.
 #' Column names are broadly similar to the text in supplied files,
@@ -57,7 +58,7 @@
 #' @importFrom stringr str_replace_all str_trim str_remove_all str_extract
 #'
 #' @export
-importNgsLogs <- function(x, type = "auto", which) {
+importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
     x <- unique(x) # Remove any  duplicates
     stopifnot(length(x) > 0) # Fail on empty vector
@@ -93,7 +94,8 @@ importNgsLogs <- function(x, type = "auto", which) {
 
     ## Load the data
     data <- suppressWarnings(lapply(x, readLines))
-    names(data) <- basename(x)
+    if (stripPaths) x <- basename(x)
+    names(data) <- x
 
     ## adding auto detect
     if (type == "autoDetect") {
@@ -164,8 +166,6 @@ importNgsLogs <- function(x, type = "auto", which) {
     if (all(c("hisat2", "bowtie2") %in% type)) type <- "bowtie2"
     type
 }
-
-
 
 #' @title Check for correct structure of supplied Bowtie log files
 #' @description Check for correct structure of supplied Bowtie log files after
@@ -392,7 +392,6 @@ importNgsLogs <- function(x, type = "auto", which) {
     checkLast <- grepl("Trimmomatic[PS]E: Completed successfully", x[[n]])
     all(checkL1, checkMain, checkLast)
 }
-
 
 #' @title Check for correct structure of supplied Quast log files
 #' @description Check for correct structure of supplied Quast log files after
@@ -642,7 +641,7 @@ importNgsLogs <- function(x, type = "auto", which) {
         ## Find the header. The next two rows will be the colnames + data
         metHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
         df <- .splitByTab(x[seq(metHeader + 1, by = 1, length.out = 2)])
-        df$LIBRARY <- basename(libName)
+        df$LIBRARY <- libName
         df
     })
     metrics <- dplyr::bind_rows(metrics)
@@ -666,7 +665,7 @@ importNgsLogs <- function(x, type = "auto", which) {
         ## Remove any blank lines (this is the last line)
         x <- x[!grepl("^$", x)]
         df <- .splitByTab(x)
-        df$LIBRARY <- basename(libName)
+        df$LIBRARY <- libName
         dplyr::select(df, "LIBRARY", everything())
     })
     histData <- dplyr::bind_rows(histData)
@@ -962,7 +961,7 @@ importNgsLogs <- function(x, type = "auto", which) {
             names_to = "Sample",
             values_to = "Total"
         )
-        x$Sample <- basename(x$Sample)
+        x$Sample <- x$Sample
         x$Total <- as.integer(x$Total)
         x$Status <- fct_inorder(x$Status)
         tidyr::pivot_wider(

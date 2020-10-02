@@ -4,7 +4,7 @@
 \alias{importNgsLogs}
 \title{Import Various NGS-related log files}
 \usage{
-importNgsLogs(x, type = "auto", which)
+importNgsLogs(x, type = "auto", which, stripPaths = TRUE)
 }
 \arguments{
 \item{x}{\code{character}. Vector of filenames. All log files must be of the
@@ -20,6 +20,8 @@ type for all implemented types.}
 \item{which}{Which element of the parsed object to return. Ignored in all
 file types except when \code{type} is set to duplicationMetrics, cutadapt or
 adapterRemoval. See details for possible values}
+
+\item{stripPaths}{logical(1). Remove paths from the Filename column}
 }
 \value{
 A \code{tibble}.

@@ -1,3 +1,6 @@
+Changes in version 1.5.4
++ Removed basename calls in all importNgsLogs functions
+
 Changes in version 1.5.3
 + Fixed bug in plotOverrep
 
