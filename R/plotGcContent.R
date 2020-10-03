@@ -77,8 +77,6 @@
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats hclust dist
 #' @import ggplot2
-#' @importFrom Biostrings readDNAStringSet
-#' @importFrom BiocGenerics width
 #' @importFrom stringr str_to_title
 #' @name plotGcContent
 #' @rdname plotGcContent-methods

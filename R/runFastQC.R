@@ -201,12 +201,12 @@ setMethod("runFastQC", "BamFileList", function(
     threads <- paste("-t", min(threads, maxCores))
     stopifnot(is.logical(casava), is.logical(nogroup))
     if (casava) {
-        casava <- ifelse(nofilter, "--casava --nofilter", "--casava")
+        casava <- c("--casava", "--casava --nofilter")[nofilter + 1]
     }
     else {
         casava <- c()
     }
-    fqcExtract <- dplyr::if_else(extract, "--extract", "--noextract")
+    fqcExtract <- c("--noextract", "--extract")[extract + 1L]
     if (nogroup) {
         message(
             "Setting the option '--nogroup' may cause FastQC to become unstable"

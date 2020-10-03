@@ -33,8 +33,8 @@
 #'
 #' @docType methods
 #'
-#' @importFrom Biostrings readDNAStringSet DNAStringSet
-#' @importFrom XVector subseq
+#' @importFrom Biostrings readDNAStringSet DNAStringSet subseq letterFrequency
+#' @importFrom BiocGenerics width
 #' @importFrom stats rnorm runif lm.fit
 #'
 #' @export
@@ -115,8 +115,8 @@ setMethod("estGcDistn", "DNAStringSet", function(
     reads <- subseq(frags, start = 1, end = rdEnds)
 
     ## Find the GC content for each read
-    gc <- as.vector(Biostrings::letterFrequency(reads, "GC"))
-    total <- as.vector(Biostrings::letterFrequency(reads, "ACGT"))
+    gc <- as.vector(letterFrequency(reads, "GC"))
+    total <- as.vector(letterFrequency(reads, "ACGT"))
     gc.content <- (gc / total)[total > 0]
 
     ## Form into bins based on RL

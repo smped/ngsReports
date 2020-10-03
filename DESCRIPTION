@@ -49,7 +49,6 @@ Imports:
     tidyselect (>= 0.2.3),
     utils,
     viridisLite,
-    XVector,
     zoo
 LazyData: true
 RoxygenNote: 7.1.1

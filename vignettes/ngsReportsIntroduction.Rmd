@@ -6,7 +6,7 @@ author:
 - name: Hien To
   affiliation: Bioinformatics Hub, University of Adelaide
 - name: Steve Pederson
-  affiliation: Bioinformatics Hub, University of Adelaide
+  affiliation: Dame Roma Mitchell Cancer Research Laboratories, Adelaide Medical School, University of Adelaide
   email: stephen.pederson@adelaide.edu.au
 package: ngsReports
 output:
@@ -28,7 +28,7 @@ The package `ngsReports` is designed to bolt into data processing pipelines and
 produce combined plots for multiple FastQC reports generated across an entire 
 set of libraries or samples.
 The primary functionality of the package is parsing FastQC reports, with import 
-methods also implemented for log files produced by tools as as `STAR`, `Hisat2` 
+methods also implemented for log files produced by tools as as `STAR`, `hisat2` 
 and others.
 In addition to parsing files, default plotting methods are implemented.
 Plots applied to a single file will replicate the default plots from 
@@ -50,10 +50,10 @@ for interactive viewing of FastQC reports.
 This can be installed using:
 
 ```
-remotes::install_github("UofABioinformaticsHub/fastqcRshiny")
+remotes::install_github("UofABioinformaticsHub/shinyNgsreports")
 ```
 
-A vignette for this app will be installed with the `fastqcRshiny` package.
+A vignette for this app will be installed with the `shinyNgsreports` package.
 
 ## The default report
 
