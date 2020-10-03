@@ -2,6 +2,7 @@ Changes in version 1.5.4
 + Allowed for ignoring basename() calls in all importNgsLogs functions
 + Added cumulative GC plot to plotGcContent() as plotType = "cdf"
 + Changed ploting option name from cumulative to cdf for plotSeqLengthDistn()
++ Announced deprecation of runFastQC()
 
 Changes in version 1.5.3
 + Fixed bug in plotOverrep

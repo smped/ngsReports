@@ -35,7 +35,6 @@
 #'
 #' @importFrom Biostrings readDNAStringSet DNAStringSet
 #' @importFrom XVector subseq
-#' @importFrom truncnorm rtruncnorm
 #' @importFrom stats rnorm runif lm.fit
 #'
 #' @export
@@ -71,6 +70,15 @@ setMethod("estGcDistn", "character", function(
 setMethod("estGcDistn", "DNAStringSet", function(
     x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
 
+    if (!requireNamespace("truncnorm", quietly = TRUE)){
+        stop(
+            paste(
+                "The package truncnorm is required for this function.",
+                "Please install it using BiocManager::install('truncnorm')"
+            )
+        )
+    }
+
     ## Check the arguments & convert to integers
     n <- tryCatch(as.integer(n))
     rl <- tryCatch(as.integer(rl))
@@ -86,7 +94,7 @@ setMethod("estGcDistn", "DNAStringSet", function(
 
     ## Sample a set of fragments with variable length using the truncated norm
     ## Upper & lower limits are set as 1 & sequence length respectively
-    fragSizes <- rtruncnorm(n, 1, width(molecules), fl, fragSd)
+    fragSizes <- truncnorm::rtruncnorm(n, 1, width(molecules), fl, fragSd)
     fragSizes <- floor(fragSizes)
 
     ## sample start positions uniformly

@@ -79,6 +79,7 @@
 #' @import ggplot2
 #' @importFrom Biostrings readDNAStringSet
 #' @importFrom BiocGenerics width
+#' @importFrom stringr str_to_title
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
 #' @export
@@ -158,6 +159,7 @@ setMethod("plotGcContent", signature = "FastqcData", function(
                 paste("Theoretical Distribution based on file", Fastafile)
         }
         else{
+            gcType <- stringr::str_to_title(gcType)
             gcType <- match.arg(gcType)
             avail <- gcAvail(GCobject, gcType)
             species <- match.arg(species, avail$Name)
@@ -300,6 +302,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
         else {
             ## Tidy up the GC content variables
             if (missing(GCobject)) GCobject <- gcTheoretical
+            gcType <- stringr::str_to_title(gcType)
             gcType <- match.arg(gcType)
             avail <- gcAvail(GCobject, gcType)
             species <- match.arg(species, avail$Name)

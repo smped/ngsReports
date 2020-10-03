@@ -385,7 +385,7 @@ plotGcContent(fdl, plotType = "line",  gcType = "Transcriptome")
 Customized theoretical GC content can be generated using input DNA sequences 
 from a supplied fasta file.
 
-```{r, message=FALSE, warning=FALSE}
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
 faFile <- system.file(
     "extdata", "Athaliana.TAIR10.tRNA.fasta", 
     package = "ngsReports")
@@ -425,7 +425,7 @@ A selection of log files as produced by tools such as `STAR`, `hisat2`,
 using the `importNgsLogs()` function. 
 
 Tool can be specified by the user using the argument `type`, however if no
-`type` is provided we will attempt to autodetect from the file's structure. 
+`type` is provided we will attempt to auto-detect from the file's structure. 
 Note: only a single log file type can be imported at any time.
 
 The `importNgsLogs()` function currently supports log files from 
@@ -434,21 +434,21 @@ the following tools.
 Adapter removal and trimming
 
 - AdapterRemoval
-- CutAdapt
-- Trimmomatic
+- cutadapt
+- trimmomatic
 
 Mapping and alignment 
 
-- Bowtie
-- Bowtie2
-- HISAT2
-- Samtools flagstat
+- bowtie
+- bowtie2
+- hisat2
+- samtools flagstat
 - STAR
-- Picard MarkDuplicates
+- picard MarkDuplicates
 
-Transcript/gene quantificaiton
+Transcript/gene quantification
 
-- Feature counts
+- featureCounts
 
 Genome assembly
 
@@ -519,7 +519,7 @@ df %>%
     )
 ```
 
-The output of the SAMtools flagstat module can be parsed and imported
+The output of the `samtools flagstat` module can be parsed and imported
 
 ```{r}
 flagstatLog <- system.file("extdata", "flagstat.txt", package = "ngsReports")
@@ -537,7 +537,7 @@ df %>%
 ```
 
 In addition to the files produced by the above alignment tools, the output 
-from Duplication Metrics (picard) can also be imported.
+from Duplication Metrics (`picard`) can also be imported.
 This is imported as a list with a `tibble` containing the detailed output in 
 the list element `$metrics` and the histogram data included as the second 
 elements.
@@ -552,7 +552,7 @@ str(dupMetrics)
 
 ### Plot log file imports 
 
-Summaries of log files from select mapping and alignement tools can be plot 
+Summaries of log files from select mapping and alignment tools can be plot 
 using the function `plotAlignemntSummary()`.
 
 ```{r, fig.cap = "Example Bowtie logs for PE and SE sequencing"}
@@ -567,12 +567,11 @@ plotAlignmentSummary(starLog, type = "star")
 ## Genome assembly 
 
 Assembly 'completeness' and summary statistic information from the tools BUSCO 
-and quast can also be plot using the funciton `plotAssemblyStats()`
+and quast can also be plot using the function `plotAssemblyStats()`
 
 ```{r, fig.cap = "Example plot after running BUSCO v3 on the Drosophila melanogaster reference genome"}
 buscoLog <- system.file("extdata", "short_summary_Dmelanogaster_Busco.txt", package = "ngsReports")
 plotAssemblyStats(buscoLog, type = "busco")
-
 ```
 
 ```{r, fig.cap = "Example plot after running quast on two shortread assemblies"}

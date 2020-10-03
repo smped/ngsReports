@@ -17,6 +17,7 @@ An object of class FastqcData
 }
 \description{
 The FastqcData Object Class
+\lifecycle{stable}
 }
 \details{
 This object class is the main object required for generating plots

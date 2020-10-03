@@ -1,7 +1,7 @@
 #' @title Import Various NGS-related log files
 #'
 #' @description Imports NGS-related log files such as those generated from
-#' stderr
+#' stderr \lifecycle{maturing}
 #'
 #' @details Imports one or more log files as output by tools such as:
 #' \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},

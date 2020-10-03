@@ -1,6 +1,7 @@
 #' @title Draw a PCA plot for Fast QC modules
 #'
 #' @description Draw a PCA plot for Fast QC modules across multiple samples
+#' \lifecycle{experimental}
 #'
 #' @details
 #' This carries out PCA on all or a subset of FastQC modules and plots the

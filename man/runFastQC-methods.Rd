@@ -136,7 +136,8 @@ Refer to the \code{fastqc} help page for more details}
 An list of paths to the output
 }
 \description{
-\lifecycle{soft-deprecated} A convenient wrapper for the bash shell command fastqc.
+\lifecycle{soft-deprecated}
+A convenient wrapper for the bash shell command fastqc.
 Only runs if Fastqc is installed.
 }
 \details{

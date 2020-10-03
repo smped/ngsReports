@@ -13,14 +13,15 @@ An object of class .FastqcFile
 \description{
 The .FastqcFile Object Class defines a path to the output from
 the standalone tool FastQC.
-
-The helper function \code{.FastqcFile()} is a simple constructor which
-checks validity and enables construction of other dependent classes.
+\lifecycle{stable}
 }
 \details{
 This class simply refers to a fastqc output file after checking for
 existence and validity (i.e. the correct internal structure).
 Underlying files can be zipped (*_fastqc.zip) or extracted directories
+
+The helper function \code{.FastqcFile()} is a simple constructor which
+checks validity and enables construction of other dependent classes.
 }
 \section{Slots}{
 

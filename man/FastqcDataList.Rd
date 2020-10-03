@@ -16,6 +16,7 @@ An object of class FastqcDataList
 }
 \description{
 The FastqcDataList Object Class
+\lifecycle{stable}
 }
 \section{Slots}{
 

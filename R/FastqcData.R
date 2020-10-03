@@ -1,6 +1,7 @@
 #' @title The FastqcData Object Class
 #'
 #' @description The FastqcData Object Class
+#' \lifecycle{stable}
 #'
 #' @details This object class is the main object required for generating plots
 #' and tables. Instantiation will first test for a compressed file (or
