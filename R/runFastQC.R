@@ -1,6 +1,7 @@
 #' A wrapper for the bash shell command fastqc.
 #'
-#' @description A convenient wrapper for the bash shell command fastqc.
+#' @description \lifecycle{soft-deprecated}
+#' A convenient wrapper for the bash shell command fastqc.
 #' Only runs if Fastqc is installed.
 #'
 #' @details This is a simple wrapper function for controlling & running
@@ -30,7 +31,7 @@
 #' @param contaminants Path to an alternate file with contaminants.
 #' The structure of the file will not be checked.
 #' Refer to the \code{fastqc} help page for more details
-#' @param adapters Path toa file listing adapters to search for.
+#' @param adapters Path to a file listing adapters to search for.
 #' The structure of the file will not be checked.
 #' Refer to the \code{fastqc} help page for more details
 #' @param kmers An integer between 2 and 10
@@ -72,8 +73,7 @@ setMethod("runFastQC", "ANY", function(
     adapters = c(), kmers = 7, exec){
 
     ## Cursory checks
-    if (!is(object, "character"))
-        stop("runFastQC not implemented for objects of class ", class(object))
+    if (!is(object, "character")) .errNotImp(class(object))
     if (!all(file.exists(object)))
         stop("Object must specify valid filepaths")
 
@@ -156,6 +156,13 @@ setMethod("runFastQC", "BamFileList", function(
 .fastqc <- function(
     object, outPath, threads, casava, nofilter, extract, nogroup, min_length,
     contaminants, adapters, kmers, exec, fileType){
+
+    message(
+        paste(
+            "runFastQC will be deprecated with Bioconductor 3.13\n",
+            "Please call directly using system2()"
+        )
+    )
 
     stopifnot(!missing(fileType))
 

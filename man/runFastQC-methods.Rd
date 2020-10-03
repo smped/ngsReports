@@ -124,7 +124,7 @@ the sequence to be shown in the report.}
 The structure of the file will not be checked.
 Refer to the \code{fastqc} help page for more details}
 
-\item{adapters}{Path toa file listing adapters to search for.
+\item{adapters}{Path to a file listing adapters to search for.
 The structure of the file will not be checked.
 Refer to the \code{fastqc} help page for more details}
 
@@ -136,7 +136,7 @@ Refer to the \code{fastqc} help page for more details}
 An list of paths to the output
 }
 \description{
-A convenient wrapper for the bash shell command fastqc.
+\lifecycle{soft-deprecated} A convenient wrapper for the bash shell command fastqc.
 Only runs if Fastqc is installed.
 }
 \details{

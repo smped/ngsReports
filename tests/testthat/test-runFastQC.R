@@ -19,7 +19,10 @@ test_that("runFastQC handles incorrect file types before searching for the execu
 ## Check the function runs if the executable exists
 exec <- Sys.which("fastqc")
 if (exec != "") {
-    ff <- suppressMessages(runFastQC(f, tempdir(), exec = exec))
+    ## Check the deprecation message appears
+    expect_message(
+        ff <- runFastQC(f, tempdir(), exec = exec), ".+deprecated.+"
+    )
     expect_equal(
         ff, file.path(tempdir(), gsub(".txt", "_fastqc.zip", basename(fl)))
     )
