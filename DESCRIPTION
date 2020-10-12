@@ -1,5 +1,5 @@
 Package: ngsReports
-Version: 1.5.5
+Version: 1.5.6
 Date: 2020/10/02
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
@@ -74,6 +74,7 @@ Collate:
     'getSummary.R'
     'helpers.R'
     'importNgsLogs.R'
+    'importSJ.R'
     'isCompressed.R'
     'maxAdapterContent.R'
     'ngsReports-package.R'

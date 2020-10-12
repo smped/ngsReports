@@ -38,7 +38,7 @@
 #'
 #' @return An list of paths to the output
 #'
-#' @author Steve Pederson <stephen.pederson@@adelaide.edu.au>
+#' @author Stephen Pederson <stephen.pederson@@adelaide.edu.au>
 #'
 #' @examples
 #' \dontrun{

@@ -1,4 +1,7 @@
 Changes in version 1.5.5
++ Added importSJ for importing SJ.out.tab files from the aligner STAR
+
+Changes in version 1.5.5
 + Added plotType = "residuals" for plotSeqContent()
 
 Changes in version 1.5.4

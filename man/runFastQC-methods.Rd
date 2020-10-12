@@ -164,5 +164,5 @@ fqcFile <- runFastQC(f, outPath = tempdir())
 
 }
 \author{
-Steve Pederson <stephen.pederson@adelaide.edu.au>
+Stephen Pederson <stephen.pederson@adelaide.edu.au>
 }
