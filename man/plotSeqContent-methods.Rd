@@ -22,7 +22,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
   usePlotly = FALSE,
   labels,
   pwfCols,
-  plotType = c("heatmap", "line"),
+  plotType = c("heatmap", "line", "residuals"),
   cluster = FALSE,
   dendrogram = FALSE,
   ...,
@@ -35,7 +35,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
+All file names must be present in the names of the vector.
 File extensions are dropped by default.}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
@@ -44,8 +44,8 @@ File extensions are dropped by default.}
 pass, warning, and fail
 values in plot}
 
-\item{plotType}{\code{character}. Type of plot to generate. Must be "line" or
-"heatmap"}
+\item{plotType}{\code{character}. Type of plot to generate. Must be "line",
+"heatmap" or "residuals"}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -74,6 +74,8 @@ Individual line plots are also generated when plotting from a single
 
 If setting \code{usePlotly = TRUE} for a large number of reports, the plot
 can be slow to render.
+An alternative may be to produce a plot of residuals for each base, produced
+by taking the position-specific mean for each base.
 }
 \examples{
 

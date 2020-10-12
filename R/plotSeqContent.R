@@ -13,14 +13,16 @@
 #'
 #' If setting \code{usePlotly = TRUE} for a large number of reports, the plot
 #' can be slow to render.
+#' An alternative may be to produce a plot of residuals for each base, produced
+#' by taking the position-specific mean for each base.
 #'
 #' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
 #' @param labels An optional named vector of labels for the file names.
-#' All filenames must be present in the names.
+#' All file names must be present in the names of the vector.
 #' File extensions are dropped by default.
 #' @param usePlotly \code{logical}. Generate an interactive plot using plotly
-#' @param plotType \code{character}. Type of plot to generate. Must be "line" or
-#' "heatmap"
+#' @param plotType \code{character}. Type of plot to generate. Must be "line",
+#' "heatmap" or "residuals"
 #' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for
 #' pass, warning, and fail
 #' values in plot
@@ -50,7 +52,9 @@
 #' @docType methods
 #'
 #' @importFrom grDevices rgb
-#' @importFrom dplyr mutate_at vars
+#' @importFrom dplyr mutate_at vars group_by ungroup
+#' @importFrom scales percent
+#' @importFrom tidyr pivot_longer
 #' @importFrom tidyselect one_of
 #' @import ggplot2
 #'
@@ -161,7 +165,8 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
 #' @rdname plotSeqContent-methods
 #' @export
 setMethod("plotSeqContent", signature = "FastqcDataList", function(
-    x, usePlotly = FALSE, labels, pwfCols, plotType = c("heatmap", "line"),
+    x, usePlotly = FALSE, labels, pwfCols,
+    plotType = c("heatmap", "line", "residuals"),
     cluster = FALSE, dendrogram = FALSE, ..., nc = 2){
 
     ## Get the SequenceContent
@@ -179,7 +184,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     df <- mutate_at(df, c("Start", "End"), as.integer)
 
     plotType <- match.arg(plotType)
-    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+    if (missing(pwfCols)) pwfCols <- pwf
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(x, labels, ...)
@@ -197,6 +202,10 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     ## Axis labels
     xLab <- "Position in read (bp)"
     yLab <- ifelse(plotType == "heatmap", "Filename", "Percent (%)")
+
+    ## Get the PASS/WARN/FAIL status
+    status <- getSummary(x)
+    status <- subset(status, Category == "Per base sequence content")
 
     if (plotType == "heatmap") {
 
@@ -287,8 +296,6 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
                     axis.title.y = element_blank()
                 )
 
-            status <- getSummary(x)
-            status <- subset(status, Category == "Per base sequence content")
             status$Filename <- labels[status$Filename]
             status$Filename <-
                 factor(status$Filename, levels = levels(df$Filename))
@@ -332,7 +339,18 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
         df$Position <- factor(df$Position, levels = posLevels)
         df$x <- as.integer(df$Position)
 
-        ##set colours
+        ## Add the pwf status for plotly plots
+        status[["Filename"]] <- labels[status[["Filename"]]]
+        df <- left_join(df, status, by = "Filename")
+        rect_df <- group_by(df, Filename, Status)
+        rect_df <- dplyr::summarise(
+            rect_df,
+            Start = 0,
+            End = length(levels(Position)),
+            .groups = "drop"
+        )
+
+        ##set colours for each base
         baseCols <- c(`T` = "red", G = "black", A = "green", C = "blue")
 
         xBreaks <- seq_along(levels(df$Position))
@@ -340,6 +358,15 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
             df,
             aes_string("x", "Percent", colour = "Base", label = "Position")
         ) +
+            geom_rect(
+                aes_string(
+                    xmin = 0, xmax = "End" ,
+                    ymin = 0, ymax = 100, fill = "Status"
+                ),
+                data = rect_df,
+                alpha = 0.1,
+                inherit.aes = FALSE
+            ) +
             geom_line() +
             facet_wrap(~Filename, ncol = nc) +
             scale_y_continuous(
@@ -350,6 +377,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
                 breaks = xBreaks,
                 labels = levels(df$Position)
             ) +
+            scale_fill_manual(values = getColours(pwfCols)) +
             scale_colour_manual(values = baseCols) +
             labs(x = xLab, y = yLab) +
             theme_bw() +
@@ -361,11 +389,89 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
         if (!is.null(userTheme)) scPlot <- scPlot + userTheme
 
         if (usePlotly) {
-            ttip <- c("y", "colour", "label")
+            scPlot <- scPlot + theme(legend.position = "none")
+            ttip <- c("y", "colour", "label", "fill")
             scPlot <- suppressMessages(
                 suppressWarnings(plotly::ggplotly(scPlot, tooltip = ttip))
             )
         }
+    }
+    if (plotType == "residuals"){
+
+        df$Filename <- labels[df$Filename]
+        ## Fill in the values glossed over by any binning by FastQC
+        df <- lapply(
+            split(df, f = df$Filename),
+            function(x){
+                x <- dplyr::right_join(
+                    x = x,
+                    y = tibble(Start = seq_len(max(x$Start))),
+                    by = "Start"
+                )
+                x <- dplyr::arrange(x, Start)
+                x <- dplyr::mutate(
+                    x,
+                    dplyr::across(
+                        .cols = c(acgt, Filename),
+                        .fns =  na.locf
+                    )
+                )
+                x <- dplyr::arrange(x, Start)
+            }
+        )
+        df <- dplyr::bind_rows(df)[,c("Filename", "Start", acgt)]
+        ## Convert to long form
+        df <- pivot_longer(
+            data = df,
+            cols = acgt,
+            names_to = "Base",
+            values_to = "Percent"
+        )
+        ## Avoid R CMD check error
+        Status <- End <- Percent <- c()
+        ## Calculate the Residuals for each base/position
+        df <- group_by(df, Start, Base)
+        df <- dplyr::mutate(df, Residuals = Percent - mean(Percent))
+        df <- ungroup(df)
+        df[["Residuals"]] <- round(df[["Residuals"]], 2)
+        ## Find the duplicated positions as a result of binning & remove
+        df <- dplyr::arrange(df, Filename, Base, Start)
+        df <- group_by(df, Filename, Base)
+        df <- dplyr::mutate(df, diff = c(0, diff(Percent)))
+        df <- ungroup(df)
+        df <- dplyr::filter(df, diff != 0 | Start == 1)
+        df[["Deviation"]] <- percent(df[["Residuals"]]/100, accuracy = 0.1)
+        ## Add the pwf status for plotly plots
+        status[["Filename"]] <- labels[status[["Filename"]]]
+        df <- left_join(df, status, by = "Filename")
+
+        scPlot <- ggplot(
+            df,
+            aes_string(
+                x = "Start", y = "Residuals",
+                colour = "Filename", label = "Deviation",
+                status = "Status"
+            )
+        ) +
+            geom_line(aes_string(group = "Filename")) +
+            facet_wrap(~Base) +
+            scale_y_continuous(labels = .addPercent) +
+            labs(x = xLab) +
+            theme_bw()
+
+        if (!is.null(userTheme)) scPlot <- scPlot + userTheme
+
+        if (usePlotly) {
+            ttip <- c("x", "colour", "label", "status")
+            scPlot <- scPlot + theme(legend.position = "none")
+            scPlot <- suppressMessages(
+                suppressWarnings(
+                    plotly::ggplotly(scPlot, tooltip = ttip)
+                )
+            )
+        }
+
+
     }
 
     scPlot
