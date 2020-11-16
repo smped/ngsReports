@@ -9,6 +9,9 @@
 #' @param x Paths to one or more alignment log files
 #' @param type The aligner used. Can be one of star, bowtie, bowtie2 or hisat2
 #' @param usePlotly logical. If TRUE an interactive plot will be generated.
+#' @param stripPaths logical(1). Remove paths from the Filename column
+#' @param asPercent Show alignments as percentages, with the alternative (FALSE)
+#' being the total number of reads
 #' If FALSE a ggplot object will be output
 #' @param ... Used to pass additional attributes to theme() and between methods
 #' @param fill Colours used to fill the bars. Passed to scale_fill_manual.
@@ -31,6 +34,8 @@ plotAlignmentSummary <- function(
     x,
     type = c("star", "bowtie", "bowtie2", "hisat2"),
     usePlotly = FALSE,
+    stripPaths = TRUE,
+    asPercent = FALSE,
     ...,
     fill = c("red", "yellow", "blue", rgb(0, 0.5, 1))
 ){
@@ -45,10 +50,11 @@ plotAlignmentSummary <- function(
     if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
     ## Import the data
-    df <- tryCatch(importNgsLogs(x, type))
+    df <- tryCatch(importNgsLogs(x, type, stripPaths = stripPaths))
     pFun <- paste0(".plot", stringr::str_to_title(type), "Alignment")
     args <- list(
         df = df,
+        asPercent = asPercent,
         fill = fill
     )
 
@@ -73,7 +79,7 @@ plotAlignmentSummary <- function(
     p
 }
 
-.plotStarAlignment <- function(df, fill){
+.plotStarAlignment <- function(df, fill, asPercent){
 
     cols <- c(
         "Filename",
@@ -91,7 +97,7 @@ plotAlignmentSummary <- function(
     ## Now gather for plotting
     df <- tidyr::pivot_longer(
         df,
-        cols = all_of(subCols),
+        cols = all_of(c(subCols, "Unmapped_Other")),
         names_to = "Type",
         values_to = "Total"
     )
@@ -108,6 +114,16 @@ plotAlignmentSummary <- function(
     df$Type <- factor(df$Type, levels = rev(lv))
     df$Percent = percent(df$Total / df$Number_Of_Input_Reads)
     df$Reads <- comma(df$Total)
+    # Set the defaults
+    ylab <- "Total Reads"
+    axisLabelFun <- scales::comma
+    if (asPercent) {
+        df <- group_by(df, Filename)
+        df <- dplyr::mutate(df, Total = Total / sum(Total))
+        df <- dplyr::ungroup(df)
+        ylab <- "Percentage"
+        axisLabelFun <- scales::percent
+    }
 
     ggplot(
         df,
@@ -120,16 +136,18 @@ plotAlignmentSummary <- function(
         )
     ) +
         geom_bar(stat = "identity") +
-        labs(y = "Total Reads") +
-        scale_y_continuous(labels = comma, expand = expansion(c(0, 0.05))) +
+        labs(y = ylab) +
+        scale_y_continuous(
+            labels = axisLabelFun,
+            expand = expansion(c(0, 0.05))
+        ) +
         scale_fill_manual(values = fill) +
         coord_flip() +
         theme_bw()
 
 }
 
-.plotHisat2Alignment <- function(df, fill){
-
+.plotHisat2Alignment <- function(df, fill, asPercent){
 
     df <- dplyr::select(df, -one_of("Paired_Reads", "Alignment_Rate"))
     keepCols <- names(df)[-seq_len(2)]
@@ -148,6 +166,16 @@ plotAlignmentSummary <- function(
     lv <- intersect(lv, df$Type)
     df$Type <- factor(df$Type, levels = rev(lv))
     fill <- grDevices::colorRampPalette(fill)(length(lv))
+    # Set the defaults
+    ylab <- "Total Reads"
+    axisLabelFun <- scales::comma
+    if (asPercent) {
+        df <- group_by(df, Filename)
+        df <- dplyr::mutate(df, Total = Total / sum(Total))
+        df <- dplyr::ungroup(df)
+        ylab <- "Percentage"
+        axisLabelFun <- scales::percent
+    }
 
     ggplot(
         df,
@@ -160,8 +188,11 @@ plotAlignmentSummary <- function(
         )
     ) +
         geom_bar(stat = "identity") +
-        labs(y = "Total Reads") +
-        scale_y_continuous(labels = comma, expand = expansion(c(0, 0.05))) +
+        labs(y = ylab) +
+        scale_y_continuous(
+            labels = axisLabelFun,
+            expand = expansion(c(0, 0.05))
+        ) +
         scale_fill_manual(values = fill) +
         coord_flip() +
         theme_bw()
@@ -171,7 +202,7 @@ plotAlignmentSummary <- function(
 .plotBowtie2Alignment <- .plotHisat2Alignment
 
 #' @importFrom tidyselect contains
-.plotBowtieAlignment <- function(df, fill){
+.plotBowtieAlignment <- function(df, fill, asPercent){
 
     df <- dplyr::select(df, -contains("Time"), -contains("Index"))
     keepCols <- names(df)[-seq_len(2)]
@@ -189,6 +220,16 @@ plotAlignmentSummary <- function(
     else {
         fill <- grDevices::colorRampPalette(fill)(nLevels)
     }
+    # Set the defaults
+    ylab <- "Total Reads"
+    axisLabelFun <- scales::comma
+    if (asPercent) {
+        df <- group_by(df, Filename)
+        df <- dplyr::mutate(df, Total = Total / sum(Total))
+        df <- dplyr::ungroup(df)
+        ylab <- "Percentage"
+        axisLabelFun <- scales::percent
+    }
 
     ggplot(
         df,
@@ -201,8 +242,11 @@ plotAlignmentSummary <- function(
         )
     ) +
         geom_bar(stat = "identity") +
-        labs(y = "Total Reads") +
-        scale_y_continuous(labels = comma, expand = expansion(c(0, 0.05))) +
+        labs(y = ylab) +
+        scale_y_continuous(
+            labels = axisLabelFun,
+            expand = expansion(c(0, 0.05))
+        ) +
         scale_fill_manual(values = fill) +
         coord_flip() +
         theme_bw()

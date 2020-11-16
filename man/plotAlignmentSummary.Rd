@@ -8,6 +8,8 @@ plotAlignmentSummary(
   x,
   type = c("star", "bowtie", "bowtie2", "hisat2"),
   usePlotly = FALSE,
+  stripPaths = TRUE,
+  asPercent = FALSE,
   ...,
   fill = c("red", "yellow", "blue", rgb(0, 0.5, 1))
 )
@@ -17,7 +19,12 @@ plotAlignmentSummary(
 
 \item{type}{The aligner used. Can be one of star, bowtie, bowtie2 or hisat2}
 
-\item{usePlotly}{logical. If TRUE an interactive plot will be generated.
+\item{usePlotly}{logical. If TRUE an interactive plot will be generated.}
+
+\item{stripPaths}{logical(1). Remove paths from the Filename column}
+
+\item{asPercent}{Show alignments as percentages, with the alternative (FALSE)
+being the total number of reads
 If FALSE a ggplot object will be output}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
