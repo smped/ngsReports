@@ -32,10 +32,16 @@ setValidity("FastqcDataList", .isValidFastqcDataList)
 FastqcDataList <- function(x){
 
     stopifnot(length(x) > 0)
-    fls <- lapply(x, .FastqcFile)
-    fdl <- lapply(fls, as, "FastqcData")
-    names(fdl) <- basename(x)
-    new("FastqcDataList", fdl)
+    if (!any(is(x, "character"), is(x, "list"))) .errNotImp(x)
+
+    if (is.character(x)){
+        fls <- lapply(x, .FastqcFile)
+        fdl <- lapply(fls, as, "FastqcData")
+        names(fdl) <- x
+        fdl <- as(fdl, "FastqcDataList")
+    }
+    if (is.list(x)) fdl <- as(x, "FastqcDataList")
+    fdl
 }
 
 ## The show method doesn't need exporting
