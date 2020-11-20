@@ -1,5 +1,6 @@
-Changes in version 1.7.1
+Changes in version 1.7.2
 + Added asPercent to plotAlignmentSummary
++ Added the ability to assign new values via fqName<-
 
 Changes in version 1.5.5
 + Added importSJ for importing SJ.out.tab files from the aligner STAR
