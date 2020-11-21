@@ -53,6 +53,14 @@ setAs(".FastqcFile", "FastqcData", function(from){
     do.call("new", c(args, out))
 
 })
+#' @importFrom methods as
+setAs("list", "FastqcDataList", function(from){
+    isFqcData <- vapply(from, is, logical(1), class2 = "FastqcData")
+    if (!all(isFqcData)) stop(
+        "All elements of the supplied list must be FastqcData objects"
+    )
+    new("FastqcDataList", from)
+})
 
 ## This helper checks for compressed or extracted FastQC reports then
 ## imports the contents of fastqc_data.txt as a character vector.

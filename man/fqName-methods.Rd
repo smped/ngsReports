@@ -5,6 +5,9 @@
 \alias{fqName,ANY-method}
 \alias{fqName,FastqcData-method}
 \alias{fqName,FastqcDataList-method}
+\alias{fqName<-}
+\alias{fqName<-,FastqcData-method}
+\alias{fqName<-,FastqcDataList-method}
 \title{Return the Underlying Fastq File Names from FastqcData* Objects}
 \usage{
 fqName(object)
@@ -14,9 +17,17 @@ fqName(object)
 \S4method{fqName}{FastqcData}(object)
 
 \S4method{fqName}{FastqcDataList}(object)
+
+fqName(object) <- value
+
+\S4method{fqName}{FastqcData}(object) <- value
+
+\S4method{fqName}{FastqcDataList}(object) <- value
 }
 \arguments{
 \item{object}{An object of class FastqcData or FastqcDataList}
+
+\item{value}{Replacement value for fqName}
 }
 \value{
 Returns the names of the Fastq files the FastQC report was
