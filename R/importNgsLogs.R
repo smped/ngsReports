@@ -36,7 +36,7 @@
 #' @param type \code{character}. The type of file being imported. Can be one of
 #' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star}, \code{flagstat},
 #' \code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt},
-#' \code{adapterRemoval}, \code{quast} or \code{busco}.
+#' \code{macs2Callpeak}, \code{adapterRemoval}, \code{quast} or \code{busco}
 #' Defaults to \code{type = "auto"} which will automatically detect the file
 #' type for all implemented types.
 #' @param which Which element of the parsed object to return. Ignored in all
@@ -75,6 +75,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         "featureCounts",
         "flagstat",
         "hisat2",
+        "macs2Callpeak",
         "quast",
         "star",
         "trimmomatic"
@@ -432,6 +433,21 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     ## Check for required text in the first line
     firstLine <- grepl("QC-passed reads", x[[1]])
     all(allPlus, firstLine)
+}
+
+#' @title Check for correct structure of macs2 callpeak log
+#' @description Check for correct structure of macs2 callpeak log
+#' @details Checks for all the required fields in the lines provided
+#' @param x Character vector as output when readLines to a supplied file
+#' @return logical(1)
+#' @keywords internal
+.isValidMacs2CallpeakLog <- function(x){
+    hasCmd <- grepl("callpeak", x[[2]])
+    hasArgs <- any(grepl("ARGUMENTS LIST", x))
+    hasBlankSep <- any(x == " ")
+    hasTagSize <- any(grepl("tag size", x))
+    hasFragLength <- any(grepl("fragment length", x))
+    all(hasCmd, hasArgs, hasBlankSep, hasTagSize, hasFragLength)
 }
 
 #' @title Parse data from Bowtie log files
@@ -1247,6 +1263,157 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     })
     out <- bind_rows(out)
     dplyr::select(out, "Filename", everything())
+
+
+}
+
+#' @title Parse data from macs2 callpeak log files
+#' @description Parse data from macs2 callpeak log files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
+#' @return data.frame
+#' @importFrom lubridate as_datetime
+#' @importFrom stringr str_subset str_remove_all str_split_fixed str_extract
+#' @importFrom stringr str_replace_all str_split
+#' @importFrom tidyselect everything ends_with contains
+#' @keywords internal
+.parseMacs2CallpeakLogs <- function(data, ...){
+
+    .parseSingleCallPeak <- function(data, ...){
+
+        ## The date the command was run
+        dt <- gsub("INFO.+@ (.+): +", "\\1", data[[1]])
+        dt <- as_datetime(
+            dt, format = "%a, %d %b %Y %H:%M:%S", tz = Sys.timezone()
+        )
+
+        ## Fragment Length
+        fl <- data[grepl("INFO .+ predicted fragment length is", data) ]
+        fl <- gsub(".+fragment length is ([0-9]+) bps", "\\1", fl)
+        fl <- as.numeric(fl)
+
+        ## Tag length
+        tl <- data[grepl("INFO .+ tag size = ", data) ]
+        tl <- gsub(".+tag size = ([0-9\\.]+) $", "\\1", tl)
+        tl <- as.numeric(tl)
+
+        ## The arguments in the main header
+        ind <- seq(
+            which(grepl("ARGUMENTS LIST", data)),
+            min(which(data == " ")) - 1
+        )
+        args <- data[ind]
+        args_out <- args[grepl(" = ", args)]
+        args_out <- str_remove_all(args_out, "# ")
+        args_out <- str_split_fixed(args_out, " = ", 2)
+        args_out[, 1] <- gsub("[ -]", "_", args_out[, 1])
+        args_out <- structure(args_out[, 2], names = args_out[, 1])
+        args_out <- as.list(args_out)
+
+        ## Add any additional arguments
+        cmd <- data[grepl("Command line: callpeak", data)]
+        if (!grepl("--max-gap", cmd)) args_out$max_gap <- tl
+        if (!grepl("--min-length", cmd)) args_out$min_length <- fl
+        args_out$keep_dup <- grepl("--keep-dup", cmd)
+        args_out$nomodel <- grepl("nomodel", cmd)
+
+        args_out$scale_to <- str_subset(args, "dataset will be scaled towards")
+        args_out$scale_to <- str_extract(args_out$scale_to , "(large|small)")
+
+        args_out$local <- str_subset(args, "regional lambda")
+        args_out$local <- str_replace_all(
+            args_out$local, ".+is: ([0-9]+) bps and ([0-9]+) bps", "[\\1, \\2]"
+        )
+
+        args_out$broad <- grepl("--broad ", cmd)
+        args_out$paired_end <- str_subset(args, "Paired-End mode")
+        args_out$paired_end <- !grepl("off", args_out$paired_end)
+
+        if ("ChIP_seq_file" %in% names(args_out)){
+            l <- args_out$ChIP_seq_file
+            l <- str_remove_all(l, "[\\[\\]\\']")
+            l <- str_split(l, pattern = ", ")[[1]]
+            args_out$ChIP_seq_file <- list(l)
+            rm(l)
+        }
+
+        if ("control_file" %in% names(args_out)){
+            l <- args_out$control_file
+            l <- str_remove_all(l, "[\\[\\]\\']")
+            l <- str_split(l, pattern = ", ")[[1]]
+            args_out$control_file <- list(l)
+            rm(l)
+        }
+
+        ## Read numbers
+        n_reads <- str_subset(data, "reads have been read")
+        n_reads <- str_replace_all(
+            n_reads, "INFO.+ ([0-9]+) reads have been.+", "\\1"
+        )
+        n_reads <- as.numeric(n_reads)
+        args_out$n_reads <- list(n_reads)
+
+        ## Tag numbers
+        n_tags_treatment <- str_subset(data, "total tags in treatment")
+        n_tags_treatment <- str_replace_all(
+            n_tags_treatment , ".+ ([0-9]+) $", "\\1"
+        )
+        args_out$n_tags_treatment <- as.numeric(n_tags_treatment)
+        n_tags_control <- str_subset(data, "total tags in control")
+        n_tags_control <- str_replace_all(
+            n_tags_control, ".+ ([0-9]+) $", "\\1"
+        )
+        args_out$n_tags_control <- as.numeric(n_tags_control)
+
+        ## Peaks
+        paired_peaks <- str_subset(data, "number of paired peaks")
+        paired_peaks <- str_replace_all(paired_peaks, ".+ ([0-9]+) $", "\\1")
+        args_out$paired_peaks <- as.numeric(paired_peaks)
+
+        ## Fragment length & tag length
+        args_out$tag_length <- tl
+        args_out$fragment_length <- fl
+        alt <- str_subset(data, "alternative fragment length")
+        alt <- str_replace_all(alt, ".+ ([0-9]+) bps ", "\\1")
+        args_out$alt_fragment_length <- as.numeric(alt)
+
+        ## Output files
+        r_script <- str_subset(data, "R script")
+        r_script <- str_replace_all(
+            r_script, ".+R script for model : (.+) ", "\\1"
+        )
+        xls <- str_subset(data, "Write output xls file")
+        xls <- str_replace_all(xls, ".+Write output xls file.+ (.+) ", "\\1")
+        narrowPeak <- str_subset(data, " Write peak in narrowPeak format file")
+        narrowPeak <- str_replace_all(
+            narrowPeak, ".+ Write peak in narrowPeak format file.+ (.+) ", "\\1"
+        )
+        summits_bed <- str_subset(data, " Write summits bed file")
+        summits_bed <- str_replace_all(
+            summits_bed, ".+ Write summits bed file.+ (.+) ", "\\1"
+        )
+        args_out$outputs <- list(
+            c(
+                r_script, xls, narrowPeak, summits_bed
+            )
+        )
+
+        ## To avoid R CMD check issues
+        name <- min_length <- c()
+        args_out <- as_tibble(args_out)
+        dplyr::select(
+            args_out,
+            name, paired_peaks, min_length, contains("tags"), n_reads,
+            ends_with("length"), everything()
+        )
+    }
+
+    ## Run using lapply, then bind_rows and add the Filenames
+    df <- lapply(data, .parseSingleCallPeak)
+    df <- dplyr::bind_rows(df)
+    df$Filename <- names(data)
+    dplyr::select(df, "Filename", everything())
 
 
 }
