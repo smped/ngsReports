@@ -1,5 +1,4 @@
-
-![Build Status](https://github.com/steveped/ngsReports/workflows/check-bioc/badge.svg)
+![Build Status](https://github.com/steveped/ngsReports/workflows/R-CMD-check-bioc/badge.svg)
 ![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)
 
 
