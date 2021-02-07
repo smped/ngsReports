@@ -1,6 +1,6 @@
 
-[![Build Status](https://travis-ci.org/steveped/ngsReports.svg?branch=master)](https://travis-ci.org/github/steveped/ngsReports/branches)
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+[![Build Status](https://github.com/steveped/ngsReports/workflows/check-bioc/badge.svg)
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)
 
 
 # ngsReports
