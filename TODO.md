@@ -14,7 +14,6 @@
 
 # Future Plans
 
-- Include the capacity for selective overwriting in `runFastQC`
 - Calculate Ranks on each module and summarise
 - Add a function to merge kMers
 - Make padding using `plotly_empty()` optional for plots of a `FastqcData` object
