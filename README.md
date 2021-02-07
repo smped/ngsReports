@@ -1,6 +1,6 @@
 
-[![Build Status](https://github.com/steveped/ngsReports/workflows/check-bioc/badge.svg)
-[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)
+![Build Status](https://github.com/steveped/ngsReports/workflows/check-bioc/badge.svg)
+![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)
 
 
 # ngsReports
