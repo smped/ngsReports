@@ -18,6 +18,11 @@
 #' fdl <- FastqcDataList(fl)
 #' fqName(fdl)
 #'
+#' nm <- paste0(letters[seq_along(fdl)], ".fq")
+#' fqName(fdl) <- nm
+#' fqName(fdl)
+#'
+#'
 #' @export
 #' @rdname fqName-methods
 setGeneric("fqName", function(object){standardGeneric("fqName")})

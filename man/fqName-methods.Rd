@@ -46,4 +46,9 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 fdl <- FastqcDataList(fl)
 fqName(fdl)
 
+nm <- paste0(letters[seq_along(fdl)], ".fq")
+fqName(fdl) <- nm
+fqName(fdl)
+
+
 }

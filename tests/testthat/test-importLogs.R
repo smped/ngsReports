@@ -11,6 +11,7 @@ fcFile <- system.file("extdata", "featureCounts.summary", package = "ngsReports"
 caFiles <- system.file("extdata", c("cutadapt_full.txt", "cutadapt_minimal.txt"), package = "ngsReports")
 trimoFiles <- system.file("extdata", "Sample1.trimmomaticPE.txt", package = "ngsReports")
 flagFile <- system.file("extdata", "flagstat.txt", package = "ngsReports")
+macs2File <- system.file("extdata", "macs2_callpeak.txt", package = "ngsReports")
 
 test_that("importNgsLogs fails on empty",{
     expect_error(importNgsLogs(bowtieLogs[0], "bowtie"))
@@ -226,4 +227,21 @@ test_that("parseFlagstatLogs behaves correctly", {
     expCols <- c("Filename", "QC-passed", "QC-failed", "flag")
     expect_equal(dim(df), c(13, 4))
     expect_equal(colnames(df), expCols)
+})
+
+test_that("parseMacs2CallPeak behaves correctly", {
+
+    df <- importNgsLogs(macs2File, "macs2Callpeak")
+    expCols <- c("Filename", "name", "paired_peaks", "min_length", "n_tags_treatment",
+                 "n_tags_control", "n_reads", "tag_length", "fragment_length",
+                 "alt_fragment_length", "format", "ChIP_seq_file", "control_file",
+                 "effective_genome_size", "band_width", "model_fold", "qvalue_cutoff",
+                 "max_gap", "keep_dup", "nomodel", "scale_to", "local", "broad",
+                 "paired_end", "outputs")
+    expect_equal(colnames(df), expCols)
+    ## Parsing errors will appear as NA values
+    expect_equal(
+        sum(vapply(df, is.na, logical(1))), 0
+    )
+
 })

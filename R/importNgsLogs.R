@@ -446,7 +446,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 .isValidMacs2CallpeakLog <- function(x){
     hasCmd <- grepl("callpeak", x[[2]])
     hasArgs <- any(grepl("ARGUMENTS LIST", x))
-    hasBlankSep <- any(x == " ")
+    hasBlankSep <- any(str_trim(x) == "")
     hasTagSize <- any(grepl("tag size", x))
     hasFragLength <- any(grepl("fragment length", x))
     all(hasCmd, hasArgs, hasBlankSep, hasTagSize, hasFragLength)
@@ -1277,15 +1277,18 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 #' @return data.frame
 #' @importFrom lubridate as_datetime
 #' @importFrom stringr str_subset str_remove_all str_split_fixed str_extract
-#' @importFrom stringr str_replace_all str_split
+#' @importFrom stringr str_replace_all str_split str_trim
 #' @importFrom tidyselect everything ends_with contains
 #' @keywords internal
 .parseMacs2CallpeakLogs <- function(data, ...){
 
     .parseSingleCallPeak <- function(data, ...){
 
+        ## Remove any leading/trailing whitespace
+        data <- str_trim(data)
+
         ## The date the command was run
-        dt <- gsub("INFO.+@ (.+): +", "\\1", data[[1]])
+        dt <- gsub("INFO.+@ (.+):", "\\1", data[[1]])
         dt <- as_datetime(
             dt, format = "%a, %d %b %Y %H:%M:%S", tz = Sys.timezone()
         )
@@ -1297,13 +1300,13 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
         ## Tag length
         tl <- data[grepl("INFO .+ tag size = ", data) ]
-        tl <- gsub(".+tag size = ([0-9\\.]+) $", "\\1", tl)
+        tl <- gsub(".+tag size = ([0-9\\.]+)$", "\\1", tl)
         tl <- as.numeric(tl)
 
         ## The arguments in the main header
         ind <- seq(
             which(grepl("ARGUMENTS LIST", data)),
-            min(which(data == " ")) - 1
+            min(which(data == "")) - 1
         )
         args <- data[ind]
         args_out <- args[grepl(" = ", args)]
@@ -1359,41 +1362,41 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         ## Tag numbers
         n_tags_treatment <- str_subset(data, "total tags in treatment")
         n_tags_treatment <- str_replace_all(
-            n_tags_treatment , ".+ ([0-9]+) $", "\\1"
+            n_tags_treatment , ".+ ([0-9]+)$", "\\1"
         )
         args_out$n_tags_treatment <- as.numeric(n_tags_treatment)
         n_tags_control <- str_subset(data, "total tags in control")
         n_tags_control <- str_replace_all(
-            n_tags_control, ".+ ([0-9]+) $", "\\1"
+            n_tags_control, ".+ ([0-9]+)$", "\\1"
         )
         args_out$n_tags_control <- as.numeric(n_tags_control)
 
         ## Peaks
         paired_peaks <- str_subset(data, "number of paired peaks")
-        paired_peaks <- str_replace_all(paired_peaks, ".+ ([0-9]+) $", "\\1")
+        paired_peaks <- str_replace_all(paired_peaks, ".+ ([0-9]+)$", "\\1")
         args_out$paired_peaks <- as.numeric(paired_peaks)
 
         ## Fragment length & tag length
         args_out$tag_length <- tl
         args_out$fragment_length <- fl
         alt <- str_subset(data, "alternative fragment length")
-        alt <- str_replace_all(alt, ".+ ([0-9]+) bps ", "\\1")
+        alt <- str_replace_all(alt, ".+ ([0-9]+) bps.*", "\\1")
         args_out$alt_fragment_length <- as.numeric(alt)
 
         ## Output files
         r_script <- str_subset(data, "R script")
         r_script <- str_replace_all(
-            r_script, ".+R script for model : (.+) ", "\\1"
+            r_script, ".+R script for model : (.+)", "\\1"
         )
         xls <- str_subset(data, "Write output xls file")
-        xls <- str_replace_all(xls, ".+Write output xls file.+ (.+) ", "\\1")
+        xls <- str_replace_all(xls, ".+Write output xls file.+ (.+)", "\\1")
         narrowPeak <- str_subset(data, " Write peak in narrowPeak format file")
         narrowPeak <- str_replace_all(
-            narrowPeak, ".+ Write peak in narrowPeak format file.+ (.+) ", "\\1"
+            narrowPeak, ".+ Write peak in narrowPeak format file.+ (.+)", "\\1"
         )
         summits_bed <- str_subset(data, " Write summits bed file")
         summits_bed <- str_replace_all(
-            summits_bed, ".+ Write summits bed file.+ (.+) ", "\\1"
+            summits_bed, ".+ Write summits bed file.+ (.+)", "\\1"
         )
         args_out$outputs <- list(
             c(
