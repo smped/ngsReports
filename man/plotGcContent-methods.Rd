@@ -93,7 +93,7 @@ File extensions are dropped by default.}
 
 \item{theoreticalGC}{\code{logical} default is \code{FALSE} to give the true
 GC content, set to \code{TRUE} to normalize values of GC_Content by the
-theoretical values using \code{\link{gcTheoretical}}. \code{species} must be
+theoretical values using \code{\link[=gcTheoretical]{gcTheoretical()}}. \code{species} must be
 specified.}
 
 \item{gcType}{\code{character} Select type of data to normalize GC
@@ -122,7 +122,7 @@ Ignored if calling the function on a FastqcDataList.}
 
 \item{plotType}{Takes values "line", "heatmap" or "cdf"}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail values in plot}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},

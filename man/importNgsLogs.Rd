@@ -29,14 +29,15 @@ Column names are broadly similar to the text in supplied files,
 but have been modified for easier handling under R naming conventions.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#maturing}{\figure{lifecycle-maturing.svg}{options: alt='[Maturing]'}}}{\strong{[Maturing]}}
 Imports NGS-related log files such as those generated from
-stderr \lifecycle{maturing}
+stderr.
 }
 \details{
 Imports one or more log files as output by tools such as:
 \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
-\code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt}, \code{flagstat},
-\code{Adapter Removal}, \code{trimmomatic} \code{quast} or \code{busco}.
+\code{STAR}, \verb{picard MarkDuplicates}, \code{cutadapt}, \code{flagstat}, \code{macs2Callpeak}
+\verb{Adapter Removal}, \code{trimmomatic} \code{quast} or \code{busco}.
 \code{autoDetect} can be used to detect the log type by parsing the file.
 
 The featureCounts log file corresponds to the \code{counts.out.summary},

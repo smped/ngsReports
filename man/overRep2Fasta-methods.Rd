@@ -41,8 +41,8 @@ Exports to a fasta file, and returns the fasta information invisibly
 Output overrepresented sequences to disk in fasta format.
 }
 \details{
-Fasta will contain \code{Filename}, \code{Possible Source},
-\code{Percent of total reads}
+Fasta will contain \code{Filename}, \verb{Possible Source},
+\verb{Percent of total reads}
 }
 \examples{
 

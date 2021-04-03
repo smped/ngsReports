@@ -17,7 +17,7 @@ An object of class FastqcData
 }
 \description{
 The FastqcData Object Class
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}
 }
 \details{
 This object class is the main object required for generating plots
@@ -27,7 +27,7 @@ all the data into R as a \code{FastqcData} object. FastQC modules are
 contained as individual slots, which can be viewed using \code{slotNames}.
 
 Individual modules can be returned using the function \code{getModule()}
-and specifying which module is required. See \code{\link{getModule}} for
+and specifying which module is required. See \code{\link[=getModule]{getModule()}} for
 more details.
 }
 \section{Slots}{

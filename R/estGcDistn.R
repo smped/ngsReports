@@ -3,7 +3,7 @@
 #' @description Generate a GC content distribution from sequences for a given
 #' read length and fragment length
 #'
-#' @param x \code{DNAStringSet} or path to a fasta file
+#' @param x `DNAStringSet` or path to a fasta file
 #' @param n The number of reads to sample
 #' @param rl Read Lengths to sample
 #' @param fl The mean of the fragment lengths sequenced
@@ -23,7 +23,7 @@
 #'
 #' Based heavily on https://github.com/mikelove/fastqcTheoreticalGC
 #'
-#' @return A \code{tibble} with two columns: \code{GC_Content} and \code{Freq}
+#' @return A `tibble` with two columns: `GC_Content` and `Freq`
 #' denoting the proportion of GC and frequency of occurence reqpectively
 #'
 #' @examples

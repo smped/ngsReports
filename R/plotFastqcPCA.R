@@ -12,23 +12,23 @@
 #' Sequence_Length_Distribution.
 
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
-#' @param module \code{character} vector containing
+#' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
+#' @param module `character` vector containing
 #'  the desired FastQC module (eg. c("Per_base_sequence_quality",
 #'  "Per_base_sequence_content"))
-#' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly
+#' @param usePlotly `logical`. Output as ggplot2 (default) or plotly
 #' object.
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default
-#' @param cluster \code{logical} default \code{FALSE}. If \code{groups} argument
+#' @param cluster `logical` default `FALSE`. If `groups` argument
 #' is not set fastqc data will be clustered using hierarchical clustering.
 #' @param clusterType One of "color/colour" or "hulls". Default is "colours"
 #' and will colour points based on cluster/group, "hulls" will draw a polygon
 #' around each cluster.
-#' @param groups Optional data.frame (or tibble) with columns \code{Filename}
-#' and \code{Group}. Values in the Filename column should correspond to the
-#' values returned by fqName(x). If not supplied and \code{cluster = TRUE},
+#' @param groups Optional data.frame (or tibble) with columns `Filename`
+#' and `Group`. Values in the Filename column should correspond to the
+#' values returned by fqName(x). If not supplied and `cluster = TRUE`,
 #' clusters will be automatically generated using HCPC from FactoMiner
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'

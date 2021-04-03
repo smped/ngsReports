@@ -1,50 +1,52 @@
 #' @title Import Various NGS-related log files
 #'
-#' @description Imports NGS-related log files such as those generated from
-#' stderr \lifecycle{maturing}
+#' @description
+#'  `r lifecycle::badge("maturing")`
+#' Imports NGS-related log files such as those generated from
+#' stderr.
 #'
 #' @details Imports one or more log files as output by tools such as:
-#' \code{bowtie}, \code{bowtie2}, \code{featureCounts}, \code{Hisat2},
-#' \code{STAR}, \code{picard MarkDuplicates}, \code{cutadapt}, \code{flagstat},
-#' \code{Adapter Removal}, \code{trimmomatic} \code{quast} or \code{busco}.
-#' \code{autoDetect} can be used to detect the log type by parsing the file.
+#' `bowtie`, `bowtie2`, `featureCounts`, `Hisat2`,
+#' `STAR`, `picard MarkDuplicates`, `cutadapt`, `flagstat`, `macs2Callpeak`
+#' `Adapter Removal`, `trimmomatic` `quast` or `busco`.
+#' `autoDetect` can be used to detect the log type by parsing the file.
 #'
-#' The featureCounts log file corresponds to the \code{counts.out.summary},
-#' not the main \code{counts.out} file.
+#' The featureCounts log file corresponds to the `counts.out.summary`,
+#' not the main `counts.out` file.
 #'
 #' Whilst most log files return a single tibble, some are more complex
 #' with multiple modules.
 #'
-#' \code{adapterRemoval} can return one of four modules (which = 1:4),.
+#' `adapterRemoval` can return one of four modules (which = 1:4),.
 #' When calling by name, the possible values are sequences, settings,
 #' statistics or distribution.
 #' Partial matching is implemented.
 #'
-#' \code{cutadapt} can return one of five modules (which = 1:5).
+#' `cutadapt` can return one of five modules (which = 1:5).
 #' When calling by name the possible modules are summary, adapter1, adapter2,
 #' adapter3 or overview.
 #' Note that adapter2/3 may be missing from these files depending on the nature
 #' of your data.
-#' If cutadapt log files are obtained using \code{report=minimal}, all supplied
+#' If cutadapt log files are obtained using `report=minimal`, all supplied
 #' log files must be of this format and no modules can be returned.
 #'
-#' \code{duplicationMetrics} will return either the metrics of histogram.
+#' `duplicationMetrics` will return either the metrics of histogram.
 #' These can be requested by setting which as 1 or 2, or naming either module.
 #'
-#' @param x \code{character}. Vector of filenames. All log files must be of the
+#' @param x `character`. Vector of filenames. All log files must be of the
 #' same type. Duplicate file paths will be silently ignored.
-#' @param type \code{character}. The type of file being imported. Can be one of
-#' \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star}, \code{flagstat},
-#' \code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt},
-#' \code{macs2Callpeak}, \code{adapterRemoval}, \code{quast} or \code{busco}
-#' Defaults to \code{type = "auto"} which will automatically detect the file
+#' @param type `character`. The type of file being imported. Can be one of
+#' `bowtie`, `bowtie2`, `hisat2`, `star`, `flagstat`,
+#' `featureCounts`, `duplicationMetrics`, `cutadapt`,
+#' `macs2Callpeak`, `adapterRemoval`, `quast` or `busco`
+#' Defaults to `type = "auto"` which will automatically detect the file
 #' type for all implemented types.
 #' @param which Which element of the parsed object to return. Ignored in all
-#' file types except when \code{type} is set to duplicationMetrics, cutadapt or
+#' file types except when `type` is set to duplicationMetrics, cutadapt or
 #' adapterRemoval. See details for possible values
 #' @param stripPaths logical(1). Remove paths from the Filename column
 #'
-#' @return A \code{tibble}.
+#' @return A `tibble`.
 #' Column names are broadly similar to the text in supplied files,
 #' but have been modified for easier handling under R naming conventions.
 #'

@@ -1,16 +1,16 @@
 #' @title The FastqcData Object Class
 #'
 #' @description The FastqcData Object Class
-#' \lifecycle{stable}
+#' `r lifecycle::badge("stable")`
 #'
 #' @details This object class is the main object required for generating plots
 #' and tables. Instantiation will first test for a compressed file (or
 #' extracted directory) with the correct data structure, and will then parse
-#' all the data into R as a \code{FastqcData} object. FastQC modules are
-#' contained as individual slots, which can be viewed using \code{slotNames}.
+#' all the data into R as a `FastqcData` object. FastQC modules are
+#' contained as individual slots, which can be viewed using `slotNames`.
 #'
-#' Individual modules can be returned using the function \code{getModule()}
-#' and specifying which module is required. See \code{\link{getModule}} for
+#' Individual modules can be returned using the function `getModule()`
+#' and specifying which module is required. See [getModule()] for
 #' more details.
 #'
 #' @slot Summary Summary of PASS/WARN/FAIL status for each module

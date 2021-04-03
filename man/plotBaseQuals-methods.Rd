@@ -80,7 +80,7 @@ ggplot. If \code{TRUE} plot will be rendered with plotly}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail values in plot}
 
 \item{warn, fail}{The default values for warn and fail are 30 and 20
@@ -121,7 +121,7 @@ obtained by setting \code{plotType = "boxplot"}, which uses \code{facet_wrap}
 to provide the layout as a single ggplot object.
 
 When acting an a \code{FastqcData} object, this replicates the
-\code{Per base sequence quality} plots from FastQC with no faceting.
+\verb{Per base sequence quality} plots from FastQC with no faceting.
 
 For large datasets, subsetting by R1 or R2 reads may be helpful.
 

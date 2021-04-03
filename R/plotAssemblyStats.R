@@ -3,7 +3,7 @@
 #' @description Plot a summary of assembly stats from a set of log files
 #'
 #' @details Loads a set of assembly log files and creates a default plot.
-#' Implemented tools are \code{quast} and \code{BUSCO}.
+#' Implemented tools are `quast` and `BUSCO`.
 #' quast will plot a parralel coordinate plot of some assembly statistics
 #' BUSCO will plot a stacked barplot of completeness statistics
 #'
@@ -11,7 +11,7 @@
 #' @param type The tool used. Can be one of quast or busco
 #' @param usePlotly logical. If TRUE an interactive plot will be generated.
 #' If FALSE a ggplot object will be output
-#' @param plotType \code{character}. Plot type to output, one of bar or
+#' @param plotType `character`. Plot type to output, one of bar or
 #' paracoord.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'

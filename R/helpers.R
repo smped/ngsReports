@@ -81,7 +81,7 @@
 #'
 #' @description Create an empty plot with supplied text
 #'
-#' @details Create plot using \code{theme_void} and only with the supplied text
+#' @details Create plot using `theme_void` and only with the supplied text
 #'
 #' @return A ggplot2 object
 #'
@@ -246,7 +246,7 @@
 #' for interactive plots. based on code found at
 #' https://plot.ly/ggplot2/ggdendro-dendrograms/
 #'
-#' @details Create plot using \code{theme_dendro}
+#' @details Create plot using `theme_dendro`
 #'
 #' @param df A `data.frame` as required
 #'

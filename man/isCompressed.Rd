@@ -24,7 +24,7 @@ Check to see if a file, or vector of files is compressed
 \details{
 Reads the first four bytes from the local file header.
 If the file is a .ZIP file, this should match the magic number
-\code{PK\003\004}.
+\verb{PK\\003\\004}.
 
 This function assumes that the first thing in a zip archive is the
 .ZIP entry with the local file header signature.

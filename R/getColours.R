@@ -3,10 +3,10 @@
 #' @description Get and modify colours from objects of class PwfCols
 #'
 #' @details
-#' Use \code{getColours} to obtain the colours in an object of class PwfCols.
+#' Use `getColours` to obtain the colours in an object of class PwfCols.
 #'
-#' These can be modified using the functions \code{setColours} and
-#' \code{setAlpha}
+#' These can be modified using the functions `setColours` and
+#' `setAlpha`
 #'
 #' @param object An object of class PwfCols
 #'

@@ -8,16 +8,16 @@
 #' data.frame. Note that each module will be it's own unique structure,
 #' although all will return a data.frame
 #'
-#' @param object Can be a \code{FastqcData}, \code{fastqcDataList}, or simply
-#' a \code{character} vector of paths
+#' @param object Can be a `FastqcData`, `fastqcDataList`, or simply
+#' a `character` vector of paths
 #' @param module The requested module as contained in a FastQC report. Possible
-#' values are \code{Summary}, \code{Basic_Statistics},
-#' \code{Per_base_sequence_quality}, \code{Per_tile_sequence_quality},
-#' \code{Per_sequence_quality_scores}, \code{Per_base_sequence_content},
-#' \code{Per_sequence_GC_content}, \code{Per_base_N_content},
-#' \code{Sequence_Length_Distribution}, \code{Sequence_Duplication_Levels},
-#' \code{Overrepresented_sequences}, \code{Adapter_Content},
-#' \code{Kmer_Content}, \code{Total_Deduplicated_Percentage}.
+#' values are `Summary`, `Basic_Statistics`,
+#' `Per_base_sequence_quality`, `Per_tile_sequence_quality`,
+#' `Per_sequence_quality_scores`, `Per_base_sequence_content`,
+#' `Per_sequence_GC_content`, `Per_base_N_content`,
+#' `Sequence_Length_Distribution`, `Sequence_Duplication_Levels`,
+#' `Overrepresented_sequences`, `Adapter_Content`,
+#' `Kmer_Content`, `Total_Deduplicated_Percentage`.
 #' Note that spelling and capitalisation is exactly as contained within a
 #' FastQC report, with the exception that spaces have been converted to
 #' underscores. Partial matching is implemented for this argument.
@@ -27,7 +27,7 @@
 #' @include FastqcFile.R
 #' @include FastqcDataList.R
 #'
-#' @return A single \code{tibble} containing module-level information
+#' @return A single `tibble` containing module-level information
 #' from all FastQC reports contained in the Fastqc* object.
 #'
 #' @examples

@@ -60,7 +60,7 @@ vector of file paths}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},

@@ -7,7 +7,7 @@
 .renderDendro(df)
 }
 \arguments{
-\item{df}{A `data.frame` as required}
+\item{df}{A \code{data.frame} as required}
 }
 \value{
 A plotly object

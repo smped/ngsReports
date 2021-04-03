@@ -7,33 +7,33 @@
 #' Any possible double counting by FastQC is ignored for the purposes of a
 #' simple approximation.
 #'
-#' Plots generated from a \code{FastqcData} object will show the top \code{n}
+#' Plots generated from a `FastqcData` object will show the top `n`
 #' sequences grouped by their predicted source & coloured by whether the
 #' individual sequence would cause a WARN/FAIL.
 #'
-#' Plots generated from a \code{FastqcDataList} group sequences by predicted
+#' Plots generated from a `FastqcDataList` group sequences by predicted
 #' source and summarise as a percentage of the total reads.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
-#' @param usePlotly \code{logical} Default \code{FALSE} will render using
-#' ggplot. If \code{TRUE} plot will be rendered with plotly
+#' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
+#' @param usePlotly `logical` Default `FALSE` will render using
+#' ggplot. If `TRUE` plot will be rendered with plotly
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param n The number of sequences to plot from an individual file
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
+#' @param pwfCols Object of class [PwfCols()] containing the colours
 #' for PASS/WARN/FAIL
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+#' @param dendrogram `logical` redundant if `cluster` is `FALSE`
+#' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
-#' @param expand.x,expand.y Output from \code{expansion()} or numeric
-#' vectors of length 4. Passed to \code{scale_*_continuous()}
+#' @param expand.x,expand.y Output from `expansion()` or numeric
+#' vectors of length 4. Passed to `scale_*_continuous()`
 #' @param paletteName Name of the palette for colouring the possible sources
 #' of the overrepresented sequences. Must be a palette name from
-#' \code{RColorBrewer}
+#' `RColorBrewer`
 #'
 #' @return A standard ggplot2 object
 #'

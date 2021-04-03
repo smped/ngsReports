@@ -3,8 +3,8 @@
 #' @description Plot a summary of alignments from a set of log files
 #'
 #' @details Loads a set of alignment log files and creates a default plot.
-#' Implemented aligners are \code{bowtie}, \code{bowtie2}, \code{Hisat2} and
-#'  \code{STAR}.
+#' Implemented aligners are `bowtie`, `bowtie2`, `Hisat2` and
+#'  `STAR`.
 #'
 #' @param x Paths to one or more alignment log files
 #' @param type The aligner used. Can be one of star, bowtie, bowtie2 or hisat2

@@ -2,10 +2,10 @@
 #'
 #' @description Get the read totals from one or more FASTQC reports
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
+#' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
 #'
-#' @return A \code{tibble} with the columns \code{Filename} and
-#' \code{Total_Sequences}
+#' @return A `tibble` with the columns `Filename` and
+#' `Total_Sequences`
 #'
 #' @examples
 #'

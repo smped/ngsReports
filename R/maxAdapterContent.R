@@ -3,16 +3,16 @@
 #' @description Get the maximum Adapter Content across one or more FASTQC
 #' reports
 #'
-#' @details This will extract the \code{Adapter_Content} module from the
-#' supplied object, and provide a \code{tibble} with the final value for each
+#' @details This will extract the `Adapter_Content` module from the
+#' supplied object, and provide a `tibble` with the final value for each
 #' file.
 #'
-#' @param x Can be a \code{.FastqcFile}, \code{FastqcData},
-#' \code{FastqcDataList} or path
-#' @param asPercent \code{logical}.
-#' Format the values as percentages with the added \code{\%} symbol
+#' @param x Can be a `.FastqcFile`, `FastqcData`,
+#' `FastqcDataList` or path
+#' @param asPercent `logical`.
+#' Format the values as percentages with the added `\%` symbol
 #'
-#' @return A \code{tibble} object containing the percent of reads with each
+#' @return A `tibble` object containing the percent of reads with each
 #' adapter type at the final position
 #'
 #' @examples

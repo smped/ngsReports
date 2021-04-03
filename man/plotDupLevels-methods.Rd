@@ -51,7 +51,7 @@ ggplot. If \code{TRUE} plot will be rendered with plotly}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail values in the plot}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}

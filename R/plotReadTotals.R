@@ -3,26 +3,26 @@
 #' @description Draw a barplot of read totals
 #'
 #' @details Draw a barplot of read totals using the standard ggplot2 syntax.
-#' The raw data from \code{\link{readTotals}} can otherwise be used to manually
+#' The raw data from [readTotals()] can otherwise be used to manually
 #' create a plot.
 #'
 #' Duplication levels are based on the value shown on FASTQC reports at the
 #' top of the DeDuplicatedTotals plot, which is known to be inaccurate.
 #' As it still gives a good guide as to sequence diversity it is included as
-#' the default. This can be turned off by setting \code{duplicated = FALSE}.
+#' the default. This can be turned off by setting `duplicated = FALSE`.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
-#' @param usePlotly \code{logical} Default \code{FALSE} will render using
-#' ggplot. If \code{TRUE} plot will be rendered with plotly
+#' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
+#' @param usePlotly `logical` Default `FALSE` will render using
+#' ggplot. If `TRUE` plot will be rendered with plotly
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param duplicated \code{logical}. Include deduplicated read total estimates
+#' @param duplicated `logical`. Include deduplicated read total estimates
 #' to plot charts
-#' @param bars If \code{duplicated = TRUE}, show unique and deduplicated reads
+#' @param bars If `duplicated = TRUE`, show unique and deduplicated reads
 #' as "stacked" or "adjacent".
 #' @param barCols Colours for duplicated and unique reads.
-#' @param expand.x Output from \code{expansion()} controlling x-axis
+#' @param expand.x Output from `expansion()` controlling x-axis
 #' expansion. Alternatively can be a numeric vector of length 4
 #' @param ... Used to pass additional attributes to theme()
 #'

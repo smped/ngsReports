@@ -3,166 +3,18 @@
 \name{runFastQC}
 \alias{runFastQC}
 \alias{runFastQC,ANY-method}
-\alias{runFastQC,FastqFile-method}
-\alias{runFastQC,FastqFileList-method}
-\alias{runFastQC,BamFile-method}
-\alias{runFastQC,BamFileList-method}
-\title{A wrapper for the bash shell command fastqc.}
+\title{Deprecated wrapper for the bash shell command fastqc.}
 \usage{
-runFastQC(
-  object,
-  outPath,
-  threads = 1L,
-  casava = FALSE,
-  nofilter = FALSE,
-  extract = FALSE,
-  nogroup = FALSE,
-  min_length = 1,
-  contaminants = c(),
-  adapters = c(),
-  kmers = 7,
-  exec
-)
+runFastQC(object)
 
-\S4method{runFastQC}{ANY}(
-  object,
-  outPath,
-  threads = 1L,
-  casava = FALSE,
-  nofilter = FALSE,
-  extract = FALSE,
-  nogroup = FALSE,
-  min_length = 1,
-  contaminants = c(),
-  adapters = c(),
-  kmers = 7,
-  exec
-)
-
-\S4method{runFastQC}{FastqFile}(
-  object,
-  outPath,
-  threads = 1L,
-  casava = FALSE,
-  nofilter = FALSE,
-  extract = FALSE,
-  nogroup = FALSE,
-  min_length = 1,
-  contaminants = c(),
-  adapters = c(),
-  kmers = 7,
-  exec
-)
-
-\S4method{runFastQC}{FastqFileList}(
-  object,
-  outPath,
-  threads = 1L,
-  casava = FALSE,
-  nofilter = FALSE,
-  extract = FALSE,
-  nogroup = FALSE,
-  min_length = 1,
-  contaminants = c(),
-  adapters = c(),
-  kmers = 7,
-  exec
-)
-
-\S4method{runFastQC}{BamFile}(
-  object,
-  outPath,
-  threads = 1L,
-  casava = FALSE,
-  nofilter = FALSE,
-  extract = FALSE,
-  nogroup = FALSE,
-  min_length = 1,
-  contaminants = c(),
-  adapters = c(),
-  kmers = 7,
-  exec
-)
-
-\S4method{runFastQC}{BamFileList}(
-  object,
-  outPath,
-  threads = 1L,
-  casava = FALSE,
-  nofilter = FALSE,
-  extract = FALSE,
-  nogroup = FALSE,
-  min_length = 1,
-  contaminants = c(),
-  adapters = c(),
-  kmers = 7,
-  exec
-)
+\S4method{runFastQC}{ANY}(object)
 }
 \arguments{
-\item{object}{A \code{FastqFileList}, \code{BamFileList}, \code{FastqFile},
-\code{BamFile} or character vector of file paths with all objects coercible
-to a single one of these types.}
-
-\item{outPath}{The path to write the FastQC reports. Must exist as (for
-safety) it will not be created when calling this function}
-
-\item{threads}{The number of threads to run in parallel}
-
-\item{casava}{logical. Sets the \code{--casava} flag}
-
-\item{nofilter}{logical. Sets the \code{--nofilter} flag}
-
-\item{extract}{logical. Extract the zip files on completion of the report}
-
-\item{nogroup}{logical. Sets the grouping of bases for reads longer than 50bp}
-
-\item{min_length}{integer. Sets an artificial lower limit on the length of
-the sequence to be shown in the report.}
-
-\item{contaminants}{Path to an alternate file with contaminants.
-The structure of the file will not be checked.
-Refer to the \code{fastqc} help page for more details}
-
-\item{adapters}{Path to a file listing adapters to search for.
-The structure of the file will not be checked.
-Refer to the \code{fastqc} help page for more details}
-
-\item{kmers}{An integer between 2 and 10}
-
-\item{exec}{The location of the fastqc executable.}
-}
-\value{
-An list of paths to the output
+\item{object}{Deprecated}
 }
 \description{
-\lifecycle{soft-deprecated}
-A convenient wrapper for the bash shell command fastqc.
-Only runs if Fastqc is installed.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }
 \details{
-This is a simple wrapper function for controlling & running
-\code{fastqc} from within R.
-This can be very useful for controlling & documenting an entire pipeline
-from within knitr to produce a simple report
-
-Takes a FastqFile, FastqFileList, BamFile or BamFileList. Alternatively
-paths to files which are coerecible to these objects can be passed.
-
-Only the common functionality of FastQC is implemented,
-for more fine detail please call FastQC directly.
-}
-\examples{
-\dontrun{
-library(ShortRead)
-sp <- SolexaPath(system.file('extdata', package='ShortRead'))
-fl <- file.path(analysisPath(sp), "s_1_sequence.txt")
-f <- FastqFile(fl)
-# This requires a working installation of FastQC
-fqcFile <- runFastQC(f, outPath = tempdir())
-}
-
-}
-\author{
-Stephen Pederson <stephen.pederson@adelaide.edu.au>
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 }

@@ -83,7 +83,7 @@ Draw a barplot of read totals
 }
 \details{
 Draw a barplot of read totals using the standard ggplot2 syntax.
-The raw data from \code{\link{readTotals}} can otherwise be used to manually
+The raw data from \code{\link[=readTotals]{readTotals()}} can otherwise be used to manually
 create a plot.
 
 Duplication levels are based on the value shown on FASTQC reports at the

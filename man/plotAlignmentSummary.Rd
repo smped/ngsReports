@@ -40,7 +40,7 @@ Plot a summary of alignments from a set of log files
 \details{
 Loads a set of alignment log files and creates a default plot.
 Implemented aligners are \code{bowtie}, \code{bowtie2}, \code{Hisat2} and
- \code{STAR}.
+\code{STAR}.
 }
 \examples{
 

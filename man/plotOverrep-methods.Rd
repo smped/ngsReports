@@ -49,7 +49,7 @@ ggplot. If \code{TRUE} plot will be rendered with plotly}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
@@ -57,7 +57,7 @@ for PASS/WARN/FAIL}
 \item{n}{The number of sequences to plot from an individual file}
 
 \item{expand.x, expand.y}{Output from \code{expansion()} or numeric
-vectors of length 4. Passed to \code{scale_*_continuous()}}
+vectors of length 4. Passed to \verb{scale_*_continuous()}}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}

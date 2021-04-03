@@ -6,25 +6,25 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods if required.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or character
+#' @param x Can be a `FastqcData`, `FastqcDataList` or character
 #' vector of file paths
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
+#' @param pwfCols Object of class [PwfCols()] containing the colours
 #' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param usePlotly \code{logical}. Generate an interactive plot using plotly
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param usePlotly `logical`. Generate an interactive plot using plotly
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+#' @param dendrogram `logical` redundant if `cluster` is `FALSE`
+#' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param ... Used to pass various potting parameters to theme.
 #' @param gridlineWidth,gridlineCol Passed to geom_hline and geom_vline to
 #' determine width and colour of gridlines
 #'
-#' @return A ggplot2 object (\code{usePlotly = FALSE})
-#' or an interactive plotly object (\code{usePlotly = TRUE})
+#' @return A ggplot2 object (`usePlotly = FALSE`)
+#' or an interactive plotly object (`usePlotly = TRUE`)
 #'
 #' @examples
 #'

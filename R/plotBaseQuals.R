@@ -2,41 +2,41 @@
 #'
 #' @description Plot the Base Qualities for each file as separate plots
 #'
-#' @details When acting on a \code{FastqcDataList}, this defaults to a heatmap
+#' @details When acting on a `FastqcDataList`, this defaults to a heatmap
 #' using the mean Per_base_sequence_quality score. A set of plots which
 #' replicate those obtained through a standard FastQC html report can be
-#' obtained by setting \code{plotType = "boxplot"}, which uses \code{facet_wrap}
+#' obtained by setting `plotType = "boxplot"`, which uses `facet_wrap`
 #' to provide the layout as a single ggplot object.
 #'
-#' When acting an a \code{FastqcData} object, this replicates the
-#' \code{Per base sequence quality} plots from FastQC with no faceting.
+#' When acting an a `FastqcData` object, this replicates the
+#' `Per base sequence quality` plots from FastQC with no faceting.
 #'
 #' For large datasets, subsetting by R1 or R2 reads may be helpful.
 #'
-#' An interactive plot can be obtained by setting \code{usePlotly = TRUE}.
+#' An interactive plot can be obtained by setting `usePlotly = TRUE`.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or character
+#' @param x Can be a `FastqcData`, `FastqcDataList` or character
 #' vector of file paths
-#' @param usePlotly \code{logical} Default \code{FALSE} will render using
-#' ggplot. If \code{TRUE} plot will be rendered with plotly
-#' @param nc \code{numeric}. The number of columns to create in the plot layout.
+#' @param usePlotly `logical` Default `FALSE` will render using
+#' ggplot. If `TRUE` plot will be rendered with plotly
+#' @param nc `numeric`. The number of columns to create in the plot layout.
 #' Only used if drawing boxplots for multiple files in a FastqcDataList
 #' @param warn,fail The default values for warn and fail are 30 and 20
 #' respectively (i.e. percentages)
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param plotType \code{character} Can be either \code{"boxplot"} or
-#' \code{"heatmap"}
-#' @param plotValue \code{character} Type of data to be presented. Can be
+#' @param plotType `character` Can be either `"boxplot"` or
+#' `"heatmap"`
+#' @param plotValue `character` Type of data to be presented. Can be
 #' any of the columns returned by
-#' \code{getModule(x, module = "Per_base_sequence_qual")}
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for
+#' `getModule(x, module = "Per_base_sequence_qual")`
+#' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in plot
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+#' @param dendrogram `logical` redundant if `cluster` is `FALSE`
+#' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param boxWidth set the width of boxes when using a boxplot
 #' @param ... Used to pass additional attributes to theme() and between methods

@@ -9,11 +9,11 @@
 #'
 #' @include validationFunctions.R
 #'
-#' @slot Genome A \code{data.frame} containing theoretical GC content for
+#' @slot Genome A `data.frame` containing theoretical GC content for
 #' genomic sequences
-#' @slot Transcriptome A \code{data.frame} containing theoretical GC content
+#' @slot Transcriptome A `data.frame` containing theoretical GC content
 #' for transcriptomic sequences
-#' @slot mData A \code{data.frame} containing metadata about all species in the
+#' @slot mData A `data.frame` containing metadata about all species in the
 #' object
 #'
 #' @examples
@@ -42,7 +42,7 @@ setValidity("TheoreticalGC", .isValidTheoreticalGC)
 #'
 #' @param object An object of class Theoretical GC
 #'
-#' @return A \code{tibble} object
+#' @return A `tibble` object
 #'
 #' @examples
 #' mData(gcTheoretical)
@@ -67,12 +67,12 @@ setMethod("mData", "TheoreticalGC", function(object){object@mData})
 #' An object of class TheoreticalGC can hold the theoretical GC content for one
 #' or more species, for either the genome or transriptome.
 #' This function checks which species are available in the given object, for
-#' either the genome or transcriptome, as supplied to the parameter \code{type}.
+#' either the genome or transcriptome, as supplied to the parameter `type`.
 #'
 #' @param object An object of class TheoreticalGC
 #' @param type character indicating either Genome or Transcriptome
 #'
-#' @return A \code{tibble} object
+#' @return A `tibble` object
 #'
 #' @examples
 #' gcAvail(gcTheoretical, "Genome")

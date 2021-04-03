@@ -9,17 +9,17 @@
 #' reports, this defaults to a heatmap with block sizes proportional to the
 #' percentage of reads belonging to that duplication category.
 #'
-#' If setting \code{usePlotly = FALSE}, the output of this function can be
+#' If setting `usePlotly = FALSE`, the output of this function can be
 #' further modified using standard ggplot2 syntax. If setting
-#' \code{usePlotly = TRUE} an interactive plotly object will be produced.
+#' `usePlotly = TRUE` an interactive plotly object will be produced.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file path
-#' @param usePlotly \code{logical} Default \code{FALSE} will render using
-#' ggplot. If \code{TRUE} plot will be rendered with plotly
+#' @param x Can be a `FastqcData`, `FastqcDataList` or file path
+#' @param usePlotly `logical` Default `FALSE` will render using
+#' ggplot. If `TRUE` plot will be rendered with plotly
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for
+#' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in the plot
 #' @param warn,fail The default values for warn and fail are 20 and 50
 #' respectively (i.e. percentages)
@@ -27,10 +27,10 @@
 #' @param deduplication Plot Duplication levels 'pre' or 'post' deduplication.
 #' Can only take values "pre" and "post"
 #' @param plotType Choose between "heatmap" and "line"
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+#' @param dendrogram `logical` redundant if `cluster` is `FALSE`
+#' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param heatCol Colour palette used for the heatmap
 #' @param ... Used to pass additional attributes to theme() and between methods

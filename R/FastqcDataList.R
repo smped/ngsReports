@@ -1,7 +1,7 @@
 #' @title The FastqcDataList Object Class
 #'
 #' @description The FastqcDataList Object Class
-#' \lifecycle{stable}
+#'  `r lifecycle::badge("stable")`
 #'
 #' @slot ... this can either be a single character vector of paths to FASTQC
 #' files, or several instances of .FastqcFile objects

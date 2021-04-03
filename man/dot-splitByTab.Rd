@@ -25,7 +25,7 @@ This will split a vector into a data.frame checking that every line
 has the same number of separators.
 By default the first element will be set as the column names.
 
-This is designed to take input from `readLines()`
+This is designed to take input from \code{readLines()}
 }
 \examples{
 x <- c("ColA\tColB", "Value1\tValue2")

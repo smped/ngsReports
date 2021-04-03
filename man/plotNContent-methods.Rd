@@ -48,7 +48,7 @@ object.}
 All filenames must be present in the names.
 File extensions are dropped by default}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
 
 \item{warn, fail}{The default values for warn and fail are 5 and 10

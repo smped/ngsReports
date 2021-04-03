@@ -82,7 +82,7 @@ ggplot. If \code{TRUE} plot will be rendered with plotly}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} containing the colours
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
 
 \item{counts}{\code{logical}. Plot the counts from each file if

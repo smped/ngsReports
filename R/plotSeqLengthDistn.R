@@ -10,32 +10,32 @@
 #' ggplot2 methods.
 #'
 #' A cdf plot can also be generated to provide guidance for minimum
-#' read length in some NGS workflows, by setting \code{plotType = "cdf"}.
+#' read length in some NGS workflows, by setting `plotType = "cdf"`.
 #' If all libraries have reads of identical lengths, these plots may be less
 #' informative.
 #'
 #' An alternative interactive plot is available by setting the argument
-#' \code{usePlotly = TRUE}.
+#' `usePlotly = TRUE`.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
-#' @param usePlotly \code{logical}. Output as ggplot2 or plotly object.
-#' @param plotType \code{character}. Can only take the values
-#' \code{plotType = "heatmap"} \code{plotType = "line"} or
-#' \code{plotType = "cdf"}
+#' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
+#' @param usePlotly `logical`. Output as ggplot2 or plotly object.
+#' @param plotType `character`. Can only take the values
+#' `plotType = "heatmap"` `plotType = "line"` or
+#' `plotType = "cdf"`
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param counts \code{logical} Should distributions be shown as counts or
+#' @param counts `logical` Should distributions be shown as counts or
 #' frequencies (percentages)
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{cluster} and
-#' \code{usePlotly} are \code{FALSE}. If both \code{cluster} and
-#' \code{dendrogram} are specified as \code{TRUE} then the dendrogram
+#' @param dendrogram `logical` redundant if `cluster` and
+#' `usePlotly` are `FALSE`. If both `cluster` and
+#' `dendrogram` are specified as `TRUE` then the dendrogram
 #' will be displayed.
 #' @param ... Used to pass additional attributes to theme()
-#' @param expand.x Output from \code{expansion()} or numeric vector of
-#' length 4. Passed to \code{scale_x_discrete}
+#' @param expand.x Output from `expansion()` or numeric vector of
+#' length 4. Passed to `scale_x_discrete`
 #' @param heatCol The colour scheme for the heatmap
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object

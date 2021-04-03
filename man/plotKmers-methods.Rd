@@ -63,7 +63,7 @@ fastqc data will be clustered using hierarchical clustering}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
-\item{pwfCols}{Object of class \code{\link{PwfCols}} to give colours for
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail values in the plot}
 
 \item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno}

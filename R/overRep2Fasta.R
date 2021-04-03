@@ -2,10 +2,10 @@
 #'
 #' @description Output overrepresented sequences to disk in fasta format.
 #'
-#' @details Fasta will contain \code{Filename}, \code{Possible Source},
-#' \code{Percent of total reads}
+#' @details Fasta will contain `Filename`, `Possible Source`,
+#' `Percent of total reads`
 #'
-#' @param x Can be a \code{FastqcData} or \code{FastqcDataList}
+#' @param x Can be a `FastqcData` or `FastqcDataList`
 #' @param path Path to export the fasta file to. Reverts to a default in the
 #' working directory if not supplied
 #' @param n The number of sequences to output

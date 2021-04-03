@@ -6,32 +6,32 @@
 #' uninformative, and omitted by default in later versions of FastQC, these
 #' are rudimentary plots.
 #'
-#' Plots for \code{FastqcData} objects replicate those contained in a FastQC
-#' report, whilst the heatmap generated from \code{FastqcDataList} objects
+#' Plots for `FastqcData` objects replicate those contained in a FastQC
+#' report, whilst the heatmap generated from `FastqcDataList` objects
 #' simply show the location and abundance of over-represented Kmers.
 #'
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
-#' @param n \code{numeric}. The number of Kmers to show.
+#' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
+#' @param n `numeric`. The number of Kmers to show.
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param usePlotly \code{logical} Default \code{FALSE} will render using
-#' ggplot. If \code{TRUE} plot will be rendered with plotly
+#' @param usePlotly `logical` Default `FALSE` will render using
+#' ggplot. If `TRUE` plot will be rendered with plotly
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
-#' @param lineWidth Passed to \code{geom_line(size = lineWidth)}
+#' @param lineWidth Passed to `geom_line(size = lineWidth)`
 #' @param pal The colour palette. If the vector supplied is less than n,
-#' \code{grDevices::colorRampPalette()} will be used
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for
+#' `grDevices::colorRampPalette()` will be used
+#' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in the plot
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+#' @param dendrogram `logical` redundant if `cluster` is `FALSE`
+#' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
-#' @param heatCol Colour palette used for the heatmap. Default is \code{inferno}
-#' from the package \code{viridris}
+#' @param heatCol Colour palette used for the heatmap. Default is `inferno`
+#' from the package `viridris`
 #'
 #' @return A standard ggplot2 object or an interactive plotly object
 #'

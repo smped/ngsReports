@@ -33,5 +33,5 @@ df <- importSJ(sjFiles, stripPaths = FALSE)
 
 }
 \author{
-Stephen Pederson <stephen.pederson@adelaide.edu.au>
+Stephen Pederson \href{mailto:stephen.pederson@adelaide.edu.au}{stephen.pederson@adelaide.edu.au}
 }

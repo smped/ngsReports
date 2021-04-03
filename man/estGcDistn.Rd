@@ -43,7 +43,7 @@ read length and fragment length
 The function takes the supplied object and returns the theoretical GC
 content distribution. Using a fixed read length essentially leads to a
 discrete distribution so the bins argument is used to define the number of
-bins returned. This defaults to 101 for 0 to 100% inclusive.
+bins returned. This defaults to 101 for 0 to 100\% inclusive.
 
 The returned values are obtained by interpolating the values obtained during
 sampling. This avoids returned distributions with gaps and jumps as would be

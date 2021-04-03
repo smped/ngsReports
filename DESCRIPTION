@@ -1,6 +1,6 @@
 Package: ngsReports
-Version: 1.7.1
-Date: 2021/02/07
+Version: 1.7.2
+Date: 2021/04/03
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Steve", "Pederson", 
@@ -35,12 +35,10 @@ Imports:
     lubridate,
     methods,
     pander,
-    parallel,
     plotly,
     readr,
     reshape2,
     rmarkdown,
-    Rsamtools,
     scales,
     ShortRead,
     stats,
@@ -108,3 +106,4 @@ Suggests:
   truncnorm
 biocViews: QualityControl, ReportWriting
 RdMacros: lifecycle
+Roxygen: list(markdown = TRUE)

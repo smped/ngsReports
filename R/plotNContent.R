@@ -8,26 +8,26 @@
 #' The output of this function can be further modified using the standard
 #' ggplot2 methods.
 #'
-#' When \code{x} is a single FastqcData object line plots will always be drawn
+#' When `x` is a single FastqcData object line plots will always be drawn
 #' for all Ns.
 #' Otherwise, users can select line plots or heatmaps.
 #'
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or file paths
-#' @param usePlotly \code{logical}. Output as ggplot2 (default) or plotly
+#' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
+#' @param usePlotly `logical`. Output as ggplot2 (default) or plotly
 #' object.
 #' @param warn,fail The default values for warn and fail are 5 and 10
 #' respectively (i.e. percentages)
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
+#' @param pwfCols Object of class [PwfCols()] containing the colours
 #' for PASS/WARN/FAIL
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default
 #' @param lineCol Defaults to red
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+#' @param dendrogram `logical` redundant if `cluster` is `FALSE`
+#' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'

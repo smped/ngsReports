@@ -13,7 +13,7 @@ An object of class .FastqcFile
 \description{
 The .FastqcFile Object Class defines a path to the output from
 the standalone tool FastQC.
-\lifecycle{stable}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#stable}{\figure{lifecycle-stable.svg}{options: alt='[Stable]'}}}{\strong{[Stable]}}`
 }
 \details{
 This class simply refers to a fastqc output file after checking for

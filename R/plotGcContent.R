@@ -8,48 +8,48 @@
 #' with Theoretical GC content overlaid if desired.
 #'
 #' When applied to multiple FastQC reports, the density at each GC content bin
-#' can be shown as a heatmap by setting \code{theoreticalGC = FALSE}. By
+#' can be shown as a heatmap by setting `theoreticalGC = FALSE`. By
 #' default the difference in observed and expected theoretical GC is shown.
 #' Species and genome/transcriptome should also be set if utilising the
 #' theoretical GC content.
 #'
 #' As an alternative to a heatmap, a series of overlaid distributions can be
-#' shown by setting \code{plotType = "line"}.
+#' shown by setting `plotType = "line"`.
 #'
 #' Can produce a static ggplot2 object or an interactive plotly object.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or character
+#' @param x Can be a `FastqcData`, `FastqcDataList` or character
 #' vector of file paths
-#' @param usePlotly \code{logical} Default \code{FALSE} will render using
-#' ggplot. If \code{TRUE} plot will be rendered with plotly
-#' @param counts \code{logical}. Plot the counts from each file if
-#' \code{counts = TRUE}, otherwise frequencies will be plotted.
+#' @param usePlotly `logical` Default `FALSE` will render using
+#' ggplot. If `TRUE` plot will be rendered with plotly
+#' @param counts `logical`. Plot the counts from each file if
+#' `counts = TRUE`, otherwise frequencies will be plotted.
 #' Ignored if calling the function on a FastqcDataList.
-#' @param theoreticalGC \code{logical} default is \code{FALSE} to give the true
-#' GC content, set to \code{TRUE} to normalize values of GC_Content by the
-#' theoretical values using \code{\link{gcTheoretical}}. \code{species} must be
+#' @param theoreticalGC `logical` default is `FALSE` to give the true
+#' GC content, set to `TRUE` to normalize values of GC_Content by the
+#' theoretical values using [gcTheoretical()]. `species` must be
 #' specified.
-#' @param gcType \code{character} Select type of data to normalize GC
+#' @param gcType `character` Select type of data to normalize GC
 #' content against. Accepts either "Genome" (default) or "Transcriptome".
 #' @param GCobject an object of class GCTheoretical.
 #'  Defaults to the gcTheoretical object supplied with the package
 #' @param Fastafile a fasta file contains DNA sequences to generate theoretical
 #' GC content
 #' @param n number of simulated reads to generate theoretical GC content from
-#' \code{Fastafile}
-#' @param species \code{character} if \code{gcTheory} is \code{TRUE} it must be
+#' `Fastafile`
+#' @param species `character` if `gcTheory` is `TRUE` it must be
 #' accompanied by a species. Species currently supported can be obtained using
-#' \code{mData(gcTheoretical)}
+#' `mData(gcTheoretical)`
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
 #' @param plotType Takes values "line", "heatmap" or "cdf"
-#' @param pwfCols Object of class \code{\link{PwfCols}} to give colours for
+#' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in plot
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+#' @param dendrogram `logical` redundant if `cluster` is `FALSE`
+#' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram  will be displayed.
 #' @param lineCols Colors for observed and theoretical GC lines in single plots
 #' @param ... Used to pass various potting parameters to theme.

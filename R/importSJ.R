@@ -10,7 +10,7 @@
 #' All co-ordinates are 1-based, in keeping with the STAR manual
 #'
 #' @return
-#' A \code{tibble}
+#' A `tibble`
 #'
 #' @param x vector of file paths to SJ.out.tab files
 #' @param stripPaths logical(1) Remove directory prefixes from the file paths

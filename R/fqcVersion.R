@@ -2,7 +2,7 @@
 #'
 #' @description Get the FASTQC version used to generate the intial files
 #'
-#' @param object An object of class \code{FastqcData} or \code{FastqcDataList}
+#' @param object An object of class `FastqcData` or `FastqcDataList`
 #'
 #' @return A character vector (FastqcData), or tibble (FastqcDataList)
 #'

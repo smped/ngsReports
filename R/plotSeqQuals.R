@@ -3,31 +3,31 @@
 #' @description Plot the Per Sequence Quality Scores for a set of FASTQC reports
 #'
 #' @details Plots the distribution of average sequence quality scores across the
-#' set of files. Values can be plotted either as counts (\code{counts = TRUE})
-#' or as frequencies (\code{counts = FALSE}).
+#' set of files. Values can be plotted either as counts (`counts = TRUE`)
+#' or as frequencies (`counts = FALSE`).
 #'
 #' Any faceting or scale adjustment can be performed after generation of the
 #' initial plot, using the standard methods of ggplot2 as desired.
 #'
-#' @param x Can be a \code{FastqcData}, \code{FastqcDataList} or path
-#' @param counts \code{logical}. Plot the counts from each file if
-#' \code{counts = TRUE}, otherwise the frequencies will be plotted
-#' @param pwfCols Object of class \code{\link{PwfCols}} containing the colours
+#' @param x Can be a `FastqcData`, `FastqcDataList` or path
+#' @param counts `logical`. Plot the counts from each file if
+#' `counts = TRUE`, otherwise the frequencies will be plotted
+#' @param pwfCols Object of class [PwfCols()] containing the colours
 #' for PASS/WARN/FAIL
 #' @param labels An optional named factor of labels for the file names.
 #' All filenames must be present in the names.
 #' File extensions are dropped by default.
-#' @param plotType \code{character}. Can only take the values
-#' \code{plotType = "heatmap"} or \code{plotType = "line"}
+#' @param plotType `character`. Can only take the values
+#' `plotType = "heatmap"` or `plotType = "line"`
 #' @param warn,fail The default values for warn and fail are 5 and 10
 #' respectively (i.e. percentages)
-#' @param dendrogram \code{logical} redundant if \code{cluster} is \code{FALSE}
-#' if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
+#' @param dendrogram `logical` redundant if `cluster` is `FALSE`
+#' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
-#' @param cluster \code{logical} default \code{FALSE}. If set to \code{TRUE},
+#' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
-#' @param usePlotly \code{logical} Default \code{FALSE} will render using
-#' ggplot. If \code{TRUE} plot will be rendered with plotly
+#' @param usePlotly `logical` Default `FALSE` will render using
+#' ggplot. If `TRUE` plot will be rendered with plotly
 #' @param alpha set alpha for line graph bounds
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.

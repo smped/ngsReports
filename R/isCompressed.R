@@ -4,7 +4,7 @@
 #'
 #' @details Reads the first four bytes from the local file header.
 #' If the file is a .ZIP file, this should match the magic number
-#' \code{PK\003\004}.
+#' `PK\003\004`.
 #'
 #' This function assumes that the first thing in a zip archive is the
 #' .ZIP entry with the local file header signature.
@@ -18,7 +18,7 @@
 #' messages
 #'
 #' @return
-#' A \code{logical} vector
+#' A `logical` vector
 #'
 #' @examples
 #'

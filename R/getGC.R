@@ -7,7 +7,7 @@
 #' @param type The type of GC content. Can only be either "Genome" or
 #' "Transcriptome"
 #'
-#' @return A \code{tibble} object
+#' @return A `tibble` object
 #'
 #' @examples
 #' getGC(gcTheoretical, name = "Hsapiens", type = "Genome")

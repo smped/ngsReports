@@ -11,7 +11,7 @@ maxAdapterContent(x, asPercent = TRUE)
 \code{FastqcDataList} or path}
 
 \item{asPercent}{\code{logical}.
-Format the values as percentages with the added \code{\%} symbol}
+Format the values as percentages with the added \verb{\\\%} symbol}
 }
 \value{
 A \code{tibble} object containing the percent of reads with each

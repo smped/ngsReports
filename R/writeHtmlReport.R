@@ -3,19 +3,19 @@
 #' @description Compiles an HTML report using a supplied template
 #'
 #' @param fastqcDir A directory containing zipped, or extracted FastQC reports
-#' @param template The template file which will be copied into \code{fastqcDir}
+#' @param template The template file which will be copied into `fastqcDir`
 #' @param outDir The directory to write the compiled document to
 #' @param usePlotly Generate interactive plots?
 #' @param species Species/closely related species of sequenced samples
 #' @param gcType Is the data "Transcriptomic" or "Genomic" in nature?
 #' @param nOver The maximum number of Overrepresented Sequences to show
 #' @param targetsDF A data.frame with at least two columns named
-#' \code{Filename}  and \code{Label}.
+#' `Filename`  and `Label`.
 #' The filenames should match the original fastq files, and the labels should
 #' be simply alternative labels for these files for convenience.
-#' @param overwrite \code{logical}. Overwrite any previous copies of the
+#' @param overwrite `logical`. Overwrite any previous copies of the
 #' template file in the destination directory
-#' @param quiet \code{logical}. Show or hide markdown output in the Console.
+#' @param quiet `logical`. Show or hide markdown output in the Console.
 #'
 #' @details
 #' This will take a user supplied template, or the file supplied with the
@@ -23,7 +23,7 @@
 #' files in the supplied directory.
 #'
 #' @return
-#' Silently returns \code{TRUE} and will output a compiled HTML file from the
+#' Silently returns `TRUE` and will output a compiled HTML file from the
 #' supplied Rmarkdown template file
 #'
 #' @examples
