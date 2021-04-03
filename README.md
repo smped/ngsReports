@@ -6,8 +6,6 @@
 
 An R Package for managing FastQC reports and other NGS related log files inside R.
 Except for some periodic minor bug fixes, this branch is the current release which is also available from [the Bioconductor website](https://bioconductor.org/packages/release/bioc/html/ngsReports.html).
-To install this package for Bioconductor <= 3.6 (R <= 3.4.4) please use the drop down menu above to change to the branch Bioc3.6, and follow the instructions there.
-Versions for Bioc releases 3.9 and 3.10 are also available as branches from this repository.
 
 ## Installation
 
@@ -22,7 +20,6 @@ library(ngsReports)
 The paper for the package can be found [here](https://doi.org/10.1093/bioinformatics/btz937). 
 For a detailed usage guide please see [here](https://bioconductor.org/packages/release/bioc/vignettes/ngsReports/inst/doc/ngsReportsIntroduction.html).
 
-
 ## ShinyApp
 
 A Graphical User Interface (Shiny App) has been developed for interactive inspection of many FastQC reports. The ngsReports shiny app can be installed [here](https://github.com/UofABioinformaticsHub/shinyNgsReports).
@@ -33,21 +30,21 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 - FastQC
 ### Adapter removal and trimming
 - AdapterRemoval
-- CutAdapt
-- Trimmomatic
+- cutadapt
+- trimmomatic
 ### Mapping and alignment 
-- Bowtie
-- Bowtie2
-- HISAT2
-- Macs2 callpeak
-- Picard MarkDuplicates
-- Samtools flagstat
+- bowtie
+- bowtie2
+- hisat2
+- macs2 callpeak
+- picard MarkDuplicates
+- samtools flagstat
 - STAR
 ### Transcript/gene quantificaiton
-- Feature counts
+- feature counts (Subread)
 ### Genome assembly
 - BUSCO
-- Quast
+- quast
 
 # Citation 
 

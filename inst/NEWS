@@ -1,3 +1,6 @@
+Changes in version 1.7.2
++ Deprecated runFastQC
+
 Changes in version 1.7.1
 + Added macs2 callpeak logs to importNgsLogs
 

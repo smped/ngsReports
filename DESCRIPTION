@@ -40,7 +40,6 @@ Imports:
     reshape2,
     rmarkdown,
     scales,
-    ShortRead,
     stats,
     stringr,
     tidyr,

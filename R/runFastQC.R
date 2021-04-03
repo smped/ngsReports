@@ -8,8 +8,6 @@
 #'
 #' @param object Deprecated
 #'
-#' @importClassesFrom ShortRead FastqFileList
-#'
 #' @export
 #' @rdname runFastQC-methods
 setGeneric("runFastQC", function(object){

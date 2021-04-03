@@ -29,8 +29,8 @@
 #' fdl[1]
 #' fdl[[1]]
 #'
-#' @name [
-#' @aliases [,FastqcDataList,numeric,missing,ANY-method
+#' @docType methods
+#' @aliases [,FastqcDataList,numeric,missing-method
 #' @rdname extract-methods
 #' @export
 setMethod(
@@ -42,7 +42,7 @@ setMethod(
         new("FastqcDataList", x)
     }
 )
-#' @aliases [,FastqcDataList,character,missing,ANY-method
+#' @aliases [,FastqcDataList,character,missing-method
 #' @rdname extract-methods
 setMethod(
     f = "[",
@@ -53,7 +53,7 @@ setMethod(
         x[i]
     }
 )
-#' @aliases [,FastqcDataList,logical,missing,ANY-method
+#' @aliases [,FastqcDataList,logical,missing-method
 #' @rdname extract-methods
 setMethod(
     f = "[",
@@ -65,7 +65,7 @@ setMethod(
         new("FastqcDataList", x)
     }
 )
-#' @aliases [,FastqcDataList,ANY,missing,ANY-method
+#' @aliases [,FastqcDataList,ANY,missing-method
 #' @rdname extract-methods
 setMethod(
     f = "[",
