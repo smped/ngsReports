@@ -55,6 +55,7 @@
 #'
 #' @importFrom stats hclust dist
 #' @importFrom scales percent comma percent_format
+#' @importFrom tidyr pivot_wider
 #' @importFrom grDevices hcl.colors
 #' @import ggplot2
 #'
@@ -252,7 +253,9 @@ setMethod("plotSeqQuals", signature = "FastqcDataList", function(
 
     ## As the Quality Scores may have different ranges across different
     ## samples, use spread & gather to fill missing values with zero
-    df <- tidyr::spread(df, key = "Quality", value = "Count", fill = 0)
+    df <- pivot_wider(
+        df, names_from = "Quality", values_from = "Count", values_fill = 0
+    )
     df <- tidyr::gather(df, key = "Quality", value = "Count", -Filename)
     df$Quality <- as.integer(df$Quality)
 

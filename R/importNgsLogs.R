@@ -58,6 +58,7 @@
 #' @importFrom lubridate dminutes dhours dseconds parse_date_time
 #' @importFrom tidyselect contains everything starts_with ends_with
 #' @importFrom stringr str_replace_all str_trim str_remove_all str_extract
+#' @importFrom tidyr pivot_wider
 #'
 #' @export
 importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
@@ -1177,7 +1178,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     value <- c() # Avoiding an R CMD check NOTE
     out <- tidyr::gather(out, "key", "value", -1)
     out <- dplyr::filter(out, !is.na(value))
-    out <- tidyr::spread(out, "key", "value")
+    out <- pivot_wider(data = out, names_from = "key", values_from = "value")
 
     ## Return the final output
     dplyr::select(

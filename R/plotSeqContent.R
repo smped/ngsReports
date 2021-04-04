@@ -52,7 +52,7 @@
 #' @docType methods
 #'
 #' @importFrom grDevices rgb
-#' @importFrom dplyr mutate_at vars group_by ungroup
+#' @importFrom dplyr mutate_at vars group_by ungroup left_join
 #' @importFrom scales percent
 #' @importFrom tidyr pivot_longer
 #' @importFrom tidyselect one_of

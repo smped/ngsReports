@@ -27,6 +27,7 @@
 #' maxAdapterContent(fdl)
 #'
 #' @importFrom tidyselect one_of
+#' @importFrom tidyr pivot_wider
 #'
 #' @export
 maxAdapterContent <- function(x, asPercent = TRUE){
@@ -44,6 +45,6 @@ maxAdapterContent <- function(x, asPercent = TRUE){
 
     ## Format & return the output
     if (asPercent) ac$value <- scales::percent_format(0.01, 1)(ac$value)
-    tidyr::spread(ac, "Type", "value")
+    pivot_wider(ac, names_from = "Type", values_from = "value")
 
 }

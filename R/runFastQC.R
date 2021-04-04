@@ -8,6 +8,8 @@
 #'
 #' @param object Deprecated
 #'
+#' @return A warning
+#'
 #' @export
 #' @rdname runFastQC-methods
 setGeneric("runFastQC", function(object){

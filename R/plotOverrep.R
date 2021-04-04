@@ -51,7 +51,6 @@
 #'
 #' @docType methods
 #'
-#' @importFrom tidyr spread
 #' @importFrom plotly layout ggplotly
 #' @importFrom grDevices rgb
 #' @import ggplot2

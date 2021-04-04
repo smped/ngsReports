@@ -213,9 +213,9 @@ test_that("parseTrimmomaticLogs behaves correctly",{
     df <- importNgsLogs(trimoFiles, "trimmomatic")
     expCols <- c(
         "Filename", "Type", "Input_Read_Pairs", "Both_Surviving",
-        "Forward_Only_Surviving", "Reverse_Only_Surviving", "Dropped",
-        "Illumina_Clip", "Min_Len", "Quality_Encoding", "Sliding_Window",
-        "Trailing"
+        "Forward_Only_Surviving",  "Reverse_Only_Surviving", "Dropped",
+        "Illumina_Clip", "Sliding_Window", "Trailing", "Min_Len",
+        "Quality_Encoding"
     )
     expect_error(importNgsLogs(caFiles, "trimmomatic"))
     expect_equal(colnames(df), expCols)

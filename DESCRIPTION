@@ -1,6 +1,6 @@
 Package: ngsReports
-Version: 1.7.2
-Date: 2021/04/03
+Version: 1.7.3
+Date: 2021/04/04
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Steve", "Pederson", 
@@ -10,8 +10,11 @@ Authors@R: c(
     person("Thu-Hien", "To", email = "tothuhien@gmail.com", role = c("aut"))
     )
 Description: This package provides methods and object classes for parsing 
-    FastQC reports and output summaries from other NGS tools into R, as well as 
-    visualising the data loaded from these files.
+    FastQC reports and output summaries from other NGS tools into R.
+    As well as parsing files, multiple plotting methods have been implemented 
+    for visualising the parsed data.
+    Plots can be generated as static ggplot objects or interactive plotly 
+    objects.
 URL: https://github.com/steveped/ngsReports
 BugReports: https://github.com/steveped/ngsReports/issues
 License: file LICENSE
@@ -26,7 +29,6 @@ Imports:
     checkmate,
     dplyr (>= 1.0.0),
     DT,
-    FactoMineR,
     forcats,
     ggdendro,
     grDevices (>= 3.6.0),

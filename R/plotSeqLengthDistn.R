@@ -58,9 +58,8 @@
 #' @docType methods
 #'
 #' @importFrom dplyr vars
-#' @importFrom plotly ggplotly
-#' @importFrom plotly layout
-#' @importFrom plotly subplot
+#' @importFrom plotly ggplotly layout subplot
+#' @importFrom tidyr pivot_wider
 #' @importFrom grDevices hcl.colors
 #' @import ggplot2
 #'
@@ -224,7 +223,9 @@ setMethod(
 
         ## Now spread the gather to fill zeros in any missing bins
         df <- df[c("Filename", "Length", "Count")]
-        df <- tidyr::spread(df, "Length", "Count", fill = 0)
+        df <- pivot_wider(
+            df, names_from = "Length", values_from = "Count", values_fill = 0
+        )
         df <- tidyr::gather(df, "Length", "Count", -Filename)
 
         ## Sort by length bins

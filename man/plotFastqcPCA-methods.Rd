@@ -10,50 +10,46 @@
 \usage{
 plotFastqcPCA(
   x,
-  module,
+  module = "Per_sequence_GC_content",
   usePlotly = FALSE,
   labels,
-  cluster = FALSE,
-  clusterType = "colour",
-  groups = NULL,
+  sz = 4,
+  groups,
   ...
 )
 
 \S4method{plotFastqcPCA}{ANY}(
   x,
-  module,
+  module = "Per_sequence_GC_content",
   usePlotly = FALSE,
   labels,
-  cluster = FALSE,
-  clusterType = "colour",
-  groups = NULL,
+  sz = 4,
+  groups,
   ...
 )
 
 \S4method{plotFastqcPCA}{character}(
   x,
-  module,
+  module = "Per_sequence_GC_content",
   usePlotly = FALSE,
   labels,
-  cluster = FALSE,
-  clusterType = "colour",
-  groups = NULL,
+  sz = 4,
+  groups,
   ...
 )
 
 \S4method{plotFastqcPCA}{FastqcDataList}(
   x,
-  module,
+  module = "Per_sequence_GC_content",
   usePlotly = FALSE,
   labels,
-  cluster = FALSE,
-  clusterType = "colour",
-  groups = NULL,
+  sz = 4,
+  groups,
   ...
 )
 }
 \arguments{
-\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
+\item{x}{Can be a \code{FastqcDataList} or \code{character} vector of file paths}
 
 \item{module}{\code{character} vector containing
 the desired FastQC module (eg. c("Per_base_sequence_quality",
@@ -66,17 +62,11 @@ object.}
 All filenames must be present in the names.
 File extensions are dropped by default}
 
-\item{cluster}{\code{logical} default \code{FALSE}. If \code{groups} argument
-is not set fastqc data will be clustered using hierarchical clustering.}
+\item{sz}{The size of the text labels}
 
-\item{clusterType}{One of "color/colour" or "hulls". Default is "colours"
-and will colour points based on cluster/group, "hulls" will draw a polygon
-around each cluster.}
-
-\item{groups}{Optional data.frame (or tibble) with columns \code{Filename}
-and \code{Group}. Values in the Filename column should correspond to the
-values returned by fqName(x). If not supplied and \code{cluster = TRUE},
-clusters will be automatically generated using HCPC from FactoMiner}
+\item{groups}{Optional factor of the same length as x. If provided,
+the plot will be coloured using this factor as the defined groups.
+Ellipses will also be added to the final plot.}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
 }
@@ -88,12 +78,15 @@ Draw a PCA plot for Fast QC modules across multiple samples
 \lifecycle{experimental}
 }
 \details{
-This carries out PCA on all or a subset of FastQC modules and plots the
-output using either ggplot or plotly. Clustering of the PCA can be carried
-out using a hierarchical clustering approach. Current modules for PCA are
+This carries out PCA on a single FastQC module and plots the
+output using either ggplot or plotly. Current modules for PCA are
 Per_base_sequence_quality, Per_sequence_quality_scores,
 Per_sequence_GC_content, Per_base_sequence_content, and
 Sequence_Length_Distribution.
+
+If a factor is provided in the groups argument, this will be applied to the
+plotting colours and ellipses will be drawn using these groups.
+Only the labels will be plotted using \code{geom_text()}
 }
 \examples{
 
@@ -103,7 +96,8 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
-plotFastqcPCA(fdl, module = "Per_sequence_quality_scores", cluster = TRUE)
+grp <- as.factor(gsub(".+(R[12]).*", "\\\\1", fqName(fdl)))
+plotFastqcPCA(fdl, module = "Per_sequence_GC_content", groups = grp)
 
 
 }

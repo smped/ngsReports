@@ -1,3 +1,6 @@
+Changes in version 1.7.3
++ Simplifed version of plotFastqcPCA. Now groups are an optional factor. No clustering is performed
+
 Changes in version 1.7.2
 + Deprecated runFastQC
 
