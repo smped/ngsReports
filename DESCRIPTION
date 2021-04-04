@@ -29,7 +29,7 @@ Imports:
     FactoMineR,
     forcats,
     ggdendro,
-    grDevices,
+    grDevices (>= 3.6.0),
     grid,
     lifecycle,
     lubridate,
@@ -45,7 +45,6 @@ Imports:
     tidyr,
     tidyselect (>= 0.2.3),
     utils,
-    viridisLite,
     zoo
 LazyData: true
 RoxygenNote: 7.1.1

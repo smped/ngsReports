@@ -61,7 +61,7 @@
 #' @importFrom plotly ggplotly
 #' @importFrom plotly layout
 #' @importFrom plotly subplot
-#' @importFrom viridisLite inferno
+#' @importFrom grDevices hcl.colors
 #' @import ggplot2
 #'
 #' @name plotSeqLengthDistn
@@ -182,7 +182,8 @@ setMethod(
         x, usePlotly = FALSE, labels, counts = FALSE,
         plotType = c("heatmap", "line", "cdf"), cluster = FALSE,
         dendrogram = FALSE, ..., expand.x = expansion(0, 0.2),
-        heatCol = inferno(50)){
+        heatCol = hcl.colors(50, "inferno")
+    ){
 
         df <- getModule(x, "Sequence_Length_Distribution")
 

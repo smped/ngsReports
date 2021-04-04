@@ -29,6 +29,7 @@
 #' @param usePlotly `logical` Default `FALSE` will render using
 #' ggplot. If `TRUE` plot will be rendered with plotly
 #' @param alpha set alpha for line graph bounds
+#' @param heatCols Colour palette for the heatmap
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
 #'
@@ -54,6 +55,7 @@
 #'
 #' @importFrom stats hclust dist
 #' @importFrom scales percent comma percent_format
+#' @importFrom grDevices hcl.colors
 #' @import ggplot2
 #'
 #' @name plotSeqQuals
@@ -237,7 +239,7 @@ setMethod("plotSeqQuals", signature = "FastqcData", function(
 setMethod("plotSeqQuals", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, counts = FALSE, alpha = 0.1,
     warn = 30, fail = 20, plotType = c("heatmap", "line"), dendrogram = FALSE,
-    cluster = FALSE, ...){
+    cluster = FALSE, heatCols = hcl.colors(100, "inferno"), ...){
 
     ## Read in data
     df <- getModule(x, "Per_sequence_quality_scores")
@@ -312,7 +314,7 @@ setMethod("plotSeqQuals", signature = "FastqcDataList", function(
         ) +
             geom_tile() +
             labs(x = xLab, y = yLab) +
-            scale_fill_gradientn(colours = inferno(150)) +
+            scale_fill_gradientn(colours = heatCols) +
             scale_x_continuous(limits = xLim, expand = c(0, 0)) +
             theme(
                 panel.grid.minor = element_blank(),

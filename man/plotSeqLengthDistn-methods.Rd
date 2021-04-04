@@ -34,7 +34,7 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
   dendrogram = FALSE,
   ...,
   expand.x = expansion(0, 0.2),
-  heatCol = inferno(50)
+  heatCol = hcl.colors(50, "inferno")
 )
 }
 \arguments{

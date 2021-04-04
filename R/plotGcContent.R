@@ -73,8 +73,7 @@
 #'
 #' @docType methods
 #'
-#' @importFrom viridisLite inferno
-#' @importFrom grDevices colorRampPalette
+#' @importFrom grDevices colorRampPalette hcl.colors
 #' @importFrom stats hclust dist
 #' @import ggplot2
 #' @importFrom stringr str_to_title
@@ -436,10 +435,10 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
             ) +
             labs(x = xLab, fill = fillLab) +
             scale_fill_gradient2(
-                low = inferno(1, begin = 0.4),
-                high = inferno(1, begin = 0.9),
+                low = "#932667FF", #viridisLite::inferno(1, begin = 0.4),
+                high = "#F6D645FF", #inferno(1, begin = 0.9),
                 midpoint = 0,
-                mid = inferno(1, begin = 0)
+                mid = "#000004FF", #inferno(1, begin = 0)
             )
 
         if (!is.null(userTheme)) gcPlot <- gcPlot + userTheme

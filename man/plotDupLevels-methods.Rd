@@ -37,7 +37,7 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
   plotType = c("heatmap", "line"),
   cluster = FALSE,
   dendrogram = FALSE,
-  heatCol = inferno(50),
+  heatCol = hcl.colors(50, "inferno"),
   ...
 )
 }

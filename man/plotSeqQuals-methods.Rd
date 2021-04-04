@@ -69,6 +69,7 @@ plotSeqQuals(
   plotType = c("heatmap", "line"),
   dendrogram = FALSE,
   cluster = FALSE,
+  heatCols = hcl.colors(100, "inferno"),
   ...
 )
 }
@@ -105,6 +106,8 @@ then the dendrogram will be displayed.}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
+
+\item{heatCols}{Colour palette for the heatmap}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object

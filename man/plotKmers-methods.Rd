@@ -32,7 +32,7 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   cluster = FALSE,
   dendrogram = FALSE,
   pwfCols,
-  heatCol = inferno(50),
+  heatCol = hcl.colors(50, "inferno"),
   ...
 )
 }
@@ -67,7 +67,7 @@ then the dendrogram will be displayed.}
 pass, warning, and fail values in the plot}
 
 \item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno}
-from the package \code{viridris}}
+from the viridis set of palettes}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

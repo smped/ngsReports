@@ -56,7 +56,7 @@
 #'
 #' @import ggplot2
 #' @importFrom stats hclust dist
-#' @importFrom viridisLite inferno
+#' @importFrom grDevices hcl.colors
 #' @importFrom tidyselect contains
 #' @importFrom forcats fct_inorder
 #' @import tibble
@@ -206,7 +206,7 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
 setMethod("plotDupLevels",signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 20, fail = 50,
     deduplication = c("pre", "post"), plotType = c("heatmap", "line"),
-    cluster = FALSE, dendrogram = FALSE,  heatCol = inferno(50), ...){
+    cluster = FALSE, dendrogram = FALSE,  heatCol = hcl.colors(50, "inferno"), ...){
 
     df <- getModule(x, "Sequence_Duplication_Levels")
 

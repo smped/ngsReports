@@ -31,7 +31,7 @@
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param heatCol Colour palette used for the heatmap. Default is `inferno`
-#' from the package `viridris`
+#' from the viridis set of palettes
 #'
 #' @return A standard ggplot2 object or an interactive plotly object
 #'
@@ -48,6 +48,7 @@
 #' @docType methods
 #'
 #' @importFrom dplyr desc
+#' @importFrom grDevices hcl.colors
 #' @import ggplot2
 #' @import tibble
 #'
@@ -227,7 +228,7 @@ setMethod("plotKmers", signature = "FastqcData", function(
 #' @export
 setMethod("plotKmers", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, cluster = FALSE, dendrogram = FALSE,
-    pwfCols, heatCol = inferno(50), ...){
+    pwfCols, heatCol = hcl.colors(50, "inferno"), ...){
 
     df <- getModule(x, "Kmer_Content")
 
