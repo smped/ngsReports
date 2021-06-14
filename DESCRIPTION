@@ -1,5 +1,5 @@
 Package: ngsReports
-Version: 1.9.0
+Version: 1.9.1
 Date: 2021/04/04
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
@@ -37,7 +37,7 @@ Imports:
     lubridate,
     methods,
     pander,
-    plotly,
+    plotly (>= 4.9.4),
     readr,
     reshape2,
     rmarkdown,
