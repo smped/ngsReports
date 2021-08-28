@@ -137,6 +137,6 @@ plotAdapterContent(fdl[r1])
 # and change the y-axis using ggplot2::scale_y_continuous
 plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
 facet_wrap(~Filename) +
-guides(colour = FALSE)
+guides(colour = "none")
 
 }

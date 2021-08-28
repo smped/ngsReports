@@ -1,5 +1,3 @@
-context("Test the isCompressed() behaves correctly")
-
 test_that("TRUE statement from a zipped file",{
   fl <- system.file("extdata", "ATTG_R1_fastqc.zip", package = "ngsReports")
   expect_true(isCompressed(fl))

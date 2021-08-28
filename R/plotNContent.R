@@ -148,7 +148,7 @@ setMethod("plotNContent", signature = "FastqcData", function(
         scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
         facet_wrap(~Filename) +
         labs(x = "Position in Read (bp)", y = yLab) +
-        guides(fill = FALSE) +
+        guides(fill = "none") +
         theme_bw() +
         theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
 

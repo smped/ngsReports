@@ -1,5 +1,3 @@
-context("Check structure of .emptyPlot()")
-
 p <- ngsReports:::.emptyPlot("test")
 
 test_that("plot can be printed", {

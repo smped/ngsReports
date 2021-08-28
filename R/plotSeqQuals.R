@@ -428,7 +428,7 @@ setMethod("plotSeqQuals", signature = "FastqcDataList", function(
             scale_x_continuous(expand = c(0, 0)) +
             scale_colour_discrete() +
             labs(x = xLab, y = yLab) +
-            guides(fill = FALSE) +
+            guides(fill = "none") +
             theme_bw()
 
         if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme

@@ -163,7 +163,7 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
         scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
         facet_wrap(~Filename) +
         labs(x = xlab, y = ylab, colour = c()) +
-        guides(fill = FALSE) +
+        guides(fill = "none") +
         theme_bw() +
         theme(
             legend.position = c(1, 1),
@@ -292,7 +292,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
             ) +
             scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
             labs(x = "Duplication Level", y = "Percentage of Total") +
-            guides(fill = FALSE) +
+            guides(fill = "none") +
             theme_bw()
 
         if (usePlotly) {
@@ -364,7 +364,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
             ) +
             scale_x_continuous(expand = c(0, 0)) +
             labs(x = xlab, fill = "Duplication\nLevel") +
-            guides(colour = FALSE) +
+            guides(colour = "none") +
             theme_bw()
 
         if (usePlotly) {

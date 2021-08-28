@@ -1,5 +1,3 @@
-context("Check Basic Structure of .FastqcFile")
-
 test_that(".FastqcFile can be formed from zip archive", {
   fl <- system.file("extdata", "ATTG_R1_fastqc.zip", package = "ngsReports")
   fqcFile <- .FastqcFile(fl)

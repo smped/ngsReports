@@ -1,5 +1,3 @@
-context("Test Subsetting")
-
 packageDir <- system.file("extdata", package = "ngsReports")
 fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:2]
 fdl <- FastqcDataList(fl)

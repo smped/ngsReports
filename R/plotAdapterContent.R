@@ -62,7 +62,7 @@
 #' # and change the y-axis using ggplot2::scale_y_continuous
 #' plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
 #' facet_wrap(~Filename) +
-#' guides(colour = FALSE)
+#' guides(colour = "none")
 #'
 #' @docType methods
 #'
@@ -173,7 +173,7 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
         scale_colour_discrete() +
         facet_wrap(~Filename, ncol = 1) +
         labs(x = xLab, y = yLab) +
-        guides(fill = FALSE) +
+        guides(fill = "none") +
         theme_bw() +
         theme(
             legend.position = c(1, 1),
@@ -453,7 +453,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
             scale_x_continuous(expand = c(0, 0)) +
             scale_colour_discrete(labels = labels) +
             scale_fill_manual(values = getColours(pwfCols)) +
-            guides(fill = FALSE) +
+            guides(fill = "none") +
             labs(x = xLab, y = yLab) +
             facet_wrap(~Type, ncol = 1) +
             theme_bw()

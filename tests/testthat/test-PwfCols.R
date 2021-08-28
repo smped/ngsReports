@@ -1,16 +1,14 @@
-context("Check correct behaviour for modifying PwfCols objects")
-
 pwf <- ngsReports::pwf
 pwfWithAlpha <- setAlpha(pwf, 0.5)
 vals <- c("#00CC00", "#E6E633", "#CC3333", "#FFFFFF")
 names(vals) <- c("PASS", "WARN", "FAIL", "MAX")
 
 test_that("getColours() works correctly",{
-    expect_equal(getColours(pwf), vals)   
+    expect_equal(getColours(pwf), vals)
 })
 
 test_that("setAlpha() works correctly",{
-    expect_equal(getColours(pwfWithAlpha), 
+    expect_equal(getColours(pwfWithAlpha),
                  structure(paste0(vals, "80"), names = names(vals)))
 })
 

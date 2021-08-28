@@ -1,5 +1,3 @@
-context("Test correct handling of NULL objects")
-
 test_that("FastqcData fails on NULL",{
     expect_error(FastqcData(NULL))
 })

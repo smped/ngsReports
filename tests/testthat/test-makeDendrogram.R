@@ -1,5 +1,3 @@
-context("Check correct behaviour for .makeDendro()")
-
 test_that(".makeDendro errors correctly with missing columns",{
     df <- data.frame()
     expect_error(.makeDendro(df))

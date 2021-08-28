@@ -1,5 +1,3 @@
-context("Test all functions for correct errors and nulls")
-
 # Define the example file with known structure
 x <- system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports")
 

@@ -1,5 +1,3 @@
-context("Check all import functions behave and error correctly")
-
 bowtieLogs <- system.file("extdata", c("bowtiePE.txt", "bowtieSE.txt"), package = "ngsReports")
 bowtie2Logs <- system.file("extdata", c("bowtie2PE.txt", "bowtie2SE.txt"), package = "ngsReports")
 buscoFiles <- system.file("extdata", c("short_summary_Dmelanogaster_Busco.txt", "short_summary_Zcucurbitae_Busco.txt"), package = "ngsReports")

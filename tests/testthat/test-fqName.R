@@ -1,5 +1,3 @@
-context("Check correct behaviour for fqName")
-
 fl <- system.file("extdata", "ATTG_R1_fastqc.zip", package = "ngsReports")
 fd <- FastqcDataList(fl)
 

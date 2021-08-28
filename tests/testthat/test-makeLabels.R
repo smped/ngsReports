@@ -1,5 +1,3 @@
-context("Check correct behaviour for .makeLabels()")
-
 test_that(".makeLabels errors correctly with missing Filename column",{
     df <- data.frame()
     expect_error(.makeLabels(df))

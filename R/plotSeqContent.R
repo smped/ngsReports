@@ -135,7 +135,7 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
             labels = levels(df$Position)
         ) +
         scale_colour_manual(values = baseCols) +
-        guides(fill = FALSE) +
+        guides(fill = "none") +
         labs(x = xLab, y = yLab) +
         theme_bw() +
         theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))

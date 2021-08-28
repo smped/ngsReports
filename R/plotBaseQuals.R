@@ -185,7 +185,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
         xlab("Position in read (bp)") +
         ylab(ylab) +
         facet_wrap(~Filename, ncol = 1) +
-        guides(fill = FALSE) +
+        guides(fill = "none") +
         theme_bw() +
         theme(
             panel.grid.minor = element_blank(),
@@ -350,7 +350,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
             xlab(xlab) +
             ylab(ylab) +
             facet_wrap(~Filename, ncol = nc) +
-            guides(fill = FALSE) +
+            guides(fill = "none") +
             theme_bw() +
             theme(
                 panel.grid.minor = element_blank(),

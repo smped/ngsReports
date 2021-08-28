@@ -1,5 +1,3 @@
-context("Test that messages appear when modules are missing from some files")
-
 f <- c(
     system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports"),
     system.file(

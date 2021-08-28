@@ -1,5 +1,3 @@
-context("Check that supplied template is OK")
-
 packageDir <- system.file("extdata", package = "ngsReports")
 fileList <-
     list.files(packageDir, pattern = "[ACGT]{4}_R[12].fastqc.zip", full.names = TRUE)[1:6]

@@ -1,5 +1,3 @@
-context("Check correct behaviour for splitting lines into a data frame")
-
 test_that(".splitByTab errors correctly with uneven tab delimiters",{
   x <- c("A\tB", "C\tD\tE")
   expect_error(.splitByTab(x))
