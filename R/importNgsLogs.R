@@ -1381,8 +1381,10 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         args_out$tag_length <- tl
         args_out$fragment_length <- fl
         alt <- str_subset(data, "alternative fragment length")
-        alt <- str_replace_all(alt, ".+ ([0-9]+) bps.*", "\\1")
-        args_out$alt_fragment_length <- as.numeric(alt)
+        alt <- str_replace_all(alt, ".+ ([0-9,]+) bps.*", "\\1")
+        alt <- str_split(alt, ",")
+        alt <- lapply(alt, as.numeric)
+        args_out$alt_fragment_length <- alt
 
         ## Output files
         r_script <- str_subset(data, "R script")
