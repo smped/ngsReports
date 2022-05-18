@@ -82,7 +82,7 @@ writeHtmlReport <- function(
     if (!missing(targetsDF)) {
         chk <- vapply(
             c("[Ff]ile[Nn]ame", "[Ll]abel"),
-            FUN = grepl,
+            FUN = function(y,x) any(grepl(y,x)),
             FUN.VALUE = logical(1),
             x = colnames(targetsDF)
         )
