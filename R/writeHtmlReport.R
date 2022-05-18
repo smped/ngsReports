@@ -81,7 +81,7 @@ writeHtmlReport <- function(
     ## Export targets.csv from targets data.frame if supplied
     if (!missing(targetsDF)) {
         chk <- vapply(
-            list("[Ff]ile[Nn]ame", "[Ll]abel"),
+            c("[Ff]ile[Nn]ame", "[Ll]abel"),
             FUN = function(y,x) any(grepl(y,x)),
             FUN.VALUE = logical(1),
             x = colnames(targetsDF)
