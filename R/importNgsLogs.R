@@ -1426,6 +1426,9 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
         ## To avoid R CMD check issues
         name <- min_length <- c()
+        ## Suggested by LaureTomas
+        i <- vapply(args_out, function(x) identical(x, numeric(0)), logical(1))
+        args_out[i] <- NA
         args_out <- as_tibble(args_out)
         dplyr::select(
             args_out,
