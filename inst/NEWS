@@ -1,3 +1,7 @@
+Changes in version 1.12.1
++ Bug fixes for importing macs2 logs
++ Bug fixes for importing bowtie2 logs
+
 Changes in version 1.9.3
 + Bug fixes for importing macs2 logs
 
