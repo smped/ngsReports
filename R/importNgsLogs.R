@@ -205,9 +205,9 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     chkLen <- length(x) > 0
     firstLine <- grepl("reads; of these:$", x[1])
     lastLine <- grepl("overall alignment rate$", x[n])
-    noAln <- sum(grepl("aligned 0 times$", x)) == 1
-    alnExact <- sum(grepl("aligned exactly 1 time$", x)) == 1
-    alnG1 <- sum(grepl("aligned >1 times$", x)) == 1
+    noAln <- sum(grepl("aligned.*0 times$", x)) %in% 1:2
+    alnExact <- sum(grepl("aligned.*exactly 1 time$", x)) %in% 1:2
+    alnG1 <- sum(grepl("aligned.*>1 times$", x)) %in% 1:2
     all(c(chkLen, firstLine, lastLine, noAln, alnExact, alnG1))
 }
 .isValidBowtie2Log <- .isValidHisat2Log
@@ -518,23 +518,41 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         totReads <- gsub("([0-9]*) reads; of these:", "\\1", x[1])
         ## Now find each category then extract the numbers
         noAln <- x[grep("aligned 0 times$", x)]
-        noAln <- gsub("([0-9]*) .+ aligned 0 times", "\\1", noAln)
+        noAln <- c(
+          gsub("([0-9]*) .+ aligned 0 times", "\\1", noAln), NA_character_
+        )[1]
         uniq <- x[grep("aligned exactly 1 time$", x)]
-        uniq <- gsub("([0-9]*) .+ aligned exactly 1 time", "\\1", uniq)
+        uniq <- c(
+          gsub("([0-9]*) .+ aligned exactly 1 time", "\\1", uniq), NA_character_
+        )[1]
         mult <- x[grep("aligned >1 times", x)]
-        mult <- gsub("([0-9]*) .+ aligned >1 times", "\\1", mult)
+        mult <- c(
+          gsub("([0-9]*) .+ aligned >1 times", "\\1", mult), NA_character_
+        )[1]
+        alnRate <- x[grep("overall alignment rate", x)]
+        alnRate <- gsub("([0-9\\.]+)% overall.+", "\\1", alnRate)
+        alnRate <- as.numeric(alnRate) / 100
 
         ## Get the paired only fields
-        pairReads <- uniqPairs <- multPairs <- uniqDiscord <- 0
+        pairReads <- uniqPairs <- multPairs <- uniqDiscord <- NA_character_
         if (paired) {
             pairReads <- x[grep("were paired; of these:$", x)]
-            pairReads <- gsub("([0-9]*) .+ of these:", "\\1", pairReads)
+            pairReads <- c(
+              gsub("([0-9]*) .+ of these:", "\\1", pairReads), NA_character_
+            )[1]
             uniqPairs <- x[grep("aligned concordantly exactly 1 time$", x)]
-            uniqPairs <- gsub("([0-9]*) .+ exactly 1 time", "\\1", uniqPairs)
+            uniqPairs <- c(
+              gsub("([0-9]*) .+ exactly 1 time", "\\1", uniqPairs),
+              NA_character_
+            )[1]
             multPairs <- x[grep("aligned concordantly >1 times$", x)]
-            multPairs <- gsub("([0-9]*) .+ >1 times", "\\1", multPairs)
+            multPairs <- c(
+              gsub("([0-9]*) .+ >1 times", "\\1", multPairs), NA_character_
+            )[1]
             uniqDiscord <- x[grep("aligned discordantly 1 time$", x)]
-            uniqDiscord <- gsub("([0-9]*) .+ 1 time", "\\1", uniqDiscord)
+            uniqDiscord <- c(
+              gsub("([0-9]*) .+ 1 time", "\\1", uniqDiscord), NA_character_
+            )[1]
         }
 
         out <- list(
@@ -549,15 +567,14 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         )
         ## Set all values as integers
         out <- lapply(out, as.integer)
+        ## Add the Alignment Rate as a numeric
+        out$Alignment_Rate <- alnRate
         as.data.frame(out)
     })
 
-    ## Bind all reults together
+    ## Bind all result together
     df <- bind_rows(df)
 
-    ## Add a final column
-    df$Alignment_Rate <-
-        1 - df$Not_Aligned / (df$Total_Reads + df$Paired_Reads)
     df$Filename <- names(data)
     dplyr::select(
         df,
