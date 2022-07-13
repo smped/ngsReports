@@ -119,13 +119,15 @@ nm <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
         "UNPAIRED_READ_DUPLICATES", "READ_PAIR_DUPLICATES",
         "READ_PAIR_OPTICAL_DUPLICATES", "PERCENT_DUPLICATION",
         "ESTIMATED_LIBRARY_SIZE")
+nm <- stringr::str_replace_all(nm, "_", " ")
+nm <- stringr::str_to_title(nm)
 test_that("importDupMetrics loads correctly",{
 
     dup <- importNgsLogs(dupLogs, "duplicationMetrics", 1)
     expect_equal(colnames(dup), nm)
 
     dup <- importNgsLogs(dupLogs, "duplicationMetrics", 2)
-    expect_equal(colnames(dup), c("LIBRARY", "BIN", "VALUE"))
+    expect_equal(colnames(dup), c("Library", "Bin", "Value"))
 })
 
 test_that("importDupMetrics handles which as a character",{
@@ -134,7 +136,7 @@ test_that("importDupMetrics handles which as a character",{
     expect_equal(colnames(dup), nm)
 
     dup <- importNgsLogs(dupLogs, "duplicationMetrics", "hist")
-    expect_equal(colnames(dup), c("LIBRARY", "BIN", "VALUE"))
+    expect_equal(colnames(dup), c("Library", "Bin", "Value"))
 })
 
 test_that("importBowtieLogs errors correctly",{
