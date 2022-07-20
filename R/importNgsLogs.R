@@ -1295,7 +1295,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 #' @return data.frame
 #' @importFrom lubridate as_datetime
 #' @importFrom stringr str_subset str_remove_all str_split_fixed str_extract
-#' @importFrom stringr str_replace_all str_split str_trim
+#' @importFrom stringr str_replace_all str_split str_trim str_extract_all
 #' @importFrom tidyselect everything ends_with contains
 #' @keywords internal
 .parseMacs2CallpeakLogs <- function(data, ...){
@@ -1312,8 +1312,8 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         )
 
         ## Fragment Length
-        fl <- data[grepl("INFO .+ predicted fragment length is", data) ]
-        fl <- gsub(".+fragment length is ([0-9]+) bps", "\\1", fl)
+        fl <- data[grepl("INFO .+ fragment (length|size) is", data) ]
+        fl <- gsub(".+fragment (length|size) is.* ([0-9\\.]+) bp.*", "\\2", fl)
         fl <- as.numeric(fl)
 
         ## Tag length
@@ -1333,6 +1333,9 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         args_out[, 1] <- gsub("[ -]", "_", args_out[, 1])
         args_out <- structure(args_out[, 2], names = args_out[, 1])
         args_out <- as.list(args_out)
+        nums <- suppressWarnings(vapply(args_out, as.numeric, numeric(1)))
+        args_out[!is.na(nums)] <- lapply(args_out[!is.na(nums)], as.numeric)
+        args_out$date <- dt
 
         ## Add any additional arguments
         cmd <- data[grepl("Command line: callpeak", data)]
@@ -1344,10 +1347,12 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         args_out$scale_to <- str_subset(args, "dataset will be scaled towards")
         args_out$scale_to <- str_extract(args_out$scale_to , "(large|small)")
 
-        args_out$local <- str_subset(args, "regional lambda")
-        args_out$local <- str_replace_all(
-            args_out$local, ".+is: ([0-9]+) bps and ([0-9]+) bps", "[\\1, \\2]"
-        )
+        lambda <- str_subset(args, "regional lambda")
+        lambda <- str_extract_all(lambda, "[0-9]+ bps")
+        lambda <- lapply(lambda, str_remove_all, " bps")
+        lambda <- rep(unlist(lambda), 2)[1:2]
+        lambda <- paste0("[", paste(lambda, collapse = ", "), "]")
+        args_out$local <- lambda
 
         args_out$broad <- grepl("--broad ", cmd)
         args_out$paired_end <- str_subset(args, "Paired-End mode")
@@ -1370,9 +1375,9 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         }
 
         ## Read numbers
-        n_reads <- str_subset(data, "reads have been read")
+        n_reads <- str_subset(data, "(read|fragment)s have been read")
         n_reads <- str_replace_all(
-            n_reads, "INFO.+ ([0-9]+) reads have been.+", "\\1"
+            n_reads, "INFO.+ ([0-9]+) (read|fragment)s have been.+", "\\1"
         )
         n_reads <- as.numeric(n_reads)
         args_out$n_reads <- list(n_reads)
@@ -1380,7 +1385,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         ## Tag numbers
         n_tags_treatment <- str_subset(data, "total tags in treatment")
         n_tags_treatment <- str_replace_all(
-            n_tags_treatment , ".+ ([0-9]+)$", "\\1"
+          n_tags_treatment , ".+ ([0-9]+)$", "\\1"
         )
         args_out$n_tags_treatment <- as.numeric(n_tags_treatment)
         n_tags_control <- str_subset(data, "total tags in control")
@@ -1406,33 +1411,33 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         ## Output files
         r_script <- str_subset(data, "R script")
         r_script <- str_replace_all(
-            r_script, ".+R script for model : (.+)", "\\1"
+          r_script, ".+R script for model : (.+)", "\\1"
         )
         xls <- str_subset(data, "Write output xls file")
         xls <- str_replace_all(xls, ".+Write output xls file.+ (.+)", "\\1")
-        narrowPeak <- str_subset(data, " Write peak in narrowPeak format file")
-        narrowPeak <- str_replace_all(
-            narrowPeak, ".+ Write peak in narrowPeak format file.+ (.+)", "\\1"
-        )
+
+        peakFiles <- str_subset(data, " Write .* in .+Peak format file")
+        peakFiles <- str_remove_all(peakFiles, ".+format file\\.\\.\\. ")
+
         summits_bed <- str_subset(data, " Write summits bed file")
         summits_bed <- str_replace_all(
             summits_bed, ".+ Write summits bed file.+ (.+)", "\\1"
         )
         args_out$outputs <- list(
             c(
-                r_script, xls, narrowPeak, summits_bed
+                r_script, xls, peakFiles, summits_bed
             )
         )
 
         ## To avoid R CMD check issues
         name <- min_length <- c()
         ## Suggested by LaureTomas
-        i <- vapply(args_out, function(x) identical(x, numeric(0)), logical(1))
-        args_out[i] <- NA
+        i <- vapply(args_out, length, integer(1)) > 0
+        args_out <- args_out[i]
         args_out <- as_tibble(args_out)
         dplyr::select(
             args_out,
-            name, paired_peaks, min_length, contains("tags"), n_reads,
+            name, date, any_of("paired_peaks"), min_length, contains("tags"), n_reads,
             ends_with("length"), everything()
         )
     }

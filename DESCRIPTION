@@ -49,7 +49,7 @@ Imports:
     utils,
     zoo
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Collate: 
     'AllGenerics.R'
     'validationFunctions.R'
