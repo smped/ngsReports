@@ -1301,7 +1301,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 #' @importFrom lubridate as_datetime
 #' @importFrom stringr str_subset str_remove_all str_split_fixed str_extract
 #' @importFrom stringr str_replace_all str_split str_trim str_extract_all
-#' @importFrom tidyselect everything ends_with contains
+#' @importFrom tidyselect everything ends_with contains any_of
 #' @keywords internal
 .parseMacs2CallpeakLogs <- function(data, ...){
 
