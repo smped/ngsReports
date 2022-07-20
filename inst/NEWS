@@ -1,5 +1,8 @@
-Changes in version 1.13.2
+Changes in version 1.13.3
 + Bug fix for importing macs2 logs
+
+Changes in version 1.13.2
++ Bug fix for importing DuplicationMetrics
 
 Changes in version 1.13.1
 + Bug fixes for importing macs2 logs

@@ -252,7 +252,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
         stopifnot(length(histHeader) == 1) # Must appear only once
         histCols <- c("BIN", "VALUE")
-        checkHistCols <- all(names(.splitByTab(x[histHeader + 1])) == histCols)
+        checkHistCols <- all(names(.splitByTab(x[histHeader + 1]))[1:2] == histCols)
 
         all(checkMetCols, checkHistCols)
 
@@ -672,9 +672,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     ## Collect the metrics from all files as a tibble
     metrics <- lapply(data, function(x){
         ## Find the library name
-        libName <- grep(
-            "picard.sam.markduplicates.MarkDuplicates.+INPUT=", x, value = TRUE
-        )
+        libName <- grep("MarkDuplicates.+INPUT=", x, value = TRUE)
         libName <- gsub(".+INPUT=\\[(.+)\\] OUTPUT.+", "\\1", libName[[1]])
         ## Find the header. The next two rows will be the colnames + data
         metHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
@@ -692,9 +690,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     ## Collect the histogram data from all files as a tibble
     histData <- lapply(data, function(x){
         ## Find the library name
-        libName <- grep(
-            "picard.sam.markduplicates.MarkDuplicates.+INPUT=", x, value = TRUE
-        )
+        libName <- grep("MarkDuplicates.+INPUT=", x, value = TRUE)
         libName <- gsub(".+INPUT=\\[(.+)\\] OUTPUT.+", "\\1", libName[[1]])
 
         ## Find the header then remove up until that line
@@ -708,17 +704,26 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     })
     histData <- dplyr::bind_rows(histData)
     ## Ensure the correct types
+    histData <- lapply(
+        histData,
+        function(x) {
+            any_na <- any(is.na(suppressWarnings(as.numeric(x))))
+            if (!any_na) x <- as.numeric(x)
+            x
+        }
+    )
     histData$BIN <- as.integer(histData$BIN)
-    histData$VALUE <- as.numeric(histData$VALUE)
     histData <- as_tibble(histData)
 
     ## Setup the output, then format the column names
     out <- list(metrics = metrics, histogram = histData)
-    lapply(out, function(x){
-        colnames(x) <- stringr::str_replace_all(colnames(x), "_", " ")
-        colnames(x) <- stringr::str_to_title(colnames(x))
-        x
-    })
+    out <- lapply(
+        out,
+        function(x){
+            colnames(x) <- stringr::str_replace_all(colnames(x), "_", " ")
+            colnames(x) <- stringr::str_to_title(colnames(x))
+            x
+        })
     out[[which]]
 }
 
