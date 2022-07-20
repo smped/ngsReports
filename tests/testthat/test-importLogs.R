@@ -232,12 +232,14 @@ test_that("parseFlagstatLogs behaves correctly", {
 test_that("parseMacs2CallPeak behaves correctly", {
 
     df <- importNgsLogs(macs2File, "macs2Callpeak")
-    expCols <- c("Filename", "name", "paired_peaks", "min_length", "n_tags_treatment",
-                 "n_tags_control", "n_reads", "tag_length", "fragment_length",
-                 "alt_fragment_length", "format", "ChIP_seq_file", "control_file",
-                 "effective_genome_size", "band_width", "model_fold", "qvalue_cutoff",
-                 "max_gap", "keep_dup", "nomodel", "scale_to", "local", "broad",
-                 "paired_end", "outputs")
+    expCols <- c(
+      "Filename", "name", "date", "paired_peaks", "min_length", "n_tags_treatment",
+      "n_tags_control", "n_reads", "tag_length", "fragment_length",
+      "alt_fragment_length", "format", "ChIP_seq_file", "control_file",
+      "effective_genome_size", "band_width", "model_fold", "qvalue_cutoff",
+      "max_gap", "keep_dup", "nomodel", "scale_to", "local", "broad",
+      "paired_end", "outputs"
+    )
     expect_equal(colnames(df), expCols)
     ## Parsing errors will appear as NA values
     expect_equal(
