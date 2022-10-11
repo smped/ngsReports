@@ -25,36 +25,36 @@
 #'
 .splitByTab <- function(x, firstRowToNames = TRUE, tab = "\\t"){
 
-    stopifnot(is.character(x))
+  stopifnot(is.character(x))
 
-    ## Check for the tab marker in every line
-    linesWithTab <- stringr::str_detect(x, tab)
-    if (sum(linesWithTab) != length(x))
-        stop("Some elements of x are missing the tab separator")
+  ## Check for the tab marker in every line
+  linesWithTab <- stringr::str_detect(x, tab)
+  if (sum(linesWithTab) != length(x))
+    stop("Some elements of x are missing the tab separator")
 
-    ## Take the first element as defining the number of columns
-    nCol <- stringr::str_count(x[1], pattern = tab) + 1
+  ## Take the first element as defining the number of columns
+  nCol <- stringr::str_count(x[1], pattern = tab) + 1
 
-    ## Count the number of tabs in each line
-    nTabs <- stringr::str_count(string = x, pattern = tab)
-    if (any(nTabs != (nCol - 1)))
-        stop("Differing number of delimiters in some rows")
+  ## Count the number of tabs in each line
+  nTabs <- stringr::str_count(string = x, pattern = tab)
+  if (any(nTabs != (nCol - 1)))
+    stop("Differing number of delimiters in some rows")
 
-    if (firstRowToNames) {
+  if (firstRowToNames) {
 
-        ## Get the first element as a vector of names
-        nm <- stringr::str_split_fixed(x[1], pattern = tab, n = nCol)
+    ## Get the first element as a vector of names
+    nm <- stringr::str_split_fixed(x[1], pattern = tab, n = nCol)
 
-        ## Split the remainder
-        df <- stringr::str_split_fixed(x[-1], pattern = tab, n = nCol)
-        colnames(df) <- nm
-    }
-    else {
-        df <- stringr::str_split_fixed(x, pattern = tab, n = nCol)
-    }
-    ## Return a generic data.frame
-    ## This leaves tidying to each module
-    as.data.frame(df, stringsAsFactors = FALSE)
+    ## Split the remainder
+    df <- stringr::str_split_fixed(x[-1], pattern = tab, n = nCol)
+    colnames(df) <- nm
+  }
+  else {
+    df <- stringr::str_split_fixed(x, pattern = tab, n = nCol)
+  }
+  ## Return a generic data.frame
+  ## This leaves tidying to each module
+  as.data.frame(df, stringsAsFactors = FALSE)
 }
 
 #' @title Add a percentage sign
@@ -73,8 +73,8 @@
 #' @keywords internal
 #'
 .addPercent <- function(x){
-    if (is.factor(x)) message("Factors will be converted to characters")
-    paste0(x, "%")
+  if (is.factor(x)) message("Factors will be converted to characters")
+  paste0(x, "%")
 }
 
 #' @title Create an empty plot with supplied text
@@ -93,11 +93,11 @@
 #' @keywords internal
 #'
 .emptyPlot <- function(x){
-    ggplot() +
-        geom_text(aes(x = 0.5, y = 0.8, label = x)) +
-        theme_void() +
-        xlim(c(0, 1)) +
-        ylim(c(0, 1))
+  ggplot() +
+    geom_text(aes(x = 0.5, y = 0.8, label = x)) +
+    theme_void() +
+    xlim(c(0, 1)) +
+    ylim(c(0, 1))
 }
 
 #' @title Make the dendrogram for heatmap-style plots
@@ -127,12 +127,14 @@
 #' @keywords internal
 .makeDendro <- function(df, rowVal, colVal, value){
 
-    stopifnot(setequal(c(rowVal, colVal, value), names(df)))
-    fm <- as.formula(paste0(rowVal, "~", colVal))
-    mat <- reshape2::acast(df, fm, value.var = value)
-    mat[is.na(mat)] <- 0
-    clust <- hclust(dist(mat), method = "ward.D2")
-    as.dendrogram(clust)
+  cols <- c(rowVal, colVal, value)
+  stopifnot(all(cols %in% names(df)))
+  df <- df[cols]
+  fm <- as.formula(paste0(rowVal, "~", colVal))
+  mat <- reshape2::acast(df, fm, value.var = value)
+  mat[is.na(mat)] <- 0
+  clust <- hclust(dist(mat), method = "ward.D2")
+  as.dendrogram(clust)
 
 }
 
@@ -162,34 +164,34 @@
 .makeLabels <- function(
     x, labels, pattern = ".(fastq|fq|bam|sam|cram).*", col = "Filename", ...){
 
-    if (is(x, "FastqcDataList") | is(x, "FastqcData")) {
-        ## Form a single column data.frame
-        x <- structure(
-            list(fqName(x)),
-            names = col,
-            row.names = seq_along(x),
-            class = "data.frame"
-        )
-    }
+  if (is(x, "FastqcDataList") | is(x, "FastqcData")) {
+    ## Form a single column data.frame
+    x <- structure(
+      list(fqName(x)),
+      names = col,
+      row.names = seq_along(x),
+      class = "data.frame"
+    )
+  }
 
-    stopifnot(is(x, "data.frame"))
+  stopifnot(is(x, "data.frame"))
 
-    col <- match.arg(col, colnames(x))
+  col <- match.arg(col, colnames(x))
 
-    ## If no labels are provided, just remove the file suffix as
-    ## determined by the supplied pattern
-    if (missing(labels)) {
-        labels <- structure(
-            gsub(pattern, "", unique(x[[col]])), # Remove the pattern
-            names = unique(x[[col]]) # Ensure a named vector
-        )
-    }
-    if (!all(x[[col]] %in% names(labels)))
-        stop("Names of supplied labels must match all filenames.")
-    if (any(duplicated(labels))) stop("Labels must be unique.")
+  ## If no labels are provided, just remove the file suffix as
+  ## determined by the supplied pattern
+  if (missing(labels)) {
+    labels <- structure(
+      gsub(pattern, "", unique(x[[col]])), # Remove the pattern
+      names = unique(x[[col]]) # Ensure a named vector
+    )
+  }
+  if (!all(x[[col]] %in% names(labels)))
+    stop("Names of supplied labels must match all filenames.")
+  if (any(duplicated(labels))) stop("Labels must be unique.")
 
-    ## Now return only the supplied labels which are in the df
-    labels[names(labels) %in% x[[col]]]
+  ## Now return only the supplied labels which are in the df
+  labels[names(labels) %in% x[[col]]]
 }
 
 #' @title Shortcut for making the status sidebar
@@ -213,36 +215,36 @@
 #'
 .makeSidebar <- function(status, key, pwfCols, usePlotly = TRUE){
 
-    stopifnot(.isValidPwf(pwfCols))
-    nx <- length(status$Filename)
-    ## make sure status is in right order so key can apply
-    ## This only works because the factor levels of the 'Filename' column
-    ## correspond to the order of the key as determined earlier the plotting
-    ## functions. This step is now essentially redundant
-    status <- status[order(status$Filename),]
-    ## Make the basic plot
-    sideBar <- ggplot(status, aes_string("1", "Filename", key = "key")) +
-        geom_tile(aes_string(fill = "Status")) +
-        geom_hline(yintercept = seq(1.5, nx), colour = "grey20", size = 0.2) +
-        scale_fill_manual(values = getColours(pwfCols)) +
-        scale_y_discrete(expand = c(0, 0)) +
-        scale_x_continuous(expand = c(0, 0)) +
-        theme(
-            panel.grid.minor = element_blank(),
-            panel.background = element_blank(),
-            legend.position = "none",
-            axis.title = element_blank(),
-            axis.text = element_blank(),
-            axis.ticks = element_blank()
-        )
+  stopifnot(.isValidPwf(pwfCols))
+  nx <- length(status$Filename)
+  ## make sure status is in right order so key can apply
+  ## This only works because the factor levels of the 'Filename' column
+  ## correspond to the order of the key as determined earlier the plotting
+  ## functions. This step is now essentially redundant
+  status <- status[order(status$Filename),]
+  ## Make the basic plot
+  sideBar <- ggplot(status, aes_string("1", "Filename", key = "key")) +
+    geom_tile(aes_string(fill = "Status")) +
+    geom_hline(yintercept = seq(1.5, nx), colour = "grey20", size = 0.2) +
+    scale_fill_manual(values = getColours(pwfCols)) +
+    scale_y_discrete(expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0)) +
+    theme(
+      panel.grid.minor = element_blank(),
+      panel.background = element_blank(),
+      legend.position = "none",
+      axis.title = element_blank(),
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    )
 
-    ## Convert to plotly
-    if (usePlotly) {
-      sideBar <- suppressWarnings(
-        suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill")))
-      )
-    }
-    sideBar
+  ## Convert to plotly
+  if (usePlotly) {
+    sideBar <- suppressWarnings(
+      suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill")))
+    )
+  }
+  sideBar
 }
 
 #' @title  Set up dendrograms for interactive plots
@@ -264,17 +266,17 @@
 #' @keywords internal
 #'
 .renderDendro <- function(df) {
-    ## Based on the example ggdend
-    dendro <- ggplot() +
-        geom_segment(
-            data = df,
-            aes_string("x","y", xend = "xend", yend = "yend")
-        ) +
-        coord_flip() +
-        scale_y_reverse(expand = c(0, 0)) +
-        scale_x_continuous(expand = c(0, 0.5)) +
-        theme_dendro()
-    ggplotly(dendro, tooltip = NULL)
+  ## Based on the example ggdend
+  dendro <- ggplot() +
+    geom_segment(
+      data = df,
+      aes_string("x","y", xend = "xend", yend = "yend")
+    ) +
+    coord_flip() +
+    scale_y_reverse(expand = c(0, 0)) +
+    scale_x_continuous(expand = c(0, 0.5)) +
+    theme_dendro()
+  ggplotly(dendro, tooltip = NULL)
 }
 
 

@@ -71,7 +71,8 @@
 #' @importFrom plotly plotly_empty ggplotly
 #' @importFrom stats hclust dist
 #' @importFrom zoo na.locf
-#' @importFrom tidyselect one_of
+#' @importFrom tidyselect one_of all_of
+#' @importFrom dplyr across summarise group_by ungroup
 #'
 #' @name plotAdapterContent
 #' @rdname plotAdapterContent-methods
@@ -242,8 +243,6 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
 
   ## Change to long form
   df <- tidyr::gather(df, "Type", "Percent", one_of(valueCols))
-  ## Set the position as a factor
-  df$Position <- factor(df$Position, levels = unique(df$Position))
 
   ## Get the adapter type and summarise all if total is requested
   adapterType <- grep(
@@ -252,10 +251,11 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
   if (length(adapterType) != 1) stop("Could not determine adapter type")
   if (adapterType == "Total_Adapter_Content") {
     ## Sum the adapters by filename& position
-    df <- dplyr::group_by(df, Filename, Position)
-    df <-
-      dplyr::summarise_at(df, dplyr::vars("Percent"), sum, na.rm = TRUE)
-    df <- dplyr::ungroup(df)
+    df <- group_by(df, Filename, Position)
+    df <- summarise(
+      df, across(all_of("Percent"), sum, na.rm = TRUE), .groups = "drop"
+    )
+    df <- ungroup(df)
   }
   else{
     df <- dplyr::filter(df, Type == adapterType)
@@ -274,7 +274,6 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
 
   ## Now just keep the three required columns
   df <- df[c("Filename", "Position", "Percent")]
-  df <- droplevels(df)
   df$Percent <- round(df$Percent, 4)
 
   ## Get any arguments for dotArgs that have been set manually
@@ -284,32 +283,23 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
   userTheme <- c()
   if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
+  ## Set any binned values to be continuous
+  df$Position <- lapply(
+    df$Position,
+    function(x){
+      rng <- as.integer(str_split(x, pattern = "-")[[1]])
+      seq(min(rng), max(rng), by = 1L)
+    }
+  )
+  df <- unnest(df, Position)
+  df$Type <- adapterType
+
   ## Set the axis label for either plotType
   xLab <- "Position in read (bp)"
 
   if (plotType == "heatmap") {
 
     yLab <- ifelse(dendrogram, "", "Filename")
-
-    ## Get the longest sequence
-    df$Start <- gsub("([0-9]*)-[0-9]*", "\\1", as.character(df$Position))
-    df$Start <- as.integer(df$Start)
-    df <- df[c("Filename", "Start", "Percent", "Position")]
-
-    ## Adjust the data for files with varying read lengths
-    ## This will fill NA values with the previous values
-    df <- lapply(split(df, f = df$Filename), function(x){
-      Longest_sequence <-
-        gsub(".*-([0-9]*)", "\\1", as.character(x$Position))
-      Longest_sequence <- max(as.integer(Longest_sequence))
-      dfFill <- data.frame(Start = seq_len(Longest_sequence))
-      x <- dplyr::right_join(x, dfFill, by = "Start")
-      na.locf(x)
-    })
-    df <- dplyr::bind_rows(df)
-
-    ## Use the start position for plotting instead of Position
-    df <- df[c("Filename", "Start", "Percent")]
 
     ## Arrange by row if clustering
     ## Just use the default order as the key if not clustering
@@ -322,20 +312,19 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     ## Set the key for interactive plotting in the shiny app
     key <- names(labels)
     if (cluster) {
-      clusterDend <- .makeDendro(df, "Filename", "Start", "Percent")
+      clusterDend <- .makeDendro(df, "Filename", "Position", "Percent")
       key <- labels(clusterDend)
     }
 
     ## Set the factor levels for the y-axis
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
-    df$Type <- adapterType
 
     cols <- .makePwfGradient(df$Percent, pwf, breaks = breaks, na.value = "white")
 
     ## Make the heatmap
     acPlot <- ggplot(
       df,
-      aes_string("Start", "Filename", fill = "Percent", type = "Type")
+      aes_string("Position", "Filename", fill = "Percent", type = "Type")
     ) +
       geom_tile() +
       ggtitle(adapterType) +
@@ -422,18 +411,11 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     key <- names(labels)
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
-    ## Define position as an integer just taking the first
-    ## value in the Position field
-    df$Start <- gsub("([0-9]*)-.+", "\\1", as.character(df$Position))
-    df$Start <- as.integer(df$Start)
-    df$Position <- as.numeric(df$Position)
-    df$Type <- adapterType
-
     ## Set the transparency & position of bg rectangles
     pwfCols <- setAlpha(pwfCols, 0.2)
     rects <- tibble(
       xmin = 0,
-      xmax = max(df$Start),
+      xmax = max(df$Position),
       ymin = c(0, warn, fail),
       ymax = c(warn, fail, 100),
       Status = c("PASS", "WARN", "FAIL")
@@ -448,7 +430,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
           ymin = "ymin", ymax = "ymax",
           fill = "Status")
       ) +
-      geom_line(aes_string("Start", "Percent", colour = "Filename")) +
+      geom_line(aes_string("Position", "Percent", colour = "Filename")) +
       scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_colour_discrete(labels = labels) +
