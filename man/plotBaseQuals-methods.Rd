@@ -66,6 +66,7 @@ plotBaseQuals(
   cluster = FALSE,
   dendrogram = FALSE,
   nc = 2,
+  heat_w = 8L,
   ...
 )
 }
@@ -106,6 +107,8 @@ then the dendrogram will be displayed.}
 
 \item{nc}{\code{numeric}. The number of columns to create in the plot layout.
 Only used if drawing boxplots for multiple files in a FastqcDataList}
+
+\item{heat_w}{Relative width of any heatmap plot components}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

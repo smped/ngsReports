@@ -21,5 +21,5 @@ pwf <- new(
     PASS = rgb(0, 0.8,0),
     WARN = rgb(0.9, 0.9, 0.2),
     FAIL = rgb(0.8, 0.2, 0.2),
-    MAX = rgb(1, 1, 1)
+    MAX = rgb(0, 0, 0)
 )

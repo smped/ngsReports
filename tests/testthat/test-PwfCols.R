@@ -1,6 +1,6 @@
 pwf <- ngsReports::pwf
 pwfWithAlpha <- setAlpha(pwf, 0.5)
-vals <- c("#00CC00", "#E6E633", "#CC3333", "#FFFFFF")
+vals <- c("#00CC00", "#E6E633", "#CC3333", "#000000")
 names(vals) <- c("PASS", "WARN", "FAIL", "MAX")
 
 test_that("getColours() works correctly",{
