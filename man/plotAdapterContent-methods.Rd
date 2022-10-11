@@ -60,6 +60,7 @@ plotAdapterContent(
   adapterType = "Total",
   cluster = FALSE,
   dendrogram = FALSE,
+  heat_w = 8L,
   ...
 )
 }
@@ -95,6 +96,8 @@ fastqc data will be clustered using hierarchical clustering}
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
+
+\item{heat_w}{Width of the heatmap relative to other plot components}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
@@ -135,7 +138,7 @@ plotAdapterContent(fdl[r1])
 
 # Plot just the Universal Adapter
 # and change the y-axis using ggplot2::scale_y_continuous
-plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
+plotAdapterContent(fdl, adapterType ="Illumina_Universal", plotType = "line") +
 facet_wrap(~Filename) +
 guides(colour = "none")
 

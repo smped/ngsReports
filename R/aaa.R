@@ -15,6 +15,7 @@ globalVariables(
         "Base",
         "Start",
         "Sequence",
-        "Value"
+        "Value",
+        "Percent"
     )
 )

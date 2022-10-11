@@ -38,6 +38,7 @@
 #' @param dendrogram `logical` redundant if `cluster` is `FALSE`
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
+#' @param heat_w Width of the heatmap relative to other plot components
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -60,7 +61,7 @@
 #'
 #' # Plot just the Universal Adapter
 #' # and change the y-axis using ggplot2::scale_y_continuous
-#' plotAdapterContent(fdl, adapterType ="Universal", plotType = "line") +
+#' plotAdapterContent(fdl, adapterType ="Illumina_Universal", plotType = "line") +
 #' facet_wrap(~Filename) +
 #' guides(colour = "none")
 #'
@@ -68,11 +69,13 @@
 #'
 #' @import ggplot2
 #' @import tibble
+#' @import patchwork
 #' @importFrom plotly plotly_empty ggplotly
 #' @importFrom stats hclust dist
 #' @importFrom zoo na.locf
 #' @importFrom tidyselect one_of all_of
 #' @importFrom dplyr across summarise group_by ungroup
+#' @importFrom ggdendro segment
 #'
 #' @name plotAdapterContent
 #' @rdname plotAdapterContent-methods
@@ -213,19 +216,16 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
 setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10,
     plotType = c("heatmap", "line"), adapterType = "Total",
-    cluster = FALSE, dendrogram = FALSE, ...){
+    cluster = FALSE, dendrogram = FALSE, heat_w = 8L, ...){
 
-  df <- getModule(x, "Adapter_Content")
+  df <- .tidyAc(x, adapterType)
 
   ## Check for values to plot & return an empty plot if none are found
-  valueCols <- setdiff(colnames(df), c("Filename", "Position"))
   msg <- c()
-  if (!length(df)) msg <- "No Adapter Content Module Detected"
-  if (sum(df[valueCols], na.rm = TRUE) == 0)
-    msg <- "No Adapter Content Found in Sequences"
+  if (!length(df))
+    msg <- "No Requested Adapter Content Found in Sequences"
   if (!is.null(msg)) {
     acPlot <- .emptyPlot(msg)
-    if (usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
     return(acPlot)
   }
 
@@ -241,40 +241,13 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
   labels <- .makeLabels(x, labels, ...)
   labels <- labels[names(labels) %in% df$Filename]
 
-  ## Change to long form
-  df <- tidyr::gather(df, "Type", "Percent", one_of(valueCols))
-
-  ## Get the adapter type and summarise all if total is requested
-  adapterType <- grep(
-    adapterType[1], c("Total_Adapter_Content", valueCols), value = TRUE
-  )
-  if (length(adapterType) != 1) stop("Could not determine adapter type")
-  if (adapterType == "Total_Adapter_Content") {
-    ## Sum the adapters by filename& position
-    df <- group_by(df, Filename, Position)
-    df <- summarise(
-      df, across(all_of("Percent"), sum, na.rm = TRUE), .groups = "drop"
-    )
-    df <- ungroup(df)
-  }
-  else{
-    df <- dplyr::filter(df, Type == adapterType)
-  }
-
-  ## Remove the underscores from the adapterType for prettier output
-  adapterType <- gsub("_", " ", adapterType)
-
   ## If no adapter content is found fo the selected adapter,
   ## output a simple message. Placing this here handles when combined into
   ## Total_Adapter_Content
   if (max(df$Percent) == 0) {
-    msg <- paste("No", adapterType, "found")
+    msg <- paste("No", unique(df$Type), "found")
     return(.emptyPlot(msg))
   }
-
-  ## Now just keep the three required columns
-  df <- df[c("Filename", "Position", "Percent")]
-  df$Percent <- round(df$Percent, 4)
 
   ## Get any arguments for dotArgs that have been set manually
   dotArgs <- list(...)
@@ -283,123 +256,139 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
   userTheme <- c()
   if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-  ## Set any binned values to be continuous
-  df$Position <- lapply(
-    df$Position,
-    function(x){
-      rng <- as.integer(str_split(x, pattern = "-")[[1]])
-      seq(min(rng), max(rng), by = 1L)
-    }
-  )
-  df <- unnest(df, Position)
-  df$Type <- adapterType
-
   ## Set the axis label for either plotType
   xLab <- "Position in read (bp)"
+  key <- names(labels)
 
   if (plotType == "heatmap") {
 
-    yLab <- ifelse(dendrogram, "", "Filename")
-
-    ## Arrange by row if clustering
     ## Just use the default order as the key if not clustering
     ## Always turn clustering on if dendrogram = TRUE
+    yLab <- c()
+    panel_w <- c(1, heat_w)
     if (dendrogram && !cluster) {
-      message("cluster will be set to TRUE when dendrogram = TRUE")
+      message("cluster will always be set to TRUE when dendrogram = TRUE")
       cluster <- TRUE
     }
 
     ## Set the key for interactive plotting in the shiny app
-    key <- names(labels)
     if (cluster) {
       clusterDend <- .makeDendro(df, "Filename", "Position", "Percent")
+      dx <- ggdendro::dendro_data(clusterDend)
       key <- labels(clusterDend)
     }
-
-    ## Set the factor levels for the y-axis
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
-    cols <- .makePwfGradient(df$Percent, pwf, breaks = breaks, na.value = "white")
+    ## Reset the PWF status using current values & form this plot panel
+    ## This needs to be recalculated when using Total AC.
+    ## Also make the sideBar
+    status <- dplyr::summarise(
+      dplyr::group_by(df, Filename), Percent = max(Percent, na.rm = TRUE)
+    )
+    status$Status <- cut(
+      status$Percent, breaks = breaks, include.lowest = TRUE,
+      labels = c("PASS", "WARN", "FAIL")
+    )
+    ## Form the sideBar for each adapter
+    sideBar <- .makeSidebar(status, key, pwfCols = pwf, usePlotly = usePlotly)
+
+    ## Prepare the dendrogram & status bar
+    if (dendrogram) {
+      n <- length(x)
+      panel_w <- c(1, panel_w)
+      dendPlot <- ggplot(segment(dx)) +
+        geom_segment(
+          aes_string(x = "x", y = "y", xend = "xend", yend = "yend")) +
+        coord_flip() +
+        scale_y_reverse(expand = expansion(0)) +
+        scale_x_continuous(limits = c(0, n) + 0.5, expand = expansion(0)) +
+        labs(x = c(), y = "") +
+        theme_minimal() +
+        theme(
+          panel.grid = element_blank(),
+          axis.text = element_blank(), axis.ticks = element_blank(),
+          plot.margin = unit(c(5.5, 0, 5.5, 5.5), "points")
+        )
+    }
 
     ## Make the heatmap
+    cols <- .makePwfGradient(df$Percent, pwf, breaks = breaks, na.value = "white")
     acPlot <- ggplot(
-      df,
-      aes_string("Position", "Filename", fill = "Percent", type = "Type")
+      df, aes_string("Position", "Filename", fill = "Percent", type = "Type")
     ) +
       geom_tile() +
-      ggtitle(adapterType) +
-      labs(x = xLab) +
+      ggtitle(unique(df$Type)) +
+      labs(x = xLab, y = yLab) +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_discrete(expand = c(0, 0)) +
       do.call("scale_fill_gradientn", cols) +
       theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
+      theme(
+        panel.background = element_blank(),
+        plot.title = element_text(hjust = 0.5 * heat_w / sum(panel_w)),
+        axis.title.x = element_text(hjust = 0.5 * heat_w / sum(panel_w)),
+        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
+      )
 
     ## Add custom elements
     if (!is.null(userTheme)) acPlot <- acPlot + userTheme
 
-    if (usePlotly) {
+    if (!usePlotly) {
 
-      ## Reset the PWF status using current values
-      ## This needs to be recalculated when using Total AC
-      status <- dplyr::summarise_at(
-        dplyr::group_by(df, Filename),
-        dplyr::vars("Percent"),
-        max,
-        na.rm = TRUE)
-      status$Status <- cut(
-        status$Percent,
-        breaks = breaks,
-        include.lowest = TRUE,
-        labels = c("PASS", "WARN", "FAIL")
-      )
+      sideBar <- sideBar +
+        theme(plot.margin = unit(c(5.5, 0, 5.5, 0), "points"))
 
-      ## Form the sideBar for each adapter
-      sideBar <- .makeSidebar(status, key, pwfCols = pwfCols)
+      ## Combined using patchwork
+      if (dendrogram) {
+        acPlot <- suppressMessages(
+          acPlot + scale_y_discrete(position = "right", expand = expansion(0))
+        )
+        out <- dendPlot + sideBar + acPlot
+      } else {
+        out <- sideBar +
+          theme(
+            axis.text.y = element_text(hjust = 1), axis.ticks.y = element_line()
+          ) +
+          acPlot  +
+          theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+      }
+
+      out <- out + plot_layout(widths = panel_w)
+
+    } else {
 
       ## Customise for plotly
       acPlot <- acPlot +
-        ggtitle(NULL) +
         theme(
-          panel.background = element_blank(),
-          axis.text.x = element_text(
-            angle = 90,
-            hjust = 1,
-            vjust = 0.5
-          ),
-          axis.text.y = element_blank(),
-          axis.ticks.y = element_blank(),
-          legend.position = "none")
+          plot.title = element_blank(),
+          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+          legend.position = "none"
+        )
       if (!is.null(userTheme)) acPlot <- acPlot + userTheme
 
       ## plot dendro setting empty as default
-      dendro <- plotly::plotly_empty()
       if (dendrogram) {
-        dx <- ggdendro::dendro_data(clusterDend)
-        dendro <- .renderDendro(dx$segments)
-      }
-
-      acPlot <- suppressWarnings(
-        suppressMessages(
-          plotly::subplot(
-            dendro,
-            sideBar,
-            acPlot,
-            widths = c(0.1,0.08,0.82),
-            margin = 0.001,
-            shareY = TRUE
+        out <- suppressWarnings(
+          suppressMessages(
+            plotly::subplot(
+              .renderDendro(dx$segments), sideBar, acPlot,
+              widths = panel_w / sum(panel_w), margin = 0.001, shareY = TRUE
+            )
           )
         )
-      )
-      acPlot <- plotly::layout(
-        acPlot,
-        annotations = list(
-          text = yLab,
-          textangle = -90,
-          showarrow = FALSE
-        ),
-        xaxis3 = list(title = xLab),
-        margin = list(b = 52)
+      } else {
+        out <- suppressWarnings(
+          suppressMessages(
+            plotly::subplot(
+              sideBar, acPlot,
+              widths = panel_w / sum(panel_w), margin = 0.001, shareY = TRUE
+            )
+          )
+        )
+      }
+
+      out <- plotly::layout(
+        out, xaxis3 = list(title = xLab), margin = list(b = 52)
       )
     }
   }
@@ -408,7 +397,6 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
 
     ## No clustering is required here
     yLab <- "Percent (%)"
-    key <- names(labels)
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
     ## Set the transparency & position of bg rectangles
@@ -426,9 +414,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       geom_rect(
         data = rects,
         aes_string(
-          xmin = "xmin", xmax = "xmax",
-          ymin = "ymin", ymax = "ymax",
-          fill = "Status")
+          xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
+          fill = "Status"
+        )
       ) +
       geom_line(aes_string("Position", "Percent", colour = "Filename")) +
       scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
@@ -439,6 +427,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       labs(x = xLab, y = yLab) +
       facet_wrap(~Type, ncol = 1) +
       theme_bw()
+
     if (!is.null(userTheme)) acPlot <- acPlot + userTheme
 
     ## And draw the plot
@@ -452,8 +441,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       ## only. This will effectively hide them from the mouse
       acPlot$x$data <- lapply(acPlot$x$data, .hidePWFRects)
     }
+    out <- acPlot
   }
-  acPlot
+  out
 }
 )
 
@@ -472,3 +462,42 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
   }
   x
 }
+
+.tidyAc <- function(x, adapterType = "Total") {
+
+  df <- getModule(x, "Adapter_Content")
+  valueCols <- setdiff(colnames(df), c("Filename", "Position"))
+  df <- tidyr::pivot_longer(
+    df, cols = all_of(valueCols), names_to = "Type", values_to = "Percent"
+  )
+  adaptOpts <- c("Total_Adapter_Content", valueCols)
+  adapterType <- match.arg(adapterType, adaptOpts)
+
+  if (adapterType == "Total_Adapter_Content") {
+    ## Sum the adapters by filename& position
+    df <- summarise(
+      group_by(df, Filename, Position),
+      Percent = sum(Percent, na.rm = TRUE), .groups = "drop"
+    )
+    df <- ungroup(df)
+  }
+  else{
+    df <- dplyr::filter(df, Type == adapterType)
+  }
+  df$Percent <- round(df$Percent, 2)
+  ## Set any binned values to be continuous
+  df$Position <- lapply(
+    df$Position,
+    function(x){
+      rng <- as.integer(str_split(x, pattern = "-")[[1]])
+      seq(min(rng), max(rng), by = 1L)
+    }
+  )
+  df <- unnest(df, Position)
+  df$Type <- gsub("_", " ", adapterType)
+
+  ## Now just keep the three required columns
+  df[c("Filename", "Position", "Percent", "Type")]
+
+}
+
