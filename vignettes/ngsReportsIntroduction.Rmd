@@ -5,9 +5,9 @@ author:
   affiliation: School of Biological Sciences, University of Adelaide
 - name: Hien To
   affiliation: Bioinformatics Hub, University of Adelaide
-- name: Steve Pederson
-  affiliation: Dame Roma Mitchell Cancer Research Laboratories, Adelaide Medical School, University of Adelaide
-  email: stephen.pederson@adelaide.edu.au
+- name: Stevie Pederson
+  affiliation: Black Ochre Data Laboratories, Telethon Kids Institute
+  email: stephen.pederson.au@gmail.com
 package: ngsReports
 output:
   BiocStyle::html_document

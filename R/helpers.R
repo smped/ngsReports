@@ -199,17 +199,19 @@
 #' @param status A data.frame with columns 'Filename' & 'Status'
 #' @param key A vector of values corresponding to the Filename column
 #' @param pwfCols An object of class PwfCols
+#' @param usePlotly If TRUE, output is a plotly panel
 #'
 #' @return
-#' A plotly object. The sidebar for an interactive plot showing PASS/WARN/FAIL
-#' status for each file.
+#' if `usePlotly = TRUE`, a plotly object. The sidebar for an interactive plot
+#' showing PASS/WARN/FAIL status for each file. If `usePlotly = FALSE` the
+#' underlying `ggplot` object will be returned.
 #'
 #' @import ggplot2
 #' @importFrom plotly ggplotly
 #'
 #' @keywords internal
 #'
-.makeSidebar <- function(status, key, pwfCols){
+.makeSidebar <- function(status, key, pwfCols, usePlotly = TRUE){
 
     stopifnot(.isValidPwf(pwfCols))
     nx <- length(status$Filename)
@@ -235,9 +237,12 @@
         )
 
     ## Convert to plotly
-    suppressWarnings(
+    if (usePlotly) {
+      sideBar <- suppressWarnings(
         suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill")))
-    )
+      )
+    }
+    sideBar
 }
 
 #' @title  Set up dendrograms for interactive plots
@@ -272,14 +277,14 @@
     ggplotly(dendro, tooltip = NULL)
 }
 
-#' @title Construct a scale using PwfCols
+
+#' @title Construct a gradient using PwfCols
 #'
-#' @description Construct a scale using PwfCols
+#' @description Construct a gradient using PwfCols
 #'
-#' @details This constructs a ggplot scale using the values contained in the
+#' @details This constructs a list of arguments for passing to
+#' `scale_fill_gradientn()` using the values contained in the
 #' fill aesthetic and the supplied breaks for PASS/WARN/FAIL criteria.
-#' As this doesn't follow the conventional ggplot syntax, using more of
-#' functional approach, it will be a hidden function.
 #'
 #' @param vals The values which need to have the scale generated
 #' @param pwfCols An object of class PwfCols
@@ -289,49 +294,48 @@
 #' @param na.value The colour to plot for missing values
 #'
 #' @return
-#' Returns a ggplot scale object
+#' Returns a ggplot list
 #'
 #' @include PwfCols.R
-#' @import ggplot2
+#' @importFrom grDevices colorRampPalette
 #'
 #' @keywords internal
 #'
-.scale_fill_pwf <- function(
+.makePwfGradient <- function(
     vals, pwfCols, breaks = c(0, 5, 10, 100),  passLow = TRUE,
     na.value = "white"){
 
-    ## passLow defines whether pass is the low score or the high score
-    ## organise the colours based on this
-    o <- seq_len(4)
-    if (!passLow) o <- rev(o)
-    gradCols <- getColours(pwfCols)[o] # Get the default gradient colours
+  ## passLow defines whether pass is the low score or the high score
+  ## organise the colours based on this
+  o <- seq_len(4)
+  if (!passLow) o <- rev(o)
+  gradCols <- getColours(pwfCols)[o] # Get the default gradient colours
 
-    ## Find which of the pwf bins are present
-    bins <- cut(vals, breaks = breaks, include.lowest = TRUE)
-    bins <- range(as.integer(bins))
-    bins <- unique(bins)
+  ## Find which of the pwf bins are present
+  bins <- cut(vals, breaks = breaks, include.lowest = TRUE)
+  bins <- range(as.integer(bins))
+  bins <- unique(bins)
 
-    ## Create an even sequence between the min & max of the range
-    n <- seq(breaks[min(bins)], breaks[max(bins) + 1], length.out = 101)
-    n <- cut(n, breaks = breaks)
-    n <- split(n, n)
+  ## Create an even sequence between the min & max of the range
+  n <- seq(breaks[min(bins)], breaks[max(bins) + 1], length.out = 101)
+  n <- cut(n, breaks = breaks)
+  n <- split(n, n)
 
-    ## Now create a colour vector between the extreme points
-    cols <- lapply(bins, function(x){
-        l <- length(n[[x]]) + 1
-        colorRampPalette(gradCols[c(x,x + 1)])(l)[-l]
-    })
-    cols <- as.character(c(unlist(cols), gradCols[max(bins) + 1]))
+  ## Now create a colour vector between the extreme points
+  cols <- lapply(bins, function(x){
+    l <- length(n[[x]]) + 1
+    colorRampPalette(gradCols[c(x,x + 1)])(l)[-l]
+  })
+  cols <- as.character(c(unlist(cols), gradCols[max(bins) + 1]))
 
-    ## Remove any breaks outside of the range
-    breaks <- breaks[seq(min(bins), max(bins) + 1)]
+  ## Remove any breaks outside of the range
+  breaks <- breaks[seq(min(bins), max(bins) + 1)]
 
-    ## Return the scale object
-    scale_fill_gradientn(
-        colours = cols,
-        breaks = breaks,
-        limits = range(breaks),
-        na.value = na.value
-    )
+  ## Return a list for passing to do.call("scale_fill_gradientn", args)
+  list(
+    colours = cols, breaks = breaks,
+    limits = range(breaks),
+    na.value = na.value
+  )
 
 }

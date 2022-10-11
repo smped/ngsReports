@@ -49,31 +49,32 @@
 #'
 #' @import ggplot2
 #' @importFrom dplyr vars
-#' @importFrom zoo na.locf
 #' @import tibble
+#' @importFrom tidyr unnest
+#' @importFrom stringr str_split
 #'
 #' @name plotNContent
 #' @rdname plotNContent-methods
 #' @export
 setGeneric("plotNContent", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
-    standardGeneric("plotNContent")
+  standardGeneric("plotNContent")
 }
 )
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
-    .errNotImp(x)
+  .errNotImp(x)
 }
 )
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "character", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
-    x <- FastqcDataList(x)
-    if (length(x) == 1) x <- x[[1]]
-    plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
+  x <- FastqcDataList(x)
+  if (length(x) == 1) x <- x[[1]]
+  plotNContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
 }
 )
 #' @rdname plotNContent-methods
@@ -82,107 +83,107 @@ setMethod("plotNContent", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...,
     lineCol = "red"){
 
-    ## Get the NContent
-    df <- getModule(x, "Per_base_N_content")
-    colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
+  ## Get the NContent
+  df <- getModule(x, "Per_base_N_content")
+  colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
-    ## Handle empty/missing modules
-    msg <- c()
-    if (!length(df)) msg <- "No N Content Module Detected"
-    if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
-    if (!is.null(msg)) {
-        nPlot <- ngsReports:::.emptyPlot(msg)
-        if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
-        return(nPlot)
-    }
+  ## Handle empty/missing modules
+  msg <- c()
+  if (!length(df)) msg <- "No N Content Module Detected"
+  if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
+  if (!is.null(msg)) {
+    nPlot <- ngsReports:::.emptyPlot(msg)
+    if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
+    return(nPlot)
+  }
 
-    ## Sort out the colours
-    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-    stopifnot(.isValidPwf(pwfCols))
-    pwfCols <- setAlpha(pwfCols, 0.2)
+  ## Sort out the colours
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+  stopifnot(.isValidPwf(pwfCols))
+  pwfCols <- setAlpha(pwfCols, 0.2)
 
-    ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(x, labels, ...)
-    labels <- labels[names(labels) %in% df$Filename]
-    df$Filename <- labels[df$Filename]
-    df$Base <- factor(df$Base, levels = unique(df$Base))
-    df$xValue <- as.integer(df$Base)
+  ## Drop the suffix, or check the alternate labels
+  labels <- .makeLabels(x, labels, ...)
+  labels <- labels[names(labels) %in% df$Filename]
+  df$Filename <- labels[df$Filename]
+  df$Base <- factor(df$Base, levels = unique(df$Base))
+  df$xValue <- as.integer(df$Base)
 
-    ## Setup the BG colours
-    rects <- tibble(
-        xmin = 0,
-        xmax = max(df$xValue),
-        ymin = c(0, warn, fail),
-        ymax = c(warn, fail, 100),
-        Status = c("PASS", "WARN", "FAIL")
+  ## Setup the BG colours
+  rects <- tibble(
+    xmin = 0,
+    xmax = max(df$xValue),
+    ymin = c(0, warn, fail),
+    ymax = c(warn, fail, 100),
+    Status = c("PASS", "WARN", "FAIL")
+  )
+
+  ## Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+  yLab <- "N Content (%)"
+  nPlot <- ggplot(df) +
+    geom_rect(
+      data = rects,
+      aes_string(
+        xmin = "xmin", xmax = "xmax",
+        ymin = "ymin", ymax = "ymax",
+        fill = "Status"
+      )
+    ) +
+    geom_line(aes_string("xValue", "Percentage"), colour = lineCol) +
+    geom_point(
+      aes_string(x = "xValue", y = "Percentage", group = "Base"),
+      size = 0, colour = rgb(0, 0, 0, 0)
+    ) +
+    scale_fill_manual(values = getColours(pwfCols)) +
+    scale_x_continuous(
+      breaks = unique(df$xValue),
+      labels = levels(df$Base),
+      expand = c(0,0)
+    ) +
+    scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+    facet_wrap(~Filename) +
+    labs(x = "Position in Read (bp)", y = yLab) +
+    guides(fill = "none") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+
+  ## Add the basic customisations
+  if (!is.null(userTheme)) nPlot <- nPlot + userTheme
+
+  if (usePlotly) {
+    nPlot <- nPlot +
+      xlab("") +
+      theme(legend.position = "none")
+    nPlot <- suppressMessages(plotly::ggplotly(nPlot))
+    nPlot <- suppressMessages(
+      suppressWarnings(
+        plotly::subplot(
+          plotly::plotly_empty(),
+          nPlot,
+          widths = c(0.14,0.86)
+        )
+      )
     )
-
-    ## Get any arguments for dotArgs that have been set manually
-    dotArgs <- list(...)
-    allowed <- names(formals(theme))
-    keepArgs <- which(names(dotArgs) %in% allowed)
-    userTheme <- c()
-    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
-    yLab <- "N Content (%)"
-    nPlot <- ggplot(df) +
-        geom_rect(
-            data = rects,
-            aes_string(
-                xmin = "xmin", xmax = "xmax",
-                ymin = "ymin", ymax = "ymax",
-                fill = "Status"
-            )
-        ) +
-        geom_line(aes_string("xValue", "Percentage"), colour = lineCol) +
-        geom_point(
-            aes_string(x = "xValue", y = "Percentage", group = "Base"),
-            size = 0, colour = rgb(0, 0, 0, 0)
-        ) +
-        scale_fill_manual(values = getColours(pwfCols)) +
-        scale_x_continuous(
-            breaks = unique(df$xValue),
-            labels = levels(df$Base),
-            expand = c(0,0)
-        ) +
-        scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
-        facet_wrap(~Filename) +
-        labs(x = "Position in Read (bp)", y = yLab) +
-        guides(fill = "none") +
-        theme_bw() +
-        theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-
-    ## Add the basic customisations
-    if (!is.null(userTheme)) nPlot <- nPlot + userTheme
-
-    if (usePlotly) {
-        nPlot <- nPlot +
-            xlab("") +
-            theme(legend.position = "none")
-        nPlot <- suppressMessages(plotly::ggplotly(nPlot))
-        nPlot <- suppressMessages(
-            suppressWarnings(
-                plotly::subplot(
-                    plotly::plotly_empty(),
-                    nPlot,
-                    widths = c(0.14,0.86)
-                )
-            )
-        )
-        nPlot <- plotly::layout(nPlot, yaxis2 = list(title = yLab))
+    nPlot <- plotly::layout(nPlot, yaxis2 = list(title = yLab))
 
 
-        ## Set the hoverinfo for bg rectangles to the vertices only,
-        ## This will effectively hide them
-        nPlot$x$data <- lapply(nPlot$x$data, .hidePWFRects)
-        ## Hide the xValue parameter to make it look nicer
-        nPlot$x$data[[6]]$text <- gsub(
-            "(.+)(xValue.+)(Percentage.+)",
-            "\\1\\3",
-            nPlot$x$data[[6]]$text
-        )
-    }
-    nPlot
+    ## Set the hoverinfo for bg rectangles to the vertices only,
+    ## This will effectively hide them
+    nPlot$x$data <- lapply(nPlot$x$data, .hidePWFRects)
+    ## Hide the xValue parameter to make it look nicer
+    nPlot$x$data[[6]]$text <- gsub(
+      "(.+)(xValue.+)(Percentage.+)",
+      "\\1\\3",
+      nPlot$x$data[[6]]$text
+    )
+  }
+  nPlot
 }
 )
 #' @rdname plotNContent-methods
@@ -191,141 +192,134 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20,
     cluster = FALSE, dendrogram = FALSE, ...){
 
-    ## Get the NContent
-    df <- getModule(x, "Per_base_N_content")
-    colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
+  ## Get the NContent
+  df <- getModule(x, "Per_base_N_content")
+  colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
-    ## Handle empty/missing modules
-    msg <- c()
-    if (!length(df)) msg <- "No N Content Module Detected"
-    if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
-    if (!is.null(msg)) {
-        nPlot <- .emptyPlot(msg)
-        if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
-        return(nPlot)
+  ## Handle empty/missing modules
+  msg <- c()
+  if (!length(df)) msg <- "No N Content Module Detected"
+  if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
+  if (!is.null(msg)) {
+    nPlot <- .emptyPlot(msg)
+    if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
+    return(nPlot)
+  }
+
+  ## Sort out the colours
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+  stopifnot(.isValidPwf(pwfCols))
+
+  ## Drop the suffix, or check the alternate labels
+  labels <- .makeLabels(x, labels, ...)
+  labels <- labels[names(labels) %in% df$Filename]
+
+  ## fill bins up to the max sequence length
+  df$Base <- lapply(
+    df$Base,
+    function(x){
+      rng <- as.integer(str_split(x, pattern = "-")[[1]])
+      seq(min(rng), max(rng), by = 1L)
     }
+  )
+  df <- unnest(df, Base)
 
-    ## Sort out the colours
-    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-    stopifnot(.isValidPwf(pwfCols))
+  if (dendrogram && !cluster) {
+    message("cluster will be set to TRUE when dendrogram = TRUE")
+    cluster <- TRUE
+  }
 
-    ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(x, labels, ...)
-    labels <- labels[names(labels) %in% df$Filename]
+  ## Now define the order for a dendrogram if required
+  key <- names(labels)
+  if (cluster) {
+    cols <- c("Filename", "Base", "Percentage")
+    clusterDend <- .makeDendro(df[cols], "Filename", "Base", "Percentage")
+    key <- labels(clusterDend)
+  }
+  ## Now set everything as factors
+  df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
-    ## fill bins up to the max sequence length
-    df$Start <- as.integer(gsub("([0-9]*)-[0-9]*", "\\1", df$Base))
-    df <- lapply(split(df, f = df$Filename), function(x){
-        Longest_sequence <- max(x$Start)
-        dfFill <- data.frame(Start = seq_len(Longest_sequence))
-        x <- dplyr::right_join(x, dfFill, by = "Start")
-        x <- na.locf(x)
-    })
-    df <- dplyr::bind_rows(df)
+  ## Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
-    if (dendrogram && !cluster) {
-        message("cluster will be set to TRUE when dendrogram = TRUE")
-        cluster <- TRUE
-    }
+  cols <- .makePwfGradient(
+    df$Percentage, pwfCols,
+    breaks = c(0, warn, fail, 101), passLow = TRUE,
+    na.value = "white"
+  )
 
-    ## Now define the order for a dendrogram if required
-    key <- names(labels)
-    if (cluster) {
-        cols <- c("Filename", "Start", "Percentage")
-        clusterDend <-
-            .makeDendro(df[cols], "Filename", "Start", "Percentage")
-        key <- labels(clusterDend)
-    }
-    ## Now set everything as factors
-    df$Filename <- factor(labels[df$Filename], levels = labels[key])
+  xLab <- "Position in Read (bp)"
+  nPlot <- ggplot(
+    df,
+    aes_string("Base", "Filename", fill = "Percentage", label = "Base")
+  ) +
+    geom_tile() +
+    do.call("scale_fill_gradientn", cols) +
+    scale_x_continuous(expand = c(0, 0)) +
+    scale_y_discrete(expand = c(0, 0)) +
+    labs(x = xLab, y = "Filename", fill = "%N") +
+    theme_bw() +
+    theme(panel.background = element_blank())
 
-    ## Get any arguments for dotArgs that have been set manually
-    dotArgs <- list(...)
-    allowed <- names(formals(theme))
-    keepArgs <- which(names(dotArgs) %in% allowed)
-    userTheme <- c()
-    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+  ## Add the basic customisations
+  if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
-    xLab <- "Position in Read (bp)"
-    nPlot <- ggplot(
-        df,
-        aes_string("Start", "Filename", fill = "Percentage", label = "Base")
-    ) +
-        geom_tile() +
-        .scale_fill_pwf(
-            df$Percentage,
-            pwfCols,
-            breaks = c(0, warn, fail, 101),
-            passLow = TRUE,
-            na.value = "white"
-        ) +
-        scale_x_continuous(expand = c(0, 0)) +
-        scale_y_discrete(expand = c(0, 0)) +
-        labs(x = xLab, y = "Filename", fill = "%N") +
-        theme_bw() +
-        theme(
-            panel.background = element_blank(),
-            axis.text.x = element_text(
-                angle = 90, hjust = 1, vjust = 0.5
-            )
-        )
+  if (usePlotly) {
+    ## Reset the status using current values
+    status <- dplyr::summarise_at(
+      dplyr::group_by(df, Filename),
+      vars("Percentage"),
+      max, na.rm = TRUE
+    )
+    status$Status <- cut(
+      status$Percentage,
+      breaks = c(0, warn, fail, 101),
+      include.lowest = TRUE,
+      labels = c("PASS", "WARN", "FAIL")
+    )
 
-    ## Add the basic customisations
+    ## Form the sideBar for each adapter
+    sideBar <- .makeSidebar(status, key, pwfCols = pwfCols)
+
     if (!is.null(userTheme)) nPlot <- nPlot + userTheme
+    nPlot <- nPlot + ylab("")
 
-    if (usePlotly) {
-        ## Reset the status using current values
-        status <- dplyr::summarise_at(
-            dplyr::group_by(df, Filename),
-            vars("Percentage"),
-            max, na.rm = TRUE
-        )
-        status$Status <- cut(
-            status$Percentage,
-            breaks = c(0, warn, fail, 101),
-            include.lowest = TRUE,
-            labels = c("PASS", "WARN", "FAIL")
-        )
-
-        ## Form the sideBar for each adapter
-        sideBar <- .makeSidebar(status, key, pwfCols = pwfCols)
-
-        if (!is.null(userTheme)) nPlot <- nPlot + userTheme
-        nPlot <- nPlot + ylab("")
-
-        dendro <- plotly::plotly_empty()
-        if (dendrogram) {
-            dx <- ggdendro::dendro_data(clusterDend)
-            dendro <- .renderDendro(dx$segments)
-        }
-
-        ## Customise for plotly
-        nPlot <- nPlot +
-            theme(
-                axis.text.y = element_blank(),
-                axis.ticks.y = element_blank(),
-                legend.position = "none"
-            )
-        nPlot <-
-            plotly::ggplotly(nPlot, tooltip = c("y", "fill", "label"))
-        ## Now make the three frame plot with option dendrogram
-        ## and the sideBar + main plot
-        nPlot <- suppressWarnings(
-            suppressMessages(
-                plotly::subplot(
-                    dendro,
-                    sideBar,
-                    nPlot,
-                    widths = c(0.1,0.08,0.82),
-                    margin = 0.001,
-                    shareY = TRUE)
-            )
-        )
-        nPlot <- plotly::layout(
-            nPlot, xaxis3 = list(title = xLab), margin = list(b = 45)
-        )
+    dendro <- plotly::plotly_empty()
+    if (dendrogram) {
+      dx <- ggdendro::dendro_data(clusterDend)
+      dendro <- .renderDendro(dx$segments)
     }
-    # Draw the final plot
-    nPlot
+
+    ## Customise for plotly
+    nPlot <- nPlot +
+      theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        legend.position = "none"
+      )
+    nPlot <- plotly::ggplotly(nPlot, tooltip = c("y", "fill", "label"))
+    ## Now make the three frame plot with option dendrogram
+    ## and the sideBar + main plot
+    nPlot <- suppressWarnings(
+      suppressMessages(
+        plotly::subplot(
+          dendro,
+          sideBar,
+          nPlot,
+          widths = c(0.1,0.08,0.82),
+          margin = 0.001,
+          shareY = TRUE)
+      )
+    )
+    nPlot <- plotly::layout(
+      nPlot, xaxis3 = list(title = xLab), margin = list(b = 45)
+    )
+  }
+  # Draw the final plot
+  nPlot
 }
 )
