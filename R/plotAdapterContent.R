@@ -267,16 +267,12 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     panel_w <- c(1, heat_w)
 
     ## Set up the dendrogram
-    dx <- list(
-      segments = tibble(
-        x = numeric(), y = numeric(), xend = numeric(), yend = numeric()
-      )
-    )
+    clusterDend <- .makeDendro(df, "Filename", "Position", "Percent")
+    dx <- ggdendro::dendro_data(clusterDend)
     if (dendrogram | cluster) {
-      clusterDend <- .makeDendro(df, "Filename", "Position", "Percent")
-      dx <- ggdendro::dendro_data(clusterDend)
       key <- labels(clusterDend)
     }
+    if (!dendrogram) dx$segments <- dx$segments[0,]
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
     ## Reset the PWF status using current values & form this plot panel

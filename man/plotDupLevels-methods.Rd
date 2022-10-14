@@ -38,6 +38,7 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
   cluster = FALSE,
   dendrogram = FALSE,
   heatCol = hcl.colors(50, "inferno"),
+  heat_w = 8,
   ...
 )
 }
@@ -74,6 +75,8 @@ if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
 \item{heatCol}{Colour palette used for the heatmap}
+
+\item{heat_w}{Relative width of the heatmap relative to other plot components}
 }
 \value{
 A standard ggplot2 or plotly object

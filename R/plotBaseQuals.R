@@ -388,32 +388,24 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     maxVal <- max(df[[plotValue]], na.rm = TRUE)
     phredMax <- ifelse(maxVal <= warn, max(maxQ, 41), ceiling(maxVal + 1))
 
-    ## Arrange by row if clustering
-    ## Just use the default order as the key if not clustering
-    ## Always turn clustering on if dendrogram = TRUE
-    if (dendrogram && !cluster) {
-      message("cluster will be set to TRUE when dendrogram = TRUE")
-      cluster <- TRUE
-    }
-
     key <- names(labels)
-    if (cluster) {
-      clusterDend <- .makeDendro(df, "Filename", "Base", plotValue)
-      dx <- ggdendro::dendro_data(clusterDend)
+
+    ## Set up the dendrogram
+    clusterDend <- .makeDendro(df, "Filename", "Base", plotValue)
+    dx <- ggdendro::dendro_data(clusterDend)
+    if (dendrogram | cluster) {
       key <- labels(clusterDend)
     }
+    if (!dendrogram) dx$segments <- dx$segments[0,]
     lv <- labels[key]
     df$Filename <- factor(labels[df$Filename], levels = lv)
 
-    if (missing(pwfCols)) pwfCols <- pwf
     cols <- .makePwfGradient(
       vals = na.omit(df[[plotValue]]), pwfCols = pwfCols,
       breaks = c(0, fail, warn, phredMax), passLow = FALSE, na.value = "white"
     )
 
-
     ## Start the heatmap
-    panel_w <- c(1, heat_w)
     qualPlot <- ggplot(
       df, aes_string("Base", "Filename", fill = plotValue)
     ) +
@@ -421,13 +413,13 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
       labs(x = xlab, y = c()) +
       ggtitle(stringr::str_to_title(gsub("_", " ", mod))) +
       do.call("scale_fill_gradientn", cols) +
+      scale_x_continuous(expand = c(0, 0)) +
+      scale_y_discrete(expand = expansion(0), position = "right") +
       theme(
         panel.grid.minor = element_blank(), panel.background = element_blank(),
-        axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-        plot.title = element_text(hjust = 0.5 * heat_w / sum(panel_w)),
-      ) +
-      scale_x_continuous(expand = c(0, 0)) +
-      scale_y_discrete(expand = expansion(0))
+        plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1)),
+        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
+      )
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
@@ -440,91 +432,8 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     ## Add the status sideBar
     status <- subset(getSummary(x), Category == gsub("_", " ", mod))
     status$Filename <- factor(labels[status$Filename], levels = lv)
-    sideBar <- .makeSidebar(status, key, pwfCols = pwf, usePlotly = usePlotly)
 
-    ## Add custom elements
-    if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
-
-    if (!usePlotly) {
-
-      out <- sideBar +
-        theme(
-          plot.margin = unit(c(5.5, 0, 5.5, 0), "points"),
-          axis.text.y = element_text(), axis.ticks.y = element_line()
-        ) +
-        qualPlot +
-        theme(
-          plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"),
-          axis.title.x = element_text(hjust = 0.5 * heat_w / sum(panel_w))
-        ) +
-        plot_layout(widths = panel_w)
-
-      if (dendrogram) {
-        panel_w <- c(1, sum(panel_w))
-        n <- length(x)
-        dendPlot <- ggplot(segment(dx)) +
-          geom_segment(
-            aes_string(x = "x", y = "y", xend = "xend", yend = "yend")) +
-          coord_flip() +
-          scale_y_reverse(expand = expansion(0)) +
-          scale_x_continuous(limits = c(0, n) + 0.5, expand = expansion(0)) +
-          labs(x = c(), y = c()) +
-          theme_minimal() +
-          theme(
-            panel.grid = element_blank(),
-            axis.text = element_blank(), axis.ticks = element_blank(),
-            plot.margin = unit(c(5.5, 0, 5.5, 5.5), "points")
-          )
-        out[[1]]$theme$axis.text.y <- element_blank()
-        out[[1]]$theme$axis.ticks <- element_blank()
-        out[[2]] <- suppressMessages(
-          out[[2]] +
-            scale_y_discrete(position = "right", expand = expansion(0)) +
-            theme(axis.text.y = element_text(), axis.ticks.y  = element_line())
-        )
-        out <- dendPlot + out + plot_layout(widths = panel_w) + theme(
-          plot.title = element_text(hjust = 0.5 * heat_w / sum(panel_w))
-        )
-      }
-
-    } else {
-
-      qualPlot <- qualPlot +
-        theme(
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          legend.position = "none"
-        )
-
-      ##plot dendrogram
-      if (dendrogram) {
-        out <- suppressMessages(
-          suppressWarnings(
-            plotly::subplot(
-              .renderDendro(dx$segments), sideBar,
-              qualPlot + theme(plot.title = element_text(hjust = 0.5)),
-              widths = c(1, 1, heat_w) / (heat_w + 2),
-              margin = 0.001,
-              shareY = TRUE
-            )
-          )
-        )
-      }
-      else{
-        out <- suppressMessages(
-          suppressWarnings(
-            plotly::subplot(
-              sideBar,
-              qualPlot + theme(plot.title = element_text(hjust = 0.5)),
-              widths = c(1, heat_w) / (heat_w + 1),
-              margin = 0.001,
-              shareY = TRUE
-            )
-          )
-        )
-      }
-
-      out <- plotly::layout(out, xaxis3 = list(title = xlab))
-    }
+    out <- .prepHeatmap(qualPlot, status, dx$segments, usePlotly, heat_w)
 
   }
 

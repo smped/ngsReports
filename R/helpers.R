@@ -413,6 +413,10 @@
           )
         )
       )
+      out <- plotly::layout(
+        out, title = list(x = title_x), xaxis3 = list(title = x$labels$x),
+        margin = list(b = 50, t = 50)
+      )
     } else {
       out <- suppressWarnings(
         suppressMessages(
@@ -422,12 +426,11 @@
           )
         )
       )
+      out <- plotly::layout(
+        out, title = list(x = title_x), xaxis2 = list(title = x$labels$x),
+        margin = list(b = 50, t = 50)
+      )
     }
-
-    out <- plotly::layout(
-      out, title = list(x = title_x), xaxis3 = list(title = x$labels$x),
-      margin = list(b = 50, t = 50)
-    )
 
   }
 
