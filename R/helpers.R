@@ -341,3 +341,96 @@
   )
 
 }
+
+#' @title Prepare the final heatmap for plotting
+#'
+#' @description Add dendrogarm & status bar to ggplot2 heatmap
+#'
+#' @param x a ggplot2 heatmap produced by ngsReports
+#' @param status a tibble with the columns Filename and status
+#' @param segments a dendrogram produced during clustering of samples
+#' @param usePlotly logica(1)
+#'
+#' @return
+#' Either a ggplot2 object assembled using patchwork, or an interactive plotly
+#' object
+#'
+#' @import patchwork
+#' @import ggplot2
+#'
+#' @keywords internal
+.prepHeatmap <- function(x, status, segments, usePlotly, heat_w = 8) {
+
+  stopifnot(is(x, "gg"))
+  stopifnot(all(c("Filename", "Status") %in% colnames(status)))
+  stopifnot(all(c("x", "y", "xend", "yend") %in% colnames(segments)))
+
+  ## Create the dendrogram if required. This is independent of plotly
+  add_dend <- nrow(segments) > 0
+  panel_w <- c(1, heat_w)
+  if (add_dend) {
+    n <- max(segments$xend)
+    panel_w <- c(1, 1, heat_w)
+    dendPlot <- ggplot(segments) +
+      geom_segment(aes_string(x = "yend", y = "xend", xend = "y", yend = "x")) +
+      scale_x_reverse(expand = expansion(0)) +
+      scale_y_continuous(limits = c(0, n) + 0.5, expand = expansion(0)) +
+      labs(x = "", y = c()) +
+      theme_minimal() +
+      theme(
+        panel.grid = element_blank(),
+        axis.text = element_blank(), axis.ticks = element_blank(),
+        plot.margin = unit(c(5.5, 0, 5.5, 5.5), "points")
+      )
+  }
+
+  ## Now create the sideBar
+  sideBar <- .makeSidebar(status, levels(status$Filename), pwf, usePlotly)
+
+  if (!usePlotly) {
+
+    sideBar <- sideBar + theme(plot.margin = unit(c(5.5, 0, 5.5, 0), "points"))
+    out <- sideBar
+    if (add_dend) out <- dendPlot + sideBar
+    out <- out + x +  plot_layout(widths = panel_w)
+
+  } else {
+
+    ## Setup additional formatting
+    x <- x + theme(
+      plot.title = element_text(hjust = 0.5), axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(), legend.position = "none"
+    )
+    title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
+    panel_w <- panel_w / sum(panel_w)
+
+    if (add_dend) {
+      out <- suppressWarnings(
+        suppressMessages(
+          plotly::subplot(
+            .renderDendro(segments), sideBar, x,
+            widths = panel_w, margin = 0.001, shareY = TRUE
+          )
+        )
+      )
+    } else {
+      out <- suppressWarnings(
+        suppressMessages(
+          plotly::subplot(
+            sideBar, x,
+            widths = panel_w, margin = 0.001, shareY = TRUE
+          )
+        )
+      )
+    }
+
+    out <- plotly::layout(
+      out, title = list(x = title_x), xaxis3 = list(title = x$labels$x),
+      margin = list(b = 50, t = 50)
+    )
+
+  }
+
+  out
+
+}

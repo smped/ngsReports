@@ -265,13 +265,14 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     ## Always turn clustering on if dendrogram = TRUE
     yLab <- c()
     panel_w <- c(1, heat_w)
-    if (dendrogram && !cluster) {
-      message("cluster will always be set to TRUE when dendrogram = TRUE")
-      cluster <- TRUE
-    }
 
-    ## Set the key for interactive plotting in the shiny app
-    if (cluster) {
+    ## Set up the dendrogram
+    dx <- list(
+      segments = tibble(
+        x = numeric(), y = numeric(), xend = numeric(), yend = numeric()
+      )
+    )
+    if (dendrogram | cluster) {
       clusterDend <- .makeDendro(df, "Filename", "Position", "Percent")
       dx <- ggdendro::dendro_data(clusterDend)
       key <- labels(clusterDend)
@@ -288,27 +289,6 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       status$Percent, breaks = breaks, include.lowest = TRUE,
       labels = c("PASS", "WARN", "FAIL")
     )
-    ## Form the sideBar for each adapter
-    sideBar <- .makeSidebar(status, key, pwfCols = pwf, usePlotly = usePlotly)
-
-    ## Prepare the dendrogram & status bar
-    if (dendrogram) {
-      n <- length(x)
-      panel_w <- c(1, panel_w)
-      dendPlot <- ggplot(segment(dx)) +
-        geom_segment(
-          aes_string(x = "x", y = "y", xend = "xend", yend = "yend")) +
-        coord_flip() +
-        scale_y_reverse(expand = expansion(0)) +
-        scale_x_continuous(limits = c(0, n) + 0.5, expand = expansion(0)) +
-        labs(x = c(), y = "") +
-        theme_minimal() +
-        theme(
-          panel.grid = element_blank(),
-          axis.text = element_blank(), axis.ticks = element_blank(),
-          plot.margin = unit(c(5.5, 0, 5.5, 5.5), "points")
-        )
-    }
 
     ## Make the heatmap
     cols <- .makePwfGradient(df$Percent, pwf, breaks = breaks, na.value = "white")
@@ -319,7 +299,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       ggtitle(unique(df$Type)) +
       labs(x = xLab, y = yLab) +
       scale_x_continuous(expand = c(0,0)) +
-      scale_y_discrete(expand = c(0, 0)) +
+      scale_y_discrete(expand = c(0, 0), position = "right") +
       do.call("scale_fill_gradientn", cols) +
       theme_bw() +
       theme(
@@ -332,64 +312,8 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     ## Add custom elements
     if (!is.null(userTheme)) acPlot <- acPlot + userTheme
 
-    if (!usePlotly) {
+    out <- .prepHeatmap(acPlot, status, dx$segments, usePlotly, heat_w)
 
-      sideBar <- sideBar +
-        theme(plot.margin = unit(c(5.5, 0, 5.5, 0), "points"))
-
-      ## Combined using patchwork
-      if (dendrogram) {
-        acPlot <- suppressMessages(
-          acPlot + scale_y_discrete(position = "right", expand = expansion(0))
-        )
-        out <- dendPlot + sideBar + acPlot
-      } else {
-        out <- sideBar +
-          theme(
-            axis.text.y = element_text(hjust = 1), axis.ticks.y = element_line()
-          ) +
-          acPlot  +
-          theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
-      }
-
-      out <- out + plot_layout(widths = panel_w)
-
-    } else {
-
-      ## Customise for plotly
-      acPlot <- acPlot +
-        theme(
-          plot.title = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(),
-          legend.position = "none"
-        )
-      if (!is.null(userTheme)) acPlot <- acPlot + userTheme
-
-      ## plot dendro setting empty as default
-      if (dendrogram) {
-        out <- suppressWarnings(
-          suppressMessages(
-            plotly::subplot(
-              .renderDendro(dx$segments), sideBar, acPlot,
-              widths = panel_w / sum(panel_w), margin = 0.001, shareY = TRUE
-            )
-          )
-        )
-      } else {
-        out <- suppressWarnings(
-          suppressMessages(
-            plotly::subplot(
-              sideBar, acPlot,
-              widths = panel_w / sum(panel_w), margin = 0.001, shareY = TRUE
-            )
-          )
-        )
-      }
-
-      out <- plotly::layout(
-        out, xaxis3 = list(title = xLab), margin = list(b = 52)
-      )
-    }
   }
 
   if (plotType == "line") {
