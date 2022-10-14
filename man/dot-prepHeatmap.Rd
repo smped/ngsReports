@@ -4,7 +4,7 @@
 \alias{.prepHeatmap}
 \title{Prepare the final heatmap for plotting}
 \usage{
-.prepHeatmap(x, status, segments, usePlotly, heat_w = 8)
+.prepHeatmap(x, status, segments, usePlotly, heat_w = 8, pwf)
 }
 \arguments{
 \item{x}{a ggplot2 heatmap produced by ngsReports}

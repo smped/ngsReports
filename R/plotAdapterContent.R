@@ -264,7 +264,6 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     ## Just use the default order as the key if not clustering
     ## Always turn clustering on if dendrogram = TRUE
     yLab <- c()
-    panel_w <- c(1, heat_w)
 
     ## Set up the dendrogram
     clusterDend <- .makeDendro(df, "Filename", "Position", "Percent")
@@ -287,7 +286,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     )
 
     ## Make the heatmap
-    cols <- .makePwfGradient(df$Percent, pwf, breaks = breaks, na.value = "white")
+    cols <-
+      .makePwfGradient(df$Percent, pwf, breaks = breaks, na.value = "white")
+    hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
     acPlot <- ggplot(
       df, aes_string("Position", "Filename", fill = "Percent", type = "Type")
     ) +
@@ -300,15 +301,15 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       theme_bw() +
       theme(
         panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5 * heat_w / sum(panel_w)),
-        axis.title.x = element_text(hjust = 0.5 * heat_w / sum(panel_w)),
+        plot.title = element_text(hjust = hj),
+        axis.title.x = element_text(hjust = hj),
         plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
       )
 
     ## Add custom elements
     if (!is.null(userTheme)) acPlot <- acPlot + userTheme
 
-    out <- .prepHeatmap(acPlot, status, dx$segments, usePlotly, heat_w)
+    out <- .prepHeatmap(acPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
 
   }
 

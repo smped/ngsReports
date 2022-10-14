@@ -333,6 +333,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
 
     ## Setup some more plotting parameters
     cols <- colorRampPalette(heatCol)(length(dupLevels))
+    hj <-  0.5 * heat_w / (heat_w + 1 + dendrogram)
     xlab <- "Percentage of Total"
     dupPlot <- ggplot(
       df,
@@ -361,7 +362,8 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
       theme_bw() +
       theme(
         plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"),
-        plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1))
+        plot.title = element_text(hjust = hj),
+        axis.title.x = element_text(hjust = hj)
       )
 
     if (!is.null(userTheme)) dupPlot <- dupPlot + userTheme
@@ -371,7 +373,8 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
     status$Filename <-
       factor(labels[status$Filename], levels = levels(df$Filename))
 
-    dupPlot <- .prepHeatmap(dupPlot, status, dx$segments, usePlotly, heat_w)
+    dupPlot <-
+      .prepHeatmap(dupPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
 
   }
 

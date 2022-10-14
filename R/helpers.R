@@ -359,11 +359,13 @@
 #' @import ggplot2
 #'
 #' @keywords internal
-.prepHeatmap <- function(x, status, segments, usePlotly, heat_w = 8) {
+.prepHeatmap <- function(x, status, segments, usePlotly, heat_w = 8, pwf) {
 
   stopifnot(is(x, "gg"))
   stopifnot(all(c("Filename", "Status") %in% colnames(status)))
   stopifnot(all(c("x", "y", "xend", "yend") %in% colnames(segments)))
+
+  if(missing(pwf)) pwf <- ngsReports::pwf
 
   ## Create the dendrogram if required. This is independent of plotly
   add_dend <- nrow(segments) > 0

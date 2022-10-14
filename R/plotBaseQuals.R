@@ -155,9 +155,9 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
     geom_rect(
       data = rects,
       aes_string(
-        xmin = "xmin", xmax = "xmax",
-        ymin = "ymin", ymax = "ymax",
-        fill = "Status")
+        xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
+        fill = "Status"
+      )
     ) +
     geom_rect(
       aes_string(
@@ -166,20 +166,22 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
       ),
       fill = "yellow", colour = "black"
     ) +
-    geom_segment(aes_string(
-      x = "xmin", xend = "xmax", y = "Median", yend = "Median"
-    ),
-    colour = "red"
+    geom_segment(
+      aes_string(x = "xmin", xend = "xmax", y = "Median", yend = "Median"),
+      colour = "red"
     ) +
-    geom_linerange(aes_string(
-      x = "Base", ymin = "`10th_Percentile`", ymax = "Lower_Quartile"
-    )) +
-    geom_linerange(aes_string(
-      x = "Base", ymin = "Upper_Quartile", ymax = "`90th_Percentile`"
-    )) +
+    geom_linerange(
+      aes_string(
+        x = "Base", ymin = "`10th_Percentile`", ymax = "Lower_Quartile"
+        )
+    ) +
+    geom_linerange(
+      aes_string(
+        x = "Base", ymin = "Upper_Quartile", ymax = "`90th_Percentile`"
+      )
+    ) +
     geom_line(
-      aes_string("Base", "Mean", group = "Filename"),
-      colour = "blue"
+      aes_string("Base", "Mean", group = "Filename"), colour = "blue"
     ) +
     scale_fill_manual(values = getColours(pwfCols)) +
     scale_x_discrete(expand = c(0, 0)) +
@@ -406,6 +408,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     )
 
     ## Start the heatmap
+    hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
     qualPlot <- ggplot(
       df, aes_string("Base", "Filename", fill = plotValue)
     ) +
@@ -417,7 +420,8 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
       scale_y_discrete(expand = expansion(0), position = "right") +
       theme(
         panel.grid.minor = element_blank(), panel.background = element_blank(),
-        plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1)),
+        plot.title = element_text(hjust = hj),
+        axis.title.x = element_text(hjust = hj),
         plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
       )
 
@@ -433,7 +437,8 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     status <- subset(getSummary(x), Category == gsub("_", " ", mod))
     status$Filename <- factor(labels[status$Filename], levels = lv)
 
-    out <- .prepHeatmap(qualPlot, status, dx$segments, usePlotly, heat_w)
+    out <-
+      .prepHeatmap(qualPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
 
   }
 
