@@ -25,6 +25,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
   plotType = c("heatmap", "line", "residuals"),
   cluster = FALSE,
   dendrogram = FALSE,
+  heat_w = 8,
   ...,
   nc = 2
 )
@@ -53,6 +54,8 @@ fastqc data will be clustered using hierarchical clustering}
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
+
+\item{heat_w}{Relative width of any heatmap plot components}
 
 \item{nc}{Specify the number of columns if plotting a FastqcDataList as line
 plots. Passed to \code{ggplot2::facet_wrap}.}

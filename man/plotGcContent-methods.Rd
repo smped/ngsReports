@@ -77,6 +77,7 @@ plotGcContent(
   pwfCols,
   cluster = FALSE,
   dendrogram = FALSE,
+  heat_w = 8,
   ...
 )
 }
@@ -131,6 +132,8 @@ fastqc data will be clustered using hierarchical clustering}
 \item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram  will be displayed.}
+
+\item{heat_w}{Relative width of any heatmap plot components}
 }
 \value{
 A ggplot2 or plotly object
