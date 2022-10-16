@@ -390,9 +390,8 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     maxVal <- max(df[[plotValue]], na.rm = TRUE)
     phredMax <- ifelse(maxVal <= warn, max(maxQ, 41), ceiling(maxVal + 1))
 
+    ## Set up the dendrogram & labels
     key <- names(labels)
-
-    ## Set up the dendrogram
     clusterDend <- .makeDendro(df, "Filename", "Base", plotValue)
     dx <- ggdendro::dendro_data(clusterDend)
     if (dendrogram | cluster) {

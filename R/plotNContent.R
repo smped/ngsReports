@@ -29,6 +29,7 @@
 #' @param dendrogram `logical` redundant if `cluster` is `FALSE`
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
+#' @param heat_w Relative width of any heatmap plot components
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -190,7 +191,7 @@ setMethod("plotNContent", signature = "FastqcData", function(
 #' @export
 setMethod("plotNContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20,
-    cluster = FALSE, dendrogram = FALSE, ...){
+    cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...){
 
   ## Get the NContent
   df <- getModule(x, "Per_base_N_content")
@@ -224,27 +225,14 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
   )
   df <- unnest(df, Base)
 
-  if (dendrogram && !cluster) {
-    message("cluster will be set to TRUE when dendrogram = TRUE")
-    cluster <- TRUE
-  }
-
   ## Now define the order for a dendrogram if required
   key <- names(labels)
-  if (cluster) {
-    cols <- c("Filename", "Base", "Percentage")
-    clusterDend <- .makeDendro(df[cols], "Filename", "Base", "Percentage")
-    key <- labels(clusterDend)
-  }
-  ## Now set everything as factors
+  cols <- c("Filename", "Base", "Percentage")
+  clusterDend <- .makeDendro(df[cols], "Filename", "Base", "Percentage")
+  dx <- ggdendro::dendro_data(clusterDend)
+  if (dendrogram | cluster) key <- labels(clusterDend)
+  if (!dendrogram) dx$segments <- dx$segments[0,]
   df$Filename <- factor(labels[df$Filename], levels = labels[key])
-
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   cols <- .makePwfGradient(
     df$Percentage, pwfCols,
@@ -253,6 +241,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
   )
 
   xLab <- "Position in Read (bp)"
+  hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
   nPlot <- ggplot(
     df,
     aes_string("Base", "Filename", fill = "Percentage", label = "Base")
@@ -260,66 +249,39 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
     geom_tile() +
     do.call("scale_fill_gradientn", cols) +
     scale_x_continuous(expand = c(0, 0)) +
-    scale_y_discrete(expand = c(0, 0)) +
-    labs(x = xLab, y = "Filename", fill = "%N") +
+    scale_y_discrete(expand = c(0, 0), position = "right") +
+    labs(x = xLab, y = NULL, fill = "%N") +
+    ggtitle("Per Base N Content") +
     theme_bw() +
-    theme(panel.background = element_blank())
+    theme(
+      panel.background = element_blank(),
+      plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"),
+      plot.title = element_text(hjust = hj),
+      axis.title.x = element_text(hjust = hj)
+    )
 
-  ## Add the basic customisations
+  ## Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
   if (!is.null(userTheme)) nPlot <- nPlot + userTheme
 
-  if (usePlotly) {
-    ## Reset the status using current values
-    status <- dplyr::summarise_at(
-      dplyr::group_by(df, Filename),
-      vars("Percentage"),
-      max, na.rm = TRUE
-    )
-    status$Status <- cut(
-      status$Percentage,
-      breaks = c(0, warn, fail, 101),
-      include.lowest = TRUE,
-      labels = c("PASS", "WARN", "FAIL")
-    )
+  ## Reset the status using current values
+  status <- dplyr::summarise(
+    dplyr::group_by(df, Filename),
+    Percentage = max(Percentage, na.rm = TRUE)
+  )
+  status$Status <- cut(
+    status$Percentage,
+    breaks = c(0, warn, fail, 101),
+    include.lowest = TRUE,
+    labels = c("PASS", "WARN", "FAIL")
+  )
+  status$Filename <- factor(labels[status$Filename], levels = labels[key])
 
-    ## Form the sideBar for each adapter
-    sideBar <- .makeSidebar(status, key, pwfCols = pwfCols)
+  .prepHeatmap(nPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
 
-    if (!is.null(userTheme)) nPlot <- nPlot + userTheme
-    nPlot <- nPlot + ylab("")
-
-    dendro <- plotly::plotly_empty()
-    if (dendrogram) {
-      dx <- ggdendro::dendro_data(clusterDend)
-      dendro <- .renderDendro(dx$segments)
-    }
-
-    ## Customise for plotly
-    nPlot <- nPlot +
-      theme(
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        legend.position = "none"
-      )
-    nPlot <- plotly::ggplotly(nPlot, tooltip = c("y", "fill", "label"))
-    ## Now make the three frame plot with option dendrogram
-    ## and the sideBar + main plot
-    nPlot <- suppressWarnings(
-      suppressMessages(
-        plotly::subplot(
-          dendro,
-          sideBar,
-          nPlot,
-          widths = c(0.1,0.08,0.82),
-          margin = 0.001,
-          shareY = TRUE)
-      )
-    )
-    nPlot <- plotly::layout(
-      nPlot, xaxis3 = list(title = xLab), margin = list(b = 45)
-    )
-  }
-  # Draw the final plot
-  nPlot
 }
 )

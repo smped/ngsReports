@@ -33,6 +33,7 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   dendrogram = FALSE,
   pwfCols,
   heatCol = hcl.colors(50, "inferno"),
+  heat_w = 8,
   ...
 )
 }
@@ -68,6 +69,8 @@ pass, warning, and fail values in the plot}
 
 \item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno}
 from the viridis set of palettes}
+
+\item{heat_w}{Relative width of any heatmap plot components}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

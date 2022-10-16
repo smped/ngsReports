@@ -32,8 +32,9 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
   plotType = c("heatmap", "line", "cdf"),
   cluster = FALSE,
   dendrogram = FALSE,
+  heat_w = 8,
+  pwfCols,
   ...,
-  expand.x = expansion(0, 0.2),
   heatCol = hcl.colors(50, "inferno")
 )
 }
@@ -65,6 +66,11 @@ fastqc data will be clustered using hierarchical clustering}
 \code{usePlotly} are \code{FALSE}. If both \code{cluster} and
 \code{dendrogram} are specified as \code{TRUE} then the dendrogram
 will be displayed.}
+
+\item{heat_w}{Relative width of any heatmap plot components}
+
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
+pass, warning, and fail values in plot}
 
 \item{heatCol}{The colour scheme for the heatmap}
 }

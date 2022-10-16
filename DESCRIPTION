@@ -96,7 +96,6 @@ Collate:
     'plotSummary.R'
     'pwf.R'
     'readTotals.R'
-    'runFastQC.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr
 Suggests: 

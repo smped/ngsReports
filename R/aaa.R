@@ -11,11 +11,14 @@ globalVariables(
         "Cumulative",
         "Length",
         "Lower",
+        "Upper",
         "Percentage",
         "Base",
         "Start",
         "Sequence",
         "Value",
-        "Percent"
+        "Percent",
+        "Nt",
+        "Quality"
     )
 )
