@@ -126,20 +126,17 @@ plotAlignmentSummary <- function(
     }
 
     ggplot(
-        df,
+        droplevels(df),
         aes_string(
-            x = "Filename",
-            y = "Total",
+            x = "Filename", y = "Total",
             fill = "Type",
-            label1 = "Percent",
-            label2 = "Reads"
+            label1 = "Percent", label2 = "Reads"
         )
     ) +
         geom_bar(stat = "identity") +
         labs(y = ylab) +
         scale_y_continuous(
-            labels = axisLabelFun,
-            expand = expansion(c(0, 0.05))
+            labels = axisLabelFun, expand = expansion(c(0, 0.05))
         ) +
         scale_fill_manual(values = fill) +
         coord_flip() +
@@ -152,16 +149,13 @@ plotAlignmentSummary <- function(
     df <- dplyr::select(df, -one_of("Paired_Reads", "Alignment_Rate"))
     keepCols <- names(df)[-seq_len(2)]
     df <- tidyr::gather(df, "Type", "Total", one_of(keepCols))
+    df <- dplyr::filter(df, !is.na(Total))
     df$Percent <- percent(df$Total / df$Total_Reads)
     df$Filename <- stringr::str_remove_all(df$Filename, ".(log|info|txt)$")
     df$Reads <- comma(df$Total)
     lv <-  c(
-        "Unique_In_Pairs",
-        "Unique_Unpaired",
-        "Unique_Discordant_Pairs",
-        "Multiple_Unpaired",
-        "Multiple_In_Pairs",
-        "Not_Aligned"
+        "Unique_In_Pairs", "Unique_Unpaired", "Unique_Discordant_Pairs",
+        "Multiple_Unpaired", "Multiple_In_Pairs", "Not_Aligned"
     )
     lv <- intersect(lv, df$Type)
     df$Type <- factor(df$Type, levels = rev(lv))
@@ -178,13 +172,11 @@ plotAlignmentSummary <- function(
     }
 
     ggplot(
-        df,
+        droplevels(df),
         aes_string(
-            x = "Filename",
-            y = "Total",
+            x = "Filename", y = "Total",
             fill = "Type",
-            label1 = "Percent",
-            label2 = "Reads"
+            label1 = "Percent", label2 = "Reads"
         )
     ) +
         geom_bar(stat = "identity") +
@@ -232,20 +224,17 @@ plotAlignmentSummary <- function(
     }
 
     ggplot(
-        df,
+        droplevels(df),
         aes_string(
-            x = "Filename",
-            y = "Total",
+            x = "Filename", y = "Total",
             fill = "Type",
-            label1 = "Percent",
-            label2 = "Reads"
+            label1 = "Percent", label2 = "Reads"
         )
     ) +
         geom_bar(stat = "identity") +
         labs(y = ylab) +
         scale_y_continuous(
-            labels = axisLabelFun,
-            expand = expansion(c(0, 0.05))
+            labels = axisLabelFun, expand = expansion(c(0, 0.05))
         ) +
         scale_fill_manual(values = fill) +
         coord_flip() +

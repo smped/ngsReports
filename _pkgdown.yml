@@ -60,6 +60,7 @@ reference:
     - pwf
 
 - title: All Methods
+  contents:
     - ends_with("method")
 
 navbar:

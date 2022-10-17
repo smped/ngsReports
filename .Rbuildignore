@@ -6,3 +6,4 @@
 ^temp/*$
 ^BiocTODO.md$
 ^.github
+^_pkgdown.yml$
