@@ -19,32 +19,33 @@ reference:
 
 - title: Working With FastQC Reports
   contents:
-      - getModule
-      - getSummary
-      - contains("Totals")
-      - plotSummary
-      - plotAdapterContent
-      - plotBaseQuals
-      - plotDupLevels
-      - plotGcContent
-      - plotKmers
-      - plotNContent
-      - plotOverrep
-      - plotFastqcPCA
-      - starts_with("plotSeq")
-      - writeHtmlReport
-      - maxAdapterContent
-      - fqcVersion
+    - getModule
+    - getSummary
+    - contains("Totals")
+    - plotSummary
+    - plotAdapterContent
+    - plotBaseQuals
+    - plotDupLevels
+    - plotGcContent
+    - plotKmers
+    - plotNContent
+    - plotOverrep
+    - plotFastqcPCA
+    - starts_with("plotSeq")
+    - writeHtmlReport
+    - maxAdapterContent
+    - fqName
+    - fqcVersion
 
 - title: Working With Other NGS Tools
   contents:
     - starts_with("import")
     - plotAlignmentSummary
+    - plotAssemblyStats
 
 - title: Utility Functions
   contents:
     - estGcDistn
-    - fqName
     - gcAvail
     - getGC
     - contains("Colours")
@@ -52,6 +53,7 @@ reference:
     - isCompressed
     - path
     - mData
+    - ends_with("method")
 
 - title: Data Objects
   contents:
