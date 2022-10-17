@@ -1,6 +1,6 @@
 Package: ngsReports
-Version: 1.13.3
-Date: 2022/07/21
+Version: 2.0.0
+Date: 2022/10/17
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Steve", "Pederson", 
@@ -20,7 +20,7 @@ BugReports: https://github.com/steveped/ngsReports/issues
 License: file LICENSE
 Encoding: UTF-8
 Depends:
-  R (>= 4.1.0),
+  R (>= 4.2.0),
   BiocGenerics,
   ggplot2 (>= 3.3.5),
   patchwork (>= 1.1.1),
