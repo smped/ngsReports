@@ -216,6 +216,26 @@
           <p><code><a href="mData.html">mData()</a></code> </p>
         </td>
         <td><p>Extract Metadata for TheoreticalGC objects</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="data-objects">Data Objects <a href="#data-objects" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="gcTheoretical.html">gcTheoretical</a></code> </p>
+        </td>
+        <td><p>Theoretical GC content</p></td>
+      </tr><tr><td>
+          <p><code><a href="pwf.html">pwf</a></code> </p>
+        </td>
+        <td><p>Colours for PASS/WARN/FAIL</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
+          <h2 id="all-methods">All Methods <a href="#all-methods" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="estGcDistn.html">estGcDistn()</a></code> </p>
+        </td>
+        <td><p>Estimate a GC Content Distribution From Sequences</p></td>
       </tr><tr><td>
           <p><code><a href="extract-methods.html">`[`(<i>&lt;FastqcDataList&gt;</i>,<i>&lt;numeric&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="extract-methods.html">`[`(<i>&lt;FastqcDataList&gt;</i>,<i>&lt;character&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="extract-methods.html">`[`(<i>&lt;FastqcDataList&gt;</i>,<i>&lt;logical&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> <code><a href="extract-methods.html">`[`(<i>&lt;FastqcDataList&gt;</i>,<i>&lt;ANY&gt;</i>,<i>&lt;missing&gt;</i>)</a></code> </p>
         </td>
@@ -229,6 +249,18 @@
         </td>
         <td><p>Get the FASTQC version</p></td>
       </tr><tr><td>
+          <p><code><a href="gcAvail.html">gcAvail()</a></code> </p>
+        </td>
+        <td><p>List Genomes or Transcriptomes with Theoretical GC Content</p></td>
+      </tr><tr><td>
+          <p><code><a href="getColours-methods.html">getColours(<i>&lt;PwfCols&gt;</i>)</a></code> <code><a href="getColours-methods.html">setColours(<i>&lt;PwfCols&gt;</i>)</a></code> <code><a href="getColours-methods.html">setAlpha(<i>&lt;PwfCols&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Work with objects of class PwfCols</p></td>
+      </tr><tr><td>
+          <p><code><a href="getGC.html">getGC()</a></code> </p>
+        </td>
+        <td><p>Get Theoretical GC content</p></td>
+      </tr><tr><td>
           <p><code><a href="getModule.html">getModule(<i>&lt;FastqcData&gt;</i>)</a></code> <code><a href="getModule.html">getModule(<i>&lt;FastqcDataList&gt;</i>)</a></code> <code><a href="getModule.html">getModule(<i>&lt;ANY&gt;</i>)</a></code> </p>
         </td>
         <td><p>Retrieve a given module from a Fastqc* Object</p></td>
@@ -236,6 +268,18 @@
           <p><code><a href="getSummary.html">getSummary(<i>&lt;.FastqcFile&gt;</i>)</a></code> <code><a href="getSummary.html">getSummary(<i>&lt;ANY&gt;</i>)</a></code> <code><a href="getSummary.html">getSummary(<i>&lt;FastqcData&gt;</i>)</a></code> <code><a href="getSummary.html">getSummary(<i>&lt;FastqcDataList&gt;</i>)</a></code> </p>
         </td>
         <td><p>Get the summary information from Fastqc Files</p></td>
+      </tr><tr><td>
+          <p><code><a href="mData.html">mData()</a></code> </p>
+        </td>
+        <td><p>Extract Metadata for TheoreticalGC objects</p></td>
+      </tr><tr><td>
+          <p><code><a href="overRep2Fasta-methods.html">overRep2Fasta()</a></code> </p>
+        </td>
+        <td><p>Write fasta of Over-Represented sequences.</p></td>
+      </tr><tr><td>
+          <p><code><a href="path.html">path(<i>&lt;.FastqcFile&gt;</i>)</a></code> <code><a href="path.html">path(<i>&lt;FastqcData&gt;</i>)</a></code> <code><a href="path.html">path(<i>&lt;FastqcDataList&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Return the File Paths from an object</p></td>
       </tr><tr><td>
           <p><code><a href="plotAdapterContent-methods.html">plotAdapterContent()</a></code> </p>
         </td>
@@ -288,18 +332,6 @@
           <p><code><a href="plotSummary-methods.html">plotSummary()</a></code> </p>
         </td>
         <td><p>Plot the PASS/WARN/FAIL information</p></td>
-      </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="data-objects">Data Objects <a href="#data-objects" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr></tbody><tbody><tr><td>
-          <p><code><a href="gcTheoretical.html">gcTheoretical</a></code> </p>
-        </td>
-        <td><p>Theoretical GC content</p></td>
-      </tr><tr><td>
-          <p><code><a href="pwf.html">pwf</a></code> </p>
-        </td>
-        <td><p>Colours for PASS/WARN/FAIL</p></td>
       </tr></tbody></table></div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -309,7 +341,7 @@
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by Steve Pederson, <a href="https://github.com/CMWbio" class="external-link">Christopher Ward</a>, Thu-Hien To.</p>
+  <p></p><p>Developed by <a href="https://github.com/steveped" class="external-link">Stephen Pederson</a>, <a href="https://github.com/CMWbio" class="external-link">Christopher Ward</a>, <a href="https://github.com/tothuhien" class="external-link">Thu-Hien To</a>.</p>
 </div>
 
 <div class="pkgdown">
