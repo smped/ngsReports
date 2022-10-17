@@ -3,7 +3,7 @@ Version: 2.0.0
 Date: 2022/10/17
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
-    person("Steve", "Pederson", 
+    person("Stephen", "Pederson", 
         email = "stephen.pederson.au@gmail.com", role = c("aut", "cre")),
     person("Christopher", "Ward", 
         email = "christopher.ward@adelaide.edu.au", role = c("aut")),

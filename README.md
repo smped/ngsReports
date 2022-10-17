@@ -16,6 +16,7 @@ install.packages("BiocManager")
 BiocManager::install("steveped/ngsReports")
 library(ngsReports)
 ```
+
 ## Usage 
 The paper for the package can be found [here](https://doi.org/10.1093/bioinformatics/btz937). 
 For a detailed usage guide please see [here](https://bioconductor.org/packages/release/bioc/vignettes/ngsReports/inst/doc/ngsReportsIntroduction.html).
@@ -28,10 +29,13 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 
 ### Quality control
 - FastQC
+
+
 ### Adapter removal and trimming
 - AdapterRemoval
 - cutadapt
 - trimmomatic
+
 ### Mapping and alignment 
 - bowtie
 - bowtie2
@@ -40,8 +44,10 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 - picard MarkDuplicates
 - samtools flagstat
 - STAR
+
 ### Transcript/gene quantificaiton
 - feature counts (Subread)
+
 ### Genome assembly
 - BUSCO
 - quast

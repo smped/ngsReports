@@ -53,12 +53,14 @@ reference:
     - isCompressed
     - path
     - mData
-    - ends_with("method")
 
 - title: Data Objects
   contents:
     - gcTheoretical
     - pwf
+
+- title: All Methods
+    - ends_with("method")
 
 navbar:
   type: default
