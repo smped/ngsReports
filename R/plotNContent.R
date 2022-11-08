@@ -127,25 +127,20 @@ setMethod("plotNContent", signature = "FastqcData", function(
   if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   yLab <- "N Content (%)"
+  x <- "xValue"
   nPlot <- ggplot(df) +
     geom_rect(
       data = rects,
-      aes_string(
-        xmin = "xmin", xmax = "xmax",
-        ymin = "ymin", ymax = "ymax",
-        fill = "Status"
-      )
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
     ) +
-    geom_line(aes_string("xValue", "Percentage"), colour = lineCol) +
+    geom_line(aes(!!sym(x), Percentage), colour = lineCol) +
     geom_point(
-      aes_string(x = "xValue", y = "Percentage", group = "Base"),
+      aes(!!sym(x), Percentage, group = Base),
       size = 0, colour = rgb(0, 0, 0, 0)
     ) +
     scale_fill_manual(values = getColours(pwfCols)) +
     scale_x_continuous(
-      breaks = unique(df$xValue),
-      labels = levels(df$Base),
-      expand = c(0,0)
+      breaks = unique(df$xValue), labels = levels(df$Base), expand = c(0,0)
     ) +
     scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
     facet_wrap(~Filename) +
@@ -242,10 +237,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
 
   xLab <- "Position in Read (bp)"
   hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
-  nPlot <- ggplot(
-    df,
-    aes_string("Base", "Filename", fill = "Percentage", label = "Base")
-  ) +
+  nPlot <- ggplot(df, aes(Base, Filename, fill = Percentage, label = Base)) +
     geom_tile() +
     do.call("scale_fill_gradientn", cols) +
     scale_x_continuous(expand = c(0, 0)) +

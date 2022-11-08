@@ -58,6 +58,7 @@
 #' @importFrom scales percent comma percent_format
 #' @importFrom tidyr pivot_wider complete nesting
 #' @importFrom grDevices hcl.colors
+#' @importFrom rlang "!!" sym
 #' @import ggplot2
 #'
 #' @name plotSeqQuals
@@ -148,14 +149,9 @@ setMethod("plotSeqQuals", signature = "FastqcData", function(
     qualPlot <- ggplot(df) +
       geom_rect(
         data = rects,
-        aes_string(
-          xmin = "xmin", xmax = "xmax",
-          ymin = "ymin", ymax = "ymax",
-          fill = "Status")
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
       ) +
-      geom_line(aes_string(
-        x = "Quality", y = "Frequency", colour = "Filename"
-      ))
+      geom_line(aes(Quality, Frequency, colour = Filename))
     yLabelFun <- scales::percent_format(accuracy = 1)
     yLab <- "Frequency"
 
@@ -165,15 +161,9 @@ setMethod("plotSeqQuals", signature = "FastqcData", function(
     qualPlot <- ggplot(df) +
       geom_rect(
         data = rects,
-        aes_string(
-          xmin = "xmin", xmax = "xmax",
-          ymin = "ymin", ymax = "ymax",
-          fill = "Status"
-        )
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
       ) +
-      geom_line(
-        aes_string(x = "Quality", y = "Count", colour = "Filename")
-      )
+      geom_line(aes(x = Quality, y = Count, colour = Filename))
     yLabelFun <- scales::comma
 
   }
@@ -181,9 +171,7 @@ setMethod("plotSeqQuals", signature = "FastqcData", function(
   qualPlot <- qualPlot +
     scale_fill_manual(values = getColours(pwfCols))  +
     scale_y_continuous(
-      limits = c(0, rects$ymax[1]),
-      expand = c(0, 0),
-      labels = yLabelFun
+      limits = c(0, rects$ymax[1]), expand = c(0, 0), labels = yLabelFun
     ) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_colour_discrete()  +
@@ -205,17 +193,13 @@ setMethod("plotSeqQuals", signature = "FastqcData", function(
     qualPlot <- suppressMessages(
       suppressWarnings(
         plotly::subplot(
-          plotly::plotly_empty(),
-          qualPlot,
-          widths = c(0.14,0.86))
+          plotly::plotly_empty(), qualPlot, widths = c(0.14,0.86)
+        )
       )
     )
     qualPlot <- plotly::layout(
-      qualPlot,
-      xaxis2 = list(title = xLab),
-      yaxis2 = list(title = yLab)
+      qualPlot, xaxis2 = list(title = xLab), yaxis2 = list(title = yLab)
     )
-
 
     ## Set the hoverinfo for bg rectangles to the vertices only,
     ## This will effectively hide them
@@ -298,12 +282,8 @@ setMethod("plotSeqQuals", signature = "FastqcDataList", function(
     if (!dendrogram) dx$segments <- dx$segments[0,]
 
     hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
-    qualPlot <- ggplot(
-      df, aes(x = Quality, y = Filename, C = Total)
-    ) +
-      geom_tile(
-        aes_string(fill = "Frequency")
-      ) +
+    qualPlot <- ggplot(df, aes(Quality, Filename, C = Total)) +
+      geom_tile(aes(fill = Frequency)) +
       ggtitle("Per Sequence Quality Score") +
       labs(x = xLab, y = c()) +
       scale_fill_gradientn(colours = heatCols, limits = c(0, 1)) +
@@ -358,20 +338,12 @@ setMethod("plotSeqQuals", signature = "FastqcDataList", function(
     qualPlot <- ggplot(df) +
       geom_rect(
         data = rects,
-        aes_string(
-          xmin = "xmin",
-          xmax = "xmax",
-          ymin = "ymin",
-          ymax = "ymax",
-          fill = "Status")) +
-      geom_line(
-        aes_string(x = "Quality", y = plotVal, colour = "Filename")
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
       ) +
+      geom_line(aes(x = Quality, y = !!sym(plotVal), colour = Filename)) +
       scale_fill_manual(values = getColours(pwfCols))  +
       scale_y_continuous(
-        limits = c(0, rects$ymax[1]),
-        expand = c(0, 0),
-        labels = yLabelFun
+        limits = c(0, rects$ymax[1]), expand = c(0, 0), labels = yLabelFun
       ) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_colour_discrete() +

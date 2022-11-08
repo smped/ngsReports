@@ -24,6 +24,7 @@
 #' All filenames must be present in the names.
 #' File extensions are dropped by default
 #' @param sz The size of the text labels
+#' @param pc The two components to be plotted
 #' @param groups Optional factor of the same length as x. If provided,
 #' the plot will be coloured using this factor as the defined groups.
 #' Ellipses will also be added to the final plot.
@@ -37,6 +38,7 @@
 #' @importFrom scales percent
 #' @importFrom tidyr pivot_wider
 #' @importFrom zoo na.locf
+#' @importFrom rlang "!!" sym
 #' @import ggplot2
 #' @import tibble
 #'
@@ -84,17 +86,20 @@ setMethod("plotFastqcPCA", signature = "character", function(
 #' @export
 setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels, sz = 4,
-    groups, ...
+    groups, pc = 1:2, ...
 ){
 
     availMods <- c(
-        "Per_base_sequence_quality",
-        "Per_sequence_quality_scores",
-        "Per_sequence_GC_content",
-        "Per_base_sequence_content",
+        "Per_base_sequence_quality", "Per_sequence_quality_scores",
+        "Per_sequence_GC_content", "Per_base_sequence_content",
         "Sequence_Length_Distribution"
     )
     module <- match.arg(module, availMods)
+    ## Ensure two components are selected as integers
+    pc <- as.integer(pc)
+    stopifnot(length(unique(pc)) > 1)
+    stopifnot(!any(is.na(pc)))
+    pc <- paste0("PC", unique(pc)[1:2])
 
     ## Get any theme arguments for dotArgs that have been set manually
     dotArgs <- list(...)
@@ -110,27 +115,27 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
 
     ## The PCA
     pca <- prcomp(mat, center = TRUE, scale. = TRUE)
-    vars <- summary(pca)$importance["Proportion of Variance", c("PC1", "PC2")]
-    df <- as.data.frame(pca$x[, c("PC1", "PC2")])
+    vars <- summary(pca)$importance["Proportion of Variance", pc]
+    df <- as.data.frame(pca$x[, pc])
     df <- rownames_to_column(df, "Filename")
 
     ## Check any groups
-    plot_aes <- aes_string("PC1", "PC2")
+    plot_aes <- aes(!!sym(pc[[1]]), !!sym(pc[[2]]))
     showGroups <- !missing(groups)
     if (showGroups) {
         stopifnot(length(groups) == length(x))
         stopifnot(is.factor(groups))
         df$group <- groups
-        plot_aes <- aes_string("PC1", "PC2", colour = "group")
+        plot_aes <- aes(!!sym(pc[[1]]), !!sym(pc[[2]]), colour = group)
     }
     df$Label <- .makeLabels(df, labels, ...)
 
     p <- ggplot(data = df, mapping = plot_aes) +
-        geom_text(aes_string(label = "Label"), show.legend = FALSE, size = sz) +
+        geom_text(aes(label = Label), show.legend = FALSE, size = sz) +
         theme_bw() +
         labs(
-            x = paste0("PC1 (", percent(vars[[1]]), ")"),
-            y = paste0("PC2 (", percent(vars[[2]]), ")"),
+            x = paste0(pc[[1]], " (", percent(vars[[1]]), ")"),
+            y = paste0(pc[[2]], " (", percent(vars[[2]]), ")"),
             colour = "Group"
         )
     if (showGroups) p <- p + stat_ellipse()

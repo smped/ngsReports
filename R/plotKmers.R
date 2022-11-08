@@ -20,7 +20,7 @@
 #' ggplot. If `TRUE` plot will be rendered with plotly
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
-#' @param lineWidth Passed to `geom_line(size = lineWidth)`
+#' @param linewidth Passed to `geom_line()`
 #' @param pal The colour palette. If the vector supplied is less than n,
 #' `grDevices::colorRampPalette()` will be used
 #' @param pwfCols Object of class [PwfCols()] to give colours for
@@ -78,7 +78,7 @@ setMethod("plotKmers", signature = "character", function(
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, n = 6, ..., lineWidth = 0.5,
+    x, usePlotly = FALSE, labels, n = 6, ..., linewidth = 0.5,
     pal = c("red", "blue", "green", "black", "magenta", "yellow")){
 
   ## Get the basic data frame
@@ -177,15 +177,11 @@ setMethod("plotKmers", signature = "FastqcData", function(
   ## Now draw the basic plots
   xLab <- "Position in read (bp)"
   yLab <- expression(paste(log[2], " Obs/Exp"))
-  kMerPlot <- ggplot(
-    df, aes_string("Position", "Value", colour = "Sequence")
-  ) +
-    geom_line(size = lineWidth) +
+  kMerPlot <- ggplot(df, aes(Position, Value, colour = Sequence)) +
+    geom_line(linewidth = linewidth) +
     facet_wrap(~Filename) +
     scale_x_continuous(
-      breaks = refForX$Position,
-      labels = refForX$Base,
-      expand = c(0.02, 0)
+      breaks = refForX$Position, labels = refForX$Base, expand = c(0.02, 0)
     ) +
     scale_y_continuous(limits = c(0, yMax), expand = c(0, 0)) +
     scale_colour_manual(values = pal) +
@@ -295,7 +291,7 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
   ## Set up for geom_tile
   df$End <- gsub("[0-9]*-([0-9]*)", "\\1", df$Base)
   df$End <- as.integer(df$End)
-  df$`Middle of Bin` <- (df$Position + df$End) / 2
+  df$Base <- (df$Position + df$End) / 2
   df$Width <- df$End - df$Position
   df$Width[df$Width == 0] <- 1
 
@@ -303,9 +299,8 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
   hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
   kMerPlot <- ggplot(
     df,
-    aes_string(
-      x = "`Middle of Bin`", y = "Filename", fill = "Total", width = "Width"
-    )) +
+    aes(Base, Filename, fill = Total, width = Width)
+  ) +
     geom_tile() +
     ggtitle(gsub("_", " ", mod)) +
     labs(x = xLab, y = c()) +

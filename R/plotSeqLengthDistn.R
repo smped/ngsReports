@@ -65,6 +65,7 @@
 #' @importFrom tidyr pivot_wider complete nesting unnest
 #' @importFrom tidyselect everything any_of
 #' @importFrom grDevices hcl.colors
+#' @importFrom rlang "!!" sym
 #' @import ggplot2
 #'
 #' @name plotSeqLengthDistn
@@ -141,8 +142,7 @@ setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
   if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   lenPlot <- ggplot(
-    df,
-    aes_string("Length", plotY, colour = "Filename", group = "Filename")
+    df, aes(Length, !!sym(plotY), colour = Filename, group = Filename)
   ) +
     geom_line() +
     facet_wrap(~Filename) +
@@ -255,10 +255,7 @@ setMethod(
 
       df$Filename <- labels[df$Filename]
       lenPlot <- ggplot(
-        df,
-        aes_string(
-          x = "Length", y = plotY, colour = "Filename", group = "Filename"
-        )
+        df, aes(Length, y = !!sym(plotY), colour = Filename, group = Filename)
       ) +
         geom_line() +
         labs(y = yLab) +
@@ -299,9 +296,9 @@ setMethod(
       hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
       lenPlot <- ggplot(df, aes) +
         geom_rect(
-          aes_string(
-            xmin = "Lower", xmax = "Upper + 1",
-            ymin = "y - 0.5", ymax = "y + 0.5", fill = "Freq"
+          aes(
+            xmin = Lower, xmax = Upper + 1,
+            ymin = y - 0.5, ymax = y + 0.5, fill = Freq
           ),
           colour = NA
         ) +

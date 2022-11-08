@@ -223,9 +223,9 @@
   ## functions. This step is now essentially redundant
   status <- status[order(status$Filename),]
   ## Make the basic plot
-  sideBar <- ggplot(status, aes_string("1", "Filename", key = "key")) +
-    geom_tile(aes_string(fill = "Status")) +
-    geom_hline(yintercept = seq(1.5, nx), colour = "grey20", size = 0.2) +
+  sideBar <- ggplot(status, aes(1, Filename, key = key)) +
+    geom_tile(aes(fill = Status)) +
+    geom_hline(yintercept = seq(1.5, nx), colour = "grey20", linewidth = 0.2) +
     scale_fill_manual(values = getColours(pwfCols)) +
     scale_y_discrete(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0)) +
@@ -269,8 +269,7 @@
   ## Based on the example ggdend
   dendro <- ggplot() +
     geom_segment(
-      data = df,
-      aes_string("x","y", xend = "xend", yend = "yend")
+      data = df, aes(x, y, xend = xend, yend = yend)
     ) +
     coord_flip() +
     scale_y_reverse(expand = c(0, 0)) +
@@ -374,7 +373,7 @@
     n <- max(segments$xend)
     panel_w <- c(1, 1, heat_w)
     dendPlot <- ggplot(segments) +
-      geom_segment(aes_string(x = "yend", y = "xend", xend = "y", yend = "x")) +
+      geom_segment(aes(x = yend, y = xend, xend = y, yend = x)) +
       scale_x_reverse(expand = expansion(0)) +
       scale_y_continuous(limits = c(0, n) + 0.5, expand = expansion(0)) +
       labs(x = "", y = c()) +
