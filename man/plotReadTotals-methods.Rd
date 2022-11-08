@@ -15,7 +15,7 @@ plotReadTotals(
   duplicated = TRUE,
   bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"),
-  expand.x = expansion(mult = c(0, 0.02)),
+  expand.x = c(0, 0, 0.02, 0),
   ...
 )
 
@@ -26,7 +26,7 @@ plotReadTotals(
   duplicated = TRUE,
   bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"),
-  expand.x = expansion(mult = c(0, 0.02)),
+  expand.x = c(0, 0, 0.02, 0),
   ...
 )
 
@@ -37,7 +37,7 @@ plotReadTotals(
   duplicated = TRUE,
   bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"),
-  expand.x = expansion(mult = c(0, 0.02)),
+  expand.x = c(0, 0, 0.02, 0),
   ...
 )
 
@@ -48,7 +48,7 @@ plotReadTotals(
   duplicated = TRUE,
   bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"),
-  expand.x = expansion(mult = c(0, 0.02)),
+  expand.x = c(0, 0, 0.02, 0),
   ...
 )
 }
@@ -70,8 +70,8 @@ as "stacked" or "adjacent".}
 
 \item{barCols}{Colours for duplicated and unique reads.}
 
-\item{expand.x}{Output from \code{expansion()} controlling x-axis
-expansion. Alternatively can be a numeric vector of length 4}
+\item{expand.x}{Output from \code{\link[ggplot2:expansion]{ggplot2::expansion}} controlling x-axis
+expansion, or a numeric vector of length 4}
 
 \item{...}{Used to pass additional attributes to theme()}
 }

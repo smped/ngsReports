@@ -164,12 +164,11 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
   acPlot <- ggplot(df) +
     geom_rect(
       data = rects,
-      aes_string(
-        xmin = "xmin", xmax = "xmax",
-        ymin = "ymin", ymax = "ymax",
-        fill = "Status")
+      aes(
+        xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status
+      )
     ) +
-    geom_line(aes_string(x = "Position", y = "Percent", colour = "Type")) +
+    geom_line(aes(x = Position, y = Percent, colour = Type)) +
     scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_fill_manual(values = getColours(pwfCols)) +
@@ -290,7 +289,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       .makePwfGradient(df$Percent, pwf, breaks = breaks, na.value = "white")
     hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
     acPlot <- ggplot(
-      df, aes_string("Position", "Filename", fill = "Percent", type = "Type")
+      df, aes(Position, Filename, fill = Percent, type = Type)
     ) +
       geom_tile() +
       ggtitle(unique(df$Type)) +
@@ -333,12 +332,11 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     acPlot <- ggplot(df) +
       geom_rect(
         data = rects,
-        aes_string(
-          xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
-          fill = "Status"
+        aes(
+          xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status
         )
       ) +
-      geom_line(aes_string("Position", "Percent", colour = "Filename")) +
+      geom_line(aes(Position, Percent, colour = Filename)) +
       scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_colour_discrete(labels = labels) +

@@ -95,19 +95,15 @@ setMethod("overRep2Fasta", signature = "FastqcDataList", function(
     if (noAdapters) df <- df[!grepl("(Primer|Adapter)", df$Possible_Source),]
     if (nrow(df) == 0) stop("No overrepresented sequences found.")
 
-    ## Declaration to avoid NOTES during R CMD check
-    Count <- Sequence <- c()
-    df <- dplyr::group_by(df, Sequence)
     ## Find the total number of sequences, the average percentage
     ## and number of files it is found in
     df <- dplyr::summarise(
-        df,
+        dplyr::group_by(df),
         Total = sum(Count),
         Percentage = mean(Percentage),
         nFiles = dplyr::n(),
-        .groups = "keep"
+        .groups = "drop"
     )
-    df <- dplyr::ungroup(df)
     df <- dplyr::arrange(df, desc(Percentage))
     df <- dplyr::top_n(df, n, Percentage)
     n <- nrow(df) # In case less than the requested n were present

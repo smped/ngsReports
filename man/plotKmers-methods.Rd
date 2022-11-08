@@ -21,7 +21,7 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   labels,
   n = 6,
   ...,
-  lineWidth = 0.5,
+  linewidth = 0.5,
   pal = c("red", "blue", "green", "black", "magenta", "yellow")
 )
 
@@ -52,7 +52,7 @@ Can also be used to set size and colour for box outlines.}
 
 \item{n}{\code{numeric}. The number of Kmers to show.}
 
-\item{lineWidth}{Passed to \code{geom_line(size = lineWidth)}}
+\item{linewidth}{Passed to \code{geom_line()}}
 
 \item{pal}{The colour palette. If the vector supplied is less than n,
 \code{grDevices::colorRampPalette()} will be used}

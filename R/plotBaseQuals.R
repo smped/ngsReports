@@ -66,6 +66,7 @@
 #' @import tibble
 #' @importFrom tidyr unnest
 #' @importFrom stringr str_split
+#' @importFrom rlang "!!" sym
 #'
 #' @name plotBaseQuals
 #' @rdname plotBaseQuals-methods
@@ -151,38 +152,23 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
   ylab <- paste0("Quality Scores (", enc, " encoding)")
 
   ## Generate the basic plot
+  lq <- "Lower_Quartile"
+  uq <- "Upper_Quartile"
   qualPlot <- ggplot(df) +
     geom_rect(
       data = rects,
-      aes_string(
-        xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
-        fill = "Status"
-      )
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
     ) +
     geom_rect(
-      aes_string(
-        xmin = "xmin", xmax = "xmax",
-        ymin = "Lower_Quartile", ymax = "Upper_Quartile"
-      ),
+      aes(xmin = xmin, xmax = xmax, ymin = !!sym(lq), ymax = !!sym(uq)),
       fill = "yellow", colour = "black"
     ) +
     geom_segment(
-      aes_string(x = "xmin", xend = "xmax", y = "Median", yend = "Median"),
-      colour = "red"
+      aes(x = xmin, xend = xmax, y = Median, yend = Median), colour = "red"
     ) +
-    geom_linerange(
-      aes_string(
-        x = "Base", ymin = "`10th_Percentile`", ymax = "Lower_Quartile"
-        )
-    ) +
-    geom_linerange(
-      aes_string(
-        x = "Base", ymin = "Upper_Quartile", ymax = "`90th_Percentile`"
-      )
-    ) +
-    geom_line(
-      aes_string("Base", "Mean", group = "Filename"), colour = "blue"
-    ) +
+    geom_linerange(aes(x = Base, ymin = `10th_Percentile`, ymax = !!sym(lq))) +
+    geom_linerange(aes(x = Base, ymin = !!sym(uq), ymax = `90th_Percentile`)) +
+    geom_line(aes(Base, Mean, group = Filename), colour = "blue") +
     scale_fill_manual(values = getColours(pwfCols)) +
     scale_x_discrete(expand = c(0, 0)) +
     scale_y_continuous(limits = ylim, expand = c(0, 0)) +
@@ -272,6 +258,8 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
   possVals <- setdiff(colnames(df), c("Filename", "Base"))
   plotValue <- match.arg(plotValue, possVals)
   xlab <- "Position in read (bp)"
+  lq <- "Lower_Quartile"
+  uq <- "Upper_Quartile"
 
   if (plotType == "boxplot") {
 
@@ -311,35 +299,22 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     qualPlot <- ggplot(df) +
       geom_rect(
         data = rects,
-        aes_string(
-          xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
-          fill = "Status"
-        )
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
       ) +
       geom_rect(
-        aes_string(
-          xmin = "xmin", xmax = "xmax",
-          ymin = "Lower_Quartile", ymax = "Upper_Quartile"
-        ),
+        aes(xmin = xmin, xmax = xmax, ymin = !!sym(lq), ymax = !!sym(uq)),
         fill = "yellow", colour = "black"
       ) +
       geom_segment(
-        aes_string(x = "xmin", xend = "xmax", y = "Median", yend = "Median"),
-        colour = "red"
+        aes(x = xmin, xend = xmax, y = Median, yend = Median), colour = "red"
       ) +
       geom_linerange(
-        aes_string(
-          x = "Base", ymin = "`10th_Percentile`", ymax = "Lower_Quartile"
-        )
+        aes(x = Base, ymin = `10th_Percentile`, ymax = !!sym(lq))
       ) +
       geom_linerange(
-        aes_string(
-          x = "Base", ymin = "Upper_Quartile", ymax = "`90th_Percentile`"
-        )
+        aes(x = Base, ymin = !!sym(uq), ymax = `90th_Percentile`)
       ) +
-      geom_line(
-        aes_string("Base", "Mean", group = "Filename"), colour = "blue"
-      ) +
+      geom_line(aes(Base, Mean, group = Filename), colour = "blue") +
       scale_fill_manual(values = getColours(pwfCols)) +
       scale_x_discrete(expand = c(0, 0)) +
       scale_y_continuous(limits = ylim, expand = c(0, 0)) +
@@ -409,7 +384,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     ## Start the heatmap
     hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
     qualPlot <- ggplot(
-      df, aes_string("Base", "Filename", fill = plotValue)
+      df, aes(Base, Filename, fill = !!sym(plotValue))
     ) +
       geom_tile() +
       labs(x = xlab, y = c()) +

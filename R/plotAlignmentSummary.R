@@ -127,11 +127,7 @@ plotAlignmentSummary <- function(
 
     ggplot(
         droplevels(df),
-        aes_string(
-            x = "Filename", y = "Total",
-            fill = "Type",
-            label1 = "Percent", label2 = "Reads"
-        )
+        aes(Filename, Total, fill = Type, label1 = Percent, label2 = Reads)
     ) +
         geom_bar(stat = "identity") +
         labs(y = ylab) +
@@ -173,17 +169,12 @@ plotAlignmentSummary <- function(
 
     ggplot(
         droplevels(df),
-        aes_string(
-            x = "Filename", y = "Total",
-            fill = "Type",
-            label1 = "Percent", label2 = "Reads"
-        )
+        aes(Filename, Total, fill = Type, label1 = Percent, label2 = Reads)
     ) +
         geom_bar(stat = "identity") +
         labs(y = ylab) +
         scale_y_continuous(
-            labels = axisLabelFun,
-            expand = expansion(c(0, 0.05))
+            labels = axisLabelFun, expand = expansion(c(0, 0.05))
         ) +
         scale_fill_manual(values = fill) +
         coord_flip() +
@@ -225,11 +216,7 @@ plotAlignmentSummary <- function(
 
     ggplot(
         droplevels(df),
-        aes_string(
-            x = "Filename", y = "Total",
-            fill = "Type",
-            label1 = "Percent", label2 = "Reads"
-        )
+        aes(Filename, Total, fill = Type, label1 = Percent, label2 = Reads)
     ) +
         geom_bar(stat = "identity") +
         labs(y = ylab) +

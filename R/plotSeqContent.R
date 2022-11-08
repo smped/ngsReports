@@ -122,17 +122,14 @@ setMethod("plotSeqContent", signature = "FastqcData", function(
 
   xLab <- "Position in read (bp)"
   yLab <- "Percent"
-  scPlot <- ggplot(
-    df, aes_string("x", "Percent", label = "Position", colour = "Base")
-  ) +
+  scPlot <- ggplot(df, aes(x, Percent, label = Position, colour = Base)) +
     geom_line() +
     facet_wrap(~Filename) +
     scale_y_continuous(
       limits = c(0, 100), expand = c(0, 0), labels = .addPercent
     ) +
     scale_x_continuous(
-      expand = c(0, 0),
-      breaks = seq_along(levels(df$Position)),
+      expand = c(0, 0), breaks = seq_along(levels(df$Position)),
       labels = levels(df$Position)
     ) +
     scale_colour_manual(values = baseCols) +
@@ -269,14 +266,13 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     yBreaks <- seq_along(levels(df$Filename))
     scPlot <- ggplot(
       df,
-      aes_string(
-        A = "A", C = "C", G = "G", `T` = "T",
-        Filename = "Filename", Position = "Base", fill = "RGB"
+      aes(
+        A = !!sym("A"), C = !!sym("C"), G = !!sym("G"), `T` = !!sym("T"),
+        Filename = Filename, Position = Base, fill = !!sym("RGB")
       )
     ) +
       geom_rect(
-        aes_string(xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax"),
-        linetype = 0
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), linetype = 0
       ) +
       ggtitle("Per Base Sequence Content") +
       scale_fill_manual(values = tileCols) +
@@ -318,15 +314,9 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     df$diff <- c(Inf, diff(df$Percent))
     df <- subset(df, diff != 0)
 
-    scPlot <- ggplot(
-      df,
-      aes_string("Base", "Percent", colour = "Nt")
-    ) +
+    scPlot <- ggplot(df, aes(Base, Percent, colour = Nt)) +
       geom_rect(
-        aes_string(
-          xmin = 0, xmax = "End" ,
-          ymin = 0, ymax = 1, fill = "Status"
-        ),
+        aes(xmin = 0, xmax = End, ymin = 0, ymax = 1, fill = Status),
         data = rect_df,
         alpha = 0.1,
         inherit.aes = FALSE
@@ -360,8 +350,6 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     df <- pivot_longer(
       data = df, cols = all_of(acgt), names_to = "Nt", values_to = "Percent"
     )
-    ## Avoid R CMD check error
-    Status <- End <- Percent <- c()
     ## Calculate the Residuals for each base/position
     df <- group_by(df, Base, Nt)
     df <- dplyr::mutate(df, Residuals = Percent - mean(Percent))
@@ -378,14 +366,14 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     status[["Filename"]] <- labels[status[["Filename"]]]
     df <- left_join(df, status, by = "Filename")
 
+    Deviation <- c()
     scPlot <- ggplot(
       df,
-      aes_string(
-        x = "Base", y = "Residuals", colour = "Filename", label = "Deviation",
-        status = "Status"
+      aes(
+        Base, Residuals, colour = Filename, label = Deviation, status = Status
       )
     ) +
-      geom_line(aes_string(group = "Filename")) +
+      geom_line(aes(group = Filename)) +
       facet_wrap(~Nt) +
       scale_y_continuous(labels = .addPercent) +
       scale_x_continuous(expand = c(0, 0)) +

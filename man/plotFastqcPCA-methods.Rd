@@ -45,6 +45,7 @@ plotFastqcPCA(
   labels,
   sz = 4,
   groups,
+  pc = 1:2,
   ...
 )
 }
@@ -69,6 +70,8 @@ the plot will be coloured using this factor as the defined groups.
 Ellipses will also be added to the final plot.}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
+
+\item{pc}{The two components to be plotted}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object

@@ -78,6 +78,7 @@
 #' @importFrom stats hclust dist
 #' @import ggplot2
 #' @importFrom stringr str_to_title
+#' @importFrom rlang "!!" sym
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
 #' @export
@@ -178,44 +179,45 @@ setMethod("plotGcContent", signature = "FastqcData", function(
 
   if (!counts) {## If using frequencies (not counts)
 
+    vals <- c("GC_Content", "Freq", "Type")
     ## Summarise to frequencies & initialise the plot
     df$Freq <- df$Count / sum(df$Count)
-    df <- df[c("Type", "GC_Content", "Freq")]
+    df <- df[vals]
     df <- dplyr::bind_rows(df, gcTheoryDF)
     df$Type <- as.factor(df$Type)
     df$Freq <- round(df$Freq, 4)
 
     gcPlot <- ggplot(
-      df, aes_string("GC_Content", "Freq", colour = "Type")
+      df, aes(!!sym(vals[[1]]), !!sym(vals[[2]]), colour = !!sym(vals[[3]]))
     ) +
       geom_line()
   }
   else{
 
-    df <- df[c("GC_Content","Type", "Count")]
+    vals <- c("GC_Content", "Count", "Type")
+    df <- df[vals]
     if (theoreticalGC) {
       gcTheoryDF$Count <- gcTheoryDF$Freq * sum(df$Count)
-      gcTheoryDF <- gcTheoryDF[c("GC_Content","Type", "Count")]
+      gcTheoryDF <- gcTheoryDF[vals]
       df <- dplyr::bind_rows(df, gcTheoryDF)
     }
     ## Initialise the plot using counts
-    gcPlot <-
-      ggplot(df, aes_string("GC_Content", "Count", colour = "Type")) +
+    gcPlot <- ggplot(
+      df, aes(!!sym(vals[[1]]), !!sym(vals[[2]]), colour = !!sym(vals[[3]]))
+    ) +
       geom_line()
   }
 
   gcPlot <- gcPlot +
     scale_colour_manual(values = lineCols) +
-    scale_x_continuous(
-      breaks = seq(0, 100, by = 10), expand = c(0.02, 0)
-    ) +
+    scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
     labs(x = xLab, y = yLab, colour = c()) +
     ggtitle(label = labels, subtitle = subTitle) +
     theme_bw() +
     theme(
       legend.position = c(1, 1),
       legend.justification = c(1, 1),
-      legend.background = element_rect(colour = "grey20", size = 0.2),
+      legend.background = element_rect(colour = "grey20", linewidth = 0.2),
       plot.title = element_text(hjust = 0.5),
       plot.subtitle = element_text(hjust = 0.5)
     )
@@ -356,14 +358,10 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     df[["Percent"]] <- round(df[["Percent"]], 2)
 
     gcPlot <- ggplot(
-      df,
-      aes_string("GC_Content", "Percent", colour = "Filename")
+      df, aes(!!sym("GC_Content"), Percent, colour = Filename)
     ) +
       geom_line() +
-      scale_x_continuous(
-        breaks = seq(0, 100, by = 10),
-        expand = c(0.02, 0)
-      ) +
+      scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
       scale_y_continuous(labels = .addPercent) +
       scale_colour_manual(values = lineCols) +
       labs(x = xLab, y = ylab, colour = c()) +
@@ -414,19 +412,14 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     key <- names(labels)
     clusterDend <- .makeDendro(df, "Filename", "GC_Content", "Percent")
     dx <- ggdendro::dendro_data(clusterDend)
-    if (dendrogram | cluster) {
-      key <- labels(clusterDend)
-    }
+    if (dendrogram | cluster) key <- labels(clusterDend)
     ## Now set everything as factors
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
     if (!dendrogram) dx$segments <- dx$segments[0,]
 
     ## Draw the heatmap
     hj <- 0.5 * heat_w / (heat_w + 1)
-    gcPlot <- ggplot(
-      df,
-      aes_string("GC_Content","Filename", fill = "Percent")
-    ) +
+    gcPlot <- ggplot(df, aes(!!sym("GC_Content"), Filename, fill = Percent)) +
       geom_tile() +
       ggtitle(ttl) +
       labs(x = xLab, fill = fillLab, y = c()) +

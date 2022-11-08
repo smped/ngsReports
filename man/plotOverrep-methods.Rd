@@ -35,8 +35,9 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
   dendrogram = FALSE,
   ...,
   paletteName = "Set1",
-  expand.x = expansion(mult = c(0, 0.05)),
-  expand.y = expansion(0, 0)
+  panel_w = 8,
+  expand.x = c(0, 0, 0.05, 0),
+  expand.y = rep(0, 4)
 )
 }
 \arguments{
@@ -69,6 +70,8 @@ then the dendrogram will be displayed.}
 \item{paletteName}{Name of the palette for colouring the possible sources
 of the overrepresented sequences. Must be a palette name from
 \code{RColorBrewer}}
+
+\item{panel_w}{Width of main panel on output}
 }
 \value{
 A standard ggplot2 object

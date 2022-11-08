@@ -61,6 +61,7 @@
 #' @importFrom tidyselect contains
 #' @importFrom forcats fct_inorder
 #' @import tibble
+#' @importFrom rlang "!!" sym
 #'
 #' @name plotDupLevels
 #' @rdname plotDupLevels-methods
@@ -146,15 +147,9 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
   dupPlot <- ggplot(data = df) +
     geom_rect(
       data = rects,
-      aes_string(
-        xmin = "xmin", xmax = "xmax",
-        ymin = "ymin", ymax = "ymax",
-        fill = "Status"
-      )
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
     ) +
-    geom_line(
-      aes_string("x", "Percentage", colour = "Type", group = "Type")
-    ) +
+    geom_line(aes(x, Percentage, colour = Type, group = Type)) +
     scale_fill_manual(values = getColours(pwfCols)) +
     scale_colour_manual(values = lineCols) +
     scale_x_continuous(
@@ -170,7 +165,7 @@ setMethod("plotDupLevels", signature = "FastqcData", function(
     theme(
       legend.position = c(1, 1),
       legend.justification = c(1, 1),
-      legend.background = element_rect(colour = "black", size = 0.2),
+      legend.background = element_rect(colour = "black", linewidth = 0.2),
       plot.title = element_text(hjust = 0.5)
     )
   if (!is.null(userTheme)) dupPlot <- dupPlot + userTheme
@@ -273,17 +268,12 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
       Status = c("PASS", "WARN", "FAIL")
     )
 
-    dupPlot <- ggplot(df, aes_string(label = "Duplication_Level")) +
+    dupPlot <- ggplot(df, aes(label = !!sym("Duplication_Level"))) +
       geom_rect(
         data = rects,
-        aes_string(
-          xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
-          fill = "Status"
-        )
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
       ) +
-      geom_line(
-        aes_string(x = "x", y = type, colour = "Filename")
-      ) +
+      geom_line(aes(x, y = !!sym(type), colour = Filename)) +
       scale_fill_manual(values = getColours(pwfCols)) +
       scale_x_continuous(
         breaks = seq_along(dupLevels),labels = dupLevels, expand = c(0, 0)
@@ -309,8 +299,10 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
 
   if (plotType == "heatmap") {
 
+    dl <- "Duplication_Level"
+    pt <- "Percentage_of_total"
     ## Set up the dendrogram
-    clusterDend <- .makeDendro(df, "Filename", "Duplication_Level", type)
+    clusterDend <- .makeDendro(df, "Filename", dl, type)
     dx <- ggdendro::dendro_data(clusterDend)
     if (dendrogram | cluster) {
       key <- labels(clusterDend)
@@ -322,7 +314,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
     df <-  dplyr::arrange(df, Filename, Duplication_Level)
     df <- split(df, f = df[["Filename"]])
     df <- lapply(df, function(x){
-      x$xmax <- cumsum(x[["Percentage_of_total"]])
+      x$xmax <- cumsum(x[[pt]])
       x$xmax <- round(x[["xmax"]], 1) # Deal with rounding errors
       x$xmin <- c(0, x[["xmax"]][-nrow(x)])
       x
@@ -334,18 +326,13 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
     ## Setup some more plotting parameters
     cols <- colorRampPalette(heatCol)(length(dupLevels))
     hj <-  0.5 * heat_w / (heat_w + 1 + dendrogram)
-    xlab <- "Percentage of Total"
     dupPlot <- ggplot(
       df,
-      aes_string(
-        fill = "Duplication_Level", total = "Percentage_of_total",
-        label = "Filename"
-      )
+      aes(fill = !!sym(dl), total = !!sym(pt), label = Filename)
     ) +
       geom_rect(
-        aes_string(
-          xmin = "xmin", xmax = "xmax", ymin = "ymin", ymax = "ymax",
-          colour = "Duplication_Level"
+        aes(
+          xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, colour = !!sym(dl)
         )
       ) +
       ggtitle(gsub("_", " ", mod)) +
@@ -357,7 +344,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
         expand = c(0, 0), position = "right"
       ) +
       scale_x_continuous(expand = c(0, 0)) +
-      labs(x = xlab, fill = "Duplication\nLevel") +
+      labs(x = pt, fill = "Duplication\nLevel") +
       guides(colour = "none") +
       theme_bw() +
       theme(

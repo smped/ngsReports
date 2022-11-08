@@ -16,7 +16,7 @@ test_that("A plot can be drawn",{
 test_that(
     "Plot is as expected",
     {
-        expected <- expected <- c(
+        expected <- c(
             x1 = "0.5", x2 = "0.5", x3 = "1.5", x4 = "1.5", x5 = "0.5",
             y1 = "0.5", y2 = "1.5", y3 = "1.5", y4 = "0.5", y5 = "0.5",
             text = "Filename: ATTG_R1<br />Status: PASS",
