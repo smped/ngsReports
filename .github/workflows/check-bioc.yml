@@ -178,14 +178,7 @@ jobs:
           message(paste('****', Sys.time(), 'installing rcmdcheck and BiocCheck ****'))
           remotes::install_cran("rcmdcheck")
           BiocManager::install("BiocCheck")
-        shell: Rscript {0}
-        
-      - name: Install BiocCheck
-        if:  env.has_RUnit == 'true'
-        run: |
-          ## Install BiocCheck
-          BiocManager::install("BiocCheck")
-        shell: Rscript {0}        
+        shell: Rscript {0}   
 
       - name: Install BiocGenerics
         if:  env.has_RUnit == 'true'
