@@ -179,6 +179,13 @@ jobs:
           remotes::install_cran("rcmdcheck")
           BiocManager::install("BiocCheck")
         shell: Rscript {0}
+        
+      - name: Install BiocCheck
+        if:  env.has_RUnit == 'true'
+        run: |
+          ## Install BiocCheck
+          BiocManager::install("BiocCheck")
+        shell: Rscript {0}        
 
       - name: Install BiocGenerics
         if:  env.has_RUnit == 'true'
