@@ -38,8 +38,8 @@ env:
   run_covr: 'true'
   run_pkgdown: 'true'
   has_RUnit: 'false'
-  cache-version: 'cache-v1'
-  run_BiocCheck: 'false'
+  cache-version: 'cache-v2'
+  run_BiocCheck: 'true'
 
 jobs:
   build-check:
