@@ -39,6 +39,7 @@ env:
   run_pkgdown: 'true'
   has_RUnit: 'false'
   cache-version: 'cache-v1'
+  run_BiocCheck: 'false'
 
 jobs:
   build-check:
@@ -52,8 +53,8 @@ jobs:
       matrix:
         config:
           - { os: ubuntu-latest, r: '4.3', bioc: 'devel', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
-          - { os: macOS-latest, r: '4.3', bioc: 'devel'}
-          - { os: windows-latest, r: '4.3', bioc: 'devel'}
+          #- { os: macOS-latest, r: '4.3', bioc: 'devel'}
+          #- { os: windows-latest, r: '4.3', bioc: 'devel'}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -230,6 +231,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Run BiocCheck
+        if: env.run_BiocCheck == 'true'
         run: |
           BiocCheck::BiocCheck(
               dir('check', 'tar.gz$', full.names = TRUE),
