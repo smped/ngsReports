@@ -37,7 +37,6 @@ env:
   has_testthat: 'true'
   run_covr: 'true'
   run_pkgdown: 'true'
-  has_RUnit: 'false'
   cache-version: 'cache-v3'
 
 jobs:
@@ -111,13 +110,6 @@ jobs:
           path: /home/runner/work/_temp/Library
           key: ${{ env.cache-version }}-${{ runner.os }}-biocversion-RELEASE_3_16-r-4.2-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ env.cache-version }}-${{ runner.os }}-biocversion-RELEASE_3_16-r-4.2-
-
-      #- name: Install Linux system dependencies
-      #  if: runner.os == 'Linux'
-      #  run: |
-      #    sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04")), collapse = " "))')
-      #    echo $sysreqs
-      #    sudo -s eval "$sysreqs"
 
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
@@ -222,12 +214,6 @@ jobs:
       - name: Reveal testthat details
         if:  env.has_testthat == 'true'
         run: find . -name testthat.Rout -exec cat '{}' ';'
-
-      - name: Run RUnit tests
-        if:  env.has_RUnit == 'true'
-        run: |
-          BiocGenerics:::testPackage()
-        shell: Rscript {0}
 
       - name: Run BiocCheck
         run: |
