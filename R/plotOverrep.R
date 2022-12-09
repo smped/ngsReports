@@ -261,6 +261,7 @@ setMethod("plotOverrep", signature = "FastqcDataList", function(
   ## Prepare the status
   status <- getSummary(x)
   status <- subset(status, Category == "Overrepresented sequences")
+  status <- subset(status, Filename %in% key)
   status$Filename <- factor(labels[status$Filename], levels = labels[key])
 
   if (missing(pwfCols)) pwfCols <- pwf

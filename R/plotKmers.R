@@ -325,6 +325,7 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
   ## Get the PWF status
   status <- getSummary(x)
   status <- status[status$Category == "Kmer Content",]
+  status <- subset(status, Filename %in% key)
   status$Filename <- factor(labels[status$Filename], levels = labels[key])
 
   .prepHeatmap(kMerPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
