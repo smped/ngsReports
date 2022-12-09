@@ -271,6 +271,7 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
     include.lowest = TRUE,
     labels = c("PASS", "WARN", "FAIL")
   )
+  status <- subset(status, Filename %in% key)
   status$Filename <- factor(labels[status$Filename], levels = labels[key])
 
   .prepHeatmap(nPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
