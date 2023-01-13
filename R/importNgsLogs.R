@@ -168,6 +168,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   type <- possTypes[logi]
   ## added for autodetect purposes
   if (all(c("hisat2", "bowtie2") %in% type)) type <- "bowtie2"
+  if (length(type) == 0) stop("No matching file type was found")
   type
 }
 
@@ -236,7 +237,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 .isValidDuplicationMetricsLog <- function(x){
 
   ## Check the METRICS CLASS data
-  metricsHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
+  metricsHeader <- grep("METRICS CLASS\t.+DuplicationMetrics", x)
 
   if (length(metricsHeader) == 1) { # Must appear only once
     metricCols <- c("LIBRARY", "UNPAIRED_READS_EXAMINED",
@@ -251,8 +252,9 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     ## Check the HISTOGRAM data
     histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
     stopifnot(length(histHeader) == 1) # Must appear only once
-    histCols <- c("BIN", "VALUE")
-    checkHistCols <- all(names(.splitByTab(x[histHeader + 1]))[1:2] == histCols)
+    histCols <- c("BIN")
+    checkHistCols <-
+      all(names(.splitByTab(x[histHeader + 1]))[seq_along(histCols)] == histCols)
 
     all(checkMetCols, checkHistCols)
 
@@ -671,13 +673,16 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
   ## Collect the metrics from all files as a tibble
   metrics <- lapply(data, function(x){
-    ## Find the library name
-    libName <- grep("MarkDuplicates.+INPUT=", x, value = TRUE)
-    libName <- gsub(".+INPUT=\\[(.+)\\] OUTPUT.+", "\\1", libName[[1]])
+    # ## Find the library name
+    cmd <- stringr::str_subset(x, "(INPUT|input)")
+    ip <- stringr::str_replace_all(
+      cmd, ".+(input|INPUT)([ =]*)([^ ]+.bam).+", "\\3"
+    )
+    ip <- str_replace_all(ip, "[\\[\\]]", "")
     ## Find the header. The next two rows will be the colnames + data
-    metHeader <- grep("METRICS CLASS\tpicard.sam.DuplicationMetrics", x)
+    metHeader <- grep("METRICS CLASS\t.+.DuplicationMetrics", x)
     df <- .splitByTab(x[seq(metHeader + 1, by = 1, length.out = 2)])
-    df$LIBRARY <- libName
+    df$LIBRARY <- ip
     df
   })
   metrics <- dplyr::bind_rows(metrics)
@@ -689,9 +694,12 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
   ## Collect the histogram data from all files as a tibble
   histData <- lapply(data, function(x){
-    ## Find the library name
-    libName <- grep("MarkDuplicates.+INPUT=", x, value = TRUE)
-    libName <- gsub(".+INPUT=\\[(.+)\\] OUTPUT.+", "\\1", libName[[1]])
+    # ## Find the library name
+    cmd <- stringr::str_subset(x, "(INPUT|input)")
+    ip <- stringr::str_replace_all(
+      cmd, ".+(input|INPUT)([ =]*)([^ ]+.bam).+", "\\3"
+    )
+    ip <- str_replace_all(ip, "[\\[\\]]", "")
 
     ## Find the header then remove up until that line
     histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
@@ -699,7 +707,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     ## Remove any blank lines (this is the last line)
     x <- x[!grepl("^$", x)]
     df <- .splitByTab(x)
-    df$LIBRARY <- libName
+    df$LIBRARY <- ip
     dplyr::select(df, "LIBRARY", everything())
   })
   histData <- dplyr::bind_rows(histData)
