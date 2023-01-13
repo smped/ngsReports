@@ -112,6 +112,9 @@ test_that("autodetect works", {
 
     expect_equal(as.character(type), tools)
 
+    f <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package = "ngsReports")
+    expect_error(importNgsLogs(f), "No matching file type was found")
+
 })
 
 nm <- c("LIBRARY", "UNPAIRED_READS_EXAMINED", "READ_PAIRS_EXAMINED",
