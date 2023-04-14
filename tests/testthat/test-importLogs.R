@@ -10,6 +10,7 @@ caFiles <- system.file("extdata", c("cutadapt_full.txt", "cutadapt_minimal.txt")
 trimoFiles <- system.file("extdata", "Sample1.trimmomaticPE.txt", package = "ngsReports")
 flagFile <- system.file("extdata", "flagstat.txt", package = "ngsReports")
 macs2File <- system.file("extdata", "macs2_callpeak.txt", package = "ngsReports")
+umiFile <- system.file("extdata", "umitoolsDedup.txt", package = "ngsReports")
 
 test_that("importNgsLogs fails on empty",{
     expect_error(importNgsLogs(bowtieLogs[0], "bowtie"))
@@ -249,4 +250,15 @@ test_that("parseMacs2CallPeak behaves correctly", {
         sum(vapply(df, is.na, logical(1))), 0
     )
 
+})
+
+test_that("umitools dedup parses", {
+  df <- importNgsLogs(umiFile, "umitoolsDedup")
+  expCols <- c(
+    "Filename", "Input_Reads", "Read_pairs", "Read_2_unmapped",
+    "Number_of_reads_out", "Total_number_of_positions_deduplicated",
+    "Mean_number_of_unique_UMIs_per_position", "Max_number_of_unique_UMIs_per_position",
+    "Mates_never_found", "start", "duration"
+  )
+  expect_equal(colnames(df), expCols)
 })

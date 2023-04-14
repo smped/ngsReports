@@ -6,7 +6,10 @@ author:
 - name: Hien To
   affiliation: Bioinformatics Hub, University of Adelaide
 - name: Stevie Pederson
-  affiliation: Black Ochre Data Laboratories, Telethon Kids Institute
+  affiliation: 
+  - Black Ochre Data Laboratories, Telethon Kids Institute, Adelaide, Australia
+  - Dame Roma Mitchell Cancer Researc Laboratories, University of Adelaide
+  - John Curtin School of Medical Research, Australian National University
   email: stephen.pederson.au@gmail.com
 package: ngsReports
 output:

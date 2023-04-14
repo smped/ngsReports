@@ -4,7 +4,7 @@ template:
 
 authors:
   Stephen Pederson:
-    href: https://github.com/steveped
+    href: https://github.com/smped
   Thu-Hien To:
     href: https://github.com/tothuhien
   Christopher Ward:
@@ -76,4 +76,4 @@ navbar:
     href: news/index.html
   right:
   - icon: fa-github fa-lg
-    href: https://github.com/steveped/ngsReports
+    href: https://github.com/smped/ngsReports

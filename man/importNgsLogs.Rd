@@ -12,7 +12,7 @@ same type. Duplicate file paths will be silently ignored.}
 
 \item{type}{\code{character}. The type of file being imported. Can be one of
 \code{bowtie}, \code{bowtie2}, \code{hisat2}, \code{star}, \code{flagstat},
-\code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt},
+\code{featureCounts}, \code{duplicationMetrics}, \code{cutadapt}, \code{umitoolsDedup},
 \code{macs2Callpeak}, \code{adapterRemoval}, \code{quast} or \code{busco}
 Defaults to \code{type = "auto"} which will automatically detect the file
 type for all implemented types.}

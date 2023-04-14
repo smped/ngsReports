@@ -1,6 +1,6 @@
-![Build Status](https://github.com/steveped/ngsReports/workflows/R-CMD-check-bioc/badge.svg)
+![Build Status](https://github.com/smped/ngsReports/workflows/R-CMD-check-bioc/badge.svg)
 ![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)
-[![codecov](https://codecov.io/gh/steveped/ngsReports/branch/master/graph/badge.svg?token=32QDK631KA)](https://codecov.io/gh/steveped/ngsReports)
+[![codecov](https://codecov.io/gh/smped/ngsReports/branch/master/graph/badge.svg?token=32QDK631KA)](https://codecov.io/gh/smped/ngsReports)
 
 # ngsReports
 
@@ -13,7 +13,7 @@ To install required packages follow the instructions below.
 
 ```
 install.packages("BiocManager")
-BiocManager::install("steveped/ngsReports")
+BiocManager::install("ngsReports")
 library(ngsReports)
 ```
 

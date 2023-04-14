@@ -1,9 +1,9 @@
 Package: ngsReports
-Version: 2.1.3
-Date: 2023/01/13
+Version: 2.1.4
+Date: 2023/04/14
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
-    person("Stephen", "Pederson", 
+    person("Stevie", "Pederson", 
         email = "stephen.pederson.au@gmail.com", role = c("aut", "cre")),
     person("Christopher", "Ward", 
         email = "christopher.ward@adelaide.edu.au", role = c("aut")),
@@ -15,8 +15,8 @@ Description: This package provides methods and object classes for parsing
     for visualising the parsed data.
     Plots can be generated as static ggplot objects or interactive plotly 
     objects.
-URL: https://github.com/steveped/ngsReports
-BugReports: https://github.com/steveped/ngsReports/issues
+URL: https://github.com/smped/ngsReports
+BugReports: https://github.com/smped/ngsReports/issues
 License: file LICENSE
 Encoding: UTF-8
 Depends:
@@ -51,7 +51,7 @@ Imports:
     utils,
     zoo
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Collate: 
     'AllGenerics.R'
     'validationFunctions.R'
