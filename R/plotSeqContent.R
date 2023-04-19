@@ -53,10 +53,10 @@
 #' @docType methods
 #'
 #' @importFrom grDevices rgb
-#' @importFrom dplyr mutate vars group_by ungroup left_join across
+#' @importFrom dplyr mutate vars group_by ungroup left_join
 #' @importFrom scales percent
 #' @importFrom tidyr pivot_longer
-#' @importFrom tidyselect one_of
+#' @importFrom tidyselect one_of all_of
 #' @import ggplot2
 #'
 #' @name plotSeqContent
@@ -217,7 +217,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
 
     ## Round to 2 digits to reduce the complexity of the colour
     ## palette
-    df <- dplyr::mutate(df, across(all_of(acgt), round, digits = 2))
+    df[acgt] <- lapply(df[acgt], round, digits = 2)
     maxBase <- max(vapply(acgt, function(x){max(df[[x]])}, numeric(1)))
     ## Set the colours, using opacity for G
     df$opacity <- 1 - df$G / maxBase
@@ -259,9 +259,7 @@ setMethod("plotSeqContent", signature = "FastqcDataList", function(
     df$xmax <- df$Base + 0.5
     df$xmin <- df$Base - 1
     ## Add percentage signs to ACGT for prettier labels
-    df <- dplyr::mutate(
-      df, across(all_of(acgt), scales::percent, accuracy = 0.1, scale = 1)
-    )
+    df[acgt] <- lapply(df[acgt], scales::percent, accuracy = 0.1, scale = 1)
 
     yBreaks <- seq_along(levels(df$Filename))
     scPlot <- ggplot(

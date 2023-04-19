@@ -1504,9 +1504,18 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     data <- stringr::str_trim(data)
     mates <- data[grepl("mates", data)]
     data <- data[!grepl("mates", data)]
+    umis <- data[grepl("umis", data)]
+    data <- data[!grepl("umis", data)]
     mat <- matrix(data, ncol = 2, byrow = TRUE)
     named_vec <- setNames(mat[,2], gsub("[ \\.]+", "_", mat[,1]))
     named_list <- as.list(named_vec)
+    ## The next two fields were introduced with v0.23
+    ## Should just duplicate the number of reads
+    total_umis <- gsub("total_umis ", "", umis[grepl("total_umis", umis)])
+    if (length(total_umis)) named_list$total_umis <- total_umis
+    ## The total # unique UMIs
+    unique_umis <- gsub("#umis ", "", umis[grepl("#umis ", umis)])
+    if (length(unique_umis)) named_list$unique_umis <- unique_umis
     named_list$Mates_never_found <- gsub(" mates never found", "", mates)
     named_list$start <- gsub(".+at (.+) --.+--.+", "\\1", timing)
     named_list$duration <- gsub(".+finished in (.+) at.+", "\\1", timing)

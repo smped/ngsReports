@@ -56,17 +56,14 @@ importSJ <- function(x, stripPaths = TRUE){
     }
   )
   df <- as_tibble(bind_rows(df))
-  df <- dplyr::mutate(
-    df,
-    dplyr::across(c("start", "end"), as.numeric),
-    dplyr::across(
-      c(
-        "strand", "intron_motif", "annotated", "uniquely_mapping",
-        "multi_mapping", "max_overhang"
-      ),
-      as.integer
-    )
+  ## Format all the required columns
+  num_cols <- c("start", "end")
+  int_cols <- c(
+    "strand", "intron_motif", "annotated", "uniquely_mapping", "multi_mapping",
+    "max_overhang"
   )
+  df[num_cols] <- lapply(df[num_cols], as.numeric)
+  df[int_cols] <- lapply(df[int_cols], as.integer)
   df[["annotated"]] <- as.logical(df[["annotated"]])
   ## Tidy up the strands
   strands <- c("*", "+", "-")

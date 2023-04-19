@@ -73,7 +73,7 @@
 #' @importFrom plotly plotly_empty ggplotly
 #' @importFrom stats hclust dist
 #' @importFrom tidyselect one_of all_of
-#' @importFrom dplyr across summarise group_by ungroup
+#' @importFrom dplyr summarise group_by ungroup
 #' @importFrom ggdendro segment
 #'
 #' @name plotAdapterContent

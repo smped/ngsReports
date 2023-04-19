@@ -60,7 +60,7 @@
 #'
 #' @docType methods
 #'
-#' @importFrom dplyr vars mutate across
+#' @importFrom dplyr vars mutate
 #' @importFrom plotly ggplotly layout subplot
 #' @importFrom tidyr pivot_wider complete nesting unnest
 #' @importFrom tidyselect everything any_of
@@ -224,7 +224,8 @@ setMethod(
     }
     df <- dplyr::ungroup(df)
     ## Round the values for better plotting
-    df <- mutate(df, across(any_of(c("Cumulative", "Freq")), round, digits = 4))
+    freq_cols <- colnames(df) %in% c("Cumulative", "Freq")
+    df[freq_cols] <- lapply(df[freq_cols], round, digits = 4)
 
     ## Get any arguments for dotArgs that have been set manually
     dotArgs <- list(...)
