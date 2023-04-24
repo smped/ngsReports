@@ -62,6 +62,191 @@ setAs("list", "FastqcDataList", function(from){
     new("FastqcDataList", from)
 })
 
+#' @importFrom jsonlite validate fromJSON
+setAs(".FastpFile", "FastpData", function(from){
+
+    ## Import each line as an element in a character vector then detect the
+    ## modules and return as a list containing each module as an element
+    path <- path(from)
+    lines <- suppressWarnings(readLines(path))
+    stopifnot(validate(lines))
+    data <- fromJSON(lines)
+    exp_mods <- c(
+        "summary", "filtering_result", "duplication", "adapter_cutting",
+        "command"
+    )
+    stopifnot(all(exp_mods %in% names(data)))
+
+    ## The fastp version number
+    ## May not be present so is only returned if present
+    vers <- NA_character_ # Default to missing
+    if ("fastp_version" %in% names(data[["summary"]]))
+        vers <- data[["summary"]][["fastp_version"]]
+
+    ## Initialise an empty list too parse the data into
+    ## Modules should be as defined in the man page for FastpData
+    isPaired <- grepl("paired", data$summary$sequencing)
+    out <- list()
+    out[["Summary"]] <- .getFpSummary(data)
+    out[["Adapters"]] <- .getFpAdapters(data)
+    out[["Duplication"]] <- .getFpDuplication(data)
+    out[["Insert_size"]] <- .getFpInsert(data)
+    out[["Before_filtering"]] <- .getFpBeforeAfter(data, "before", isPaired)
+    out[["After_filtering"]] <- .getFpBeforeAfter(data, "after", isPaired)
+    out[["paired"]] <- isPaired
+    out[["command"]] <- data[["command"]]
+    out[["version"]] <- vers
+    out[["path"]] <- path
+
+    args <- list(Class = "FastpData")
+    do.call("new", c(args, out))
+
+})
+
+.getFpSummary <- function(data){
+
+    n_reads <- data$summary$before_filtering$total_reads
+
+    ## The Before/After Filtering Table
+    Before_filtering <- as_tibble(data$summary$before_filtering)
+    After_filtering <- as_tibble(data$summary$after_filtering)
+
+    ## The filtering Result
+    results <- unlist(data$filtering_result)
+    rates <- results  / n_reads
+    filtering_result <- tibble(
+        result = names(results), total = results,rate = rates
+    )
+
+    list(
+        Before_filtering = Before_filtering, After_filtering = After_filtering,
+        Filtering_result = filtering_result
+    )
+}
+
+#' @importFrom stringr str_count
+.getFpAdapters <- function(data){
+    n_reads <- data$summary$before_filtering$total_reads
+    n_bases <- data$summary$before_filtering$total_bases
+    ad <- data$adapter_cutting
+    ## Summary table
+    tbl <- as_tibble(ad[!grepl("adapter_counts", names(ad))])
+    tbl$adapter_trimmed_reads_rate <- tbl$adapter_trimmed_reads / n_reads
+    tbl$adapter_trimmed_bases_rate <- tbl$adapter_trimmed_bases / n_bases
+
+    ## R1
+    r1 <- unlist(ad$read1_adapter_counts)
+    tbl_r1 <- tibble(Sequence = names(r1), Occurences = as.integer(r1))
+    tbl_r1$Occurence_rate <- tbl_r1$Occurences / n_reads
+    tbl_r1$adapter_length <- str_count(tbl_r1$Sequence, "[ACGT]")
+    tbl_r1$adapter_length[tbl_r1$Sequence == "others"] <- NA_integer_
+
+    ## R2
+    r2 <- unlist(ad$read2_adapter_counts)
+    tbl_r2 <- tibble(Sequence = names(r2), Occurences = as.integer(r2))
+    tbl_r2$Occurence_rate <- tbl_r2$Occurences / n_reads
+    tbl_r2$adapter_length <- str_count(tbl_r2$Sequence, "[ACGT]")
+    tbl_r2$adapter_length[tbl_r2$Sequence == "others"] <- NA_integer_
+    tbl_r2
+
+    tbl$read1_adapter_count <- list(tbl_r1)
+    tbl$read2_adapter_count <- list(tbl_r2)
+    tbl
+}
+
+.getFpDuplication <- function(data){
+    tbl <- tibble(rate = data$duplication$rate)
+    hist <- tibble(
+        histogram = data$duplication$histogram,
+        mean_gc = data$duplication$mean_g,
+    )
+    hist$duplication_level <- seq_len(nrow(hist))
+    tbl$histogram <- list(hist)
+    tbl
+}
+
+#' @importFrom tidyr nest
+.getFpInsert <- function(data){
+    insert_size <- histogram <- freq <- NULL
+    n_sampled <- c(data$insert_size$unknown, data$insert_size$histogram)
+    tbl <- as_tibble(data$insert_size)
+    tbl$unknown_rate <- tbl$unknown / sum(n_sampled)
+    tbl$freq <- tbl$histogram / sum(n_sampled)
+    tbl$insert_size <- seq_along(tbl$histogram)
+    nest(tbl, histogram = c(insert_size, histogram, freq))
+}
+
+.getFpBeforeAfter <- function(data, type = c("before", "after"), paired){
+
+    type <- match.arg(type)
+
+    ## Setup the kmer values
+    atcg <- c("A", "T", "C", "G")
+    col_levels <- apply(
+        expand.grid(atcg, atcg)[,c(2,1)], 1, paste, collapse = ""
+    )
+    row_levels <- apply(
+        expand.grid(atcg, atcg, atcg)[,c(3, 2,1)], 1, paste, collapse = ""
+    )
+    cols <- c(
+        "total_reads", "total_bases", "q20_bases", "q30_bases", "total_cycles"
+    )
+
+    ## Read1 should always be present
+    mod <- paste(c("read1_", type, "_filtering"), collapse = "")
+    stopifnot(mod %in% names(data))
+    tbl <- as_tibble(data[[mod]][cols])
+
+    quality_curves <- as_tibble(data[[mod]]$quality_curves)
+    quality_curves$position <- seq_len(nrow(quality_curves))
+    tbl$quality_curves <- list(quality_curves)
+
+    content_curves <- as_tibble(data[[mod]]$content_curves)
+    content_curves$position <- seq_len(nrow(content_curves))
+    tbl$content_curves <- list(content_curves)
+
+    kmer_count <- unlist(data[[mod]]$kmer_count)
+    kmer_tbl <- tibble(
+        kmer = names(kmer_count), count = as.integer(kmer_count)
+    )
+    kmer_tbl$times_mean <- kmer_tbl$count / mean(kmer_tbl$count)
+    kmer_tbl$prefix <- gsub("^([ATCG]{3}).+", "\\1", kmer_tbl$kmer)
+    kmer_tbl$prefix <- factor(kmer_tbl$prefix, levels = row_levels)
+    kmer_tbl$suffix <- gsub("^([ATCG]{3})([ATCG]{2})", "\\2", kmer_tbl$kmer)
+    kmer_tbl$suffix <- factor(kmer_tbl$suffix, levels = col_levels)
+    tbl$kmer_count <- list(kmer_tbl)
+    out <- list(read1 = tbl)
+
+    ## Check for the read2 module
+    if (paired) {
+        mod <- paste(c("read2_", type, "_filtering"), collapse = "")
+        stopifnot(mod %in% names(data))
+        tbl <- as_tibble(data[[mod]][cols])
+
+        quality_curves <- as_tibble(data[[mod]]$quality_curves)
+        quality_curves$position <- seq_len(nrow(quality_curves))
+        tbl$quality_curves <- list(quality_curves)
+
+        content_curves <- as_tibble(data[[mod]]$content_curves)
+        content_curves$position <- seq_len(nrow(content_curves))
+        tbl$content_curves <- list(content_curves)
+
+        kmer_count <- unlist(data[[mod]]$kmer_count)
+        kmer_tbl <- tibble(
+            kmer = names(kmer_count), count = as.integer(kmer_count)
+        )
+        kmer_tbl$times_mean <- kmer_tbl$count / mean(kmer_tbl$count)
+        kmer_tbl$prefix <- gsub("^([ATCG]{3}).+", "\\1", kmer_tbl$kmer)
+        kmer_tbl$prefix <- factor(kmer_tbl$prefix, levels = row_levels)
+        kmer_tbl$suffix <- gsub("^([ATCG]{3})([ATCG]{2})", "\\2", kmer_tbl$kmer)
+        kmer_tbl$suffix <- factor(kmer_tbl$suffix, levels = col_levels)
+        tbl$kmer_count <- list(kmer_tbl)
+        out[["read2"]] <- tbl
+    }
+    out
+}
+
+
 ## This helper checks for compressed or extracted FastQC reports then
 ## imports the contents of fastqc_data.txt as a character vector.
 ## Comments (#) and lines denoting the end of a module are then removed

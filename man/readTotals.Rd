@@ -7,7 +7,8 @@
 readTotals(x)
 }
 \arguments{
-\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
+\item{x}{Can be a \code{FastqcData}, \code{FastqcDataList}, \code{FastpData},
+\code{FastpDataList} or file paths}
 }
 \value{
 A \code{tibble} with the columns \code{Filename} and

@@ -6,6 +6,8 @@
 \alias{getModule}
 \alias{getModule,FastqcDataList-method}
 \alias{getModule,ANY-method}
+\alias{getModule,FastpData-method}
+\alias{getModule,FastpDataList-method}
 \title{Retrieve a given module from a Fastqc* Object}
 \usage{
 \S4method{getModule}{FastqcData}(object, module)
@@ -13,6 +15,10 @@
 \S4method{getModule}{FastqcDataList}(object, module)
 
 \S4method{getModule}{ANY}(object, module)
+
+\S4method{getModule}{FastpData}(object, module)
+
+\S4method{getModule}{FastpDataList}(object, module)
 }
 \arguments{
 \item{object}{Can be a \code{FastqcData}, \code{fastqcDataList}, or simply

@@ -126,3 +126,90 @@ setMethod("getModule", "ANY", function(object, module){
     getModule(fqcData, module)
 
 })
+
+#' @importFrom tibble as_tibble_row
+#' @importFrom dplyr bind_cols
+#' @importFrom methods slotNames slot
+#'
+#' @export
+#' @rdname getModule
+#' @aliases getModule
+setMethod("getModule", "FastpData", function(object, module){
+
+    ## This is the list of defined modules from the object specification
+    allMods <-  slotNames("FastpData")
+
+    ## Make sure we have asked for a valid module
+    module <- match.arg(module, allMods)
+
+    ## Get the Filename for the underlying Fastq file
+    isPaired <- object@paired
+    nm <- c(Filename = basename(path(object)), fqName(object))
+    nm_tbl <- as_tibble_row(nm)
+
+    ## Extract the actual module
+    mod <- slot(object, module)
+
+    if (module == "Summary") {
+        mod <- lapply(mod, function(x) bind_cols(nm_tbl, x))
+    }
+    if (module %in% c("Before_filtering", "After_filtering")) {
+        mod$read1 <- bind_cols(nm_tbl[c("Filename", "read1")], mod$read1)
+        names(mod$read1)[names(mod$read1) == "read1"] <- "fqName"
+        if (isPaired) {
+            mod$read2 <- bind_cols(nm_tbl[c("Filename", "read2")], mod$read2)
+            names(mod$read2)[names(mod$read2) == "read2"] <- "fqName"
+        }
+    }
+    if (module %in% c("Adapters", "Duplication", "Insert_size")) {
+        mod <- bind_cols(nm_tbl, mod)
+    }
+
+    mod
+
+})
+
+#' @export
+#' @rdname getModule
+#' @aliases getModule
+setMethod("getModule", "FastpDataList", function(object, module){
+
+    ## This is the list of defined modules from the object specification
+    allMods <-  slotNames("FastpData")
+
+    ## Make sure we have asked for a valid module
+    module <- match.arg(module, allMods)
+
+    ## Extract module as a list
+    anyPaired <- any(vapply(object, function(x) x@paired, logical(1)))
+    allMods <- lapply(object, getModule, module = module)
+    out <- list()
+
+    if (module == "Summary") {
+        modNames <- c("Before_filtering", "After_filtering", "Filtering_result")
+        out <- lapply(
+            modNames,
+            function(mod) bind_rows(lapply(allMods, function(x) x[[mod]]))
+        )
+        names(out) <- modNames
+    }
+    if (module %in% c("Before_filtering", "After_filtering")) {
+        r1 <- bind_rows(lapply(allMods, function(x) x[["read1"]]))
+        out[["read1"]] <- r1
+        if (anyPaired) {
+            r2 <- bind_rows(lapply(allMods, function(x) x$read2))
+            out[["read2"]] <- r2
+        }
+    }
+    if (module %in% c("Adapters", "Duplication", "Insert_size")) {
+        out <- bind_rows(allMods)
+    }
+    if (module %in% c("paired", "command", "version", "path")) {
+        vals <- unlist(allMods)
+        names(vals) <- c()
+        out <- tibble(Filename = basename(path(object)))
+        out[[module]] <- vals
+    }
+    out
+
+})

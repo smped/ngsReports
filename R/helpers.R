@@ -346,7 +346,7 @@
 #' @description Add dendrogarm & status bar to ggplot2 heatmap
 #'
 #' @param x a ggplot2 heatmap produced by ngsReports
-#' @param status a tibble with the columns Filename and status
+#' @param status a tibble with the columns Filename and Status
 #' @param segments a dendrogram produced during clustering of samples
 #' @param usePlotly logica(1)
 #'

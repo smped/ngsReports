@@ -30,12 +30,17 @@ A Graphical User Interface (Shiny App) has been developed for interactive inspec
 
 ### Quality control
 - FastQC
+- fastp
 
 
 ### Adapter removal and trimming
 - AdapterRemoval
 - cutadapt
 - trimmomatic
+- fastp
+
+### Deduplication
+- umi_tools dedup
 
 ### Mapping and alignment 
 - bowtie

@@ -38,7 +38,7 @@
 #' Sequence_Duplication_Levels. Only included in later versions of FastQC
 #' @slot version The version of FastQC used for generation of the report (if
 #' available)
-#' @slot path Path to the FastQC report#'
+#' @slot path Path to the FastQC report
 #'
 #' @return An object of class FastqcData
 #'

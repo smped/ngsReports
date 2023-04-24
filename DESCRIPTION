@@ -34,6 +34,7 @@ Imports:
     ggdendro,
     grDevices (>= 3.6.0),
     grid,
+    jsonlite,
     lifecycle,
     lubridate,
     methods,
@@ -55,6 +56,9 @@ RoxygenNote: 7.2.3
 Collate: 
     'AllGenerics.R'
     'validationFunctions.R'
+    'FastpData.R'
+    'FastpDataList.R'
+    'FastpFile.R'
     'FastqcData.R'
     'FastqcDataList.R'
     'FastqcFile.R'

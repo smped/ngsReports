@@ -39,10 +39,39 @@
     all(reqSlots %in% slotNames(object))
 }
 
+#'
+.isValidFastpFile <- function(object){
+
+    path <- path(object)
+    if (length(path) != 1) {
+        warning("Only a single path can be specified")
+        return(FALSE)
+    }
+    expected <- c("{", "\t\"summary\": {")
+    head <- readLines(path, 2)
+    all(expected == head)
+}
+
+#' @importFrom methods slotNames
+.isValidFastpData <- function(object){
+    reqSlots <- c(
+        "Summary", "Adapters", "Duplication", "Insert_size",
+        "Before_filtering", "After_filtering"
+    )
+    all(reqSlots %in% slotNames(object))
+}
+
 #' @importFrom methods is
 .isValidFastqcDataList <- function(object){
     ## This is very rudimentary & may need more thought
     cls <- vapply(object, is, logical(1), "FastqcData")
+    all(cls)
+}
+
+#' @importFrom methods is
+.isValidFastpDataList <- function(object){
+    ## This is very rudimentary & may need more thought
+    cls <- vapply(object, is, logical(1), "FastpData")
     all(cls)
 }
 

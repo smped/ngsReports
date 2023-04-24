@@ -1,8 +1,8 @@
-#' @title Return the Underlying Fastq File Names from FastqcData* Objects
+#' @title Return the Underlying Fastq File Names from Fastqc/Fastp Objects
 #'
-#' @description Return the Underlying Fastq File Names from FastqcData* Objects
+#' @description Return the Underlying Fastq File Names from Fastqc/Fastp Objects
 #'
-#' @param object An object of class FastqcData or FastqcDataList
+#' @param object An object able to extract an Fastq name from
 #' @param value Replacement value for fqName
 #'
 #' @return Returns the names of the Fastq files the FastQC report was
@@ -79,4 +79,30 @@ setReplaceMethod("fqName", signature = "FastqcDataList", function(object, value)
     )
     as(out, "FastqcDataList")
 })
-
+#' @export
+#' @name fqName
+#' @aliases fqName,FastpData-method
+#' @rdname fqName-methods
+setMethod("fqName", "FastpData", function(object){
+    isPaired <- object@paired
+    r1 <- basename(gsub(".+-i ([^ ]+) .+", "\\1", object@command))
+    out <- c(read1 = r1)
+    if (isPaired) {
+        r2 <- basename(gsub(".+-I ([^ ]+) .+", "\\1", object@command))
+        out <- c(out, read2 = r2)
+    }
+    out
+})
+#' @export
+#' @name fqName
+#' @aliases fqName,FastpDataList-method
+#' @rdname fqName-methods
+setMethod("fqName", "FastpDataList", function(object){
+    allPaired <- all(vapply(object, function(x) x@paired, logical(1)))
+    if (allPaired) {
+        fqName <- t(vapply(object@.Data, fqName, character(2)))
+    } else {
+        fqName <- vapply(object@.Data, function(x) fqName(x)[1], character(1))
+    }
+    fqName
+})

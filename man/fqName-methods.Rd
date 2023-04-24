@@ -8,7 +8,9 @@
 \alias{fqName<-}
 \alias{fqName<-,FastqcData-method}
 \alias{fqName<-,FastqcDataList-method}
-\title{Return the Underlying Fastq File Names from FastqcData* Objects}
+\alias{fqName,FastpData-method}
+\alias{fqName,FastpDataList-method}
+\title{Return the Underlying Fastq File Names from Fastqc/Fastp Objects}
 \usage{
 fqName(object)
 
@@ -23,9 +25,13 @@ fqName(object) <- value
 \S4method{fqName}{FastqcData}(object) <- value
 
 \S4method{fqName}{FastqcDataList}(object) <- value
+
+\S4method{fqName}{FastpData}(object)
+
+\S4method{fqName}{FastpDataList}(object)
 }
 \arguments{
-\item{object}{An object of class FastqcData or FastqcDataList}
+\item{object}{An object able to extract an Fastq name from}
 
 \item{value}{Replacement value for fqName}
 }
@@ -34,7 +40,7 @@ Returns the names of the Fastq files the FastQC report was
 generated from, without any preceding directories.
 }
 \description{
-Return the Underlying Fastq File Names from FastqcData* Objects
+Return the Underlying Fastq File Names from Fastqc/Fastp Objects
 }
 \examples{
 

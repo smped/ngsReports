@@ -29,8 +29,9 @@
 #' @param plotType `character` Can be either `"boxplot"` or
 #' `"heatmap"`
 #' @param plotValue `character` Type of data to be presented. Can be
-#' any of the columns returned by
-#' `getModule(x, module = "Per_base_sequence_qual")`
+#' any of the columns returned by the appropriate call to `getModule()`
+#' @param reads Plot heatmaps for read1 or read2 when using a FastpDataList
+#' @param module Select Before and After filtering when using a FastpDataList
 #' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in plot
 #' @param cluster `logical` default `FALSE`. If set to `TRUE`,
@@ -83,16 +84,6 @@ setMethod("plotBaseQuals", signature = "ANY", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
     boxWidth = 0.8, ...){
   .errNotImp(x)
-}
-)
-#' @rdname plotBaseQuals-methods
-#' @export
-setMethod("plotBaseQuals", signature = "character", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
-    boxWidth = 0.8, ...){
-  x <- FastqcDataList(x)
-  if (length(x) == 1) x <- x[[1]]
-  plotBaseQuals(x, usePlotly, labels, pwfCols, warn, fail, boxWidth, ...)
 }
 )
 #' @rdname plotBaseQuals-methods
@@ -420,3 +411,97 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
 
 }
 )
+#' @rdname plotBaseQuals-methods
+#' @export
+setMethod(
+  "plotBaseQuals", signature = "FastpDataList",
+  function(
+    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
+    plotType = c("heatmap"), reads = c("read1", "read2"),
+    module = c("Before_filtering", "After_filtering"),
+    plotValue = c("mean", "A", "T", "C", "G"),
+    cluster = FALSE, dendrogram = FALSE, heat_w = 8L, ...
+  ){
+
+    ## Get the data
+    module <- match.arg(module)
+    reads <- match.arg(reads)
+    plotType <- match.arg(plotType)
+    plotValue <- match.arg(plotValue)
+    df <- getModule(x, module)[[reads]]
+    df$Filename <- df$fqName
+    df <- df[c("Filename", "quality_curves")]
+    df <- unnest(df, !!sym("quality_curves"))
+    df <- df[c("Filename", "position", plotValue)]
+    maxQ <- max(df[[plotValue]])
+
+    ## Sort out the colours
+    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+    stopifnot(.isValidPwf(pwfCols))
+
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(df, labels, ...)
+    labels <- labels[names(labels) %in% df$Filename]
+
+    ## Set the plot titles
+    xlab <- "Position in read (bp)"
+    main <- c(gsub("_", " ", module), " (", reads, ")")
+    main <- stringr::str_to_title(paste(main, collapse = ""))
+
+    maxVal <- max(df[[plotValue]], na.rm = TRUE)
+    phredMax <- ifelse(maxVal <= warn, max(maxQ, 41), ceiling(maxVal + 1))
+
+    ## Set up the dendrogram & labels
+    key <- names(labels)
+    clusterDend <- .makeDendro(df, "Filename", "position", plotValue)
+    dx <- ggdendro::dendro_data(clusterDend)
+    if (dendrogram | cluster) key <- labels(clusterDend)
+    if (!dendrogram) dx$segments <- dx$segments[0,]
+    lv <- labels[key]
+    df$Filename <- factor(labels[df$Filename], levels = lv)
+
+    cols <- .makePwfGradient(
+      vals = na.omit(df[[plotValue]]), pwfCols = pwfCols,
+      breaks = c(0, fail, warn, phredMax), passLow = FALSE, na.value = "white"
+    )
+
+    ## Start the heatmap
+    hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
+    qualPlot <- ggplot(
+      df, aes(!!sym("position"), Filename, fill = !!sym(plotValue))
+    ) +
+      geom_tile() +
+      labs(x = xlab, y = c()) +
+      ggtitle(main) +
+      do.call("scale_fill_gradientn", cols) +
+      scale_x_continuous(expand = c(0, 0)) +
+      scale_y_discrete(expand = expansion(0), position = "right") +
+      theme(
+        panel.grid.minor = element_blank(), panel.background = element_blank(),
+        plot.title = element_text(hjust = hj),
+        axis.title.x = element_text(hjust = hj),
+        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
+      )
+
+    ## Get any arguments for dotArgs that have been set manually
+    dotArgs <- list(...)
+    allowed <- names(formals(theme))
+    keepArgs <- which(names(dotArgs) %in% allowed)
+    userTheme <- c()
+    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+    if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
+
+    ## Manually replicate the status using the provided values
+    status <- lapply(split(df, df$Filename), function(x) min(x[[plotValue]]))
+    status <- unlist(status)
+    status_df <- tibble(Filename = names(status), value = as.numeric(status))
+    status_df$Status <- cut(
+      status_df$value, breaks = c(0, fail, warn, Inf),
+      labels = c("FAIL", "WARN", "PASS")
+    )
+    status_df$Filename <- factor(status_df$Filename, levels = lv)
+    .prepHeatmap(qualPlot, status_df, dx$segments, usePlotly, heat_w, pwfCols)
+
+  }
+)
+

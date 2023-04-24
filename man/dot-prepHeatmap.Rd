@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{a ggplot2 heatmap produced by ngsReports}
 
-\item{status}{a tibble with the columns Filename and status}
+\item{status}{a tibble with the columns Filename and Status}
 
 \item{segments}{a dendrogram produced during clustering of samples}
 

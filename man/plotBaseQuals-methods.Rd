@@ -4,9 +4,9 @@
 \name{plotBaseQuals}
 \alias{plotBaseQuals}
 \alias{plotBaseQuals,ANY-method}
-\alias{plotBaseQuals,character-method}
 \alias{plotBaseQuals,FastqcData-method}
 \alias{plotBaseQuals,FastqcDataList-method}
+\alias{plotBaseQuals,FastpDataList-method}
 \title{Plot the Base Qualities for each file}
 \usage{
 plotBaseQuals(
@@ -21,17 +21,6 @@ plotBaseQuals(
 )
 
 \S4method{plotBaseQuals}{ANY}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pwfCols,
-  warn = 25,
-  fail = 20,
-  boxWidth = 0.8,
-  ...
-)
-
-\S4method{plotBaseQuals}{character}(
   x,
   usePlotly = FALSE,
   labels,
@@ -69,6 +58,23 @@ plotBaseQuals(
   heat_w = 8L,
   ...
 )
+
+\S4method{plotBaseQuals}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 25,
+  fail = 20,
+  plotType = c("heatmap"),
+  reads = c("read1", "read2"),
+  module = c("Before_filtering", "After_filtering"),
+  plotValue = c("mean", "A", "T", "C", "G"),
+  cluster = FALSE,
+  dendrogram = FALSE,
+  heat_w = 8L,
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or character
@@ -95,8 +101,7 @@ respectively (i.e. percentages)}
 \code{"heatmap"}}
 
 \item{plotValue}{\code{character} Type of data to be presented. Can be
-any of the columns returned by
-\code{getModule(x, module = "Per_base_sequence_qual")}}
+any of the columns returned by the appropriate call to \code{getModule()}}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -109,6 +114,10 @@ then the dendrogram will be displayed.}
 Only used if drawing boxplots for multiple files in a FastqcDataList}
 
 \item{heat_w}{Relative width of any heatmap plot components}
+
+\item{reads}{Plot heatmaps for read1 or read2 when using a FastpDataList}
+
+\item{module}{Select Before and After filtering when using a FastpDataList}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

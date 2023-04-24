@@ -15,9 +15,10 @@ reference:
 - title: Object Classes
   contents:
       - starts_with("Fastqc")
+      - starts_with("Fastp")
       - ends_with("class")
 
-- title: Working With FastQC Reports
+- title: Working With FastQC or Fastp Reports
   contents:
     - getModule
     - getSummary

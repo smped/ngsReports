@@ -5,6 +5,9 @@
 \alias{path,.FastqcFile-method}
 \alias{path,FastqcData-method}
 \alias{path,FastqcDataList-method}
+\alias{path,.FastpFile-method}
+\alias{path,FastpData-method}
+\alias{path,FastpDataList-method}
 \title{Return the File Paths from an object}
 \usage{
 \S4method{path}{.FastqcFile}(object)
@@ -12,6 +15,12 @@
 \S4method{path}{FastqcData}(object)
 
 \S4method{path}{FastqcDataList}(object)
+
+\S4method{path}{.FastpFile}(object)
+
+\S4method{path}{FastpData}(object)
+
+\S4method{path}{FastpDataList}(object)
 }
 \arguments{
 \item{object}{An object of class .FastqcFile}

@@ -37,3 +37,23 @@ setMethod("path", "FastqcData", function(object){object@path})
 setMethod("path", "FastqcDataList", function(object){
     vapply(object@.Data, path, character(1))
 })
+
+#' @importMethodsFrom BiocGenerics path
+#' @name path
+#' @aliases path,.FastpFile-method
+#' @export
+setMethod("path", ".FastpFile", function(object){object@path})
+
+#' @importMethodsFrom BiocGenerics path
+#' @name path
+#' @aliases path,FastpData-method
+#' @export
+setMethod("path", "FastpData", function(object){object@path})
+
+#' @importMethodsFrom BiocGenerics path
+#' @name path
+#' @aliases path,FastpDataList-method
+#' @export
+setMethod("path", "FastpDataList", function(object){
+  vapply(object@.Data, path, character(1))
+})
