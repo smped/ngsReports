@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.6</span>
       </span>
     </div>
 
@@ -60,7 +60,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/steveped/ngsReports" class="external-link">
+  <a href="https://github.com/smped/ngsReports" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -90,12 +90,14 @@ To</h4>
 Adelaide<br><h4 data-toc-skip class="author">Stevie
 Pederson</h4>
             <address class="author_afil">
-      Black Ochre Data Laboratories, Telethon Kids
-Institute<br><a class="author_email" href="mailto:#"></a><a href="mailto:stephen.pederson.au@gmail.com" class="email">stephen.pederson.au@gmail.com</a>
+      Black Ochre Data Laboratories, Telethon Kids Institute, Adelaide,
+AustraliaDame Roma Mitchell Cancer Researc Laboratories, University of
+AdelaideJohn Curtin School of Medical Research, Australian National
+University<br><a class="author_email" href="mailto:#"></a><a href="mailto:stephen.pederson.au@gmail.com" class="email">stephen.pederson.au@gmail.com</a>
       </address>
                   
       
-      <small class="dont-index">Source: <a href="https://github.com/steveped/ngsReports/blob/HEAD/vignettes/ngsReportsIntroduction.Rmd" class="external-link"><code>vignettes/ngsReportsIntroduction.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/smped/ngsReports/blob/HEAD/vignettes/ngsReportsIntroduction.Rmd" class="external-link"><code>vignettes/ngsReportsIntroduction.Rmd</code></a></small>
       <div class="hidden name"><code>ngsReportsIntroduction.Rmd</code></div>
 
     </address>
@@ -142,7 +144,7 @@ be installed using:</p>
 simply by specifying a directory containing the output from FastQC and
 calling the function <code><a href="../reference/writeHtmlReport.html">writeHtmlReport()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/steveped/ngsReports" class="external-link">ngsReports</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/smped/ngsReports" class="external-link">ngsReports</a></span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="va">fileDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"path"</span>, <span class="st">"to"</span>, <span class="st">"your"</span>, <span class="st">"FastQC"</span>, <span class="st">"Reports"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/writeHtmlReport.html">writeHtmlReport</a></span><span class="op">(</span><span class="va">fileDir</span><span class="op">)</span></span></code></pre>
 <p>This function will transfer the default template to the provided
@@ -517,7 +519,7 @@ specifying the type.</p>
 <span><span class="co">## <span style="color: #BCBCBC;"> 8</span> Drerio        Animals  UCSC   danRer10  </span></span>
 <span><span class="co">## <span style="color: #BCBCBC;"> 9</span> Ecoli         Bacteria NCBI   2008/08/05</span></span>
 <span><span class="co">## <span style="color: #BCBCBC;">10</span> Gaculeatus    Other    UCSC   gasAcu1   </span></span>
-<span><span class="co">## <span style="color: #949494;"># … with 14 more rows</span></span></span></code></pre>
+<span><span class="co">## <span style="color: #949494;"># ℹ 14 more rows</span></span></span></code></pre>
 </div>
 <div class="section level4">
 <h4 id="inspecting-gc-content">Inspecting GC Content<a class="anchor" aria-label="anchor" href="#inspecting-gc-content"></a>
@@ -921,9 +923,9 @@ assemblies
 <div class="section level2">
 <h2 class="unnumbered" id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<pre><code><span><span class="co">## R Under development (unstable) (2023-01-10 r83596)</span></span>
+<pre><code><span><span class="co">## R version 4.3.0 Patched (2023-04-21 r84297)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu (64-bit)</span></span>
-<span><span class="co">## Running under: Ubuntu 22.04.1 LTS</span></span>
+<span><span class="co">## Running under: Ubuntu 22.04.2 LTS</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## Matrix products: default</span></span>
 <span><span class="co">## BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 </span></span>
@@ -944,39 +946,38 @@ assemblies
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] pander_0.6.5        dplyr_1.0.10        ngsReports_2.1.3   </span></span>
-<span><span class="co">## [4] tibble_3.1.8        patchwork_1.1.2     ggplot2_3.4.0      </span></span>
-<span><span class="co">## [7] BiocGenerics_0.45.0 BiocStyle_2.27.0   </span></span>
+<span><span class="co">## [1] pander_0.6.5        dplyr_1.1.2         ngsReports_2.1.6   </span></span>
+<span><span class="co">## [4] tibble_3.2.1        patchwork_1.1.2     ggplot2_3.4.2      </span></span>
+<span><span class="co">## [7] BiocGenerics_0.45.3 BiocStyle_2.27.2   </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] gtable_0.3.1           xfun_0.36              bslib_0.4.2           </span></span>
-<span><span class="co">##  [4] htmlwidgets_1.6.1      lattice_0.20-45        vctrs_0.5.1           </span></span>
-<span><span class="co">##  [7] tools_4.3.0            bitops_1.0-7           generics_0.1.3        </span></span>
-<span><span class="co">## [10] stats4_4.3.0           fansi_1.0.3            highr_0.10            </span></span>
-<span><span class="co">## [13] pkgconfig_2.0.3        data.table_1.14.6      RColorBrewer_1.1-3    </span></span>
-<span><span class="co">## [16] desc_1.4.2             S4Vectors_0.37.3       assertthat_0.2.1      </span></span>
-<span><span class="co">## [19] lifecycle_1.0.3        GenomeInfoDbData_1.2.9 farver_2.1.1          </span></span>
-<span><span class="co">## [22] compiler_4.3.0         stringr_1.5.0          textshaping_0.3.6     </span></span>
-<span><span class="co">## [25] Biostrings_2.67.0      munsell_0.5.0          GenomeInfoDb_1.35.10  </span></span>
-<span><span class="co">## [28] htmltools_0.5.4        sass_0.4.4             lazyeval_0.2.2        </span></span>
-<span><span class="co">## [31] RCurl_1.98-1.9         yaml_2.3.6             plotly_4.10.1         </span></span>
-<span><span class="co">## [34] tidyr_1.2.1            pillar_1.8.1           pkgdown_2.0.7         </span></span>
-<span><span class="co">## [37] crayon_1.5.2           jquerylib_0.1.4        ellipsis_0.3.2        </span></span>
-<span><span class="co">## [40] MASS_7.3-58.1          DT_0.26                cachem_1.0.6          </span></span>
-<span><span class="co">## [43] tidyselect_1.2.0       digest_0.6.31          stringi_1.7.12        </span></span>
-<span><span class="co">## [46] reshape2_1.4.4         purrr_1.0.1            bookdown_0.31         </span></span>
-<span><span class="co">## [49] labeling_0.4.2         forcats_0.5.2          rprojroot_2.0.3       </span></span>
-<span><span class="co">## [52] fastmap_1.1.0          grid_4.3.0             colorspace_2.0-3      </span></span>
-<span><span class="co">## [55] cli_3.6.0              magrittr_2.0.3         utf8_1.2.2            </span></span>
-<span><span class="co">## [58] withr_2.5.0            scales_1.2.1           timechange_0.2.0      </span></span>
-<span><span class="co">## [61] lubridate_1.9.0        httr_1.4.4             rmarkdown_2.19        </span></span>
-<span><span class="co">## [64] XVector_0.39.0         zoo_1.8-11             ragg_1.2.5            </span></span>
-<span><span class="co">## [67] memoise_2.0.1          evaluate_0.19          knitr_1.41            </span></span>
-<span><span class="co">## [70] IRanges_2.33.0         viridisLite_0.4.1      rlang_1.0.6           </span></span>
-<span><span class="co">## [73] ggdendro_0.1.23        Rcpp_1.0.9             glue_1.6.2            </span></span>
-<span><span class="co">## [76] DBI_1.1.3              BiocManager_1.30.19    jsonlite_1.8.4        </span></span>
-<span><span class="co">## [79] plyr_1.8.8             R6_2.5.1               systemfonts_1.0.4     </span></span>
-<span><span class="co">## [82] fs_1.5.2               zlibbioc_1.45.0</span></span></code></pre>
+<span><span class="co">##  [1] gtable_0.3.3            xfun_0.39               bslib_0.4.2            </span></span>
+<span><span class="co">##  [4] htmlwidgets_1.6.2       lattice_0.21-8          vctrs_0.6.2            </span></span>
+<span><span class="co">##  [7] tools_4.3.0             bitops_1.0-7            generics_0.1.3         </span></span>
+<span><span class="co">## [10] stats4_4.3.0            fansi_1.0.4             highr_0.10             </span></span>
+<span><span class="co">## [13] pkgconfig_2.0.3         data.table_1.14.8       RColorBrewer_1.1-3     </span></span>
+<span><span class="co">## [16] desc_1.4.2              S4Vectors_0.37.7        lifecycle_1.0.3        </span></span>
+<span><span class="co">## [19] GenomeInfoDbData_1.2.10 farver_2.1.1            compiler_4.3.0         </span></span>
+<span><span class="co">## [22] stringr_1.5.0           textshaping_0.3.6       Biostrings_2.67.2      </span></span>
+<span><span class="co">## [25] munsell_0.5.0           GenomeInfoDb_1.35.17    htmltools_0.5.5        </span></span>
+<span><span class="co">## [28] sass_0.4.5              lazyeval_0.2.2          RCurl_1.98-1.12        </span></span>
+<span><span class="co">## [31] yaml_2.3.7              plotly_4.10.1           tidyr_1.3.0            </span></span>
+<span><span class="co">## [34] pillar_1.9.0            pkgdown_2.0.7           crayon_1.5.2           </span></span>
+<span><span class="co">## [37] jquerylib_0.1.4         MASS_7.3-59             DT_0.27                </span></span>
+<span><span class="co">## [40] cachem_1.0.7            tidyselect_1.2.0        digest_0.6.31          </span></span>
+<span><span class="co">## [43] stringi_1.7.12          reshape2_1.4.4          purrr_1.0.1            </span></span>
+<span><span class="co">## [46] bookdown_0.33           labeling_0.4.2          forcats_1.0.0          </span></span>
+<span><span class="co">## [49] rprojroot_2.0.3         fastmap_1.1.1           grid_4.3.0             </span></span>
+<span><span class="co">## [52] colorspace_2.1-0        cli_3.6.1               magrittr_2.0.3         </span></span>
+<span><span class="co">## [55] utf8_1.2.3              withr_2.5.0             scales_1.2.1           </span></span>
+<span><span class="co">## [58] lubridate_1.9.2         timechange_0.2.0        httr_1.4.5             </span></span>
+<span><span class="co">## [61] rmarkdown_2.21          XVector_0.39.0          zoo_1.8-12             </span></span>
+<span><span class="co">## [64] ragg_1.2.5              memoise_2.0.1           evaluate_0.20          </span></span>
+<span><span class="co">## [67] knitr_1.42              IRanges_2.33.1          viridisLite_0.4.1      </span></span>
+<span><span class="co">## [70] rlang_1.1.0             ggdendro_0.1.23         Rcpp_1.0.10            </span></span>
+<span><span class="co">## [73] glue_1.6.2              BiocManager_1.30.20     jsonlite_1.8.4         </span></span>
+<span><span class="co">## [76] plyr_1.8.8              R6_2.5.1                systemfonts_1.0.4      </span></span>
+<span><span class="co">## [79] fs_1.6.1                zlibbioc_1.45.0</span></span></code></pre>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr>
@@ -998,7 +999,7 @@ assemblies
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by <a href="https://github.com/steveped" class="external-link">Stephen Pederson</a>, <a href="https://github.com/CMWbio" class="external-link">Christopher Ward</a>, <a href="https://github.com/tothuhien" class="external-link">Thu-Hien To</a>.</p>
+<p>Developed by Stevie Pederson, <a href="https://github.com/CMWbio" class="external-link">Christopher Ward</a>, <a href="https://github.com/tothuhien" class="external-link">Thu-Hien To</a>.</p>
 </div>
 
 <div class="pkgdown">

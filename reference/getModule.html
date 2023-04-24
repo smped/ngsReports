@@ -18,7 +18,7 @@ data.frame"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.6</span>
       </span>
     </div>
 
@@ -40,7 +40,7 @@ data.frame"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
   <a href="../news/index.html">News</a>
 </li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
-  <a href="https://github.com/steveped/ngsReports" class="external-link">
+  <a href="https://github.com/smped/ngsReports" class="external-link">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -55,7 +55,7 @@ data.frame"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Retrieve a given module from a Fastqc* Object</h1>
-    <small class="dont-index">Source: <a href="https://github.com/steveped/ngsReports/blob/HEAD/R/getModule.R" class="external-link"><code>R/getModule.R</code></a></small>
+    <small class="dont-index">Source: <a href="https://github.com/smped/ngsReports/blob/HEAD/R/getModule.R" class="external-link"><code>R/getModule.R</code></a></small>
     <div class="hidden name"><code>getModule.Rd</code></div>
     </div>
 
@@ -72,6 +72,12 @@ data.frame</p>
 <span><span class="fu">getModule</span><span class="op">(</span><span class="va">object</span>, <span class="va">module</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for ANY</span></span>
+<span><span class="fu">getModule</span><span class="op">(</span><span class="va">object</span>, <span class="va">module</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for FastpData</span></span>
+<span><span class="fu">getModule</span><span class="op">(</span><span class="va">object</span>, <span class="va">module</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for FastpDataList</span></span>
 <span><span class="fu">getModule</span><span class="op">(</span><span class="va">object</span>, <span class="va">module</span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -134,22 +140,23 @@ although all will return a data.frame</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> ATTG_R1.fastq PASS   Sequence Length Distribution</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> ATTG_R1.fastq FAIL   Sequence Duplication Levels </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> ATTG_R1.fastq FAIL   Overrepresented sequences   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 62 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 62 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The Basic_Statistics module corresponds to the table at the top of each</span></span></span>
 <span class="r-in"><span><span class="co"># FastQC report</span></span></span>
 <span class="r-in"><span><span class="fu">getModule</span><span class="op">(</span><span class="va">fdl</span>, <span class="st">"Basic_Statistics"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Filename      Total_Sequences Sequence…¹ Short…² Longe…³ `%GC` File_…⁴ Encod…⁵</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ATTG_R1.fastq           <span style="text-decoration: underline;">24</span>978          0      84      84 47    Conven… Sanger…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ATTG_R2.fastq           <span style="text-decoration: underline;">24</span>978          0      84      84 52    Conven… Sanger…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> CCGC_R1.fastq           <span style="text-decoration: underline;">22</span>269          0      84      84 57    Conven… Sanger…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> CCGC_R2.fastq           <span style="text-decoration: underline;">22</span>269          0      84      84 61    Conven… Sanger…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> GACC_R1.fastq           <span style="text-decoration: underline;">10</span>287          0      84      84 53    Conven… Sanger…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> GACC_R2.fastq           <span style="text-decoration: underline;">10</span>287          0      84      84 55    Conven… Sanger…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with abbreviated variable names ¹​Sequences_flagged_as_poor_quality,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   ²​Shortest_sequence, ³​Longest_sequence, ⁴​File_type, ⁵​Encoding</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Filename      Total_Sequences Sequences_flagged_as_poor_qu…¹ Shortest_sequence</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>                          <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> ATTG_R1.fastq           <span style="text-decoration: underline;">24</span>978                              0                84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> ATTG_R2.fastq           <span style="text-decoration: underline;">24</span>978                              0                84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> CCGC_R1.fastq           <span style="text-decoration: underline;">22</span>269                              0                84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> CCGC_R2.fastq           <span style="text-decoration: underline;">22</span>269                              0                84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> GACC_R1.fastq           <span style="text-decoration: underline;">10</span>287                              0                84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> GACC_R2.fastq           <span style="text-decoration: underline;">10</span>287                              0                84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ abbreviated name: ¹​Sequences_flagged_as_poor_quality</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: Longest_sequence &lt;int&gt;, `%GC` &lt;chr&gt;, File_type &lt;chr&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   Encoding &lt;chr&gt;</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -161,7 +168,7 @@ although all will return a data.frame</p>
 
 
       <footer><div class="copyright">
-  <p></p><p>Developed by <a href="https://github.com/steveped" class="external-link">Stephen Pederson</a>, <a href="https://github.com/CMWbio" class="external-link">Christopher Ward</a>, <a href="https://github.com/tothuhien" class="external-link">Thu-Hien To</a>.</p>
+  <p></p><p>Developed by Stevie Pederson, <a href="https://github.com/CMWbio" class="external-link">Christopher Ward</a>, <a href="https://github.com/tothuhien" class="external-link">Thu-Hien To</a>.</p>
 </div>
 
 <div class="pkgdown">

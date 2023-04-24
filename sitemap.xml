@@ -22,6 +22,12 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/FastpData.html</loc>
+  </url>
+  <url>
+    <loc>/reference/FastpDataList.html</loc>
+  </url>
+  <url>
     <loc>/reference/FastqcData.html</loc>
   </url>
   <url>
@@ -32,6 +38,9 @@
   </url>
   <url>
     <loc>/reference/TheoreticalGC-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-FastpFile-class.html</loc>
   </url>
   <url>
     <loc>/reference/dot-FastqcFile-class.html</loc>
@@ -85,6 +94,9 @@
     <loc>/reference/dot-isValidTrimmomaticLog.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-isValidUmitoolsDedupLog.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-makeDendro.html</loc>
   </url>
   <url>
@@ -131,6 +143,9 @@
   </url>
   <url>
     <loc>/reference/dot-parseTrimmomaticLogs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-parseUmitoolsDedupLogs.html</loc>
   </url>
   <url>
     <loc>/reference/dot-prepHeatmap.html</loc>
