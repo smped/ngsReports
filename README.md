@@ -1,8 +1,9 @@
+# ngsReports <img id="ngsreports_logo" src="man/figures/ngsReports.png" align="right" width = "125" />
+
 ![Build Status](https://github.com/smped/ngsReports/workflows/R-CMD-check-bioc/badge.svg)
 ![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)
 [![codecov](https://codecov.io/gh/smped/ngsReports/branch/master/graph/badge.svg?token=32QDK631KA)](https://codecov.io/gh/smped/ngsReports)
 
-# ngsReports
 
 An R Package for managing FastQC reports and other NGS related log files inside R.
 Except for some periodic minor bug fixes, this branch is the current release which is also available from [the Bioconductor website](https://bioconductor.org/packages/release/bioc/html/ngsReports.html).
