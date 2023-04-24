@@ -1,5 +1,8 @@
+Changes in version 2.1.5
++ Added FastpData and FastpDataList classes for working with fastp reports
+
 Changes in version 2.1.4
-+ Added uni_tools dedup to importNgsLogs
++ Added umi_tools dedup to importNgsLogs
 
 Changes in version 2.1.3
 + Bugfix when importing duplicationMetrics

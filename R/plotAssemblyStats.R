@@ -72,7 +72,7 @@ plotAssemblyStats <- function(
   labels <- .makeLabels(df, pattern = ".tsv", col = "fileNames")
   df$fileNames <- labels[df$fileNames]
 
-  dfLong <- tidyr::gather(df, "variable", "Value", 2:7)
+  dfLong <- tidyr::gather(df, "variable", "Value", seq(2, 7))
   variable <- Value <- c()
 
   dfLong$fileNames <- factor(

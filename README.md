@@ -1,8 +1,10 @@
 # ngsReports <img id="ngsreports_logo" src="man/figures/ngsReports.png" align="right" width = "125" />
 
-![Build Status](https://github.com/smped/ngsReports/workflows/R-CMD-check-bioc/badge.svg)
-![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)
-[![codecov](https://codecov.io/gh/smped/ngsReports/branch/master/graph/badge.svg?token=32QDK631KA)](https://codecov.io/gh/smped/ngsReports)
+<!-- badges: start -->
+[![Build Status](https://github.com/smped/ngsReports/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/smped/ngsReports/actions))
+[![Repo Status](https://img.shields.io/badge/repo%20status-Active-green.svg)](https://shields.io/)
+[![Codecov test coverage](https://codecov.io/gh/smped/ngsReports/branch/devel/graph/badge.svg)](https://codecov.io/gh/smped/ngsReports?branch=devel)
+<!-- badges: end -->
 
 
 An R Package for managing FastQC reports and other NGS related log files inside R.

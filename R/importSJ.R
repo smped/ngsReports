@@ -93,9 +93,9 @@ importSJ <- function(x, stripPaths = TRUE){
   ## https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf
   chkColNums <- ncol(df) == 9
   if (!chkColNums) return(FALSE)
-  chkStrand <- all(df[[4]] %in% 0:2)
-  chkMotif <- all(df[[5]] %in% 0:6)
-  chkAnnot <- all(df[[6]] %in% 0:1)
+  chkStrand <- all(df[[4]] %in% seq(0, 2))
+  chkMotif <- all(df[[5]] %in% seq(0, 6))
+  chkAnnot <- all(df[[6]] %in% seq(0, 1))
   chkUnique <- sum(is.na(as.numeric(df[[7]]))) == 0
   chkMulti <- sum(is.na(as.numeric(df[[8]]))) == 0
   chkOverhang <- sum(is.na(as.numeric(df[[9]]))) == 0

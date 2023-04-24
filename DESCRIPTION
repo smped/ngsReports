@@ -1,10 +1,12 @@
 Package: ngsReports
-Version: 2.1.5
-Date: 2023/04/19
+Version: 2.1.6
+Date: 2023/04/25
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Stevie", "Pederson", 
-        email = "stephen.pederson.au@gmail.com", role = c("aut", "cre")),
+        email = "stephen.pederson.au@gmail.com", role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0001-8197-3303")
+        ),
     person("Christopher", "Ward", 
         email = "christopher.ward@adelaide.edu.au", role = c("aut")),
     person("Thu-Hien", "To", email = "tothuhien@gmail.com", role = c("aut"))

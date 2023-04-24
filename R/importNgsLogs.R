@@ -207,9 +207,9 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   chkLen <- length(x) > 0
   firstLine <- grepl("reads; of these:$", x[1])
   lastLine <- grepl("overall alignment rate$", x[n])
-  noAln <- sum(grepl("aligned.*0 times$", x)) %in% 1:2
-  alnExact <- sum(grepl("aligned.*exactly 1 time$", x)) %in% 1:2
-  alnG1 <- sum(grepl("aligned.*>1 times$", x)) %in% 1:2
+  noAln <- sum(grepl("aligned.*0 times$", x)) %in% seq_len(2)
+  alnExact <- sum(grepl("aligned.*exactly 1 time$", x)) %in% seq_len(2)
+  alnG1 <- sum(grepl("aligned.*>1 times$", x)) %in% seq_len(2)
   all(c(chkLen, firstLine, lastLine, noAln, alnExact, alnG1))
 }
 .isValidBowtie2Log <- .isValidHisat2Log
@@ -1379,7 +1379,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     lambda <- str_subset(args, "regional lambda")
     lambda <- str_extract_all(lambda, "[0-9]+ bps")
     lambda <- lapply(lambda, str_remove_all, " bps")
-    lambda <- rep(unlist(lambda), 2)[1:2]
+    lambda <- rep(unlist(lambda), 2)[seq_len(2)]
     lambda <- paste0("[", paste(lambda, collapse = ", "), "]")
     args_out$local <- lambda
 

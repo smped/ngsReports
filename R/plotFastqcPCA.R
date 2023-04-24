@@ -99,7 +99,7 @@ setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
     pc <- as.integer(pc)
     stopifnot(length(unique(pc)) > 1)
     stopifnot(!any(is.na(pc)))
-    pc <- paste0("PC", unique(pc)[1:2])
+    pc <- paste0("PC", unique(pc)[seq_len(2)])
 
     ## Get any theme arguments for dotArgs that have been set manually
     dotArgs <- list(...)
