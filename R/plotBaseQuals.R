@@ -30,7 +30,7 @@
 #' `"heatmap"`
 #' @param plotValue `character` Type of data to be presented. Can be
 #' any of the columns returned by the appropriate call to `getModule()`
-#' @param reads Plot heatmaps for read1 or read2 when using a FastpDataList
+#' @param reads Create plots for read1, read2 or all when using a FastpDataList
 #' @param module Select Before and After filtering when using a FastpDataList
 #' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in plot
@@ -41,6 +41,8 @@
 #' then the dendrogram will be displayed.
 #' @param boxWidth set the width of boxes when using a boxplot
 #' @param heat_w Relative width of any heatmap plot components
+#' @param line_cols Line colours when plotting FastpData object
+#' @param showPwf Include the Pwf shading colours
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object or an interactive plotly object
@@ -73,8 +75,7 @@
 #' @rdname plotBaseQuals-methods
 #' @export
 setGeneric("plotBaseQuals", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
-    boxWidth = 0.8, ...){
+    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, ...){
   standardGeneric("plotBaseQuals")
 }
 )
@@ -409,6 +410,119 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
 
   out
 
+}
+)
+#' @importFrom tidyselect everything
+#' @importFrom rlang "!!" sym
+#' @rdname plotBaseQuals-methods
+#' @export
+setMethod("plotBaseQuals", signature = "FastpData", function(
+    x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
+    module = c("Before_filtering", "After_filtering"),
+    reads = c("read1", "read2"),
+    line_cols = c(
+      A = "#807C58", `T` = "#601490", C = "green", G = "blue", mean = "grey30"
+    ), showPwf = TRUE, ...){
+
+  ## Get the data
+  module <- match.arg(module)
+  mod <- getModule(x, module)
+  avail_reads <- names(mod)
+  reads <- match.arg(reads, avail_reads, several.ok = TRUE)
+  df <- dplyr::bind_rows(mod[reads], .id = "reads")
+  df[["Filename"]] <- df[["fqName"]]
+  df <- df[c("Filename", "reads", "quality_curves")]
+  df <- tidyr::unnest(df, everything())
+
+  ## Make a blank plot if no data is found
+  if (!length(df)) {
+    msg <- "No Quality Curve Data Detected"
+    qualPlot <- .emptyPlot(msg)
+    if (usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
+    return(qualPlot)
+  }
+
+  # Get the plot labels organised
+  labels <- .makeLabels(df, labels, ...)
+  labels <- labels[names(labels) %in% df$Filename]
+  df$Filename <- labels[df$Filename]
+  df <- pivot_longer(
+    df, cols = names(line_cols), names_to = "base", values_to = "quality"
+  )
+  df[["base"]] <- factor(df[["base"]], levels = names(line_cols))
+  df[["quality"]] <- round(df[["quality"]], 2)
+
+  ## Sort out the Pwf Colours
+  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+  stopifnot(.isValidPwf(pwfCols))
+  pwfCols <- setAlpha(pwfCols, 0.2)
+
+  ## Get any theme arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+  ## Set the limits & rectangles
+  ylim <- c(0.975 * min(df$quality), 1.025 * max(df$quality))
+  expand_x <- round(0.015*(max(df$position) - min(df$position)), 1)
+  rects <- tibble(
+    xmin = min(df$position) - expand_x,
+    xmax = max(df$position) + expand_x,
+    ymin = c(0, fail, warn),
+    ymax = c(fail, warn, max(ylim)),
+    Status = c("FAIL", "WARN", "PASS")
+  )
+  xlim <- c(rects$xmin[[1]], rects$xmax[[1]])
+  rects <- dplyr::filter(rects, !!sym("ymax") > min(ylim))
+  rects[["ymin"]][rects[["ymin"]] < min(ylim)] <- min(ylim)
+  if (!showPwf) rects <- rects[NULL,]
+
+  qualPlot <- ggplot(df) +
+    geom_rect(
+      data = rects,
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
+    ) +
+    geom_line(aes(!!sym("position"), !!sym("quality"), colour = !!sym("base"))) +
+    facet_wrap(~reads) +
+    scale_colour_manual(values = line_cols) +
+    scale_fill_manual(values = getColours(pwfCols)) +
+    scale_x_continuous(expand = rep(0, 4), limits = xlim) +
+    scale_y_continuous(expand = rep(0, 4), limits = ylim) +
+    labs(colour = c()) +
+    guides(fill = "none") +
+    ggtitle(labels[[1]]) +
+    theme_bw()
+
+  if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
+
+  if (usePlotly) {
+    hv <-  names(line_cols)
+    qualPlot <- qualPlot + xlab("")
+    qualPlot <- suppressMessages(
+      suppressWarnings(
+        plotly::ggplotly(qualPlot, hoverinfo = hv)
+      )
+    )
+    ## Set the hoverinfo for bg rectangles to none,
+    ## This will effectively hide them
+    qualPlot$x$data <- lapply(qualPlot$x$data, .hidePWFRects)
+    qualPlot$x$data <- lapply(
+      qualPlot$x$data,
+      function(x){
+        isRect <- any(grepl("Status", x$text))
+        if (isRect) {
+          x$text <- ""
+          x$hoverinfo <- "none"
+        }
+        x
+      }
+    )
+
+  }
+
+  qualPlot
 }
 )
 #' @rdname plotBaseQuals-methods

@@ -85,7 +85,7 @@ setAs(".FastpFile", "FastpData", function(from){
 
     ## Initialise an empty list too parse the data into
     ## Modules should be as defined in the man page for FastpData
-    isPaired <- grepl("paired", data$summary$sequencing)
+    isPaired <- grepl("(-I|--in2)", data$command)
     out <- list()
     out[["Summary"]] <- .getFpSummary(data)
     out[["Adapters"]] <- .getFpAdapters(data)
@@ -179,6 +179,7 @@ setAs(".FastpFile", "FastpData", function(from){
 .getFpBeforeAfter <- function(data, type = c("before", "after"), paired){
 
     type <- match.arg(type)
+    count <- NULL
 
     ## Setup the kmer values
     atcg <- c("A", "T", "C", "G")
@@ -215,6 +216,20 @@ setAs(".FastpFile", "FastpData", function(from){
     kmer_tbl$suffix <- gsub("^([ATCG]{3})([ATCG]{2})", "\\2", kmer_tbl$kmer)
     kmer_tbl$suffix <- factor(kmer_tbl$suffix, levels = col_levels)
     tbl$kmer_count <- list(kmer_tbl)
+
+    overrep <- data[[mod]]$overrepresented_sequences
+    if (length(overrep) > 0) {
+        tbl$overrepresented_sequences <- list(
+            tibble(
+                sequence = names(overrep),
+                count = as.integer(unlist(overrep)),
+                ## I don't know why we multiply by 2, but it gives the same
+                ## value as the html report
+                rate = nchar(sequence) * count * 2 / tbl$total_bases
+            )
+        )
+    }
+
     out <- list(read1 = tbl)
 
     ## Check for the read2 module
@@ -241,6 +256,19 @@ setAs(".FastpFile", "FastpData", function(from){
         kmer_tbl$suffix <- gsub("^([ATCG]{3})([ATCG]{2})", "\\2", kmer_tbl$kmer)
         kmer_tbl$suffix <- factor(kmer_tbl$suffix, levels = col_levels)
         tbl$kmer_count <- list(kmer_tbl)
+
+        overrep <- data[[mod]]$overrepresented_sequences
+        if (length(overrep) > 0) {
+            tbl$overrepresented_sequences <- list(
+                tibble(
+                    sequence = names(overrep),
+                    count = as.integer(unlist(overrep)),
+                    ## I don't know why we multiply by 2, but it gives the same
+                    ## value as the html report
+                    rate = nchar(sequence) * count * 2 / tbl$total_bases
+                )
+            )
+        }
         out[["read2"]] <- tbl
     }
     out

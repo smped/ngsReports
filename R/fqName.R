@@ -85,12 +85,16 @@ setReplaceMethod("fqName", signature = "FastqcDataList", function(object, value)
 #' @rdname fqName-methods
 setMethod("fqName", "FastpData", function(object){
     isPaired <- object@paired
-    r1 <- basename(gsub(".+-i ([^ ]+) .+", "\\1", object@command))
+    cmd <- object@command
+    r1 <- basename(gsub(".+(-i|--in1) *([^ ]+) .+", "\\2", cmd))
     out <- c(read1 = r1)
     if (isPaired) {
-        r2 <- basename(gsub(".+-I ([^ ]+) .+", "\\1", object@command))
+        r2 <- basename(gsub(".+(-I|--in2) *([^ ]+) .+", "\\2", cmd))
         out <- c(out, read2 = r2)
     }
+    ## If names couldn't be extracted from the command, set as NA
+    any_na <- out == cmd
+    out[any_na] <- NA_character_
     out
 })
 #' @export

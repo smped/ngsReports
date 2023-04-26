@@ -33,6 +33,14 @@
 #' @param heatCol Colour palette used for the heatmap. Default is `inferno`
 #' from the viridis set of palettes
 #' @param heat_w Relative width of any heatmap plot components
+#' @param module The module to obtain data from when using a FastpData object
+#' @param reads Either read1 or read2. Only used when using a FastpData object
+#' @param fill A ggplot2 continuous scale to be used for the colour palette
+#' @param trans Function for transforming the count/mean ratio. Set as NULL
+#' to use the ratio without transformation
+#' @param label_size,label_colour Size & colour for the kmer labels drawn in
+#' each each cell
+#' @param fill_lab Label for fill legend. Set to NULL to have no label.
 #'
 #' @return A standard ggplot2 object or an interactive plotly object
 #'
@@ -45,6 +53,12 @@
 #' # Load the FASTQC data as a FastqcDataList object
 #' fdl <- FastqcDataList(fl)
 #' plotKmers(fdl[[1]])
+#'
+#' # Use a FastpData object
+#' fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+#' fp <- FastpData(fl)
+#' plotKmers(fp)
+#'
 #'
 #' @docType methods
 #'
@@ -330,5 +344,87 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
 
   .prepHeatmap(kMerPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
 
+}
+)
+#' @importFrom rlang "!!" sym
+#' @importFrom forcats fct_rev
+#' @rdname plotKmers-methods
+#' @export
+setMethod("plotKmers", signature = "FastpData", function(
+    x, usePlotly = FALSE, labels,
+    module = c("Before_filtering", "After_filtering"),
+    reads = c("read1", "read2"),
+    label_size = 3, label_colour = "grey70", trans = "log2",
+    fill = scale_fill_gradient2(),  fill_lab = "Count/\nMean",
+    ...
+){
+
+  ## Get the basic data frame
+  mod <- match.arg(module)
+  reads <- match.arg(reads)
+  df <- getModule(x, mod)[[reads]]
+  df[["Filename"]] <- df[["fqName"]]
+
+  ## Drop the suffix, or check the alternate labels
+  labels <- .makeLabels(df, labels, ...)
+  labels <- labels[names(labels) %in% df$Filename]
+  df$Filename <- labels[df$Filename]
+
+  ## Just grab the data we need
+  df <- df[c("Filename", "kmer_count")]
+  df <- tidyr::unnest(df, !!sym("kmer_count"))
+  df[["prefix"]] <- fct_rev(df[["prefix"]])
+  df[["count"]] <- scales::comma(df[["count"]], 1)
+
+  ## Make a blank plot if no data is found
+  if (!length(df)) {
+    msg <- "No kmer Counts Detected"
+    qualPlot <- .emptyPlot(msg)
+    if (usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
+    return(qualPlot)
+  }
+
+  if (!is.null(trans)) {
+    f <- match.fun(trans)
+    stopifnot(length(f(1:2)) == 2)
+    df[["times_mean"]] <- f(df[["times_mean"]])
+    if (!is.null(fill_lab))
+      fill_lab <- paste(trans, fill_lab, sep = "\n")
+  }
+  df[["times_mean"]] <- round(df[["times_mean"]], 3)
+
+  stopifnot(is(fill, "ScaleContinuous"))
+
+  ## Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+
+  kMerPlot <- ggplot(
+    df,
+    aes(
+      x = !!sym("suffix"), y = !!sym("prefix"), fill = !!sym("times_mean"),
+      count = !!sym("count")
+    )
+  ) +
+    geom_raster() +
+    geom_text(
+      aes(label = !!sym("kmer")), size = label_size, colour = label_colour
+    ) +
+    scale_x_discrete(expand = expansion(0), position = "top") +
+    scale_y_discrete(expand = expansion(0), position = "left") +
+    labs(x = c(), y = c(), fill = fill_lab) +
+    ggtitle(labels[[1]]) +
+    theme(axis.ticks = element_blank()) +
+    fill
+
+  if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
+
+  if (usePlotly) {
+    kMerPlot <- suppressWarnings(plotly::ggplotly(kMerPlot))
+  }
+  kMerPlot
 }
 )

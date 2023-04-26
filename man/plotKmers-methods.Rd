@@ -7,6 +7,7 @@
 \alias{plotKmers,character-method}
 \alias{plotKmers,FastqcData-method}
 \alias{plotKmers,FastqcDataList-method}
+\alias{plotKmers,FastpData-method}
 \title{Plot Overrepresented Kmers}
 \usage{
 plotKmers(x, usePlotly = FALSE, labels, ...)
@@ -34,6 +35,20 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   pwfCols,
   heatCol = hcl.colors(50, "inferno"),
   heat_w = 8,
+  ...
+)
+
+\S4method{plotKmers}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  label_size = 3,
+  label_colour = "grey70",
+  trans = "log2",
+  fill = scale_fill_gradient2(),
+  fill_lab = "Count/\\nMean",
   ...
 )
 }
@@ -71,6 +86,20 @@ pass, warning, and fail values in the plot}
 from the viridis set of palettes}
 
 \item{heat_w}{Relative width of any heatmap plot components}
+
+\item{module}{The module to obtain data from when using a FastpData object}
+
+\item{reads}{Either read1 or read2. Only used when using a FastpData object}
+
+\item{label_size, label_colour}{Size & colour for the kmer labels drawn in
+each each cell}
+
+\item{trans}{Function for transforming the count/mean ratio. Set as NULL
+to use the ratio without transformation}
+
+\item{fill}{A ggplot2 continuous scale to be used for the colour palette}
+
+\item{fill_lab}{Label for fill legend. Set to NULL to have no label.}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object
@@ -96,5 +125,11 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
 plotKmers(fdl[[1]])
+
+# Use a FastpData object
+fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+fp <- FastpData(fl)
+plotKmers(fp)
+
 
 }

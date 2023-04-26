@@ -6,19 +6,11 @@
 \alias{plotBaseQuals,ANY-method}
 \alias{plotBaseQuals,FastqcData-method}
 \alias{plotBaseQuals,FastqcDataList-method}
+\alias{plotBaseQuals,FastpData-method}
 \alias{plotBaseQuals,FastpDataList-method}
 \title{Plot the Base Qualities for each file}
 \usage{
-plotBaseQuals(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pwfCols,
-  warn = 25,
-  fail = 20,
-  boxWidth = 0.8,
-  ...
-)
+plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, ...)
 
 \S4method{plotBaseQuals}{ANY}(
   x,
@@ -59,6 +51,20 @@ plotBaseQuals(
   ...
 )
 
+\S4method{plotBaseQuals}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 25,
+  fail = 20,
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  line_cols = c(A = "#807C58", T = "#601490", C = "green", G = "blue", mean = "grey30"),
+  showPwf = TRUE,
+  ...
+)
+
 \S4method{plotBaseQuals}{FastpDataList}(
   x,
   usePlotly = FALSE,
@@ -93,9 +99,9 @@ pass, warning, and fail values in plot}
 \item{warn, fail}{The default values for warn and fail are 30 and 20
 respectively (i.e. percentages)}
 
-\item{boxWidth}{set the width of boxes when using a boxplot}
-
 \item{...}{Used to pass additional attributes to theme() and between methods}
+
+\item{boxWidth}{set the width of boxes when using a boxplot}
 
 \item{plotType}{\code{character} Can be either \code{"boxplot"} or
 \code{"heatmap"}}
@@ -115,9 +121,13 @@ Only used if drawing boxplots for multiple files in a FastqcDataList}
 
 \item{heat_w}{Relative width of any heatmap plot components}
 
-\item{reads}{Plot heatmaps for read1 or read2 when using a FastpDataList}
-
 \item{module}{Select Before and After filtering when using a FastpDataList}
+
+\item{reads}{Create plots for read1, read2 or all when using a FastpDataList}
+
+\item{line_cols}{Line colours when plotting FastpData object}
+
+\item{showPwf}{Include the Pwf shading colours}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object
