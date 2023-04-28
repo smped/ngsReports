@@ -438,3 +438,22 @@
   out
 
 }
+
+#' Add custom theme elements fro dotArgs
+#'
+#' @param p ggplot object
+#' @param ... Standard dot arguments
+#'
+#' @return ggplot2 object
+#' @keywords internal
+.updateThemeFromDots <- function(p, ...){
+  ## Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+  ## Add the basic customisations
+  if (!is.null(userTheme)) p <- p + userTheme
+  p
+}

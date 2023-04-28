@@ -39,6 +39,8 @@
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param heat_w Width of the heatmap relative to other plot components
+#' @param cols Fill colours for each read when using FastpData objects
+#' @param pattern regex used to trim the ends of all filenames for plotting
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
@@ -80,25 +82,15 @@
 #' @rdname plotAdapterContent-methods
 #' @export
 setGeneric("plotAdapterContent", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
+    x, usePlotly = FALSE, labels, ...){
   standardGeneric("plotAdapterContent")
 }
 )
 #' @rdname plotAdapterContent-methods
 #' @export
-setMethod("plotAdapterContent", signature = "ANY", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
-  .errNotImp(x)
-}
-)
-#' @rdname plotAdapterContent-methods
-#' @export
-setMethod("plotAdapterContent", signature = "character", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10, ...){
-  x <- FastqcDataList(x)
-  if (length(x) == 1) x <- x[[1]]
-  plotAdapterContent(x, usePlotly, labels, pwfCols, warn, fail, ...)
-}
+setMethod(
+  "plotAdapterContent", signature = "ANY",
+  function(x, usePlotly = FALSE, labels, ...){.errNotImp(x)}
 )
 #' @rdname plotAdapterContent-methods
 #' @export
@@ -130,13 +122,6 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
   stopifnot(is.numeric(c(warn, fail)))
   stopifnot(all(fail < 100, warn < fail,  warn > 0))
 
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
   ## Change to long form and remove the _ symbols between words
   df <- tidyr::gather(df, key = "Type", value = "Percent", one_of(valueCols))
   df$Type <- gsub("_", " ", df$Type)
@@ -151,10 +136,8 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
   pwfCols <- setAlpha(pwfCols, 0.2)
   rng <- structure(range(df$Position), names = c("min", "max"))
   rects <- tibble(
-    xmin = 0,
-    xmax = rng["max"],
-    ymin = c(0, warn, fail),
-    ymax = c(warn, fail, 100),
+    xmin = 0, xmax = rng["max"],
+    ymin = c(0, warn, fail), ymax = c(warn, fail, 100),
     Status = c("PASS", "WARN", "FAIL")
   )
 
@@ -178,22 +161,20 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
     guides(fill = "none") +
     theme_bw() +
     theme(
-      legend.position = c(1, 1),
-      legend.justification = c(1, 1),
+      legend.position = c(1, 1), legend.justification = c(1, 1),
       legend.title = element_blank()
     )
 
   ## Add the basic customisations
-  if (!is.null(userTheme)) acPlot <- acPlot + userTheme
-  ## Make interacive if required
+  acPlot <- .updateThemeFromDots(acPlot, ...)
+
+  ## Make interactive if required
   if (usePlotly) {
     acPlot <- acPlot + theme(legend.position = "none")
     acPlot <- suppressWarnings(
       suppressMessages(
         plotly::subplot(
-          plotly::plotly_empty(),
-          acPlot,
-          widths = c(0.14,0.86)
+          plotly::plotly_empty(), acPlot, widths = c(0.14,0.86)
         )
       )
     )
@@ -247,13 +228,6 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     return(.emptyPlot(msg))
   }
 
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
   ## Set the axis label for either plotType
   xLab <- "Position in read (bp)"
   key <- names(labels)
@@ -306,7 +280,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       )
 
     ## Add custom elements
-    if (!is.null(userTheme)) acPlot <- acPlot + userTheme
+    acPlot <- .updateThemeFromDots(acPlot, ...)
 
     out <- .prepHeatmap(acPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
 
@@ -346,7 +320,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       facet_wrap(~Type, ncol = 1) +
       theme_bw()
 
-    if (!is.null(userTheme)) acPlot <- acPlot + userTheme
+    acPlot <- .updateThemeFromDots(acPlot, ...)
 
     ## And draw the plot
     if (usePlotly) {
@@ -364,6 +338,74 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
   out
 }
 )
+#' @importFrom dplyr group_by summarise bind_rows
+#' @importFrom rlang !! sym
+#' @rdname plotAdapterContent-methods
+#' @export
+setMethod(
+  "plotAdapterContent", signature = "FastpData",
+  function(
+    x, usePlotly = FALSE, labels, cols = c("red", "darkblue"),
+    pattern =  "fastq.*|.fastp.json", ...
+  ){
+
+    mod <- "Adapters"
+    df <- getModule(x, mod)
+    counts <- list(df$read1_adapter_count[[1]], df$read2_adapter_count[[1]])
+    names(counts) <- fqName(x)
+    counts <- lapply(
+      counts,
+      function(x) {
+        df <- group_by(x, !!sym("adapter_length"))
+        summarise(
+          df, Sequence = paste(Sequence, collapse = " | "),
+          Occurences = sum(!!sym("Occurences")),
+          Occurence_rate = sum(!!sym("Occurence_rate")), .groups = "drop"
+        )
+      }
+    )
+    counts_df <- bind_rows(counts, .id = "Filename")
+
+    ## Set any labels & colours
+    labels <- .makeLabels(counts_df, labels, pattern = pattern, ...)
+    labels <- labels[names(labels) %in% counts_df$Filename]
+    counts_df$Filename <- labels[counts_df$Filename]
+    cols <- rep_len(cols, length(labels))
+
+    ## Tidy up for plotting
+    counts_df$Rate <- scales::percent(counts_df$Occurence_rate, 0.01)
+    counts_df$Count <- scales::comma(counts_df$Occurences)
+    counts_df$adapter_fct <- as.factor(counts_df$adapter_length)
+    counts_df$adapter_fct <- forcats::fct_na_value_to_level(
+      f = counts_df$adapter_fct, level = "other"
+    )
+    main <- .makeLabels(df, pattern = pattern)
+    aes <- aes(
+      x = !!sym("adapter_fct"), y = !!sym("Occurence_rate"), fill = Filename,
+      seq = Sequence, count = Count, rate = Rate
+    )
+
+    p <- ggplot(counts_df, aes) +
+      geom_col(position = position_dodge2(preserve = "single")) +
+      scale_y_continuous(
+        labels = scales::percent, expand = expansion(c(0, 0.05))
+      ) +
+      scale_fill_manual(values = cols) +
+      labs(x = "Adapter Sequence Length", y = "Occurence Rate (%)") +
+      ggtitle(unique(main)) +
+      theme_bw()
+
+    p <- .updateThemeFromDots(p, ...)
+
+    if (usePlotly) {
+      p <- p + theme(legend.position = "none")
+      hv <- c("Filename", "Sequence", "Count", "Rate")
+      p <- suppressMessages(plotly::ggplotly(p, tooltip = hv))
+    }
+    p
+  }
+)
+
 
 #' @title Hide PWF tooltips from line plots
 #' @description Hide tooltips from PWF rectangles in line plots

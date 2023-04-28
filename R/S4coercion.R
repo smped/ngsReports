@@ -138,14 +138,14 @@ setAs(".FastpFile", "FastpData", function(from){
     r1 <- unlist(ad$read1_adapter_counts)
     tbl_r1 <- tibble(Sequence = names(r1), Occurences = as.integer(r1))
     tbl_r1$Occurence_rate <- tbl_r1$Occurences / n_reads
-    tbl_r1$adapter_length <- str_count(tbl_r1$Sequence, "[ACGT]")
+    tbl_r1$adapter_length <- str_count(tbl_r1$Sequence, "[ACGTN]")
     tbl_r1$adapter_length[tbl_r1$Sequence == "others"] <- NA_integer_
 
     ## R2
     r2 <- unlist(ad$read2_adapter_counts)
     tbl_r2 <- tibble(Sequence = names(r2), Occurences = as.integer(r2))
     tbl_r2$Occurence_rate <- tbl_r2$Occurences / n_reads
-    tbl_r2$adapter_length <- str_count(tbl_r2$Sequence, "[ACGT]")
+    tbl_r2$adapter_length <- str_count(tbl_r2$Sequence, "[ACGTN]")
     tbl_r2$adapter_length[tbl_r2$Sequence == "others"] <- NA_integer_
     tbl_r2
 

@@ -4,40 +4,14 @@
 \name{plotAdapterContent}
 \alias{plotAdapterContent}
 \alias{plotAdapterContent,ANY-method}
-\alias{plotAdapterContent,character-method}
 \alias{plotAdapterContent,FastqcData-method}
 \alias{plotAdapterContent,FastqcDataList-method}
+\alias{plotAdapterContent,FastpData-method}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pwfCols,
-  warn = 5,
-  fail = 10,
-  ...
-)
+plotAdapterContent(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotAdapterContent}{ANY}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pwfCols,
-  warn = 5,
-  fail = 10,
-  ...
-)
-
-\S4method{plotAdapterContent}{character}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pwfCols,
-  warn = 5,
-  fail = 10,
-  ...
-)
+\S4method{plotAdapterContent}{ANY}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotAdapterContent}{FastqcData}(
   x,
@@ -63,6 +37,15 @@ plotAdapterContent(
   heat_w = 8L,
   ...
 )
+
+\S4method{plotAdapterContent}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  cols = c("red", "darkblue"),
+  pattern = "fastq.*|.fastp.json",
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, a \code{FastqcDataList} or character
@@ -75,13 +58,13 @@ object.}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
+\item{...}{Used to pass additional attributes to theme() and between methods}
+
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
 
 \item{warn, fail}{The default values for warn and fail are 5 and 10
 respectively (i.e. percentages)}
-
-\item{...}{Used to pass additional attributes to theme() and between methods}
 
 \item{plotType}{\code{character}. Can only take the values
 \code{plotType = "heatmap"} or \code{plotType = "line"}}
@@ -98,6 +81,10 @@ if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
 \item{heat_w}{Width of the heatmap relative to other plot components}
+
+\item{cols}{Fill colours for each read when using FastpData objects}
+
+\item{pattern}{regex used to trim the ends of all filenames for plotting}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
