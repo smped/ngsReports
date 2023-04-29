@@ -34,3 +34,12 @@ test_that("FastpData plots correctly", {
   expect_true(is(p, "plotly"))
 
 })
+
+test_that("FastpData plots correctly", {
+
+  fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+  fpl <- FastpDataList(c(fl, fl))
+  p <- plotAdapterContent(fpl)
+  expect_true(is(p, "gg"))
+
+})

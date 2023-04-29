@@ -348,7 +348,8 @@
 #' @param x a ggplot2 heatmap produced by ngsReports
 #' @param status a tibble with the columns Filename and Status
 #' @param segments a dendrogram produced during clustering of samples
-#' @param usePlotly logica(1)
+#' @param usePlotly logical(1)
+#' @param hv character vector of fields to include in hoverinfo
 #'
 #' @return
 #' Either a ggplot2 object assembled using patchwork, or an interactive plotly
@@ -358,13 +359,13 @@
 #' @import ggplot2
 #'
 #' @keywords internal
-.prepHeatmap <- function(x, status, segments, usePlotly, heat_w = 8, pwf) {
+.prepHeatmap <- function(x, status, segments, usePlotly, heat_w = 8, pwf, hv = NULL) {
 
   stopifnot(is(x, "gg"))
   stopifnot(all(c("Filename", "Status") %in% colnames(status)))
   stopifnot(all(c("x", "y", "xend", "yend") %in% colnames(segments)))
 
-  if(missing(pwf)) pwf <- ngsReports::pwf
+  if (missing(pwf)) pwf <- ngsReports::pwf
 
   ## Create the dendrogram if required. This is independent of plotly
   add_dend <- nrow(segments) > 0
@@ -387,6 +388,7 @@
 
   ## Now create the sideBar
   sideBar <- .makeSidebar(status, levels(status$Filename), pwf, usePlotly)
+  x_lab <- x$labels$x
 
   if (!usePlotly) {
 
@@ -404,6 +406,7 @@
     )
     title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
     panel_w <- panel_w / sum(panel_w)
+    if (!is.null(hv)) x <- plotly::ggplotly(x, tooltip = hv)
 
     if (add_dend) {
       out <- suppressWarnings(
@@ -415,7 +418,7 @@
         )
       )
       out <- plotly::layout(
-        out, title = list(x = title_x), xaxis3 = list(title = x$labels$x),
+        out, title = list(x = title_x), xaxis3 = list(title = x_lab),
         margin = list(b = 50, t = 50)
       )
     } else {
@@ -428,7 +431,7 @@
         )
       )
       out <- plotly::layout(
-        out, title = list(x = title_x), xaxis2 = list(title = x$labels$x),
+        out, title = list(x = title_x), xaxis2 = list(title = x_lab),
         margin = list(b = 50, t = 50)
       )
     }

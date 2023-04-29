@@ -346,7 +346,7 @@ setMethod(
   "plotAdapterContent", signature = "FastpData",
   function(
     x, usePlotly = FALSE, labels, cols = c("red", "darkblue"),
-    pattern =  "fastq.*|.fastp.json", ...
+    pattern =  ".fastq.*|.fastp.json", ...
   ){
 
     mod <- "Adapters"
@@ -460,4 +460,138 @@ setMethod(
   df[c("Filename", "Position", "Percent", "Type")]
 
 }
+#' @importFrom tidyr complete unnest
+#' @importFrom dplyr summarise group_by bind_rows
+#' @importFrom rlang "!!" sym
+#' @importFrom tidyselect any_of
+#' @rdname plotAdapterContent-methods
+#' @export
+setMethod(
+  "plotAdapterContent", signature = "FastpDataList",
+  function(
+    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10,
+    pattern =  ".fastq.*|.fastp.json", cluster = FALSE, dendrogram = FALSE,
+    heat_w = 8L,  ...
+  ){
 
+    mod <- "Adapters"
+    df <- getModule(x, mod)
+    r1 <- dplyr::select(df, any_of(c("Filename", "read1", "read1_adapter_count")))
+    r1$read1_adapter_count <- lapply(
+      r1$read1_adapter_count,
+      function(x) {
+        x <- group_by(x, !!sym("adapter_length"))
+        summarise(
+          x, Sequence = paste(Sequence, collapse = " | "),
+          Occurences = sum(!!sym("Occurences")),
+          Occurence_rate = sum(!!sym("Occurence_rate")), .groups = "drop"
+        )
+      }
+    )
+    r1 <- unnest(r1, !!sym("read1_adapter_count"))
+    r1$Filename <- r1$read1
+
+    ## Might need to put a condition here for SE reads
+    r2 <- dplyr::select(df, any_of(c("Filename", "read2", "read2_adapter_count")))
+    r2$read2_adapter_count <- lapply(
+      r2$read2_adapter_count,
+      function(x) {
+        x <- group_by(x, !!sym("adapter_length"))
+        summarise(
+          x, Sequence = paste(Sequence, collapse = " | "),
+          Occurences = sum(!!sym("Occurences")),
+          Occurence_rate = sum(!!sym("Occurence_rate")), .groups = "drop"
+        )
+      }
+    )
+    r2 <- unnest(r2, !!sym("read2_adapter_count"))
+    r2$Filename <- r2$read2
+    counts_list <- list(read1 = r1, read2 = r2)
+    counts_list <- lapply(counts_list, dplyr::select, -any_of(c("read1", "read2")))
+    counts_df <- bind_rows(counts_list, .id = "reads")
+
+    ## Tidy up for plotting
+    counts_df <- complete(
+      counts_df,
+      !!sym("adapter_length"), nesting(!!sym("reads"),!!sym("Filename")),
+      fill = list(Occurences = 0, Occurence_rate = 0)
+    )
+    counts_df$Rate <- scales::percent(counts_df$Occurence_rate, 0.01)
+    counts_df$Count <- scales::comma(counts_df$Occurences)
+    counts_df$adapter_fct <- as.factor(counts_df$adapter_length)
+    counts_df$adapter_fct <- forcats::fct_na_value_to_level(
+      f = counts_df$adapter_fct, level = "other"
+    )
+
+    ## Set any labels & colours
+    labels <- .makeLabels(counts_df, labels, pattern = pattern, ...)
+    labels <- labels[names(labels) %in% counts_df$Filename]
+    key <- names(labels)
+    ## Set up the dendrogram
+    clusterDend <- .makeDendro(
+      counts_df, "Filename", "adapter_length", "Occurence_rate"
+    )
+    dx <- ggdendro::dendro_data(clusterDend)
+    if (dendrogram | cluster) {
+      key <- labels(clusterDend)
+    }
+    if (!dendrogram) dx$segments <- dx$segments[0,]
+    counts_df$Filename <- factor(labels[counts_df$Filename], levels = labels[key])
+
+    ## Set the gradient
+    if (missing(pwfCols)) pwfCols <- pwf
+    stopifnot(.isValidPwf(pwfCols))
+    stopifnot(is.numeric(c(warn, fail)))
+    stopifnot(all(fail < 100, warn < fail,  warn > 0))
+    breaks <- c(0, warn, fail, 100) / 100
+    cols <- .makePwfGradient(
+      counts_df$Occurence_rate, pwf, breaks = breaks, na.value = "white"
+    )
+    cols$breaks <- seq(min(cols$breaks), max(cols$breaks), length.out = 3)
+    cols$labels <- scales::percent
+
+    ## Bodge up a PWF status like FastQC
+    status_df <- dplyr::filter(
+      counts_df, !!sym("Occurence_rate") == max(!!sym("Occurence_rate")),
+      .by = Filename
+    )
+    status_df <- dplyr::select(
+      status_df, all_of(c("Filename", "Occurence_rate"))
+    )
+    status_df$Status <- cut(
+      status_df$Occurence_rate,
+      breaks = breaks, include.lowest = TRUE, labels = c("PASS", "WARN", "FAIL")
+    )
+
+    hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram) # Heatmap width
+    p <- ggplot(
+      counts_df,
+      aes(
+        x = !!sym("adapter_fct"), y = Filename, fill = !!sym("Occurence_rate"),
+        seq = Sequence, count = Count, rate = Rate
+      )
+    ) +
+      geom_tile() +
+      ggtitle("Adapter Content (fastp)") +
+      scale_x_discrete(expand = expansion(c(0, 0))) +
+      scale_y_discrete(expand = expansion(c(0, 0)), position = "right") +
+      do.call("scale_fill_gradientn", cols) +
+      labs(
+        x = "Adapter Sequence Length", y = "Filename",
+        fill = "Occurence\nRate (%)"
+      ) +
+      theme_bw() +
+      theme(
+        panel.background = element_blank(),
+        plot.title = element_text(hjust = hj),
+        axis.title.x = element_text(hjust = hj),
+        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
+      )
+
+    ## Add custom elements
+    p <- .updateThemeFromDots(p, ...)
+    hv <- c("Filename", "Status", "Sequence", "Count", "Rate")
+    p <- .prepHeatmap(p, status_df, dx$segments, usePlotly, heat_w, pwfCols, hv)
+    p
+  }
+)

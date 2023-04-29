@@ -7,6 +7,7 @@
 \alias{plotAdapterContent,FastqcData-method}
 \alias{plotAdapterContent,FastqcDataList-method}
 \alias{plotAdapterContent,FastpData-method}
+\alias{plotAdapterContent,FastpDataList-method}
 \title{Draw an Adapter Content Plot}
 \usage{
 plotAdapterContent(x, usePlotly = FALSE, labels, ...)
@@ -43,7 +44,21 @@ plotAdapterContent(x, usePlotly = FALSE, labels, ...)
   usePlotly = FALSE,
   labels,
   cols = c("red", "darkblue"),
-  pattern = "fastq.*|.fastp.json",
+  pattern = ".fastq.*|.fastp.json",
+  ...
+)
+
+\S4method{plotAdapterContent}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 5,
+  fail = 10,
+  pattern = ".fastq.*|.fastp.json",
+  cluster = FALSE,
+  dendrogram = FALSE,
+  heat_w = 8L,
   ...
 )
 }

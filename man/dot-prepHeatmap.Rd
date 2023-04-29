@@ -4,7 +4,7 @@
 \alias{.prepHeatmap}
 \title{Prepare the final heatmap for plotting}
 \usage{
-.prepHeatmap(x, status, segments, usePlotly, heat_w = 8, pwf)
+.prepHeatmap(x, status, segments, usePlotly, heat_w = 8, pwf, hv = NULL)
 }
 \arguments{
 \item{x}{a ggplot2 heatmap produced by ngsReports}
@@ -13,7 +13,9 @@
 
 \item{segments}{a dendrogram produced during clustering of samples}
 
-\item{usePlotly}{logica(1)}
+\item{usePlotly}{logical(1)}
+
+\item{hv}{character vector of fields to include in hoverinfo}
 }
 \value{
 Either a ggplot2 object assembled using patchwork, or an interactive plotly
