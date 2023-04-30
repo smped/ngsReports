@@ -160,7 +160,10 @@ setAs(".FastpFile", "FastpData", function(from){
         histogram = data$duplication$histogram,
         mean_gc = data$duplication$mean_g,
     )
+    hist$duplication_rate <- numeric(nrow(hist))
     hist$duplication_level <- seq_len(nrow(hist))
+    if (nrow(hist))
+        hist$duplication_rate <- hist$histogram / sum(hist$histogram)
     tbl$histogram <- list(hist)
     tbl
 }

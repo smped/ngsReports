@@ -442,7 +442,7 @@
 
 }
 
-#' Add custom theme elements fro dotArgs
+#' Add custom theme elements from dotArgs
 #'
 #' @param p ggplot object
 #' @param ... Standard dot arguments
@@ -459,4 +459,26 @@
   ## Add the basic customisations
   if (!is.null(userTheme)) p <- p + userTheme
   p
+}
+
+
+#' @title Hide PWF tooltips from line plots
+#' @description Hide tooltips from PWF rectangles in line plots
+#' @param x plotlyObject$x$data
+#' @return plotlyObject$x$data
+#' @keywords internal
+.hidePWFRects <- function(x){
+  ## If there is a name component & it contains
+  ## PASS/WARN/FAIL set the hoverinfo to none
+  if (any(grepl("(PASS|WARN|FAIL|Status)", x$text))) {
+    x$hoverinfo <- "none"
+    x$text <- ""
+  }
+  if (!is.null(x$name)) {
+    if (any(grepl("(PASS|WARN|FAIL|Status)", x$name))) {
+      x$hoverinfo <- "none"
+      x$text <- ""
+    }
+  }
+  x
 }

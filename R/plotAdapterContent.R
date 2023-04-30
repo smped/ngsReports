@@ -405,61 +405,6 @@ setMethod(
     p
   }
 )
-
-
-#' @title Hide PWF tooltips from line plots
-#' @description Hide tooltips from PWF rectangles in line plots
-#' @param x plotlyObject$x$data
-#' @return plotlyObject$x$data
-#' @keywords internal
-.hidePWFRects <- function(x){
-  ## If there is a name component & it contains
-  ## PASS/WARN/FAIL set the hoverinfo to none
-  if ("name" %in% names(x)) {
-    if (grepl("(PASS|WARN|FAIL)", x$name)) {
-      x$hoverinfo <- "none"
-    }
-  }
-  x
-}
-
-.tidyAc <- function(x, adapterType = "Total") {
-
-  df <- getModule(x, "Adapter_Content")
-  valueCols <- setdiff(colnames(df), c("Filename", "Position"))
-  df <- tidyr::pivot_longer(
-    df, cols = all_of(valueCols), names_to = "Type", values_to = "Percent"
-  )
-  adaptOpts <- c("Total_Adapter_Content", valueCols)
-  adapterType <- match.arg(adapterType, adaptOpts)
-
-  if (adapterType == "Total_Adapter_Content") {
-    ## Sum the adapters by filename& position
-    df <- summarise(
-      group_by(df, Filename, Position),
-      Percent = sum(Percent, na.rm = TRUE), .groups = "drop"
-    )
-    df <- ungroup(df)
-  }
-  else{
-    df <- dplyr::filter(df, Type == adapterType)
-  }
-  df$Percent <- round(df$Percent, 2)
-  ## Set any binned values to be continuous
-  df$Position <- lapply(
-    df$Position,
-    function(x){
-      rng <- as.integer(str_split(x, pattern = "-")[[1]])
-      seq(min(rng), max(rng), by = 1L)
-    }
-  )
-  df <- unnest(df, Position)
-  df$Type <- gsub("_", " ", adapterType)
-
-  ## Now just keep the three required columns
-  df[c("Filename", "Position", "Percent", "Type")]
-
-}
 #' @importFrom tidyr complete unnest
 #' @importFrom dplyr summarise group_by bind_rows
 #' @importFrom rlang "!!" sym
@@ -595,3 +540,42 @@ setMethod(
     p
   }
 )
+
+
+.tidyAc <- function(x, adapterType = "Total") {
+
+  df <- getModule(x, "Adapter_Content")
+  valueCols <- setdiff(colnames(df), c("Filename", "Position"))
+  df <- tidyr::pivot_longer(
+    df, cols = all_of(valueCols), names_to = "Type", values_to = "Percent"
+  )
+  adaptOpts <- c("Total_Adapter_Content", valueCols)
+  adapterType <- match.arg(adapterType, adaptOpts)
+
+  if (adapterType == "Total_Adapter_Content") {
+    ## Sum the adapters by filename& position
+    df <- summarise(
+      group_by(df, Filename, Position),
+      Percent = sum(Percent, na.rm = TRUE), .groups = "drop"
+    )
+    df <- ungroup(df)
+  }
+  else{
+    df <- dplyr::filter(df, Type == adapterType)
+  }
+  df$Percent <- round(df$Percent, 2)
+  ## Set any binned values to be continuous
+  df$Position <- lapply(
+    df$Position,
+    function(x){
+      rng <- as.integer(str_split(x, pattern = "-")[[1]])
+      seq(min(rng), max(rng), by = 1L)
+    }
+  )
+  df <- unnest(df, Position)
+  df$Type <- gsub("_", " ", adapterType)
+
+  ## Now just keep the three required columns
+  df[c("Filename", "Position", "Percent", "Type")]
+
+}

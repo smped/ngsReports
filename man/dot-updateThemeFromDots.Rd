@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{.updateThemeFromDots}
 \alias{.updateThemeFromDots}
-\title{Add custom theme elements fro dotArgs}
+\title{Add custom theme elements from dotArgs}
 \usage{
 .updateThemeFromDots(p, ...)
 }
@@ -15,6 +15,6 @@
 ggplot2 object
 }
 \description{
-Add custom theme elements fro dotArgs
+Add custom theme elements from dotArgs
 }
 \keyword{internal}

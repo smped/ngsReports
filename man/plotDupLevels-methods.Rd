@@ -4,16 +4,15 @@
 \name{plotDupLevels}
 \alias{plotDupLevels}
 \alias{plotDupLevels,ANY-method}
-\alias{plotDupLevels,character-method}
 \alias{plotDupLevels,FastqcData-method}
 \alias{plotDupLevels,FastqcDataList-method}
+\alias{plotDupLevels,FastpData-method}
+\alias{plotDupLevels,FastpDataList-method}
 \title{Plot the combined Sequence_Duplication_Levels information}
 \usage{
 plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotDupLevels}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
-
-\S4method{plotDupLevels}{character}(x, usePlotly = FALSE, labels, pwfCols, ...)
 
 \S4method{plotDupLevels}{FastqcData}(
   x,
@@ -22,7 +21,8 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
   pwfCols,
   warn = 20,
   fail = 50,
-  lineCols = c("red", "blue"),
+  lineCol = c("red", "blue"),
+  lineWidth = 1,
   ...
 )
 
@@ -39,6 +39,42 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
   dendrogram = FALSE,
   heatCol = hcl.colors(50, "inferno"),
   heat_w = 8,
+  ...
+)
+
+\S4method{plotDupLevels}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 20,
+  fail = 50,
+  maxLevel = 10,
+  lineCol = "red",
+  lineWidth = 1,
+  barFill = "dodgerblue4",
+  barCol = barFill,
+  showPwf = TRUE,
+  ...
+)
+
+\S4method{plotDupLevels}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pwfCols,
+  warn = 20,
+  fail = 50,
+  plotType = c("bar", "heatmap"),
+  barFill = "blue",
+  barCol = "blue",
+  cluster = FALSE,
+  dendrogram = FALSE,
+  heatCol = hcl.colors(50, "inferno"),
+  heat_w = 8,
+  pattern = ".fastp.*",
+  showPwf = TRUE,
+  maxLevel = 10,
   ...
 )
 }
@@ -60,7 +96,7 @@ pass, warning, and fail values in the plot}
 \item{warn, fail}{The default values for warn and fail are 20 and 50
 respectively (i.e. percentages)}
 
-\item{lineCols}{Colours of the lines drawn for individual libraries}
+\item{lineCol, lineWidth}{Colours and width of lines drawn}
 
 \item{deduplication}{Plot Duplication levels 'pre' or 'post' deduplication.
 Can only take values "pre" and "post"}
@@ -77,6 +113,15 @@ then the dendrogram will be displayed.}
 \item{heatCol}{Colour palette used for the heatmap}
 
 \item{heat_w}{Relative width of the heatmap relative to other plot components}
+
+\item{maxLevel}{The maximum duplication level to plot. Beyond this level, all
+values will be summed}
+
+\item{barFill, barCol}{Colours for bars when calling geom_col()}
+
+\item{showPwf}{logical(1) Show PWF rectanlges in the background}
+
+\item{pattern}{regex to remove from the end of fastp & fastq file names}
 }
 \value{
 A standard ggplot2 or plotly object

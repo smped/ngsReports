@@ -183,7 +183,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
       theme(legend.position = "none")
     qualPlot <- suppressMessages(
       suppressWarnings(
-        plotly::ggplotly(qualPlot, hoverinfo = hv)
+        plotly::ggplotly(qualPlot, tooltip = hv)
       )
     )
     qualPlot <- suppressMessages(
@@ -460,13 +460,17 @@ setMethod(
     xlim <- c(rects$xmin[[1]], rects$xmax[[1]])
     rects <- dplyr::filter(rects, !!sym("ymax") > min(ylim))
     rects[["ymin"]][rects[["ymin"]] < min(ylim)] <- min(ylim)
-    if (!showPwf) rects <- rects[NULL,]
 
-    qualPlot <- ggplot(df) +
-      geom_rect(
+    qualPlot <- ggplot(df)
+    if (showPwf) {
+      qualPlot <- qualPlot + geom_rect(
         data = rects,
-        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
-      ) +
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status),
+        inherit.aes = FALSE
+      )
+    }
+
+    qualPlot <- qualPlot +
       geom_line(
         aes(
           !!sym("position"), !!sym("quality"), colour = !!sym("base"),

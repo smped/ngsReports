@@ -25,25 +25,6 @@ test_that("plotBaseQuals outputs correct objects", {
 })
 
 
-test_that("plotDupLevels outputs correct objects", {
-
-  p <- plotDupLevels(fdl[[1]])
-  expect_true(is(p, "gg"))
-
-  p <- plotDupLevels(fdl)
-  expect_true(is(p, "gg"))
-
-  p <- plotDupLevels(fdl, plotType = "line")
-  expect_true(is(p, "gg"))
-
-  p <- plotDupLevels(fdl, dendrogam = TRUE)
-  expect_true(is(p, "patchwork"))
-
-  p <- plotDupLevels(fdl, dendrogam = TRUE, usePlotly = TRUE)
-  expect_true(is(p, "plotly"))
-
-})
-
 test_that("plotGcContent outputs correct objects", {
 
   p <- plotGcContent(fdl[[1]])
