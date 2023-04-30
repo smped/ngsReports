@@ -31,6 +31,7 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, ...)
   warn = 25,
   fail = 20,
   boxWidth = 0.8,
+  showPwf = TRUE,
   ...
 )
 
@@ -61,7 +62,9 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, ...)
   module = c("Before_filtering", "After_filtering"),
   reads = c("read1", "read2"),
   line_cols = c(A = "#807C58", T = "#601490", C = "green", G = "blue", mean = "grey30"),
+  readsBy = c("facet", "linetype"),
   showPwf = TRUE,
+  pattern = ".fq.*|.fastq.*|.fastp.*",
   ...
 )
 
@@ -73,7 +76,6 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20, ...)
   warn = 25,
   fail = 20,
   plotType = c("heatmap"),
-  reads = c("read1", "read2"),
   module = c("Before_filtering", "After_filtering"),
   plotValue = c("mean", "A", "T", "C", "G"),
   cluster = FALSE,
@@ -103,6 +105,8 @@ respectively (i.e. percentages)}
 
 \item{boxWidth}{set the width of boxes when using a boxplot}
 
+\item{showPwf}{Include the Pwf shading colours}
+
 \item{plotType}{\code{character} Can be either \code{"boxplot"} or
 \code{"heatmap"}}
 
@@ -127,7 +131,11 @@ Only used if drawing boxplots for multiple files in a FastqcDataList}
 
 \item{line_cols}{Line colours when plotting FastpData object}
 
-\item{showPwf}{Include the Pwf shading colours}
+\item{readsBy}{If paired reads are present, separate using either linetype
+or by facet}
+
+\item{pattern}{Regex to remove from the end of the Fastp report and Fastq
+file names}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

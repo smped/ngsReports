@@ -42,6 +42,10 @@
 #' @param boxWidth set the width of boxes when using a boxplot
 #' @param heat_w Relative width of any heatmap plot components
 #' @param line_cols Line colours when plotting FastpData object
+#' @param readsBy If paired reads are present, separate using either linetype
+#' or by facet
+#' @param pattern Regex to remove from the end of the Fastp report and Fastq
+#' file names
 #' @param showPwf Include the Pwf shading colours
 #' @param ... Used to pass additional attributes to theme() and between methods
 #'
@@ -91,7 +95,7 @@ setMethod("plotBaseQuals", signature = "ANY", function(
 #' @export
 setMethod("plotBaseQuals", signature = "FastqcData", function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
-    boxWidth = 0.8, ...){
+    boxWidth = 0.8, showPwf = TRUE, ...){
 
   ## Get the data
   df <- getModule(x, "Per_base_sequence_quality")
@@ -120,13 +124,6 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
   stopifnot(.isValidPwf(pwfCols))
   pwfCols <- setAlpha(pwfCols, 0.2)
 
-  ## Get any theme arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
   ## Set the limits & rectangles
   ylim <- c(0, max(df$`90th_Percentile`) + 1)
   expand_x <- round(0.015*(max(df$Position) - min(df$Position)), 1)
@@ -137,6 +134,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
     ymax = c(fail, warn, max(ylim)),
     Status = c("FAIL", "WARN", "PASS")
   )
+  if (!showPwf) rects <- rects[NULL,]
 
   ## Get the Illumina encoding
   enc <- getModule(x, "Basic_Statistics")$Encoding[1]
@@ -173,7 +171,7 @@ setMethod("plotBaseQuals", signature = "FastqcData", function(
       panel.grid.minor = element_blank(),
       axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
-  if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
+  qualPlot <- .updateThemeFromDots(qualPlot, ...)
 
   if (usePlotly) {
     hv <-  c(
@@ -271,20 +269,10 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
     ylim <- c(0, max(df$`90th_Percentile`) + 1)
     expand_x <- round(0.015*(max(df$Position) - min(df$Position)), 1)
     rects <- tibble(
-      xmin = min(df$Position) - expand_x,
-      xmax = max(df$Position) + expand_x,
-      ymin = c(0, fail, warn),
-      ymax = c(fail, warn, max(ylim)),
+      xmin = min(df$Position) - expand_x, xmax = max(df$Position) + expand_x,
+      ymin = c(0, fail, warn), ymax = c(fail, warn, max(ylim)),
       Status = c("FAIL", "WARN", "PASS")
     )
-
-    ## Get any theme arguments for dotArgs that have been set
-    ## manually
-    dotArgs <- list(...)
-    allowed <- names(formals(theme))
-    keepArgs <- which(names(dotArgs) %in% allowed)
-    userTheme <- c()
-    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
     ## Generate the basic plot
     df$Filename <- labels[df$Filename]
@@ -319,7 +307,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
         panel.grid.minor = element_blank(),
         axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
       )
-    if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
+    qualPlot <- .updateThemeFromDots(qualPlot, ...)
 
     ## Make interactive if required
     if (usePlotly) {
@@ -392,12 +380,7 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
       )
 
     ## Get any arguments for dotArgs that have been set manually
-    dotArgs <- list(...)
-    allowed <- names(formals(theme))
-    keepArgs <- which(names(dotArgs) %in% allowed)
-    userTheme <- c()
-    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-    if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
+    qualPlot <- .updateThemeFromDots(qualPlot, ...)
 
     ## Add the status sideBar
     status <- subset(getSummary(x), Category == gsub("_", " ", mod))
@@ -416,114 +399,118 @@ setMethod("plotBaseQuals", signature = "FastqcDataList", function(
 #' @importFrom rlang "!!" sym
 #' @rdname plotBaseQuals-methods
 #' @export
-setMethod("plotBaseQuals", signature = "FastpData", function(
+setMethod(
+  "plotBaseQuals", signature = "FastpData",
+  function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
-    module = c("Before_filtering", "After_filtering"),
-    reads = c("read1", "read2"),
+    module = c("Before_filtering", "After_filtering"), reads = c("read1", "read2"),
     line_cols = c(
       A = "#807C58", `T` = "#601490", C = "green", G = "blue", mean = "grey30"
-    ), showPwf = TRUE, ...){
+    ), readsBy = c("facet", "linetype"), showPwf = TRUE,
+    pattern = ".fq.*|.fastq.*|.fastp.*", ...
+  ){
 
-  ## Get the data
-  module <- match.arg(module)
-  mod <- getModule(x, module)
-  avail_reads <- names(mod)
-  reads <- match.arg(reads, avail_reads, several.ok = TRUE)
-  df <- dplyr::bind_rows(mod[reads], .id = "reads")
-  df[["Filename"]] <- df[["fqName"]]
-  df <- df[c("Filename", "reads", "quality_curves")]
-  df <- tidyr::unnest(df, everything())
+    ## Get the data
+    module <- match.arg(module)
+    mod <- getModule(x, module)
+    avail_reads <- names(mod)
+    reads <- match.arg(reads, avail_reads, several.ok = TRUE)
+    df <- dplyr::bind_rows(mod[reads], .id = "reads")
+    fpName <- gsub(pattern, "", unique(df[["Filename"]]))
+    df[["Filename"]] <- df[["fqName"]]
+    df <- df[c("Filename", "reads", "quality_curves")]
+    df <- tidyr::unnest(df, everything())
+    readsBy <- match.arg(readsBy)
+    linetype <- linewidth <- NULL
+    if (readsBy == "linetype") linetype <- sym("Filename")
 
-  ## Make a blank plot if no data is found
-  if (!length(df)) {
-    msg <- "No Quality Curve Data Detected"
-    qualPlot <- .emptyPlot(msg)
-    if (usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
-    return(qualPlot)
-  }
+    ## Make a blank plot if no data is found
+    if (!length(df)) {
+      msg <- "No Quality Curve Data Detected"
+      qualPlot <- .emptyPlot(msg)
+      if (usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
+      return(qualPlot)
+    }
 
-  # Get the plot labels organised
-  labels <- .makeLabels(df, labels, ...)
-  labels <- labels[names(labels) %in% df$Filename]
-  df$Filename <- labels[df$Filename]
-  df <- pivot_longer(
-    df, cols = names(line_cols), names_to = "base", values_to = "quality"
-  )
-  df[["base"]] <- factor(df[["base"]], levels = names(line_cols))
-  df[["quality"]] <- round(df[["quality"]], 2)
+    # Get the plot labels organised
+    labels <- .makeLabels(df, labels, pattern = pattern, ...)
+    labels <- labels[names(labels) %in% df$Filename]
+    df$Filename <- labels[df$Filename]
+    df <- pivot_longer(
+      df, cols = names(line_cols), names_to = "base", values_to = "quality"
+    )
+    df[["base"]] <- factor(df[["base"]], levels = names(line_cols))
+    df[["quality"]] <- round(df[["quality"]], 2)
 
-  ## Sort out the Pwf Colours
-  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-  stopifnot(.isValidPwf(pwfCols))
-  pwfCols <- setAlpha(pwfCols, 0.2)
+    ## Sort out the Pwf Colours
+    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+    stopifnot(.isValidPwf(pwfCols))
+    pwfCols <- setAlpha(pwfCols, 0.2)
 
-  ## Get any theme arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+    ## Set the limits & rectangles
+    ylim <- c(0.975 * min(df$quality), 1.025 * max(df$quality))
+    expand_x <- round(0.015*(max(df$position) - min(df$position)), 1)
+    rects <- tibble(
+      xmin = min(df$position) - expand_x,
+      xmax = max(df$position) + expand_x,
+      ymin = c(0, fail, warn),
+      ymax = c(fail, warn, max(ylim)),
+      Status = c("FAIL", "WARN", "PASS")
+    )
+    xlim <- c(rects$xmin[[1]], rects$xmax[[1]])
+    rects <- dplyr::filter(rects, !!sym("ymax") > min(ylim))
+    rects[["ymin"]][rects[["ymin"]] < min(ylim)] <- min(ylim)
+    if (!showPwf) rects <- rects[NULL,]
 
-  ## Set the limits & rectangles
-  ylim <- c(0.975 * min(df$quality), 1.025 * max(df$quality))
-  expand_x <- round(0.015*(max(df$position) - min(df$position)), 1)
-  rects <- tibble(
-    xmin = min(df$position) - expand_x,
-    xmax = max(df$position) + expand_x,
-    ymin = c(0, fail, warn),
-    ymax = c(fail, warn, max(ylim)),
-    Status = c("FAIL", "WARN", "PASS")
-  )
-  xlim <- c(rects$xmin[[1]], rects$xmax[[1]])
-  rects <- dplyr::filter(rects, !!sym("ymax") > min(ylim))
-  rects[["ymin"]][rects[["ymin"]] < min(ylim)] <- min(ylim)
-  if (!showPwf) rects <- rects[NULL,]
+    qualPlot <- ggplot(df) +
+      geom_rect(
+        data = rects,
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
+      ) +
+      geom_line(
+        aes(
+          !!sym("position"), !!sym("quality"), colour = !!sym("base"),
+          linetype = {{ linetype }}
+        )
+      ) +
+      scale_colour_manual(values = line_cols) +
+      scale_fill_manual(values = getColours(pwfCols)) +
+      scale_x_continuous(expand = rep(0, 4), limits = xlim) +
+      scale_y_continuous(expand = rep(0, 4), limits = ylim) +
+      labs(colour = c()) +
+      guides(fill = "none") +
+      ggtitle(fpName) +
+      theme_bw()
+    if (readsBy == "facet") qualPlot <- qualPlot + facet_wrap(~Filename)
+    qualPlot <- .updateThemeFromDots(qualPlot, ...)
 
-  qualPlot <- ggplot(df) +
-    geom_rect(
-      data = rects,
-      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
-    ) +
-    geom_line(aes(!!sym("position"), !!sym("quality"), colour = !!sym("base"))) +
-    facet_wrap(~reads) +
-    scale_colour_manual(values = line_cols) +
-    scale_fill_manual(values = getColours(pwfCols)) +
-    scale_x_continuous(expand = rep(0, 4), limits = xlim) +
-    scale_y_continuous(expand = rep(0, 4), limits = ylim) +
-    labs(colour = c()) +
-    guides(fill = "none") +
-    ggtitle(labels[[1]]) +
-    theme_bw()
-
-  if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
-
-  if (usePlotly) {
-    hv <-  names(line_cols)
-    qualPlot <- qualPlot + xlab("")
-    qualPlot <- suppressMessages(
-      suppressWarnings(
-        plotly::ggplotly(qualPlot, hoverinfo = hv)
+    if (usePlotly) {
+      hv <-  names(line_cols)
+      qualPlot <- qualPlot + xlab("")
+      qualPlot <- suppressMessages(
+        suppressWarnings(
+          plotly::ggplotly(qualPlot, hoverinfo = hv)
+        )
       )
-    )
-    ## Set the hoverinfo for bg rectangles to none,
-    ## This will effectively hide them
-    qualPlot$x$data <- lapply(qualPlot$x$data, .hidePWFRects)
-    qualPlot$x$data <- lapply(
-      qualPlot$x$data,
-      function(x){
-        isRect <- any(grepl("Status", x$text))
-        if (isRect) {
-          x$text <- ""
-          x$hoverinfo <- "none"
+      ## Set the hoverinfo for bg rectangles to none,
+      ## This will effectively hide them
+      qualPlot$x$data <- lapply(qualPlot$x$data, .hidePWFRects)
+      qualPlot$x$data <- lapply(
+        qualPlot$x$data,
+        function(x){
+          isRect <- any(grepl("Status", x$text))
+          if (isRect) {
+            x$text <- ""
+            x$hoverinfo <- "none"
+          }
+          x
         }
-        x
-      }
-    )
+      )
 
+    }
+
+    qualPlot
   }
-
-  qualPlot
-}
 )
 #' @rdname plotBaseQuals-methods
 #' @export
@@ -531,40 +518,27 @@ setMethod(
   "plotBaseQuals", signature = "FastpDataList",
   function(
     x, usePlotly = FALSE, labels, pwfCols, warn = 25, fail = 20,
-    plotType = c("heatmap"), reads = c("read1", "read2"),
-    module = c("Before_filtering", "After_filtering"),
+    plotType = c("heatmap"), module = c("Before_filtering", "After_filtering"),
     plotValue = c("mean", "A", "T", "C", "G"),
     cluster = FALSE, dendrogram = FALSE, heat_w = 8L, ...
   ){
 
     ## Get the data
     module <- match.arg(module)
-    reads <- match.arg(reads)
     plotType <- match.arg(plotType)
     plotValue <- match.arg(plotValue)
-    df <- getModule(x, module)[[reads]]
+
+    df <- bind_rows(getModule(x, module), .id = "reads")
     df$Filename <- df$fqName
     df <- df[c("Filename", "quality_curves")]
     df <- unnest(df, !!sym("quality_curves"))
     df <- df[c("Filename", "position", plotValue)]
-    maxQ <- max(df[[plotValue]])
-
-    ## Sort out the colours
-    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-    stopifnot(.isValidPwf(pwfCols))
+    maxQ <- max(df[[plotValue]], na.rm = TRUE)
+    phredMax <- ifelse(maxQ <= warn, max(maxQ, 41), ceiling(maxQ + 1))
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(df, labels, ...)
     labels <- labels[names(labels) %in% df$Filename]
-
-    ## Set the plot titles
-    xlab <- "Position in read (bp)"
-    main <- c(gsub("_", " ", module), " (", reads, ")")
-    main <- stringr::str_to_title(paste(main, collapse = ""))
-
-    maxVal <- max(df[[plotValue]], na.rm = TRUE)
-    phredMax <- ifelse(maxVal <= warn, max(maxQ, 41), ceiling(maxVal + 1))
-
     ## Set up the dendrogram & labels
     key <- names(labels)
     clusterDend <- .makeDendro(df, "Filename", "position", plotValue)
@@ -573,7 +547,16 @@ setMethod(
     if (!dendrogram) dx$segments <- dx$segments[0,]
     lv <- labels[key]
     df$Filename <- factor(labels[df$Filename], levels = lv)
+    df[[plotValue]] <- round(df[[plotValue]], 2)
 
+    ## Set the plot titles
+    xlab <- "Position in read (bp)"
+    main <- gsub("_", " ", module)
+    main <- stringr::str_to_title(paste(main, collapse = ""))
+
+    ## Sort out the colours
+    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+    stopifnot(.isValidPwf(pwfCols))
     cols <- .makePwfGradient(
       vals = na.omit(df[[plotValue]]), pwfCols = pwfCols,
       breaks = c(0, fail, warn, phredMax), passLow = FALSE, na.value = "white"
@@ -596,14 +579,7 @@ setMethod(
         axis.title.x = element_text(hjust = hj),
         plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
       )
-
-    ## Get any arguments for dotArgs that have been set manually
-    dotArgs <- list(...)
-    allowed <- names(formals(theme))
-    keepArgs <- which(names(dotArgs) %in% allowed)
-    userTheme <- c()
-    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-    if (!is.null(userTheme)) qualPlot <- qualPlot + userTheme
+    qualPlot <- .updateThemeFromDots(qualPlot, ...)
 
     ## Manually replicate the status using the provided values
     status <- lapply(split(df, df$Filename), function(x) min(x[[plotValue]]))
