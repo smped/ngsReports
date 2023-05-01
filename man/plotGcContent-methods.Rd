@@ -7,20 +7,10 @@
 \alias{plotGcContent,character-method}
 \alias{plotGcContent,FastqcData-method}
 \alias{plotGcContent,FastqcDataList-method}
+\alias{plotGcContent,FastpDataList-method}
 \title{Plot the Per Sequence GC Content}
 \usage{
-plotGcContent(
-  x,
-  usePlotly = FALSE,
-  labels,
-  theoreticalGC = TRUE,
-  gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens",
-  GCobject,
-  Fastafile,
-  n = 1e+06,
-  ...
-)
+plotGcContent(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotGcContent}{ANY}(
   x,
@@ -59,7 +49,7 @@ plotGcContent(
   Fastafile,
   n = 1e+06,
   counts = FALSE,
-  lineCols = c("red", "blue"),
+  lineCol = c("red3", "navyblue"),
   ...
 )
 
@@ -80,6 +70,22 @@ plotGcContent(
   heat_w = 8,
   ...
 )
+
+\S4method{plotGcContent}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".fastp.*",
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  plotType = "bar",
+  fillCol = c("navyblue", "red3"),
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or character
@@ -91,6 +97,8 @@ ggplot. If \code{TRUE} plot will be rendered with plotly}
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.
 File extensions are dropped by default.}
+
+\item{...}{Used to pass various potting parameters to theme.}
 
 \item{theoreticalGC}{\code{logical} default is \code{FALSE} to give the true
 GC content, set to \code{TRUE} to normalize values of GC_Content by the
@@ -113,13 +121,11 @@ GC content}
 \item{n}{number of simulated reads to generate theoretical GC content from
 \code{Fastafile}}
 
-\item{...}{Used to pass various potting parameters to theme.}
-
 \item{counts}{\code{logical}. Plot the counts from each file if
 \code{counts = TRUE}, otherwise frequencies will be plotted.
 Ignored if calling the function on a FastqcDataList.}
 
-\item{lineCols}{Colors for observed and theoretical GC lines in single plots}
+\item{lineCol}{Colors for observed and theoretical GC lines in single plots}
 
 \item{plotType}{Takes values "line", "heatmap" or "cdf"}
 
@@ -134,6 +140,10 @@ if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram  will be displayed.}
 
 \item{heat_w}{Relative width of any heatmap plot components}
+
+\item{pattern}{Pattern to remove from the end of filenames}
+
+\item{fillCol}{Bar colours when plotting data from a FastpDataList}
 }
 \value{
 A ggplot2 or plotly object

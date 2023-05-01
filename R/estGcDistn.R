@@ -139,7 +139,7 @@ setMethod("estGcDistn", "DNAStringSet", function(
     ## Setup the values to return
     props <- seq(0, by = 1, length.out = bins) / (bins - 1)
     df <- tibble(
-        GC_Content = props,
+        GC_Content = props * 100,
         Freq = vapply(props, function(x){
             interval <- findInterval(x, breaks[splits])
             max(lmFits[[interval]]["x2"]*x + lmFits[[interval]]["x1"], 0)
