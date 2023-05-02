@@ -28,7 +28,9 @@
 #' @param theoreticalGC `logical` default is `FALSE` to give the true
 #' GC content, set to `TRUE` to normalize values of GC_Content by the
 #' theoretical values using [gcTheoretical()]. `species` must be
-#' specified.
+#' specified. For Fastqc* objects, the entire distributions will be used,
+#' wheras for the Fastp* objects, only the expected mean value is shown as a
+#' horizontal line
 #' @param gcType `character` Select type of data to normalize GC
 #' content against. Accepts either "Genome" (default) or "Transcriptome".
 #' @param GCobject an object of class GCTheoretical.
@@ -99,26 +101,12 @@ setMethod("plotGcContent", signature = "ANY", function(
 )
 #' @rdname plotGcContent-methods
 #' @export
-setMethod("plotGcContent", signature = "character", function(
-    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
-    GCobject, Fastafile, n = 1e+6, ...){
-  x <- FastqcDataList(x)
-  if (length(x) == 1) x <- x[[1]]
-  plotGcContent(
-    x, usePlotly, labels, theoreticalGC, gcType, species,
-    GCobject, Fastafile, n, ...
-  )
-}
-)
-#' @rdname plotGcContent-methods
-#' @export
 setMethod(
   "plotGcContent", signature = "FastqcData",
   function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     gcType = c("Genome", "Transcriptome"), species = "Hsapiens", GCobject,
-    Fastafile, n = 1e+6, counts = FALSE, lineCol = c("red3", "navyblue"),
+    Fastafile, n = 1e6, counts = FALSE, lineCol = c("red3", "black"),
     ...
   ){
 
@@ -221,23 +209,22 @@ setMethod(
   if (usePlotly) {
     value <- c("Freq", "Count")[counts + 1]
     ttip <- c("GC_Content", value, "Type")
-    gcPlot <- gcPlot + ggtitle(label = labels, subtitle = c())
+    gcPlot <- gcPlot +
+      ggtitle(label = labels, subtitle = c()) +
+      theme(legend.position = "none")
     gcPlot <- suppressWarnings(
       suppressMessages(plotly::ggplotly(gcPlot, tooltip = ttip)
       )
     )
-    gcPlot <- plotly::layout(gcPlot, legend = list(x = 0.622, y = 1))
-    gcPlot <- suppressMessages(
-      plotly::subplot(
-        plotly::plotly_empty(),
-        gcPlot,
-        widths = c(0.14,0.86)
-      )
-    )
+    # gcPlot <- suppressMessages(
+    #   plotly::subplot(
+    #     plotly::plotly_empty(), gcPlot, widths = c(0.14,0.86)
+    #   )
+    # )
     gcPlot <- plotly::layout(
       gcPlot,
-      xaxis2 = list(title = xLab),
-      yaxis2 = list(title = yLab)
+      xaxis1 = list(title = xLab),
+      yaxis1 = list(title = yLab)
     )
 
   }
@@ -309,7 +296,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
   plotType <- match.arg(plotType)
   xLab <- "GC Content (%)"
 
-  if (plotType %in% c("cdf", "line")){
+  if (plotType %in% c("cdf", "line")) {
 
     ## Setup a palette with black as the first colour.
     ## Use the paired palette for easier visualisation of paired data
@@ -328,7 +315,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 
     ## Calculate the CDF then rejoin if required
-    if (plotType == "cdf"){
+    if (plotType == "cdf") {
       df <- lapply(
         split(df, f = df$Filename),
         function(y){
@@ -441,6 +428,86 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
 
   gcPlot
 }
+)
+#' @importFrom dplyr bind_rows
+#' @importFrom scales percent
+#' @rdname plotGcContent-methods
+#' @export
+setMethod(
+  "plotGcContent", signature = "FastpData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".fastp.*", theoreticalGC = TRUE,
+    gcType = c("Genome", "Transcriptome"), species = "Hsapiens", GCobject,
+    Fastafile, n = 1e6, plotType = "bar", fillCol = c("navyblue", "red3"), ...
+  ){
+
+    plotType <- match.arg(plotType)
+    mod <- "Summary"
+    steps <-  c("Before_filtering", "After_filtering")
+    data <- getModule(x, mod)
+    data <- data[names(data) %in% steps]
+    df <- bind_rows(data, .id = "Step")
+    cols <- c("Step", "Filename", "gc_content")
+    df <- df[names(df) %in% cols]
+    df$Step <- factor(df$Step, levels = steps)
+
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(df, labels, pattern = pattern,...)
+    labels <- labels[names(labels) %in% df$Filename]
+    df$Filename <- factor(labels[df$Filename], levels = labels)
+
+    ## Get the theoretical mean GC
+    exp_mean <- c()
+    if (theoreticalGC) {
+      if (!missing(Fastafile)) {
+        rdLen <- data[[1]]$read1_mean_length
+        gc_df <- estGcDistn(Fastafile, n, rdLen)
+        gc_df$GC_Content
+        species <- "Freq"
+      }
+      else{
+        if (missing(GCobject)) GCobject <- ngsReports::gcTheoretical
+        gcType <- stringr::str_to_title(gcType)
+        gcType <- match.arg(gcType)
+        avail <- gcAvail(GCobject, gcType)
+        species <- match.arg(species, avail$Name)
+        gc_df <- getGC(GCobject, species, gcType)
+      }
+      gc_df$p <- cumsum(gc_df[[species]])
+      gc_df$d <- abs(gc_df$p - 0.5)
+      gc_df <- gc_df[which(rank(gc_df$d) <= 2),]
+      exp_mean <- weighted.mean(gc_df$GC_Content / 100, 1 / gc_df$d)
+    }
+
+    fillCol <- rep_len(fillCol, length(steps))
+    df[["% GC"]] <- percent(df$gc_content, 0.1)
+    p <- NULL
+    if (plotType == "bar"){
+
+      p <- ggplot(
+        df,
+        aes(
+          !!sym("Step"), !!sym("gc_content"), fill = !!sym("Step"),
+          main = Filename, label = !!sym("% GC")
+        )
+      ) +
+        geom_col() +
+        geom_hline(yintercept = exp_mean) +
+        scale_fill_manual(values = fillCol) +
+        scale_y_continuous(labels = percent, expand = expansion(c(0, 0.05))) +
+        labs(y = "% GC") +
+        ggtitle(unique(df$Filename)) +
+        theme_bw()
+
+      if (usePlotly) {
+        p <- p + theme(legend.position = "none")
+        hv <- c("x", "main", "label")
+        p <- plotly::ggplotly(p, tooltip = hv)
+      }
+    }
+
+    p
+  }
 )
 #' @importFrom dplyr bind_rows
 #' @importFrom scales percent

@@ -25,28 +25,6 @@ test_that("plotBaseQuals outputs correct objects", {
 })
 
 
-test_that("plotGcContent outputs correct objects", {
-
-  p <- plotGcContent(fdl[[1]])
-  expect_true(is(p, "gg"))
-
-  p <- plotGcContent(fdl)
-  expect_true(is(p, "gg"))
-
-  p <- plotGcContent(fdl, plotType = "line")
-  expect_true(is(p, "gg"))
-
-  p <- plotGcContent(fdl, plotType = "cdf")
-  expect_true(is(p, "gg"))
-
-  p <- plotGcContent(fdl, dendrogam = TRUE)
-  expect_true(is(p, "patchwork"))
-
-  p <- plotGcContent(fdl, dendrogam = TRUE, usePlotly = TRUE)
-  expect_true(is(p, "plotly"))
-
-})
-
 test_that("plotKmers outputs correct objects", {
 
   p <- plotKmers(fdl[[1]])

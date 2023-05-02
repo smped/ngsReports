@@ -4,28 +4,15 @@
 \name{plotGcContent}
 \alias{plotGcContent}
 \alias{plotGcContent,ANY-method}
-\alias{plotGcContent,character-method}
 \alias{plotGcContent,FastqcData-method}
 \alias{plotGcContent,FastqcDataList-method}
+\alias{plotGcContent,FastpData-method}
 \alias{plotGcContent,FastpDataList-method}
 \title{Plot the Per Sequence GC Content}
 \usage{
 plotGcContent(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotGcContent}{ANY}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  theoreticalGC = TRUE,
-  gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens",
-  GCobject,
-  Fastafile,
-  n = 1e+06,
-  ...
-)
-
-\S4method{plotGcContent}{character}(
   x,
   usePlotly = FALSE,
   labels,
@@ -49,7 +36,7 @@ plotGcContent(x, usePlotly = FALSE, labels, ...)
   Fastafile,
   n = 1e+06,
   counts = FALSE,
-  lineCol = c("red3", "navyblue"),
+  lineCol = c("red3", "black"),
   ...
 )
 
@@ -68,6 +55,22 @@ plotGcContent(x, usePlotly = FALSE, labels, ...)
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
+  ...
+)
+
+\S4method{plotGcContent}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".fastp.*",
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  plotType = "bar",
+  fillCol = c("navyblue", "red3"),
   ...
 )
 
@@ -103,7 +106,9 @@ File extensions are dropped by default.}
 \item{theoreticalGC}{\code{logical} default is \code{FALSE} to give the true
 GC content, set to \code{TRUE} to normalize values of GC_Content by the
 theoretical values using \code{\link[=gcTheoretical]{gcTheoretical()}}. \code{species} must be
-specified.}
+specified. For Fastqc* objects, the entire distributions will be used,
+wheras for the Fastp* objects, only the expected mean value is shown as a
+horizontal line}
 
 \item{gcType}{\code{character} Select type of data to normalize GC
 content against. Accepts either "Genome" (default) or "Transcriptome".}
