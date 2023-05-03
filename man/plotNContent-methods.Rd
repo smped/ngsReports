@@ -4,16 +4,15 @@
 \name{plotNContent}
 \alias{plotNContent}
 \alias{plotNContent,ANY-method}
-\alias{plotNContent,character-method}
 \alias{plotNContent,FastqcData-method}
 \alias{plotNContent,FastqcDataList-method}
+\alias{plotNContent,FastpData-method}
+\alias{plotNContent,FastpDataList-method}
 \title{Draw an N Content Plot}
 \usage{
-plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
+plotNContent(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
-
-\S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
 
 \S4method{plotNContent}{FastqcData}(
   x,
@@ -38,6 +37,31 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
   heat_w = 8,
   ...
 )
+
+\S4method{plotNContent}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".fastq.*|.fastp.*|.fq*",
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  linetype = NULL,
+  colour = NULL,
+  lineCol = c("navyblue", "red3"),
+  facetBy = module ~ fqName,
+  ...
+)
+
+\S4method{plotNContent}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".fastq.*|.fastp.*|.fq*",
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  fill = scale_fill_viridis_c(),
+  ...
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
@@ -46,8 +70,9 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
 object.}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default}
+All filenames must be present in the names.}
+
+\item{...}{Used to pass additional attributes to theme() and between methods}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
@@ -55,9 +80,7 @@ for PASS/WARN/FAIL}
 \item{warn, fail}{The default values for warn and fail are 5 and 10
 respectively (i.e. percentages)}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
-
-\item{lineCol}{Defaults to red}
+\item{lineCol}{Line colours}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -67,6 +90,20 @@ if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
 \item{heat_w}{Relative width of any heatmap plot components}
+
+\item{pattern}{Regex used to trim filenames}
+
+\item{module}{Used for Fastp* structures to show results before or after
+filtering}
+
+\item{reads}{Show plots for read1, read2 or both.}
+
+\item{colour, linetype}{Data arguments to decorate plots. Should be drawn
+from columns in the formatted data, such as "module", "reads", "fqName"}
+
+\item{facetBy}{Formula to facet the plot by. Passed to \code{facet_wrap()}}
+
+\item{fill}{continuous scale for ggplot objects}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object

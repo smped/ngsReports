@@ -15,7 +15,7 @@
 #' @param n `numeric`. The number of Kmers to show.
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
-#' File extensions are dropped by default.
+#' @param pattern regex to drop from the end of filenames
 #' @param usePlotly `logical` Default `FALSE` will render using
 #' ggplot. If `TRUE` plot will be rendered with plotly
 #' @param ... Used to pass various potting parameters to theme.
@@ -38,8 +38,11 @@
 #' @param fill A ggplot2 continuous scale to be used for the colour palette
 #' @param trans Function for transforming the count/mean ratio. Set as NULL
 #' to use the ratio without transformation
-#' @param label_size,label_colour Size & colour for the kmer labels drawn in
+#' @param labelSize,labelCol Size & colour for the kmer labels drawn in
 #' each each cell
+#' @param readsBy Strategy for visualising both read1 and read2. Can be set to
+#' show each set of reads by facet, or within the same plot taking the mean of
+#' the enrichment above mean, or the difference in the enrichment above mean
 #' @param fill_lab Label for fill legend. Set to NULL to have no label.
 #'
 #' @return A standard ggplot2 object or an interactive plotly object
@@ -92,7 +95,8 @@ setMethod("plotKmers", signature = "character", function(
 #' @rdname plotKmers-methods
 #' @export
 setMethod("plotKmers", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, n = 6, ..., linewidth = 0.5,
+    x, usePlotly = FALSE, labels, pattern = ".fastq.*|.fastp.*|.fq*",
+    n = 6, ..., linewidth = 0.5,
     pal = c("red", "blue", "green", "black", "magenta", "yellow")){
 
   ## Get the basic data frame
@@ -105,7 +109,7 @@ setMethod("plotKmers", signature = "FastqcData", function(
   }
 
   ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
+  labels <- .makeLabels(x, labels, pattern = pattern, ...)
   labels <- labels[names(labels) %in% df$Filename]
   df$Filename <- labels[df$Filename]
 
@@ -237,9 +241,13 @@ setMethod("plotKmers", signature = "FastqcData", function(
 )
 #' @rdname plotKmers-methods
 #' @export
-setMethod("plotKmers", signature = "FastqcDataList", function(
-    x, usePlotly = FALSE, labels, cluster = FALSE, dendrogram = FALSE,
-    pwfCols, heatCol = hcl.colors(50, "inferno"), heat_w = 8, ...){
+setMethod(
+  "plotKmers", signature = "FastqcDataList",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".fastq.*|.fastp.*|.fq*",
+    cluster = FALSE, dendrogram = FALSE, pwfCols,
+    heatCol = hcl.colors(50, "inferno"), heat_w = 8, ...
+  ){
 
   mod <- "Kmer_Content"
   df <- getModule(x, mod)
@@ -255,7 +263,7 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
   stopifnot(.isValidPwf(pwfCols))
 
   ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
+  labels <- .makeLabels(x, labels, pattern = pattern, ...)
   labels <- labels[names(labels) %in% df$Filename]
 
   colnames(df) <- gsub("Max_Obs/Exp_Position", "Base", colnames(df))
@@ -348,83 +356,104 @@ setMethod("plotKmers", signature = "FastqcDataList", function(
 )
 #' @importFrom rlang "!!" sym
 #' @importFrom forcats fct_rev
+#' @importFrom dplyr reframe group_by bind_rows
 #' @rdname plotKmers-methods
 #' @export
-setMethod("plotKmers", signature = "FastpData", function(
-    x, usePlotly = FALSE, labels,
+setMethod(
+  "plotKmers", signature = "FastpData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".fastq.*|.fastp.*|.fq*",
     module = c("Before_filtering", "After_filtering"),
-    reads = c("read1", "read2"),
-    label_size = 3, label_colour = "grey70", trans = "log2",
+    reads = c("read1", "read2"), readsBy = c("facet", "mean", "diff"),
+    labelSize = 3, labelCol = "grey70", trans = "log2",
     fill = scale_fill_gradient2(),  fill_lab = "Count/\nMean",
     ...
-){
+  ){
 
-  ## Get the basic data frame
-  mod <- match.arg(module)
-  reads <- match.arg(reads)
-  df <- getModule(x, mod)[[reads]]
-  df[["Filename"]] <- df[["fqName"]]
+    ## Check args
+    mod <- match.arg(module)
+    reads <- match.arg(reads, several.ok = TRUE)
+    readsBy <- match.arg(readsBy)
+    stopifnot(is(fill, "ScaleContinuous"))
 
-  ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(df, labels, ...)
-  labels <- labels[names(labels) %in% df$Filename]
-  df$Filename <- labels[df$Filename]
+    ## Get the basic data frame
+    df <- getModule(x, mod)[reads]
+    df <- bind_rows(df, .id = "reads")
+    fpName <- gsub(pattern, "", df$Filename)[[1]]
+    df[["Filename"]] <- df[["fqName"]]
 
-  ## Just grab the data we need
-  df <- df[c("Filename", "kmer_count")]
-  df <- tidyr::unnest(df, !!sym("kmer_count"))
-  df[["prefix"]] <- fct_rev(df[["prefix"]])
-  df[["count"]] <- scales::comma(df[["count"]], 1)
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(df, labels, pattern = pattern, ...)
+    labels <- labels[names(labels) %in% df$Filename]
+    df$Filename <- labels[df$Filename]
 
-  ## Make a blank plot if no data is found
-  if (!length(df)) {
-    msg <- "No kmer Counts Detected"
-    qualPlot <- .emptyPlot(msg)
-    if (usePlotly) qualPlot <- ggplotly(qualPlot, tooltip = "")
-    return(qualPlot)
-  }
+    ## Just grab the data we need
+    df <- df[c("Filename", "kmer_count")]
+    df <- tidyr::unnest(df, !!sym("kmer_count"))
+    df[["prefix"]] <- fct_rev(df[["prefix"]])
 
-  if (!is.null(trans)) {
-    f <- match.fun(trans)
-    stopifnot(length(f(1:2)) == 2)
-    df[["times_mean"]] <- f(df[["times_mean"]])
-    if (!is.null(fill_lab))
-      fill_lab <- paste(trans, fill_lab, sep = "\n")
-  }
-  df[["times_mean"]] <- round(df[["times_mean"]], 3)
+    ## Make a blank plot if no data is found
+    if (!length(df)) {
+      msg <- "No kmer Counts Detected"
+      p <- .emptyPlot(msg)
+      if (usePlotly) p <- ggplotly(p, tooltip = "")
+      return(p)
+    }
 
-  stopifnot(is(fill, "ScaleContinuous"))
+    if (!is.null(trans)) {
+      f <- match.fun(trans)
+      stopifnot(length(f(1:2)) == 2)
+      df[["times_mean"]] <- f(df[["times_mean"]])
+      if (!is.null(fill_lab))
+        fill_lab <- paste(trans, fill_lab, sep = "\n")
+    }
 
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+    sub <- c()
+    if (readsBy %in% c("mean", "diff")) {
+      merge_fun <- match.fun(readsBy)
+      cols <- c("kmer", "prefix", "suffix")
+      df <- group_by(df, !!!syms(cols))
+      df <- reframe(
+        df,
+        count = merge_fun(!!sym("count")),
+        times_mean = merge_fun(!!sym("times_mean"))
+      )
+      if (!nrow(df)) stop("Please choose another approach for 'readsBy'")
+      sub <- paste(
+        "Reads combined using",
+        ifelse(readsBy == "mean", "mean values", "differences")
+      )
+    }
 
-  kMerPlot <- ggplot(
-    df,
-    aes(
-      x = !!sym("suffix"), y = !!sym("prefix"), fill = !!sym("times_mean"),
-      count = !!sym("count")
-    )
-  ) +
-    geom_raster() +
-    geom_text(
-      aes(label = !!sym("kmer")), size = label_size, colour = label_colour
+    ## Tidy up for plotting
+    df[["times_mean"]] <- round(df[["times_mean"]], 3)
+    df[["count"]] <- scales::comma(df[["count"]], 1)
+    main <- paste0(fpName, ": ", gsub("_", " ", mod))
+    p <- ggplot(
+      df,
+      aes(
+        x = !!sym("suffix"), y = !!sym("prefix"), fill = !!sym("times_mean"),
+        count = !!sym("count")
+      )
     ) +
-    scale_x_discrete(expand = expansion(0), position = "top") +
-    scale_y_discrete(expand = expansion(0), position = "left") +
-    labs(x = c(), y = c(), fill = fill_lab) +
-    ggtitle(labels[[1]]) +
-    theme(axis.ticks = element_blank()) +
-    fill
+      geom_raster() +
+      geom_text(
+        aes(label = !!sym("kmer")), size = labelSize, colour = labelCol
+      ) +
+      scale_x_discrete(expand = expansion(0), position = "top") +
+      scale_y_discrete(expand = expansion(0), position = "left") +
+      labs(x = c(), y = c(), fill = fill_lab) +
+      ggtitle(main, subtitle = sub) +
+      theme(axis.ticks = element_blank()) +
+      fill
+    if (readsBy == "facet") p <- p + facet_wrap(~Filename, nrow = 1)
+    p <- .updateThemeFromDots(p, ...)
 
-  if (!is.null(userTheme)) kMerPlot <- kMerPlot + userTheme
-
-  if (usePlotly) {
-    kMerPlot <- suppressWarnings(plotly::ggplotly(kMerPlot))
+    if (usePlotly) {
+      p <- p + theme(legend.position = "none")
+      hv <- c("kmer", "count", "times_mean")
+      p <- suppressWarnings(plotly::ggplotly(p, tooltip = hv))
+    }
+    p
   }
-  kMerPlot
-}
 )

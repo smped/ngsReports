@@ -30,7 +30,7 @@ Depends:
 Imports:
     Biostrings,
     checkmate,
-    dplyr (>= 1.0.0),
+    dplyr (>= 1.1.0),
     DT,
     forcats,
     ggdendro,

@@ -20,6 +20,7 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".fastq.*|.fastp.*|.fq*",
   n = 6,
   ...,
   linewidth = 0.5,
@@ -30,6 +31,7 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".fastq.*|.fastp.*|.fq*",
   cluster = FALSE,
   dendrogram = FALSE,
   pwfCols,
@@ -42,10 +44,12 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".fastq.*|.fastp.*|.fq*",
   module = c("Before_filtering", "After_filtering"),
   reads = c("read1", "read2"),
-  label_size = 3,
-  label_colour = "grey70",
+  readsBy = c("facet", "mean", "diff"),
+  labelSize = 3,
+  labelCol = "grey70",
   trans = "log2",
   fill = scale_fill_gradient2(),
   fill_lab = "Count/\\nMean",
@@ -59,11 +63,12 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
 ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+All filenames must be present in the names.}
 
 \item{...}{Used to pass various potting parameters to theme.
 Can also be used to set size and colour for box outlines.}
+
+\item{pattern}{regex to drop from the end of filenames}
 
 \item{n}{\code{numeric}. The number of Kmers to show.}
 
@@ -91,7 +96,11 @@ from the viridis set of palettes}
 
 \item{reads}{Either read1 or read2. Only used when using a FastpData object}
 
-\item{label_size, label_colour}{Size & colour for the kmer labels drawn in
+\item{readsBy}{Strategy for visualising both read1 and read2. Can be set to
+show each set of reads by facet, or within the same plot taking the mean of
+the enrichment above mean, or the difference in the enrichment above mean}
+
+\item{labelSize, labelCol}{Size & colour for the kmer labels drawn in
 each each cell}
 
 \item{trans}{Function for transforming the count/mean ratio. Set as NULL

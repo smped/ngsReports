@@ -54,7 +54,8 @@
 #' @param dendrogram `logical` redundant if `cluster` is `FALSE`
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram  will be displayed.
-#' @param lineCol Colors for observed and theoretical GC lines in single plots
+#' @param lineCol,lineType,lineWidth Line colour type and width for observed
+#' and theoretical GC lines
 #' @param fillCol Bar colours when plotting data from a FastpDataList
 #' @param heat_w Relative width of any heatmap plot components
 #' @param ... Used to pass various potting parameters to theme.
@@ -107,13 +108,13 @@ setMethod(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     gcType = c("Genome", "Transcriptome"), species = "Hsapiens", GCobject,
     Fastafile, n = 1e6, counts = FALSE, lineCol = c("red3", "black"),
-    ...
+    lineType = 1, lineWidth = 0.5, ...
   ){
 
   df <- getModule(x, "Per_sequence_GC_content")
 
   if (!length(df)) {
-    gcPlot <- .emptyPlot("No Duplication Levels Module Detected")
+    gcPlot <- .emptyPlot("No GC Content Data Detected")
     if (usePlotly) gcPlot <- ggplotly(gcPlot, tooltip = "")
     return(gcPlot)
   }
@@ -173,7 +174,7 @@ setMethod(
     gcPlot <- ggplot(
       df, aes(!!sym(vals[[1]]), !!sym(vals[[2]]), colour = !!sym(vals[[3]]))
     ) +
-      geom_line()
+      geom_line(linetype = lineType, linewidth = lineWidth)
   }
   else{
 
@@ -188,9 +189,10 @@ setMethod(
     gcPlot <- ggplot(
       df, aes(!!sym(vals[[1]]), !!sym(vals[[2]]), colour = !!sym(vals[[3]]))
     ) +
-      geom_line()
+      geom_line(linetype = lineType, linewidth = lineWidth)
   }
 
+  lineCol <- rep_len(lineCol, 2)
   gcPlot <- gcPlot +
     scale_colour_manual(values = lineCol) +
     scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
@@ -216,15 +218,8 @@ setMethod(
       suppressMessages(plotly::ggplotly(gcPlot, tooltip = ttip)
       )
     )
-    # gcPlot <- suppressMessages(
-    #   plotly::subplot(
-    #     plotly::plotly_empty(), gcPlot, widths = c(0.14,0.86)
-    #   )
-    # )
     gcPlot <- plotly::layout(
-      gcPlot,
-      xaxis1 = list(title = xLab),
-      yaxis1 = list(title = yLab)
+      gcPlot, xaxis1 = list(title = xLab), yaxis1 = list(title = yLab)
     )
 
   }
@@ -239,13 +234,16 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
     gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
     GCobject, Fastafile, n=1e+6, plotType = c("heatmap", "line", "cdf"),
-    pwfCols, cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...){
+    pwfCols, cluster = FALSE, dendrogram = FALSE, heat_w = 8,
+    lineCol = RColorBrewer::brewer.pal(12, "Paired"), lineType = 1,
+    lineWidth = 0.5, ...
+    ){
 
   mod <- "Per_sequence_GC_content"
   df <- getModule(x, mod)
 
   if (!length(df)) {
-    gcPlot <- .emptyPlot("No Duplication Levels Module Detected")
+    gcPlot <- .emptyPlot("No GC Content Levels Data Detected")
     if (usePlotly) gcPlot <- ggplotly(gcPlot, tooltip = "")
     return(gcPlot)
   }
@@ -300,9 +298,9 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
 
     ## Setup a palette with black as the first colour.
     ## Use the paired palette for easier visualisation of paired data
-    ## Onlt used for plotType = "line" or plotType = "cdf
+    ## Only used for plotType = "line" or plotType = "cdf
     n <- length(x)
-    lineCol <- RColorBrewer::brewer.pal(min(12, n), "Paired")
+    if (length(lineCol) > n) lineCol <- lineCol[seq_len(n)]
     lineCol <- colorRampPalette(lineCol)(n)
     lineCol <- c("#000000", lineCol)
 
@@ -332,7 +330,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     gcPlot <- ggplot(
       df, aes(!!sym("GC_Content"), Percent, colour = Filename)
     ) +
-      geom_line() +
+      geom_line(linetype = lineType, linewidth = lineWidth) +
       scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
       scale_y_continuous(labels = .addPercent) +
       scale_colour_manual(values = lineCol) +
@@ -438,7 +436,8 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".fastp.*", theoreticalGC = TRUE,
     gcType = c("Genome", "Transcriptome"), species = "Hsapiens", GCobject,
-    Fastafile, n = 1e6, plotType = "bar", fillCol = c("navyblue", "red3"), ...
+    Fastafile, n = 1e6, plotType = "bar", fillCol = c("navyblue", "red3"),
+    lineCol = "black", lineType = 1, lineWidth = 0.5, ...
   ){
 
     plotType <- match.arg(plotType)
@@ -457,7 +456,7 @@ setMethod(
     df$Filename <- factor(labels[df$Filename], levels = labels)
 
     ## Get the theoretical mean GC
-    exp_mean <- c()
+    exp_mean <- mean(df$gc_content)
     if (theoreticalGC) {
       if (!missing(Fastafile)) {
         rdLen <- data[[1]]$read1_mean_length
@@ -518,7 +517,8 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".fastp.*", theoreticalGC = TRUE,
     gcType = c("Genome", "Transcriptome"), species = "Hsapiens", GCobject,
-    Fastafile, n=1e6, plotType = "bar", fillCol = c("navyblue", "red3"), ...
+    Fastafile, n=1e6, plotType = "bar", fillCol = c("navyblue", "red3"),
+    lineCol = "black", lineType = 1, lineWidth = 0.5, ...
   ){
 
     plotType <- match.arg(plotType)
@@ -537,7 +537,7 @@ setMethod(
     df$Filename <- factor(labels[df$Filename], levels = labels)
 
     ## Get the theoretical mean GC
-    exp_mean <- c()
+    exp_mean <- mean(df$gc_content)
     if (theoreticalGC) {
       if (!missing(Fastafile)) {
         rdLen <- data[[1]]$read1_mean_length
@@ -574,7 +574,7 @@ setMethod(
         )
       ) +
         geom_col(position = "dodge") +
-        geom_hline(yintercept = exp_mean) +
+        geom_hline(yintercept = exp_mean, colour = lineCol, linetype = lineType, linewidth = lineWidth) +
         scale_y_continuous(expand = expansion(c(0, 0.05)), labels = percent) +
         scale_fill_manual(values = fillCol) +
         labs(y = "GC Content (%)") +
@@ -588,7 +588,6 @@ setMethod(
       hv <- c("Filename", "% GC", "Step")
       p <- plotly::ggplotly(p, tooltip = hv)
     }
-
     p
   }
 )

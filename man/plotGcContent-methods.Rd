@@ -37,6 +37,8 @@ plotGcContent(x, usePlotly = FALSE, labels, ...)
   n = 1e+06,
   counts = FALSE,
   lineCol = c("red3", "black"),
+  lineType = 1,
+  lineWidth = 0.5,
   ...
 )
 
@@ -55,6 +57,9 @@ plotGcContent(x, usePlotly = FALSE, labels, ...)
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
+  lineCol = RColorBrewer::brewer.pal(12, "Paired"),
+  lineType = 1,
+  lineWidth = 0.5,
   ...
 )
 
@@ -71,6 +76,9 @@ plotGcContent(x, usePlotly = FALSE, labels, ...)
   n = 1e+06,
   plotType = "bar",
   fillCol = c("navyblue", "red3"),
+  lineCol = "black",
+  lineType = 1,
+  lineWidth = 0.5,
   ...
 )
 
@@ -87,6 +95,9 @@ plotGcContent(x, usePlotly = FALSE, labels, ...)
   n = 1e+06,
   plotType = "bar",
   fillCol = c("navyblue", "red3"),
+  lineCol = "black",
+  lineType = 1,
+  lineWidth = 0.5,
   ...
 )
 }
@@ -130,7 +141,8 @@ GC content}
 \code{counts = TRUE}, otherwise frequencies will be plotted.
 Ignored if calling the function on a FastqcDataList.}
 
-\item{lineCol}{Colors for observed and theoretical GC lines in single plots}
+\item{lineCol, lineType, lineWidth}{Line colour type and width for observed
+and theoretical GC lines}
 
 \item{plotType}{Takes values "line", "heatmap" or "cdf"}
 
