@@ -4,51 +4,40 @@
 \name{plotReadTotals}
 \alias{plotReadTotals}
 \alias{plotReadTotals,ANY-method}
-\alias{plotReadTotals,character-method}
 \alias{plotReadTotals,FastqcDataList-method}
+\alias{plotReadTotals,FastpDataList-method}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(
-  x,
-  usePlotly = FALSE,
-  labels,
-  duplicated = TRUE,
-  bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"),
-  expand.x = c(0, 0, 0.02, 0),
-  ...
-)
+plotReadTotals(x, usePlotly = FALSE, labels, ...)
 
-\S4method{plotReadTotals}{ANY}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  duplicated = TRUE,
-  bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"),
-  expand.x = c(0, 0, 0.02, 0),
-  ...
-)
-
-\S4method{plotReadTotals}{character}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  duplicated = TRUE,
-  bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"),
-  expand.x = c(0, 0, 0.02, 0),
-  ...
-)
+\S4method{plotReadTotals}{ANY}(x, usePlotly = FALSE, labels, ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam|sam).*",
   duplicated = TRUE,
   bars = c("stacked", "adjacent"),
   barCols = c("red", "blue"),
   expand.x = c(0, 0, 0.02, 0),
+  ...
+)
+
+\S4method{plotReadTotals}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam|sam).*",
+  scalePaired = TRUE,
+  scaleY = 1e+06,
+  barFill = scale_fill_viridis_d(option = "cividis", direction = -1),
+  labMin = 0.05,
+  labVjust = 0.5,
+  labAlpha = 1,
+  labFill = "white",
+  labSize = 4,
+  labNudge = 0,
   ...
 )
 }
@@ -59,8 +48,11 @@ plotReadTotals(
 ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+All filenames must be present in the names.}
+
+\item{...}{Used to pass additional attributes to theme()}
+
+\item{pattern}{Regex used to trim the end of filenames}
 
 \item{duplicated}{\code{logical}. Include deduplicated read total estimates
 to plot charts}
@@ -73,7 +65,21 @@ as "stacked" or "adjacent".}
 \item{expand.x}{Output from \code{\link[ggplot2:expansion]{ggplot2::expansion}} controlling x-axis
 expansion, or a numeric vector of length 4}
 
-\item{...}{Used to pass additional attributes to theme()}
+\item{scalePaired}{Scale read totals by 0.5 when paired}
+
+\item{scaleY}{Scale read totals by this value. The default shows the y-axis
+in millions}
+
+\item{barFill}{ScaleDiscrete function to be applied to the plot}
+
+\item{labMin}{Only show labels for filtering categories higher than this
+values as a proportion of reads}
+
+\item{labVjust, labNudge}{Used to place labels within each bar. labNudge is
+passed to nudge_y within \code{geom_label()}}
+
+\item{labAlpha, labFill, labSize}{Passed to \code{geom_label()} in the alpha, fill
+and size arguments respectively}
 }
 \value{
 Returns a ggplot or plotly object
