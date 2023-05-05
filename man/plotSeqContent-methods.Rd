@@ -4,30 +4,58 @@
 \name{plotSeqContent}
 \alias{plotSeqContent}
 \alias{plotSeqContent,ANY-method}
-\alias{plotSeqContent,character-method}
 \alias{plotSeqContent,FastqcData-method}
 \alias{plotSeqContent,FastqcDataList-method}
+\alias{plotSeqContent,FastpData-method}
 \title{Plot the per base content as a heatmap}
 \usage{
-plotSeqContent(x, usePlotly = FALSE, labels, ...)
+plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotSeqContent}{ANY}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSeqContent}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotSeqContent}{character}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotSeqContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSeqContent}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  bases = c("A", "T", "C", "G"),
+  colourScale = NULL,
+  plotTheme = theme(),
+  expand.x = 0.02,
+  expand.y = c(0, 0.05),
+  ...
+)
 
 \S4method{plotSeqContent}{FastqcDataList}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   plotType = c("heatmap", "line", "residuals"),
+  colourScale = NULL,
+  plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
   ...,
   nc = 2
+)
+
+\S4method{plotSeqContent}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  readsBy = c("facet", "linetype"),
+  bases = c("A", "T", "C", "G", "N", "GC"),
+  colourScale = NULL,
+  plotTheme = theme(),
+  expand.x = 0.02,
+  expand.y = c(0, 0.05),
+  ...
 )
 }
 \arguments{
@@ -39,7 +67,22 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
 All file names must be present in the names of the vector.
 File extensions are dropped by default.}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
+\item{pattern}{Regex to remove from the end of any filenames}
+
+\item{...}{Used to pass additional attributes to plotting geoms}
+
+\item{bases}{Which bases to draw on the plot. Also becomes the default
+plotting order by setting these as factor levels}
+
+\item{colourScale}{Discrete colour scale as a ggplot ScaleDiscrete object
+If not provided, will default to \link[ggplot2]{scale_colour_manual}}
+
+\item{plotTheme}{\link[ggplot2]{theme} object to be applied. Note that all
+plots will have \link[ggplot2]{theme_bw} theme applied by default, as well as
+any additional themes supplied here}
+
+\item{expand.x, expand.y}{Passed to \link[ggplot2]{expansion} in the x- and
+y-axis scales respectively}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail
@@ -59,6 +102,13 @@ then the dendrogram will be displayed.}
 
 \item{nc}{Specify the number of columns if plotting a FastqcDataList as line
 plots. Passed to \code{ggplot2::facet_wrap}.}
+
+\item{module}{Fastp Module to show. Can only be Before/After_filtering}
+
+\item{reads}{Which set of reads to show}
+
+\item{readsBy}{When plotting both R1 & R2, separate by either linetype or
+use facet_wrap, called on the associated fqName}
 }
 \value{
 A ggplot2 object or an interactive plotly object

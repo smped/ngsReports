@@ -22,18 +22,17 @@
 #' @param bars If `duplicated = TRUE`, show unique and deduplicated reads
 #' as "stacked" or "adjacent".
 #' @param barCols Colours for duplicated and unique reads.
-#' @param expand.x Output from [`ggplot2::expansion`] controlling x-axis
-#' expansion, or a numeric vector of length 4
+#' @param expand.x,expand.y Passed to [`ggplot2::expansion`] inside the
+#' respective axis scale
 #' @param scalePaired Scale read totals by 0.5 when paired
 #' @param scaleY Scale read totals by this value. The default shows the y-axis
 #' in millions
-#' @param barFill ScaleDiscrete function to be applied to the plot
+#' @param fillScale ScaleDiscrete function to be applied to the plot
 #' @param labMin Only show labels for filtering categories higher than this
 #' values as a proportion of reads
-#' @param labVjust,labNudge Used to place labels within each bar. labNudge is
-#' passed to nudge_y within `geom_label()`
-#' @param labAlpha,labFill,labSize Passed to `geom_label()` in the alpha, fill
-#' and size arguments respectively
+#' @param labVjust Used to place labels within each bar.
+#' @param labFill Passed to \link[ggplot2]{geom_label}
+#' @param plotTheme \link[ggplot2]{theme} to be added to the plot
 #' @param ... Used to pass additional attributes to theme()
 #'
 #' @examples
@@ -63,9 +62,11 @@
 #' @name plotReadTotals
 #' @rdname plotReadTotals-methods
 #' @export
-setGeneric("plotReadTotals", function(x, usePlotly = FALSE, labels, ...){
-  standardGeneric("plotReadTotals")
-}
+setGeneric(
+  "plotReadTotals",
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam|sam).*", ...){
+    standardGeneric("plotReadTotals")
+  }
 )
 #' @rdname plotReadTotals-methods
 #' @export
@@ -79,7 +80,7 @@ setMethod(
 setMethod("plotReadTotals", signature = "FastqcDataList", function(
     x, usePlotly = FALSE, labels,  pattern = ".(fast|fq|bam|sam).*",
     duplicated = TRUE, bars = c("stacked", "adjacent"),
-    barCols = c("red","blue"), expand.x = c(0, 0, 0.02, 0), ...){
+    barCols = c("red","blue"), expand.x = c(0, 0.02), ...){
 
   stopifnot(is.logical(duplicated))
   df <- readTotals(x)
@@ -89,33 +90,25 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
   df$Filename <- labels[df$Filename]
   df$Filename <- forcats::fct_inorder(df$Filename)
 
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
   ## Get the colours for the barplot
   barCols <- tryCatch(barCols[seq_len(duplicated + 1)])
 
   ## Check the axis expansion
-  stopifnot(length(expand.x) == 4, is.numeric(expand.x))
+  stopifnot(is.numeric(expand.x))
   xMax <- max(df$Total_Sequences)
   xLab <- "Read Totals"
 
   if (!duplicated) {
 
-    rtPlot <- ggplot(df, aes(Filename, Total_Sequences)) +
+    rtPlot <- ggplot(df, aes(y = Filename, x = Total_Sequences)) +
       geom_bar(stat = "identity", fill = barCols) +
-      scale_y_continuous(
-        labels = scales::comma, limits = c(0, xMax), expand = expand.x
+      scale_x_continuous(
+        labels = scales::comma, limits = c(0, xMax),
+        expand = expansion(rep_len(expand.x, 2))
       ) +
-      labs(y = xLab) +
-      coord_flip() +
+      labs(x = xLab) +
       theme_bw()
-
-    if (!is.null(userTheme)) rtPlot <- rtPlot + userTheme
+    rtPlot <- .updateThemeFromDots(rtPlot, ...)
     if (usePlotly) rtPlot <- plotly::ggplotly(rtPlot)
 
   }
@@ -145,18 +138,16 @@ setMethod("plotReadTotals", signature = "FastqcDataList", function(
     if (bars == "adjacent") xMax <- max(df$Total)*(1 + expand.x[[1]])
 
     ## Make the plot
-    rtPlot <- ggplot(df, aes(Filename, Total, fill = Type)) +
+    rtPlot <- ggplot(df, aes(y = Filename, x = Total, fill = Type)) +
       geom_bar(stat = "identity", position = barPos) +
-      scale_y_continuous(
-        labels = scales::comma, limits = c(0, xMax), expand = expand.x
+      scale_x_continuous(
+        labels = scales::comma, limits = c(0, xMax),
+        expand = expansion(rep_len(expand.x, 2))
       ) +
       scale_fill_manual(values = barCols) +
-      labs(y = xLab) +
-      coord_flip() +
+      labs(x = xLab) +
       theme_bw()
-
-    ## Add common themes & labels
-    if (!is.null(userTheme)) rtPlot <- rtPlot + userTheme
+    rtPlot <- .updateThemeFromDots(rtPlot, ...)
 
     if (usePlotly) {
 
@@ -182,17 +173,16 @@ setMethod(
   "plotReadTotals", signature = "FastpDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam|sam).*",
-    scalePaired  = TRUE, scaleY = 1e6,
-    barFill = scale_fill_viridis_d(option = "cividis", direction = -1),
-    labMin = 0.05, labVjust = 0.5, labAlpha = 1, labFill = "white",
-    labSize = 4, labNudge = 0, ...
+    scalePaired  = TRUE, scaleY = 1e6, fillScale = NULL, labMin = 0.05,
+    labVjust = 0.5, labFill = "white", plotTheme = theme(),
+    expand.y = c(0, 0.05), ...
   ){
 
     ## Sort out the summary data
     module <- "Summary"
     data <- getModule(x, module)
     df <- data$Filtering_result
-    df <- dplyr::filter(df, total > 0)
+    df <- dplyr::filter(df, !!sym("total") > 0)
     if (!nrow(df)) {
       ## If no filtering was performed, just use the Defore_filtering data
       df <- data$Before_filtering
@@ -212,7 +202,8 @@ setMethod(
     )
     paired <- getModule(x, "paired")
     df <- dplyr::left_join(df, paired, by = "Filename")
-    y_col <- ifelse(scaleY == 1, "Reads", paste0("Reads (x", comma(scaleY, 1), ")"))
+    y_col <- "Reads"
+    if (scaleY != 1) y_col <- paste0("Reads (x", comma(scaleY, 1), ")")
     df[[y_col]] <- df$total / scaleY
     if (scalePaired) df[[y_col]][df$paired] <- 0.5 * df[[y_col]][df$paired]
     df <- mutate(df, cumsum = cumsum(!!sym(y_col)), .by = Filename)
@@ -228,7 +219,13 @@ setMethod(
     df$Total <- comma(df$Total)
     df[["% Reads"]] <- percent(df$rate, 0.01)
     names(df) <- gsub("result", "Filtering Result", names(df))
-    stopifnot(is(barFill, "ScaleDiscrete"))
+    if (is.null(fillScale)) {
+      fillScale <- scale_fill_viridis_d(option = "cividis", direction = -1)
+    }
+    stopifnot(is(fillScale, "ScaleDiscrete"))
+    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(plotTheme, "theme"))
+
     p <- ggplot(
       df,
       aes(
@@ -238,17 +235,20 @@ setMethod(
       )
     ) +
       geom_col() +
-      scale_y_continuous(labels = comma, expand = expansion(c(0, 0.05))) +
-      barFill +
-      theme_bw()
-    p <- .updateThemeFromDots(p, ...)
+      scale_y_continuous(
+        labels = comma, expand = expansion(rep_len(expand.y, 2))
+      ) +
+      fillScale +
+      theme_bw() +
+      plotTheme
 
     if (!usePlotly) {
       p <- p +
         geom_label(
-          aes(Filename, y = !!sym("label_y"), label = percent(rate, 0.1)),
-          data = dplyr::filter(df, rate >= labMin),
-          alpha = labAlpha, fill = labFill, size = labSize, nudge_y = labNudge
+          aes(
+            Filename, y = !!sym("label_y"), label = percent(!!sym("rate"), 0.1)
+          ),
+          data = dplyr::filter(df, !!sym("rate") >= labMin), fill = labFill, ...
         )
     } else {
       p <- p + theme(legend.position = "none")
@@ -257,6 +257,5 @@ setMethod(
     }
 
     p
-
   }
 )

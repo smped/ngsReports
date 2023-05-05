@@ -17,10 +17,11 @@
 #' by taking the position-specific mean for each base.
 #'
 #' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
+#' @param usePlotly `logical`. Generate an interactive plot using plotly
 #' @param labels An optional named vector of labels for the file names.
 #' All file names must be present in the names of the vector.
 #' File extensions are dropped by default.
-#' @param usePlotly `logical`. Generate an interactive plot using plotly
+#' @param pattern Regex to remove from the end of any filenames
 #' @param plotType `character`. Type of plot to generate. Must be "line",
 #' "heatmap" or "residuals"
 #' @param pwfCols Object of class [PwfCols()] to give colours for
@@ -32,7 +33,20 @@
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param heat_w Relative width of any heatmap plot components
-#' @param ... Used to pass additional attributes to theme() and between methods
+#' @param module Fastp Module to show. Can only be Before/After_filtering
+#' @param reads Which set of reads to show
+#' @param readsBy When plotting both R1 & R2, separate by either linetype or
+#' use facet_wrap, called on the associated fqName
+#' @param bases Which bases to draw on the plot. Also becomes the default
+#' plotting order by setting these as factor levels
+#' @param colourScale Discrete colour scale as a ggplot ScaleDiscrete object
+#' If not provided, will default to \link[ggplot2]{scale_colour_manual}
+#' @param plotTheme \link[ggplot2]{theme} object to be applied. Note that all
+#' plots will have \link[ggplot2]{theme_bw} theme applied by default, as well as
+#' any additional themes supplied here
+#' @param expand.x,expand.y Passed to \link[ggplot2]{expansion} in the x- and
+#' y-axis scales respectively
+#' @param ... Used to pass additional attributes to plotting geoms
 #' @param nc Specify the number of columns if plotting a FastqcDataList as line
 #' plots. Passed to `ggplot2::facet_wrap`.
 #'
@@ -62,336 +76,419 @@
 #' @name plotSeqContent
 #' @rdname plotSeqContent-methods
 #' @export
-setGeneric("plotSeqContent", function(x, usePlotly = FALSE, labels, ...){
-  standardGeneric("plotSeqContent")
-}
+setGeneric(
+  "plotSeqContent",
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+    standardGeneric("plotSeqContent")
+  }
 )
 #' @rdname plotSeqContent-methods
 #' @export
 setMethod("plotSeqContent", signature = "ANY", function(
-    x, usePlotly = FALSE, labels, ...){
+    x, usePlotly = FALSE, labels, pattern, ...){
   .errNotImp(x)
 }
 )
+#' @importFrom scales label_percent
 #' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSeqContent", signature = "character", function(
-    x, usePlotly = FALSE, labels, ...){
-  x <- FastqcDataList(x)
-  if (length(x) == 1) x <- x[[1]]
-  plotSeqContent(x, usePlotly, labels, ...)
-}
-)
-#' @rdname plotSeqContent-methods
-#' @export
-setMethod("plotSeqContent", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, ...){
+setMethod(
+  "plotSeqContent", signature = "FastqcData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
+    bases = c("A", "T", "C", "G"), colourScale = NULL, plotTheme = theme(),
+    expand.x = 0.02, expand.y = c(0, 0.05), ...
+  ){
 
-  ## Get the SequenceContent
-  df <- getModule(x, "Per_base_sequence_content")
-  names(df)[names(df) == "Base"] <- "Position"
+    ## Get the SequenceContent
+    df <- getModule(x, "Per_base_sequence_content")
+    names(df)[names(df) == "Base"] <- "Position"
 
-  if (!length(df)) {
-    scPlot <- .emptyPlot("No Sequence Content Module Detected")
-    if (usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
-    return(scPlot)
-  }
-
-  df$Position <- factor(df$Position, levels = unique(df$Position))
-
-  ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
-  labels <- labels[names(labels) %in% df$Filename]
-  acgt <- c("T", "C", "A", "G")
-
-  df$Filename <- labels[df$Filename]
-  df <- tidyr::gather(df, "Base", "Percent", one_of(acgt))
-  df$Base <- factor(df$Base, levels = acgt)
-  df$Percent <- round(df$Percent, 2)
-  df$x <- as.integer(df$Position)
-
-  ##set colours
-  baseCols <- c(`T` = "red", G = "black", A = "green", C = "blue")
-
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
-  xLab <- "Position in read (bp)"
-  yLab <- "Percent"
-  scPlot <- ggplot(df, aes(x, Percent, label = Position, colour = Base)) +
-    geom_line() +
-    facet_wrap(~Filename) +
-    scale_y_continuous(
-      limits = c(0, 100), expand = c(0, 0), labels = .addPercent
-    ) +
-    scale_x_continuous(
-      expand = c(0, 0), breaks = seq_along(levels(df$Position)),
-      labels = levels(df$Position)
-    ) +
-    scale_colour_manual(values = baseCols) +
-    guides(fill = "none") +
-    labs(x = xLab, y = yLab) +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
-
-  if (usePlotly) {
-
-    ttip <- c("y", "label", "colour")
-    scPlot <- plotly::ggplotly(scPlot, tooltip = ttip)
-    scPlot <- suppressMessages(
-      suppressWarnings(
-        plotly::subplot(
-          plotly::plotly_empty(),
-          scPlot,
-          widths = c(0.14,0.86))
-      )
-    )
-
-    scPlot <- plotly::layout(
-      scPlot, xaxis2 = list(title = xLab), yaxis2 = list(title = yLab)
-    )
-  }
-
-  scPlot
-
-}
-)
-#' @rdname plotSeqContent-methods
-#' @export
-setMethod("plotSeqContent", signature = "FastqcDataList", function(
-    x, usePlotly = FALSE, labels, pwfCols,
-    plotType = c("heatmap", "line", "residuals"),
-    cluster = FALSE, dendrogram = FALSE, heat_w = 8, ..., nc = 2){
-
-  ## Get the SequenceContent
-  mod <- "Per_base_sequence_content"
-  df <- getModule(x, mod)
-
-  if (!length(df)) {
-    scPlot <- .emptyPlot("No Sequence Content Module Detected")
-    if (usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
-    return(scPlot)
-  }
-
-  # Sort out any binned positions
-  df$Base <- lapply(
-    df$Base,
-    function(x){
-      rng <- as.integer(str_split(x, pattern = "-")[[1]])
-      seq(min(rng), max(rng), by = 1L)
+    if (!length(df)) {
+      scPlot <- .emptyPlot("No Sequence Content Module Detected")
+      if (usePlotly) scPlot <- plotly::ggplotly(scPlot, tooltip = "")
+      return(scPlot)
     }
-  )
-  df <- unnest(df, Base)
 
-  plotType <- match.arg(plotType)
-  if (missing(pwfCols)) pwfCols <- pwf
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, pattern = pattern, ...)
+    labels <- labels[names(labels) %in% df$Filename]
+    df$Filename <- labels[df$Filename]
 
-  ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
-  labels <- labels[names(labels) %in% df$Filename]
-
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
-  ## Define the bases as a vector for ease later in the function
-  acgt <- c("T", "C", "A", "G")
-  ## Axis labels
-  xLab <- "Position in read (bp)"
-  yLab <- "Percent (%)"
-
-  ## Get the PASS/WARN/FAIL status
-  status <- getSummary(x)
-  status <- subset(status, Category == "Per base sequence content")
-  status$Status <- factor(status$Status, levels = c("PASS", "WARN", "FAIL"))
-  status <- droplevels(status)
-
-  if (plotType == "heatmap") {
-
-    ## Round to 2 digits to reduce the complexity of the colour
-    ## palette
-    df[acgt] <- lapply(df[acgt], round, digits = 2)
-    maxBase <- max(vapply(acgt, function(x){max(df[[x]])}, numeric(1)))
-    ## Set the colours, using opacity for G
-    df$opacity <- 1 - df$G / maxBase
-    df$RGB <- with(df, rgb(
-      red = `T` * opacity / maxBase,
-      green = A * opacity / maxBase,
-      blue = C * opacity / maxBase)
+    bases <- match.arg(bases, several.ok = TRUE)
+    df <- tidyr::pivot_longer(
+      df, cols = all_of(bases), names_to = "Base", values_to = "Percent"
     )
+    df$Base <- factor(df$Base, levels = bases)
+    df$Position <- as.integer(str_extract(df$Position, "^[0-9]+"))
+    df$Percent <- round(df$Percent, 2)
+    ## This was a good idea but looks ugly. Maybe make it an option??
+    # df <- tidyr::complete(
+    #   df, Position = seq_len(max(df$Position)), nesting(Filename, Base)
+    # )
+    # df <- dplyr::arrange(df, Filename, Base, Position)
+    # df <- zoo::na.locf(df)
 
-    basicStat <- getModule(x, "Basic_Statistics")
-    basicStat <- basicStat[c("Filename", "Longest_sequence")]
-    df <- dplyr::right_join(df, basicStat, by = "Filename")
-    cols <- c("Filename", "Base", "RGB", "Longest_sequence")
-    df <- df[c(cols, acgt)]
+    ## set colours & theme
+    if (is.null(colourScale)) {
+      baseCols <- c(`T` = "red", G = "black", A = "green", C = "blue")[bases]
+      colourScale <- scale_colour_manual(values = baseCols)
+    }
+    stopifnot(is(colourScale, "ScaleDiscrete"))
+    stopifnot(colourScale$aesthetics == "colour")
+    stopifnot(is(plotTheme, "theme"))
 
-    ## Now define the order for a dendrogram if required
-    key <- names(labels)
-    df_long <- tidyr::pivot_longer(
-      df, cols = all_of(acgt), names_to = "Nt", values_to = "Percent"
-    )
-    df_long$Base <- paste(df_long$Base, df_long$Nt)
-    df_long <- df_long[c("Filename", "Base", "Percent")]
-    clusterDend <- .makeDendro(df_long, "Filename", "Base", "Percent")
-    dx <- ggdendro::dendro_data(clusterDend)
-    if (dendrogram | cluster) key <- labels(clusterDend)
-    if (!dendrogram) dx$segments <- dx$segments[0,]
-    ## Now set everything as factors
-    df$Filename <- factor(labels[df$Filename], levels = labels[key])
-    status$Filename <- factor(labels[status$Filename], levels = labels[key])
-
-    ## Define the colours as named colours (name = RGB)
-    tileCols <- unique(df$RGB)
-    names(tileCols) <- unique(df$RGB)
-
-    ## Define the tile locations
-    df$y <- as.integer(df$Filename)
-    df$ymax <- as.integer(df$Filename) + 0.5
-    df$ymin <- df$ymax - 1
-    df$xmax <- df$Base + 0.5
-    df$xmin <- df$Base - 1
-    ## Add percentage signs to ACGT for prettier labels
-    df[acgt] <- lapply(df[acgt], scales::percent, accuracy = 0.1, scale = 1)
-
-    yBreaks <- seq_along(levels(df$Filename))
-    scPlot <- ggplot(
-      df,
-      aes(
-        A = !!sym("A"), C = !!sym("C"), G = !!sym("G"), `T` = !!sym("T"),
-        Filename = Filename, Position = Base, fill = !!sym("RGB")
-      )
-    ) +
-      geom_rect(
-        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), linetype = 0
-      ) +
-      ggtitle("Per Base Sequence Content") +
-      scale_fill_manual(values = tileCols) +
-      scale_x_continuous(expand = c(0, 0)) +
+    xLab <- "Position in read (bp)"
+    yLab <- "Percent"
+    p <- ggplot(df, aes(Position, Percent, label = Position, colour = Base)) +
+      geom_line(...) +
+      facet_wrap(~Filename) +
       scale_y_continuous(
-        expand = c(0, 0), breaks = yBreaks, labels = levels(df$Filename),
-        position = "right"
+        limits = c(0, max(df$Percent)), labels = label_percent(scale = 1),
+        expand = expansion(rep_len(expand.y, 2))
       ) +
-      labs(x = xLab, y = c()) +
+      scale_x_continuous(expand = expansion(rep_len(expand.x, 2))) +
+      colourScale +
+      guides(fill = "none") +
+      labs(x = xLab, y = yLab) +
       theme_bw() +
-      theme(
-        legend.position = "none", panel.grid = element_blank(),
-        plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1)),
-        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
-      )
-    if (!is.null(userTheme)) scPlot <- scPlot + userTheme
-
-    scPlot <-
-      .prepHeatmap(scPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
-
-  }
-
-  if (plotType == "line") {
-    df$Filename <- labels[df$Filename]
-    df <- tidyr::gather(df, "Nt", "Percent", one_of(acgt))
-    df$Nt <- factor(df$Nt, levels = acgt)
-    df$Percent <- round(df$Percent, 2) / 100
-
-    ## Add the pwf status for plotly plots
-    status[["Filename"]] <- labels[status[["Filename"]]]
-    df <- left_join(df, status, by = "Filename")
-    rect_df <- group_by(df, Filename, Status)
-    rect_df <- dplyr::summarise(
-      rect_df, Start = 0, End = max(df$Base), .groups = "drop"
-    )
-
-    ##set colours for each base
-    baseCols <- c(`T` = "red", G = "black", A = "green", C = "blue")
-    df$diff <- c(Inf, diff(df$Percent))
-    df <- subset(df, diff != 0)
-
-    scPlot <- ggplot(df, aes(Base, Percent, colour = Nt)) +
-      geom_rect(
-        aes(xmin = 0, xmax = End, ymin = 0, ymax = 1, fill = Status),
-        data = rect_df,
-        alpha = 0.1,
-        inherit.aes = FALSE
-      ) +
-      geom_line() +
-      facet_wrap(~Filename, ncol = nc) +
-      scale_y_continuous(
-        limits = c(0, 1), expand = c(0, 0), labels = scales::percent
-      ) +
-      scale_x_continuous(expand = c(0, 0)) +
-      scale_fill_manual(values = getColours(pwfCols)[levels(status$Status)]) +
-      scale_colour_manual(values = baseCols) +
-      labs(x = xLab, y = yLab, colour = "Base") +
-      theme_bw()
-
-
-    if (!is.null(userTheme)) scPlot <- scPlot + userTheme
+      plotTheme
 
     if (usePlotly) {
-      scPlot <- scPlot + theme(legend.position = "none")
-      ttip <- c("y", "colour", "label", "fill")
-      scPlot <- suppressMessages(
-        suppressWarnings(plotly::ggplotly(scPlot, tooltip = ttip))
-      )
+      ttip <- c("y", "label", "colour")
+      p <- plotly::ggplotly(p, tooltip = ttip)
     }
+
+    p
+
   }
-  if (plotType == "residuals"){
+)
+#' @rdname plotSeqContent-methods
+#' @export
+setMethod(
+  "plotSeqContent", signature = "FastqcDataList",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
+    plotType = c("heatmap", "line", "residuals"), colourScale = NULL,
+    plotTheme = theme(), cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...,
+    nc = 2
+  ){
 
-    df$Filename <- labels[df$Filename]
-    ## Convert to long form
-    df <- pivot_longer(
-      data = df, cols = all_of(acgt), names_to = "Nt", values_to = "Percent"
+    ## Get the SequenceContent
+    mod <- "Per_base_sequence_content"
+    df <- getModule(x, mod)
+
+    if (!length(df)) {
+      scPlot <- .emptyPlot("No Sequence Content Module Detected")
+      if (usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
+      return(scPlot)
+    }
+
+    # Sort out any binned positions
+    df$Base <- lapply(
+      df$Base,
+      function(x){
+        rng <- as.integer(str_split(x, pattern = "-")[[1]])
+        seq(min(rng), max(rng), by = 1L)
+      }
     )
-    ## Calculate the Residuals for each base/position
-    df <- group_by(df, Base, Nt)
-    df <- dplyr::mutate(df, Residuals = Percent - mean(Percent))
-    df <- ungroup(df)
-    df[["Residuals"]] <- round(df[["Residuals"]], 2)
-    ## Find the duplicated positions as a result of binning & remove
-    df <- dplyr::arrange(df, Filename, Nt, Base)
-    df <- group_by(df, Filename, Nt)
-    df <- dplyr::mutate(df, diff = c(0, diff(Percent)))
-    df <- ungroup(df)
-    df <- dplyr::filter(df, diff != 0 | Base == 1)
-    df[["Deviation"]] <- percent(df[["Residuals"]]/100, accuracy = 0.1)
-    ## Add the pwf status for plotly plots
-    status[["Filename"]] <- labels[status[["Filename"]]]
-    df <- left_join(df, status, by = "Filename")
+    df <- unnest(df, Base)
 
-    Deviation <- c()
-    scPlot <- ggplot(
+    plotType <- match.arg(plotType)
+    if (missing(pwfCols)) pwfCols <- pwf
+    stopifnot(is(plotTheme, "theme"))
+
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, pattern = pattern, ...)
+    labels <- labels[names(labels) %in% df$Filename]
+
+    ## Define the bases as a vector for ease later in the function
+    acgt <- c("T", "C", "A", "G")
+    ## Axis labels
+    xLab <- "Position in read (bp)"
+    yLab <- "Percent (%)"
+
+    ## Get the PASS/WARN/FAIL status
+    status <- getSummary(x)
+    status <- subset(status, Category == "Per base sequence content")
+    status$Status <- factor(status$Status, levels = c("PASS", "WARN", "FAIL"))
+    status <- droplevels(status)
+
+
+    if (plotType == "heatmap") {
+
+      ## Round to 2 digits to reduce the complexity of the colour
+      ## palette
+      df[acgt] <- lapply(df[acgt], round, digits = 2)
+      maxBase <- max(vapply(acgt, function(x){max(df[[x]])}, numeric(1)))
+      ## Set the colours, using opacity for G
+      df$opacity <- 1 - df$G / maxBase
+      df$RGB <- with(df, rgb(
+        red = `T` * opacity / maxBase,
+        green = A * opacity / maxBase,
+        blue = C * opacity / maxBase)
+      )
+
+      basicStat <- getModule(x, "Basic_Statistics")
+      basicStat <- basicStat[c("Filename", "Longest_sequence")]
+      df <- dplyr::right_join(df, basicStat, by = "Filename")
+      cols <- c("Filename", "Base", "RGB", "Longest_sequence")
+      df <- df[c(cols, acgt)]
+
+      ## Now define the order for a dendrogram if required
+      key <- names(labels)
+      df_long <- tidyr::pivot_longer(
+        df, cols = all_of(acgt), names_to = "Nt", values_to = "Percent"
+      )
+      df_long$Base <- paste(df_long$Base, df_long$Nt)
+      df_long <- df_long[c("Filename", "Base", "Percent")]
+      clusterDend <- .makeDendro(df_long, "Filename", "Base", "Percent")
+      dx <- ggdendro::dendro_data(clusterDend)
+      if (dendrogram | cluster) key <- labels(clusterDend)
+      if (!dendrogram) dx$segments <- dx$segments[0,]
+      ## Now set everything as factors
+      df$Filename <- factor(labels[df$Filename], levels = labels[key])
+      status$Filename <- factor(labels[status$Filename], levels = labels[key])
+
+      ## Define the colours as named colours (name = RGB)
+      tileCols <- unique(df$RGB)
+      names(tileCols) <- unique(df$RGB)
+
+      ## Define the tile locations
+      df$y <- as.integer(df$Filename)
+      df$ymax <- as.integer(df$Filename) + 0.5
+      df$ymin <- df$ymax - 1
+      df$xmax <- df$Base + 0.5
+      df$xmin <- df$Base - 1
+      ## Add percentage signs to ACGT for prettier labels
+      df[acgt] <- lapply(df[acgt], scales::percent, accuracy = 0.1, scale = 1)
+      yBreaks <- seq_along(levels(df$Filename))
+
+      scPlot <- ggplot(
+        df,
+        aes(
+          A = !!sym("A"), C = !!sym("C"), G = !!sym("G"), `T` = !!sym("T"),
+          Filename = Filename, Position = Base, fill = !!sym("RGB")
+        )
+      ) +
+        geom_rect(
+          aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), linetype = 0
+        ) +
+        ggtitle("Per Base Sequence Content") +
+        scale_fill_manual(values = tileCols) +
+        scale_x_continuous(expand = c(0, 0)) +
+        scale_y_continuous(
+          expand = c(0, 0), breaks = yBreaks, labels = levels(df$Filename),
+          position = "right"
+        ) +
+        labs(x = xLab, y = c()) +
+        theme_bw() +
+        theme(
+          legend.position = "none", panel.grid = element_blank(),
+          plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1)),
+          plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
+        ) +
+        plotTheme
+
+      scPlot <-
+        .prepHeatmap(scPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
+
+    }
+
+    if (plotType == "line") {
+
+      df$Filename <- labels[df$Filename]
+      df <- tidyr::gather(df, "Nt", "Percent", one_of(acgt))
+      df$Nt <- factor(df$Nt, levels = acgt)
+      df$Percent <- round(df$Percent, 2) / 100
+
+      ## Add the pwf status for plotly plots
+      status[["Filename"]] <- labels[status[["Filename"]]]
+      df <- left_join(df, status, by = "Filename")
+      rect_df <- group_by(df, Filename, Status)
+      rect_df <- dplyr::summarise(
+        rect_df, Start = 0, End = max(df$Base), .groups = "drop"
+      )
+
+      df$diff <- c(Inf, diff(df$Percent))
+      df <- subset(df, diff != 0)
+
+      ## Set colours for line plots & theme
+      if (is.null(colourScale)) {
+        baseCols <- c(`T` = "red", G = "black", A = "green", C = "blue")
+        colourScale <- scale_colour_manual(values = baseCols)
+      }
+      stopifnot(is(colourScale, "ScaleDiscrete"))
+      stopifnot(colourScale$aesthetics == "colour")
+
+      scPlot <- ggplot(df, aes(Base, Percent, colour = Nt)) +
+        geom_rect(
+          aes(xmin = 0, xmax = End, ymin = 0, ymax = 1, fill = Status),
+          data = rect_df,
+          alpha = 0.1, inherit.aes = FALSE
+        ) +
+        geom_line(...) +
+        facet_wrap(~Filename, ncol = nc) +
+        scale_y_continuous(
+          limits = c(0, 1), expand = c(0, 0), labels = scales::percent
+        ) +
+        scale_x_continuous(expand = c(0, 0)) +
+        scale_fill_manual(values = getColours(pwfCols)[levels(status$Status)]) +
+        colourScale +
+        labs(x = xLab, y = yLab, colour = "Base") +
+        theme_bw() +
+        plotTheme
+
+      if (usePlotly) {
+        scPlot <- scPlot + theme(legend.position = "none")
+        ttip <- c("y", "colour", "label", "fill")
+        scPlot <- suppressMessages(
+          suppressWarnings(plotly::ggplotly(scPlot, tooltip = ttip))
+        )
+      }
+    }
+    if (plotType == "residuals") {
+
+      df$Filename <- labels[df$Filename]
+      ## Convert to long form
+      df <- pivot_longer(
+        data = df, cols = all_of(acgt), names_to = "Nt", values_to = "Percent"
+      )
+      ## Calculate the Residuals for each base/position
+      df <- group_by(df, Base, Nt)
+      df <- dplyr::mutate(df, Residuals = Percent - mean(Percent))
+      df <- ungroup(df)
+      df[["Residuals"]] <- round(df[["Residuals"]], 2)
+      ## Find the duplicated positions as a result of binning & remove
+      df <- dplyr::arrange(df, Filename, Nt, Base)
+      df <- group_by(df, Filename, Nt)
+      df <- dplyr::mutate(df, diff = c(0, diff(Percent)))
+      df <- ungroup(df)
+      df <- dplyr::filter(df, diff != 0 | Base == 1)
+      df[["Deviation"]] <- percent(df[["Residuals"]]/100, accuracy = 0.1)
+      ## Add the pwf status for plotly plots
+      status[["Filename"]] <- labels[status[["Filename"]]]
+      df <- left_join(df, status, by = "Filename")
+
+      ## Set colours for line plots & theme
+      if (is.null(colourScale)) {
+        colourScale <- scale_colour_brewer(palette = "Paired")
+      }
+      stopifnot(is(colourScale, "ScaleDiscrete"))
+      stopifnot(colourScale$aesthetics == "colour")
+
+      Deviation <- c()
+      scPlot <- ggplot(
+        df,
+        aes(
+          Base, Residuals, colour = Filename, label = Deviation, status = Status
+        )
+      ) +
+        geom_line(aes(group = Filename), ...) +
+        facet_wrap(~Nt) +
+        scale_y_continuous(labels = .addPercent) +
+        scale_x_continuous(expand = c(0, 0)) +
+        colourScale +
+        labs(x = xLab) +
+        theme_bw() +
+        plotTheme
+
+      if (usePlotly) {
+        ttip <- c("x", "colour", "label", "status")
+        scPlot <- scPlot + theme(legend.position = "none")
+        scPlot <- suppressMessages(
+          suppressWarnings(
+            plotly::ggplotly(scPlot, tooltip = ttip)
+          )
+        )
+      }
+
+    }
+
+    scPlot
+  }
+)
+#' @importFrom tidyr unnest pivot_longer
+#' @importFrom rlang sym "!!"
+#' @importFrom scales label_percent
+#' @rdname plotSeqContent-methods
+#' @export
+setMethod(
+  "plotSeqContent", signature = "FastpData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
+    module = c("Before_filtering", "After_filtering"),
+    reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
+    bases = c("A", "T", "C", "G", "N", "GC"), colourScale = NULL,
+    plotTheme = theme(), expand.x = 0.02, expand.y = c(0, 0.05), ...
+  ) {
+
+    module <- match.arg(module)
+    data <- getModule(x, module)
+    reads <- match.arg(reads, names(data), several.ok = TRUE)
+    df <- dplyr::bind_rows(data[reads])
+    df <- df[c("Filename", "fqName", "content_curves")]
+    df <- unnest(df, !!sym("content_curves"))
+    bases <- match.arg(bases, colnames(df), several.ok = TRUE)
+    df <- pivot_longer(
+      df, all_of(bases), names_to = "Base", values_to = "Frequency"
+    )
+    df$Base <- factor(df$Base, levels = bases)
+
+    if (is.null(colourScale)) {
+      ## Best guess based on those in a fastp report
+      basecols <- c(
+        A = "#807C58", `T` = "#601490", C = "green", G = "blue", N = "red",
+        GC = "grey20"
+      )[bases]
+      colourScale <- scale_colour_manual(values = basecols)
+    }
+    stopifnot(is(colourScale, "ScaleDiscrete"))
+    stopifnot(colourScale$aesthetics == "colour")
+    stopifnot(is(plotTheme, "theme"))
+
+    ## Sort out labels for nicer plotting
+    fqLabels <- .makeLabels(df, pattern = pattern, col = "fqName")
+    df$fqName <- factor(fqLabels[df$fqName], levels = fqLabels)
+    labels <- .makeLabels(df, labels, pattern)
+    df$Filename <- factor(labels[df$Filename], levels = labels)
+    main <- paste0(unique(labels), ": ", gsub("_", " ", module))
+
+    ## How to show reads
+    readsBy <- match.arg(readsBy)
+    linetype <- NULL
+    if (readsBy == "linetype") linetype <- sym("fqName")
+
+    ## Final tweaks for better plotly category labels
+    names(df) <- gsub("position", "Position", names(df))
+    df$Frequency <- round(100 * df$Frequency, 2)
+    df$Filename <- df$fqName
+    p <- ggplot(
       df,
       aes(
-        Base, Residuals, colour = Filename, label = Deviation, status = Status
+        Position, Frequency, colour = Base, linetype = {{ linetype }},
+        name = Filename
       )
     ) +
-      geom_line(aes(group = Filename)) +
-      facet_wrap(~Nt) +
-      scale_y_continuous(labels = .addPercent) +
-      scale_x_continuous(expand = c(0, 0)) +
-      labs(x = xLab) +
-      theme_bw()
-
-    if (!is.null(userTheme)) scPlot <- scPlot + userTheme
+      geom_line(...) +
+      ggtitle(main) +
+      labs(x = "Position in Read") +
+      scale_x_continuous(expand = expansion(rep_len(expand.x, 2))) +
+      scale_y_continuous(
+        labels = label_percent(scale = 1), #breaks = seq(0, 100, by = 10),
+        limits = c(0, max(df$Frequency)),
+        expand = expansion(rep_len(expand.y, 2))
+      ) +
+      colourScale +
+      theme_bw() +
+      plotTheme
+    if (readsBy == "facet") p <- p + facet_wrap(~fqName)
 
     if (usePlotly) {
-      ttip <- c("x", "colour", "label", "status")
-      scPlot <- scPlot + theme(legend.position = "none")
-      scPlot <- suppressMessages(
-        suppressWarnings(
-          plotly::ggplotly(scPlot, tooltip = ttip)
-        )
-      )
+      p <- p + theme(legend.position = "none")
+      tt <- c("Filename", "Position", "Frequency", "Base")
+      p <- plotly::ggplotly(p, tooltip = tt)
     }
-
+    p
   }
-
-  scPlot
-}
 )
