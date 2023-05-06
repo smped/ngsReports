@@ -7,6 +7,7 @@
 \alias{plotSeqContent,FastqcData-method}
 \alias{plotSeqContent,FastqcDataList-method}
 \alias{plotSeqContent,FastpData-method}
+\alias{plotSeqContent,FastpDataList-method}
 \title{Plot the per base content as a heatmap}
 \usage{
 plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
@@ -57,6 +58,29 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   expand.y = c(0, 0.05),
   ...
 )
+
+\S4method{plotSeqContent}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  bases = c("A", "T", "C", "G", "N", "GC"),
+  pwfCols,
+  warn = 10,
+  fail = 20,
+  plotType = c("heatmap", "line", "residuals"),
+  colourScale = NULL,
+  plotTheme = theme(),
+  cluster = FALSE,
+  dendrogram = FALSE,
+  heat_w = 8,
+  expand.x = c(0.01),
+  expand.y = c(0, 0.05),
+  ...,
+  nc = 2
+)
 }
 \arguments{
 \item{x}{Can be a \code{FastqcData}, \code{FastqcDataList} or file paths}
@@ -101,7 +125,7 @@ then the dendrogram will be displayed.}
 \item{heat_w}{Relative width of any heatmap plot components}
 
 \item{nc}{Specify the number of columns if plotting a FastqcDataList as line
-plots. Passed to \code{ggplot2::facet_wrap}.}
+plots. Passed to \link[ggplot2]{facet_wrap}.}
 
 \item{module}{Fastp Module to show. Can only be Before/After_filtering}
 
@@ -109,6 +133,9 @@ plots. Passed to \code{ggplot2::facet_wrap}.}
 
 \item{readsBy}{When plotting both R1 & R2, separate by either linetype or
 use facet_wrap, called on the associated fqName}
+
+\item{warn, fail}{Default values for WARN and FAIL based on FastQC reports.
+Only applied to heatmaps for FastpDataList objects}
 }
 \value{
 A ggplot2 object or an interactive plotly object
