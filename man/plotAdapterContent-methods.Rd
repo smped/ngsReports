@@ -10,17 +10,33 @@
 \alias{plotAdapterContent,FastpDataList-method}
 \title{Draw an Adapter Content Plot}
 \usage{
-plotAdapterContent(x, usePlotly = FALSE, labels, ...)
+plotAdapterContent(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  ...
+)
 
-\S4method{plotAdapterContent}{ANY}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotAdapterContent}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  ...
+)
 
 \S4method{plotAdapterContent}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
+  showPwf = TRUE,
   warn = 5,
   fail = 10,
+  colourScale = NULL,
+  plotlyLegend = FALSE,
   ...
 )
 
@@ -28,7 +44,9 @@ plotAdapterContent(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
+  showPwf = TRUE,
   warn = 5,
   fail = 10,
   plotType = c("heatmap", "line"),
@@ -36,6 +54,9 @@ plotAdapterContent(x, usePlotly = FALSE, labels, ...)
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8L,
+  fillScale = NULL,
+  colourScale = NULL,
+  plotlyLegend = FALSE,
   ...
 )
 
@@ -43,8 +64,10 @@ plotAdapterContent(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
-  cols = c("red", "darkblue"),
-  pattern = ".fastq.*|.fastp.json",
+  pattern = ".(fast|fq|bam).*",
+  fillScale = NULL,
+  plotlyLegend = FALSE,
+  plotTheme = theme(),
   ...
 )
 
@@ -52,12 +75,15 @@ plotAdapterContent(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
+  showPwf = FALSE,
   warn = 5,
   fail = 10,
-  pattern = ".fastq.*|.fastp.json",
   cluster = FALSE,
   dendrogram = FALSE,
+  fillScale = NULL,
+  plotTheme = theme(),
   heat_w = 8L,
   ...
 )
@@ -70,16 +96,24 @@ vector of file paths}
 object.}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+All filenames must be present in the names.}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
+\item{pattern}{regex used to trim the ends of all filenames for plotting}
+
+\item{...}{Used to pass additional attributes to theme() for FastQC objects
+and geoms for Fastp objects}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
 
+\item{showPwf}{logical(1) Show PASS/WARN/FAIL status as would be included in
+a standard FastQC report}
+
 \item{warn, fail}{The default values for warn and fail are 5 and 10
 respectively (i.e. percentages)}
+
+\item{plotlyLegend}{logical(1) Show legend when choosing interactive plots.
+Ignored for heatmaps}
 
 \item{plotType}{\code{character}. Can only take the values
 \code{plotType = "heatmap"} or \code{plotType = "line"}}
@@ -97,9 +131,9 @@ then the dendrogram will be displayed.}
 
 \item{heat_w}{Width of the heatmap relative to other plot components}
 
-\item{cols}{Fill colours for each read when using FastpData objects}
+\item{fillScale, colourScale}{scale_fill\* and scale_colour_\* objects}
 
-\item{pattern}{regex used to trim the ends of all filenames for plotting}
+\item{plotTheme}{Set theme elements by passing a \link[ggplot2]{theme}}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
@@ -143,5 +177,9 @@ plotAdapterContent(fdl[r1])
 plotAdapterContent(fdl, adapterType ="Illumina_Universal", plotType = "line") +
 facet_wrap(~Filename) +
 guides(colour = "none")
+
+# For FastpData object, the plots are slightly different
+fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+plotAdapterContent(fp, fillScale = scale_fill_brewer(palette = "Set1"))
 
 }

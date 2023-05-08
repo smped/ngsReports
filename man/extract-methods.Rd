@@ -6,6 +6,10 @@
 \alias{[,FastqcDataList,character,missing-method}
 \alias{[,FastqcDataList,logical,missing-method}
 \alias{[,FastqcDataList,ANY,missing-method}
+\alias{[,FastpDataList,numeric,missing-method}
+\alias{[,FastpDataList,character,missing-method}
+\alias{[,FastpDataList,logical,missing-method}
+\alias{[,FastpDataList,ANY,missing-method}
 \title{Extract Elements}
 \usage{
 \S4method{[}{FastqcDataList,numeric,missing}(x, i, j, ..., drop = TRUE)
@@ -15,9 +19,17 @@
 \S4method{[}{FastqcDataList,logical,missing}(x, i, j, ..., drop = TRUE)
 
 \S4method{[}{FastqcDataList,ANY,missing}(x, i, j, ..., drop = TRUE)
+
+\S4method{[}{FastpDataList,numeric,missing}(x, i, j, ..., drop = TRUE)
+
+\S4method{[}{FastpDataList,character,missing}(x, i, j, ..., drop = TRUE)
+
+\S4method{[}{FastpDataList,logical,missing}(x, i, j, ..., drop = TRUE)
+
+\S4method{[}{FastpDataList,ANY,missing}(x, i, j, ..., drop = TRUE)
 }
 \arguments{
-\item{x}{A FastqcDataList}
+\item{x}{A FastqcDataList or FastpDataList}
 
 \item{i}{character, logical or integer vector}
 

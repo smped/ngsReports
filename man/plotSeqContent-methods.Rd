@@ -22,6 +22,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   bases = c("A", "T", "C", "G"),
   colourScale = NULL,
   plotTheme = theme(),
+  plotlyLegend = FALSE,
   expand.x = 0.02,
   expand.y = c(0, 0.05),
   ...
@@ -33,14 +34,16 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   labels,
   pattern = ".(fast|fq|bam).*",
   pwfCols,
+  showPwf = TRUE,
   plotType = c("heatmap", "line", "residuals"),
   colourScale = NULL,
   plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
-  ...,
-  nc = 2
+  plotlyLegend = FALSE,
+  nc = 2,
+  ...
 )
 
 \S4method{plotSeqContent}{FastpData}(
@@ -53,6 +56,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   readsBy = c("facet", "linetype"),
   bases = c("A", "T", "C", "G", "N", "GC"),
   colourScale = NULL,
+  plotlyLegend = FALSE,
   plotTheme = theme(),
   expand.x = 0.02,
   expand.y = c(0, 0.05),
@@ -66,11 +70,14 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   pattern = ".(fast|fq|bam).*",
   module = c("Before_filtering", "After_filtering"),
   reads = c("read1", "read2"),
+  readsBy = c("facet", "linetype"),
   bases = c("A", "T", "C", "G", "N", "GC"),
+  showPwf = FALSE,
   pwfCols,
   warn = 10,
   fail = 20,
   plotType = c("heatmap", "line", "residuals"),
+  plotlyLegend = FALSE,
   colourScale = NULL,
   plotTheme = theme(),
   cluster = FALSE,
@@ -78,8 +85,8 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   heat_w = 8,
   expand.x = c(0.01),
   expand.y = c(0, 0.05),
-  ...,
-  nc = 2
+  nc = 2,
+  ...
 )
 }
 \arguments{
@@ -105,12 +112,18 @@ If not provided, will default to \link[ggplot2]{scale_colour_manual}}
 plots will have \link[ggplot2]{theme_bw} theme applied by default, as well as
 any additional themes supplied here}
 
+\item{plotlyLegend}{logical(1) Show legends for interactive plots. Ignored
+for heatmaps}
+
 \item{expand.x, expand.y}{Passed to \link[ggplot2]{expansion} in the x- and
 y-axis scales respectively}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail
 values in plot}
+
+\item{showPwf}{Show PASS/WARN/FAIL categories as would be defined in a FastQC
+report}
 
 \item{plotType}{\code{character}. Type of plot to generate. Must be "line",
 "heatmap" or "residuals"}

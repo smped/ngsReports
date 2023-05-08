@@ -21,6 +21,7 @@
 #' vector of file paths
 #' @param usePlotly `logical`. Output as ggplot2 (default) or plotly
 #' object.
+#' @param pattern regex used to trim the ends of all filenames for plotting
 #' @param adapterType A regular expression matching the adapter(s) to be
 #' plotted. To plot all adapters summed, specify `adapterType = "Total"`.
 #' This is the default behaviour.
@@ -30,18 +31,22 @@
 #' respectively (i.e. percentages)
 #' @param pwfCols Object of class [PwfCols()] containing the colours
 #' for PASS/WARN/FAIL
+#' @param showPwf logical(1) Show PASS/WARN/FAIL status as would be included in
+#' a standard FastQC report
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
-#' File extensions are dropped by default.
 #' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram `logical` redundant if `cluster` is `FALSE`
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param heat_w Width of the heatmap relative to other plot components
-#' @param cols Fill colours for each read when using FastpData objects
-#' @param pattern regex used to trim the ends of all filenames for plotting
-#' @param ... Used to pass additional attributes to theme() and between methods
+#' @param fillScale,colourScale scale_fill\* and scale_colour_\* objects
+#' @param plotlyLegend logical(1) Show legend when choosing interactive plots.
+#' Ignored for heatmaps
+#' @param plotTheme Set theme elements by passing a \link[ggplot2]{theme}
+#' @param ... Used to pass additional attributes to theme() for FastQC objects
+#' and geoms for Fastp objects
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
@@ -67,6 +72,10 @@
 #' facet_wrap(~Filename) +
 #' guides(colour = "none")
 #'
+#' # For FastpData object, the plots are slightly different
+#' fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+#' plotAdapterContent(fp, fillScale = scale_fill_brewer(palette = "Set1"))
+#'
 #' @docType methods
 #'
 #' @import ggplot2
@@ -81,10 +90,11 @@
 #' @name plotAdapterContent
 #' @rdname plotAdapterContent-methods
 #' @export
-setGeneric("plotAdapterContent", function(
-    x, usePlotly = FALSE, labels, ...){
-  standardGeneric("plotAdapterContent")
-}
+setGeneric(
+  "plotAdapterContent",
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+    standardGeneric("plotAdapterContent")
+  }
 )
 #' @rdname plotAdapterContent-methods
 #' @export
@@ -94,8 +104,13 @@ setMethod(
 )
 #' @rdname plotAdapterContent-methods
 #' @export
-setMethod("plotAdapterContent", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10,  ...){
+setMethod(
+  "plotAdapterContent", signature = "FastqcData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
+    showPwf = TRUE, warn = 5, fail = 10, colourScale = NULL,
+    plotlyLegend = FALSE, ...
+  ){
 
   df <- getModule(x, "Adapter_Content")
 
@@ -106,13 +121,13 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
   if (sum(df[valueCols]) == 0)
     msg <- "No Adapter Content Found in Sequences"
   if (!is.null(msg)) {
-    acPlot <- .emptyPlot(msg)
-    if (usePlotly) acPlot <- ggplotly(acPlot, tooltip = "")
-    return(acPlot)
+    p <- .emptyPlot(msg)
+    if (usePlotly) p <- ggplotly(p, tooltip = "")
+    return(p)
   }
 
   ## Set any labels
-  labels <- .makeLabels(x, labels, ...)
+  labels <- .makeLabels(x, labels, pattern)
   labels <- labels[names(labels) %in% df$Filename]
   df$Filename <- labels[df$Filename]
 
@@ -141,21 +156,23 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
     Status = c("PASS", "WARN", "FAIL")
   )
 
+  if (is.null(colourScale)) colourScale <- scale_colour_discrete()
+  stopifnot(is(colourScale, "ScaleDiscrete"))
+  stopifnot(colourScale$aesthetics == "colour")
+
   ## Create the basic plot
   xLab <- "Position in read (bp)"
   yLab <- "Percent (%)"
-  acPlot <- ggplot(df) +
-    geom_rect(
-      data = rects,
-      aes(
-        xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status
-      )
-    ) +
-    geom_line(aes(x = Position, y = Percent, colour = Type)) +
+  p <- ggplot(df)
+  if (showPwf) p <- p + geom_rect(
+    data = rects,
+    aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
+    )
+  p <- p + geom_line(aes(x = Position, y = Percent, colour = Type)) +
     scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0)) +
     scale_fill_manual(values = getColours(pwfCols)) +
-    scale_colour_discrete() +
+    colourScale +
     facet_wrap(~Filename, ncol = 1) +
     labs(x = xLab, y = yLab) +
     guides(fill = "none") +
@@ -166,36 +183,38 @@ setMethod("plotAdapterContent", signature = "FastqcData", function(
     )
 
   ## Add the basic customisations
-  acPlot <- .updateThemeFromDots(acPlot, ...)
+  p <- .updateThemeFromDots(p, ...)
 
   ## Make interactive if required
   if (usePlotly) {
-    acPlot <- acPlot + theme(legend.position = "none")
-    acPlot <- suppressWarnings(
+    if (!plotlyLegend) p <- p + theme(legend.position = "none")
+    p <- suppressWarnings(
       suppressMessages(
-        plotly::subplot(
-          plotly::plotly_empty(), acPlot, widths = c(0.14,0.86)
-        )
+        plotly::subplot(plotly::plotly_empty(), p, widths = c(0.14,0.86))
       )
     )
-    acPlot <- plotly::layout(
-      acPlot, xaxis2 = list(title = xLab), yaxis2 = list(title = yLab)
+    p <- plotly::layout(
+      p, xaxis2 = list(title = xLab), yaxis2 = list(title = yLab)
     )
     ## Set the hoverinfo for bg rectangles to the vertices only,
     ## This will effectively hide them
-    acPlot$x$data <- lapply(acPlot$x$data, .hidePWFRects)
+    p$x$data <- lapply(p$x$data, .hidePWFRects)
   }
 
-  acPlot
+  p
 
 }
 )
 #' @rdname plotAdapterContent-methods
 #' @export
-setMethod("plotAdapterContent", signature = "FastqcDataList", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10,
-    plotType = c("heatmap", "line"), adapterType = "Total",
-    cluster = FALSE, dendrogram = FALSE, heat_w = 8L, ...){
+setMethod(
+  "plotAdapterContent", signature = "FastqcDataList",
+  function(
+    x, usePlotly = FALSE, labels, pattern =  ".(fast|fq|bam).*", pwfCols,
+    showPwf = TRUE, warn = 5, fail = 10, plotType = c("heatmap", "line"),
+    adapterType = "Total", cluster = FALSE, dendrogram = FALSE, heat_w = 8L,
+    fillScale = NULL, colourScale = NULL, plotlyLegend = FALSE, ...
+  ){
 
   df <- .tidyAc(x, adapterType)
 
@@ -204,8 +223,8 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
   if (!length(df))
     msg <- "No Requested Adapter Content Found in Sequences"
   if (!is.null(msg)) {
-    acPlot <- .emptyPlot(msg)
-    return(acPlot)
+    p <- .emptyPlot(msg)
+    return(p)
   }
 
   ## Sort out the colours & pass/warn/fail breaks
@@ -217,7 +236,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
 
   ## Check for valid plotType & labels
   plotType <- match.arg(plotType)
-  labels <- .makeLabels(x, labels, ...)
+  labels <- .makeLabels(x, labels, pattern)
   labels <- labels[names(labels) %in% df$Filename]
 
   ## If no adapter content is found fo the selected adapter,
@@ -259,10 +278,19 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
     )
 
     ## Make the heatmap
-    cols <-
-      .makePwfGradient(df$Percent, pwf, breaks = breaks, na.value = "white")
+    if (is.null(fillScale)) {
+      cols <- .makePwfGradient(
+        df$Percent, pwf, breaks = breaks, na.value = "white"
+      )
+      cols$breaks <- seq(min(cols$breaks), max(cols$breaks), length.out = 3)
+      cols$labels <- scales::percent
+      fillScale <- do.call("scale_fill_gradientn", cols)
+    }
+    stopifnot(is(fillScale, "ScaleContinuous"))
+    stopifnot(fillScale$aesthetic == "fill")
+
     hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
-    acPlot <- ggplot(
+    p <- ggplot(
       df, aes(Position, Filename, fill = Percent, type = Type)
     ) +
       geom_tile() +
@@ -270,7 +298,7 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       labs(x = xLab, y = yLab) +
       scale_x_continuous(expand = c(0,0)) +
       scale_y_discrete(expand = c(0, 0), position = "right") +
-      do.call("scale_fill_gradientn", cols) +
+      fillScale +
       theme_bw() +
       theme(
         panel.background = element_blank(),
@@ -280,9 +308,9 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       )
 
     ## Add custom elements
-    acPlot <- .updateThemeFromDots(acPlot, ...)
-
-    out <- .prepHeatmap(acPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
+    p <- .updateThemeFromDots(p, ...)
+    if (!showPwf) status <- status[0, ]
+    p <- .prepHeatmap(p, status, dx$segments, usePlotly, heat_w, pwfCols)
 
   }
 
@@ -302,51 +330,51 @@ setMethod("plotAdapterContent", signature = "FastqcDataList", function(
       Status = c("PASS", "WARN", "FAIL")
     )
 
+    if (is.null(colourScale)) colourScale <- scale_colour_discrete()
+    stopifnot(is(colourScale, "ScaleDiscrete"))
+    stopifnot(colourScale$aesthetics == "colour")
+
     ## Create the basic plot
-    acPlot <- ggplot(df) +
-      geom_rect(
-        data = rects,
-        aes(
-          xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status
-        )
-      ) +
-      geom_line(aes(Position, Percent, colour = Filename)) +
+    p <- ggplot(df)
+    if (showPwf) p <- p + geom_rect(
+      data = rects,
+      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
+    )
+    p <- p + geom_line(aes(Position, Percent, colour = Filename)) +
       scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
       scale_x_continuous(expand = c(0, 0)) +
-      scale_colour_discrete(labels = labels) +
+      colourScale +
       scale_fill_manual(values = getColours(pwfCols)) +
       guides(fill = "none") +
       labs(x = xLab, y = yLab) +
       facet_wrap(~Type, ncol = 1) +
       theme_bw()
-
-    acPlot <- .updateThemeFromDots(acPlot, ...)
+    p <- .updateThemeFromDots(p, ...)
 
     ## And draw the plot
     if (usePlotly) {
-      acPlot <- acPlot + theme(legend.position = "none")
-      acPlot <- suppressMessages(
-        plotly::ggplotly(acPlot, hoverinfo = c("x", "y", "colour"))
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
+      p <- suppressMessages(
+        plotly::ggplotly(p, tooltip = c("x", "y", "colour"))
       )
-
       ## Set the hoverinfo for bg rectangles to the vertices
       ## only. This will effectively hide them from the mouse
-      acPlot$x$data <- lapply(acPlot$x$data, .hidePWFRects)
+      p$x$data <- lapply(p$x$data, .hidePWFRects)
     }
-    out <- acPlot
   }
-  out
+  p
 }
 )
 #' @importFrom dplyr group_by summarise bind_rows
 #' @importFrom rlang !! sym
+#' @importFrom scales percent
 #' @rdname plotAdapterContent-methods
 #' @export
 setMethod(
   "plotAdapterContent", signature = "FastpData",
   function(
-    x, usePlotly = FALSE, labels, cols = c("red", "darkblue"),
-    pattern =  ".fastq.*|.fastp.json", ...
+    x, usePlotly = FALSE, labels, pattern =  ".(fast|fq|bam).*",
+    fillScale = NULL, plotlyLegend = FALSE, plotTheme = theme(), ...
   ){
 
     mod <- "Adapters"
@@ -367,13 +395,12 @@ setMethod(
     counts_df <- bind_rows(counts, .id = "Filename")
 
     ## Set any labels & colours
-    labels <- .makeLabels(counts_df, labels, pattern = pattern, ...)
+    labels <- .makeLabels(counts_df, labels, pattern = pattern)
     labels <- labels[names(labels) %in% counts_df$Filename]
     counts_df$Filename <- labels[counts_df$Filename]
-    cols <- rep_len(cols, length(labels))
 
     ## Tidy up for plotting
-    counts_df$Rate <- scales::percent(counts_df$Occurence_rate, 0.01)
+    counts_df$Rate <- percent(counts_df$Occurence_rate, 0.01)
     counts_df$Count <- scales::comma(counts_df$Occurences)
     counts_df$adapter_fct <- as.factor(counts_df$adapter_length)
     counts_df$adapter_fct <- forcats::fct_na_value_to_level(
@@ -385,20 +412,25 @@ setMethod(
       seq = Sequence, count = Count, rate = Rate
     )
 
+    if (is.null(fillScale)) {
+      cols = c("red", "darkblue")
+      fillScale <- scale_fill_manual(values = cols)
+    }
+    stopifnot(is(fillScale, "ScaleDiscrete"))
+    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(plotTheme, "theme"))
+
     p <- ggplot(counts_df, aes) +
-      geom_col(position = position_dodge2(preserve = "single")) +
-      scale_y_continuous(
-        labels = scales::percent, expand = expansion(c(0, 0.05))
-      ) +
-      scale_fill_manual(values = cols) +
+      geom_col(position = position_dodge2(preserve = "single"), ...) +
+      scale_y_continuous(labels = percent, expand = expansion(c(0, 0.05))) +
+      fillScale +
       labs(x = "Adapter Sequence Length", y = "Occurence Rate (%)") +
       ggtitle(unique(main)) +
-      theme_bw()
-
-    p <- .updateThemeFromDots(p, ...)
+      theme_bw() +
+      plotTheme
 
     if (usePlotly) {
-      p <- p + theme(legend.position = "none")
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
       hv <- c("Filename", "Sequence", "Count", "Rate")
       p <- suppressMessages(plotly::ggplotly(p, tooltip = hv))
     }
@@ -414,9 +446,9 @@ setMethod(
 setMethod(
   "plotAdapterContent", signature = "FastpDataList",
   function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 10,
-    pattern =  ".fastq.*|.fastp.json", cluster = FALSE, dendrogram = FALSE,
-    heat_w = 8L,  ...
+    x, usePlotly = FALSE, labels, pattern =  ".(fast|fq|bam).*", pwfCols,
+    showPwf = FALSE, warn = 5, fail = 10, cluster = FALSE, dendrogram = FALSE,
+    fillScale = NULL, plotTheme = theme(), heat_w = 8L, ...
   ){
 
     mod <- "Adapters"
@@ -477,9 +509,7 @@ setMethod(
       counts_df, "Filename", "adapter_length", "Occurence_rate"
     )
     dx <- ggdendro::dendro_data(clusterDend)
-    if (dendrogram | cluster) {
-      key <- labels(clusterDend)
-    }
+    if (dendrogram | cluster) key <- labels(clusterDend)
     if (!dendrogram) dx$segments <- dx$segments[0,]
     counts_df$Filename <- factor(labels[counts_df$Filename], levels = labels[key])
 
@@ -489,24 +519,34 @@ setMethod(
     stopifnot(is.numeric(c(warn, fail)))
     stopifnot(all(fail < 100, warn < fail,  warn > 0))
     breaks <- c(0, warn, fail, 100) / 100
-    cols <- .makePwfGradient(
-      counts_df$Occurence_rate, pwf, breaks = breaks, na.value = "white"
-    )
-    cols$breaks <- seq(min(cols$breaks), max(cols$breaks), length.out = 3)
-    cols$labels <- scales::percent
+    if (is.null(fillScale)) {
+      cols <- .makePwfGradient(
+        counts_df$Occurence_rate, pwf, breaks = breaks, na.value = "white"
+      )
+      cols$breaks <- seq(min(cols$breaks), max(cols$breaks), length.out = 3)
+      cols$labels <- scales::percent
+      fillScale <- do.call("scale_fill_gradientn", cols)
+    }
+    stopifnot(is(fillScale, "ScaleContinuous"))
+    stopifnot(fillScale$aesthetic == "fill")
+    stopifnot(is(plotTheme, "theme"))
 
     ## Bodge up a PWF status like FastQC
-    status_df <- dplyr::filter(
-      counts_df, !!sym("Occurence_rate") == max(!!sym("Occurence_rate")),
-      .by = Filename
-    )
-    status_df <- dplyr::select(
-      status_df, all_of(c("Filename", "Occurence_rate"))
-    )
-    status_df$Status <- cut(
-      status_df$Occurence_rate,
-      breaks = breaks, include.lowest = TRUE, labels = c("PASS", "WARN", "FAIL")
-    )
+    status_df <- tibble(Filename = factor(), Status = factor())
+    if (showPwf) {
+      status_df <- dplyr::filter(
+        counts_df, !!sym("Occurence_rate") == max(!!sym("Occurence_rate")),
+        .by = Filename
+      )
+      status_df <- dplyr::select(
+        status_df, all_of(c("Filename", "Occurence_rate"))
+      )
+      status_df$Status <- cut(
+        status_df$Occurence_rate,
+        breaks = breaks, include.lowest = TRUE,
+        labels = c("PASS", "WARN", "FAIL")
+      )
+    }
 
     hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram) # Heatmap width
     p <- ggplot(
@@ -520,18 +560,13 @@ setMethod(
       ggtitle("Adapter Content (fastp)") +
       scale_x_discrete(expand = expansion(c(0, 0))) +
       scale_y_discrete(expand = expansion(c(0, 0)), position = "right") +
-      do.call("scale_fill_gradientn", cols) +
+      fillScale +
       labs(
         x = "Adapter Sequence Length", y = "Filename",
         fill = "Occurence\nRate (%)"
       ) +
       theme_bw() +
-      theme(
-        panel.background = element_blank(),
-        plot.title = element_text(hjust = hj),
-        axis.title.x = element_text(hjust = hj),
-        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
-      )
+      plotTheme
 
     ## Add custom elements
     p <- .updateThemeFromDots(p, ...)

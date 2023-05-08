@@ -44,6 +44,10 @@
 #' @param plotTheme \link[ggplot2]{theme} object to be applied. Note that all
 #' plots will have \link[ggplot2]{theme_bw} theme applied by default, as well as
 #' any additional themes supplied here
+#' @param plotlyLegend logical(1) Show legends for interactive plots. Ignored
+#' for heatmaps
+#' @param showPwf Show PASS/WARN/FAIL categories as would be defined in a FastQC
+#' report
 #' @param expand.x,expand.y Passed to \link[ggplot2]{expansion} in the x- and
 #' y-axis scales respectively
 #' @param ... Used to pass additional attributes to plotting geoms
@@ -99,7 +103,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     bases = c("A", "T", "C", "G"), colourScale = NULL, plotTheme = theme(),
-    expand.x = 0.02, expand.y = c(0, 0.05), ...
+    plotlyLegend = FALSE, expand.x = 0.02, expand.y = c(0, 0.05), ...
   ){
 
     ## Get the SequenceContent
@@ -107,9 +111,9 @@ setMethod(
     names(df)[names(df) == "Base"] <- "Position"
 
     if (!length(df)) {
-      scPlot <- .emptyPlot("No Sequence Content Module Detected")
-      if (usePlotly) scPlot <- plotly::ggplotly(scPlot, tooltip = "")
-      return(scPlot)
+      p <- .emptyPlot("No Sequence Content Module Detected")
+      if (usePlotly) p <- plotly::ggplotly(p, tooltip = "")
+      return(p)
     }
 
     ## Drop the suffix, or check the alternate labels
@@ -158,6 +162,7 @@ setMethod(
 
     if (usePlotly) {
       ttip <- c("y", "label", "colour")
+      if (!plotlyLegend) p <- p + theme(show.legend = "none")
       p <- plotly::ggplotly(p, tooltip = ttip)
     }
 
@@ -171,9 +176,9 @@ setMethod(
   "plotSeqContent", signature = "FastqcDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
-    plotType = c("heatmap", "line", "residuals"), colourScale = NULL,
-    plotTheme = theme(), cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...,
-    nc = 2
+    showPwf = TRUE, plotType = c("heatmap", "line", "residuals"),
+    colourScale = NULL, plotTheme = theme(), cluster = FALSE,
+    dendrogram = FALSE, heat_w = 8, plotlyLegend = FALSE, nc = 2, ...
   ){
 
     ## Get the SequenceContent
@@ -181,9 +186,9 @@ setMethod(
     df <- getModule(x, mod)
 
     if (!length(df)) {
-      scPlot <- .emptyPlot("No Sequence Content Module Detected")
-      if (usePlotly) scPlot <- ggplotly(scPlot, tooltip = "")
-      return(scPlot)
+      p <- .emptyPlot("No Sequence Content Module Detected")
+      if (usePlotly) p <- ggplotly(p, tooltip = "")
+      return(p)
     }
 
     # Sort out any binned positions
@@ -215,7 +220,6 @@ setMethod(
     status <- subset(status, Category == "Per base sequence content")
     status$Status <- factor(status$Status, levels = c("PASS", "WARN", "FAIL"))
     status <- droplevels(status)
-
 
     if (plotType == "heatmap") {
 
@@ -266,7 +270,7 @@ setMethod(
       df[acgt] <- lapply(df[acgt], scales::percent, accuracy = 0.1, scale = 1)
       yBreaks <- seq_along(levels(df$Filename))
 
-      scPlot <- ggplot(
+      p <- ggplot(
         df,
         aes(
           A = !!sym("A"), C = !!sym("C"), G = !!sym("G"), `T` = !!sym("T"),
@@ -292,8 +296,10 @@ setMethod(
         ) +
         plotTheme
 
-      scPlot <-
-        .prepHeatmap(scPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
+      if (!showPwf) status <- status[0,]
+
+      p <-
+        .prepHeatmap(p, status, dx$segments, usePlotly, heat_w, pwfCols)
 
     }
 
@@ -323,13 +329,14 @@ setMethod(
       stopifnot(is(colourScale, "ScaleDiscrete"))
       stopifnot(colourScale$aesthetics == "colour")
 
-      scPlot <- ggplot(df, aes(Base, Percent, colour = Nt)) +
-        geom_rect(
-          aes(xmin = 0, xmax = End, ymin = 0, ymax = 1, fill = Status),
-          data = rect_df,
-          alpha = 0.1, inherit.aes = FALSE
-        ) +
-        geom_line(...) +
+      p <- ggplot(df, aes(Base, Percent, colour = Nt))
+      if (showPwf) p <- p + geom_rect(
+        aes(xmin = 0, xmax = End, ymin = 0, ymax = 1, fill = Status),
+        data = rect_df,
+        alpha = 0.1, inherit.aes = FALSE
+      )
+
+      p <- p + geom_line(...) +
         facet_wrap(~Filename, ncol = nc) +
         scale_y_continuous(
           limits = c(0, 1), expand = c(0, 0), labels = scales::percent
@@ -342,10 +349,10 @@ setMethod(
         plotTheme
 
       if (usePlotly) {
-        scPlot <- scPlot + theme(legend.position = "none")
+        if (!plotlyLegend) p <- p + theme(legend.position = "none")
         ttip <- c("y", "colour", "label", "fill")
-        scPlot <- suppressMessages(
-          suppressWarnings(plotly::ggplotly(scPlot, tooltip = ttip))
+        p <- suppressMessages(
+          suppressWarnings(plotly::ggplotly(p, tooltip = ttip))
         )
       }
     }
@@ -380,7 +387,7 @@ setMethod(
       stopifnot(colourScale$aesthetics == "colour")
 
       Deviation <- c()
-      scPlot <- ggplot(
+      p <- ggplot(
         df,
         aes(
           Base, Residuals, colour = Filename, label = Deviation, status = Status
@@ -397,17 +404,17 @@ setMethod(
 
       if (usePlotly) {
         ttip <- c("x", "colour", "label", "status")
-        scPlot <- scPlot + theme(legend.position = "none")
-        scPlot <- suppressMessages(
+        if (!plotlyLegend) p <- p + theme(legend.position = "none")
+        p <- suppressMessages(
           suppressWarnings(
-            plotly::ggplotly(scPlot, tooltip = ttip)
+            plotly::ggplotly(p, tooltip = ttip)
           )
         )
       }
 
     }
 
-    scPlot
+    p
   }
 )
 #' @importFrom tidyr unnest pivot_longer
@@ -422,7 +429,8 @@ setMethod(
     module = c("Before_filtering", "After_filtering"),
     reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
     bases = c("A", "T", "C", "G", "N", "GC"), colourScale = NULL,
-    plotTheme = theme(), expand.x = 0.02, expand.y = c(0, 0.05), ...
+    plotlyLegend = FALSE, plotTheme = theme(), expand.x = 0.02,
+    expand.y = c(0, 0.05), ...
   ) {
 
     module <- match.arg(module)
@@ -487,7 +495,7 @@ setMethod(
     if (readsBy == "facet") p <- p + facet_wrap(~fqName)
 
     if (usePlotly) {
-      p <- p + theme(legend.position = "none")
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
       tt <- c("Filename", "Position", "Frequency", "Base")
       p <- plotly::ggplotly(p, tooltip = tt)
     }
@@ -504,17 +512,19 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     module = c("Before_filtering", "After_filtering"),
-    reads = c("read1", "read2"), bases = c("A", "T", "C", "G", "N", "GC"),
-    pwfCols, warn = 10, fail = 20, plotType = c("heatmap", "line", "residuals"),
-    colourScale = NULL, plotTheme = theme(), cluster = FALSE,
-    dendrogram = FALSE, heat_w = 8, expand.x = c(0.01), expand.y = c(0, 0.05),
-    ..., nc = 2
+    reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
+    bases = c("A", "T", "C", "G", "N", "GC"), showPwf = FALSE, pwfCols,
+    warn = 10, fail = 20, plotType = c("heatmap", "line", "residuals"),
+    plotlyLegend = FALSE, colourScale = NULL, plotTheme = theme(),
+    cluster = FALSE, dendrogram = FALSE, heat_w = 8,
+    expand.x = c(0.01), expand.y = c(0, 0.05), nc = 2, ...
   ){
 
     ## Get the SequenceContent
     module <- match.arg(module)
     data <- getModule(x, module)
     reads <- match.arg(reads, names(data), several.ok = TRUE)
+    readsBy <- match.arg(readsBy)
     df <- bind_rows(data[reads], .id = "reads")
     df <- df[c("Filename", "fqName", "reads", "content_curves")]
     df <- unnest(df, !!sym("content_curves"))
@@ -569,11 +579,12 @@ setMethod(
       maxFreq <- max(unlist(df[bases]))
       ## Set the colours, using opacity for G
       df$opacity <- 1 - df$G / maxFreq
-      df$RGB <- with(df, rgb(
-        red = !!sym("T") * !!sym("opacity") / maxFreq,
-        green = !!sym("A") * !!sym("opacity") / maxFreq,
-        blue = !!sym("C") * !!sym("opacity") / maxFreq)
+      df$RGB <- rgb(
+        red = df[["T"]] * df$opacity / maxFreq,
+        green = df[["A"]] * df$opacity / maxFreq,
+        blue = df[["C"]] * df$opacity / maxFreq
       )
+
       names(df) <- gsub("position", "Position", names(df))
 
       ## Now define the order for a dendrogram if required
@@ -606,6 +617,9 @@ setMethod(
       df[bases] <- lapply(df[bases], scales::percent, accuracy = 0.1, scale = 1)
       yBreaks <- seq_along(levels(df$Filename))
 
+      if (readsBy != "facet")
+        message("Reads can only be separated by facet for a heatmap")
+
       p <- ggplot(
         df,
         aes(
@@ -633,6 +647,7 @@ setMethod(
         ) +
         plotTheme
       tt <- c(bases, "fqName", "Position")
+      if (!showPwf) status_df <- status_df[0, ]
       p <- .prepHeatmap(p, status_df, dx$segments, usePlotly, heat_w, pwfCols, tt)
 
     }
@@ -673,16 +688,30 @@ setMethod(
       y_lim <- c(0, max(df$Frequency))
       rng <- diff(range(y_lim))
       y_lim <- y_lim + c(-1, 1) * expand.y * rng
-      p <- ggplot(df, aes(Position, Frequency, colour = Base)) +
-        geom_rect(
-          aes(
-            xmin = Start, xmax = End, ymin = 0, ymax = max(y_lim),
-            fill = Status
-          ),
-          data = rect_df, alpha = 0.1, inherit.aes = FALSE
-        ) +
+
+      ## Default settings should match readsBy == "facet"
+      linetype <- NULL
+      facets <- facet_grid(Filename ~ reads)
+      if (readsBy == "linetype") {
+        linetype <- sym("reads")
+        facets <- facet_wrap(~ Filename)
+      }
+      p <- ggplot(
+        df,
+        aes(
+          Position, Frequency, colour = Base, linetype = {{ linetype }},
+          reads = !!sym("fqName")
+        )
+      )
+      ## Add rectangles if requested
+      if (showPwf) p <- p + geom_rect(
+        aes(xmin = Start, xmax = End, ymin = 0, ymax = max(y_lim), fill = Status),
+        data = rect_df, alpha = 0.1, inherit.aes = FALSE
+      )
+      ## The rest of the plot
+      p <- p +
         geom_line(...) +
-        facet_grid(Filename ~ reads) +
+        facets +
         scale_y_continuous(
           limits = y_lim, expand = rep_len(0, 4),
           labels = scales::label_percent(scale = 1)
@@ -696,8 +725,8 @@ setMethod(
         plotTheme
 
       if (usePlotly) {
-        p <- p + theme(legend.position = "none")
-        ttip <- c("y", "colour", "label", "fill")
+        if (!plotlyLegend) p <- p + theme(legend.position = "none")
+        ttip <- c("y", "colour", "label", "fill", "fqName")
         p <- suppressMessages(
           suppressWarnings(plotly::ggplotly(p, tooltip = ttip))
         )
@@ -737,15 +766,23 @@ setMethod(
       stopifnot(is(colourScale, "ScaleDiscrete"))
       stopifnot(colourScale$aesthetics == "colour")
 
+      ## Default settings should match readsBy == "facet"
+      linetype <- NULL
+      facets <- facet_grid(Base ~ reads)
+      if (readsBy == "linetype") {
+        linetype <- sym("reads")
+        facets <- facet_wrap(~ Base)
+      }
+
       p <- ggplot(
         df,
         aes(
           Position, Residuals, colour = Filename, label = !!sym("Deviation"),
-          status = Status, fqName = !!sym("fqName")
+          status = Status, fqName = !!sym("fqName"), linetype = {{ linetype }}
         )
       ) +
-        geom_line(aes(group = Filename), ...) +
-        facet_grid(Base~reads) +
+        geom_line(...) +
+        facets +
         scale_y_continuous(labels = label_percent(scale = 1)) +
         scale_x_continuous(expand = expansion(rep_len(expand.x, 2))) +
         colourScale +
@@ -755,8 +792,9 @@ setMethod(
         plotTheme
 
       if (usePlotly) {
-        ttip <- c("x", "colour", "label", "status", "fqName")
-        p <- p + theme(legend.position = "none")
+        ttip <- c("x", "colour", "label", "fqName")
+        if (showPwf) ttip <- c(ttip, "status")
+        if (!plotlyLegend) p <- p + theme(legend.position = "none")
         p <- suppressMessages(
           suppressWarnings(plotly::ggplotly(p, tooltip = ttip))
         )

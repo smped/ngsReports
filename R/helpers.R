@@ -162,7 +162,7 @@
 #'
 #' @keywords internal
 .makeLabels <- function(
-    x, labels, pattern = ".(fastq|fq|bam|sam|cram).*", col = "Filename", ...){
+    x, labels, pattern = ".(fast|fq|bam|sam|cram).*", col = "Filename", ...){
 
   if (is(x, "FastqcDataList") | is(x, "FastqcData")) {
     ## Form a single column data.frame
@@ -209,7 +209,6 @@
 #' underlying `ggplot` object will be returned.
 #'
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 #' @keywords internal
 #'
@@ -241,7 +240,7 @@
   ## Convert to plotly
   if (usePlotly) {
     sideBar <- suppressWarnings(
-      suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill")))
+      suppressMessages(plotly::ggplotly(sideBar, tooltip = c("y", "fill")))
     )
   }
   sideBar
@@ -261,7 +260,6 @@
 #'
 #' @import ggplot2
 #' @importFrom ggdendro theme_dendro
-#' @importFrom plotly ggplotly
 #'
 #' @keywords internal
 #'
@@ -275,7 +273,7 @@
     scale_y_reverse(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0.5)) +
     theme_dendro()
-  ggplotly(dendro, tooltip = NULL)
+  plotly::ggplotly(dendro, tooltip = NULL)
 }
 
 
@@ -363,7 +361,6 @@
 
   stopifnot(is(x, "gg"))
   hasStatus <- as.logical(nrow(status))
-  if (hasStatus) stopifnot(all(c("Filename", "Status") %in% colnames(status)))
   stopifnot(all(c("x", "y", "xend", "yend") %in% colnames(segments)))
 
   if (missing(pwf)) pwf <- ngsReports::pwf
@@ -389,6 +386,7 @@
 
   x_lab <- x$labels$x
   if (hasStatus) {
+    stopifnot(all(c("Filename", "Status") %in% colnames(status)))
     ## Now create the sideBar
     sideBar <- .makeSidebar(status, levels(status$Filename), pwf, usePlotly)
 
@@ -408,7 +406,8 @@
       )
       title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
       panel_w <- panel_w / sum(panel_w)
-      if (!is.null(hv)) x <- plotly::ggplotly(x, tooltip = hv)
+      if (is.null(hv)) hv <- "all"
+      x <- plotly::ggplotly(x, tooltip = hv)
 
       if (add_dend) {
         out <- suppressWarnings(
@@ -455,7 +454,8 @@
       )
       title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
       panel_w <- panel_w / sum(panel_w)
-      if (!is.null(hv)) x <- plotly::ggplotly(x, tooltip = hv)
+      if (is.null(hv)) hv <- "all"
+      x <- plotly::ggplotly(x, tooltip = hv)
 
       if (add_dend) {
         out <- suppressWarnings(
