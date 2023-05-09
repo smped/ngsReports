@@ -8,12 +8,16 @@ test_that("plotDupLevels outputs correct objects from FastQC", {
 
   p <- plotDupLevels(fdl[[1]])
   expect_true(is(p, "gg"))
+  p <- plotDupLevels(fdl[[1]], TRUE)
+  expect_true(is(p, "plotly"))
 
   p <- plotDupLevels(fdl)
   expect_true(is(p, "gg"))
 
   p <- plotDupLevels(fdl, plotType = "line")
   expect_true(is(p, "gg"))
+  p <- plotDupLevels(fdl, TRUE, plotType = "line")
+  expect_true(is(p, "plotly"))
 
   p <- plotDupLevels(fdl, dendrogam = TRUE)
   expect_true(is(p, "patchwork"))
@@ -35,5 +39,9 @@ test_that("plotDupLevels fastp outputs are correct",{
   expect_true(is(p, "gg"))
   p <- plotDupLevels(fpl, plotType = "heatmap")
   expect_true(is(p, "gg"))
+  p <- plotDupLevels(fpl, TRUE, plotType = "bar")
+  expect_true(is(p, "plotly"))
+  p <- plotDupLevels(fpl, TRUE, plotType = "heatmap")
+  expect_true(is(p, "plotly"))
 
 })
