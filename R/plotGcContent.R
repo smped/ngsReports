@@ -47,15 +47,17 @@
 #' @param plotType Takes values "line", "heatmap" or "cdf"
 #' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in plot
+#' @param showPwf logical(1) Show Pwf Status on the plot
 #' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram `logical` redundant if `cluster` is `FALSE`
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram  will be displayed.
 #' @param heat_w Relative width of any heatmap plot components
-#' @param plotlyLegend logical(1) Show legend oninteractive line plots
+#' @param plotlyLegend logical(1) Show legend on interactive line plots
 #' @param fillScale ggplot2 scale for filling heatmap cells or bars
 #' @param colourScale ggplot2 scale for line colours
+#' @param plotTheme \link[ggplot2]{theme} object
 #' @param lineCols,linetype,linewidth Line colour type and width for observed
 #' and theoretical GC lines
 #' @param ... Used to pass various potting parameters to themes and geoms.
@@ -247,7 +249,7 @@ setMethod(
     cluster = FALSE, dendrogram = FALSE, heat_w = 8,
     pwfCols, showPwf = TRUE, fillScale = NULL, colourScale = NULL,
     plotlyLegend = FALSE, lineCols = RColorBrewer::brewer.pal(12, "Paired"),
-    linetype = 1, lineWidth = 0.5, ...
+    linetype = 1, linewidth = 0.5, ...
   ){
 
   mod <- "Per_sequence_GC_content"
@@ -348,7 +350,7 @@ setMethod(
     p <- ggplot(
       df, aes(!!sym("GC_Content"), Percent, colour = Filename)
     ) +
-      geom_line(linetype = linetype, linewidth = lineWidth) +
+      geom_line(linetype = linetype, linewidth = linewidth) +
       scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
       scale_y_continuous(labels = .addPercent) +
       colourScale +

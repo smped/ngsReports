@@ -56,7 +56,7 @@ plotGcContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   plotlyLegend = FALSE,
   lineCols = RColorBrewer::brewer.pal(12, "Paired"),
   linetype = 1,
-  lineWidth = 0.5,
+  linewidth = 0.5,
   ...
 )
 
@@ -126,7 +126,7 @@ accompanied by a species. Species currently supported can be obtained using
 \item{GCobject}{an object of class GCTheoretical.
 Defaults to the gcTheoretical object supplied with the package}
 
-\item{plotlyLegend}{logical(1) Show legend oninteractive line plots}
+\item{plotlyLegend}{logical(1) Show legend on interactive line plots}
 
 \item{Fastafile}{a fasta file contains DNA sequences to generate theoretical
 GC content}
@@ -157,7 +157,11 @@ then the dendrogram  will be displayed.}
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail values in plot}
 
+\item{showPwf}{logical(1) Show Pwf Status on the plot}
+
 \item{fillScale}{ggplot2 scale for filling heatmap cells or bars}
+
+\item{plotTheme}{\link[ggplot2]{theme} object}
 }
 \value{
 A ggplot2 or plotly object
