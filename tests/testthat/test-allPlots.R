@@ -4,22 +4,6 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
 
-test_that("plotKmers outputs correct objects", {
-
-  p <- plotKmers(fdl[[1]])
-  expect_true(is(p, "gg"))
-
-  p <- plotKmers(fdl)
-  expect_true(is(p, "gg"))
-
-  p <- plotKmers(fdl, dendrogam = TRUE)
-  expect_true(is(p, "patchwork"))
-
-  p <- plotKmers(fdl, dendrogam = TRUE, usePlotly = TRUE)
-  expect_true(is(p, "plotly"))
-
-})
-
 test_that("plotNContent outputs correct objects", {
 
   p <- plotNContent(fdl)

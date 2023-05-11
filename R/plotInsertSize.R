@@ -170,9 +170,18 @@ setMethod(
 
     if (plotType == "heatmap") {
 
-      clusterDend <- .makeDendro(df, "Filename", "insert_size", "freq")
-      dx <- ggdendro::dendro_data(clusterDend)
-      if (dendrogram | cluster) key <- labels(clusterDend)
+      n <- length(x)
+      if (n > 1) {
+        clusterDend <- .makeDendro(df, "Filename", "insert_size", "freq")
+        dx <- ggdendro::dendro_data(clusterDend)
+        if (dendrogram | cluster) key <- labels(clusterDend)
+      } else {
+        cluster <- dendrogram <- FALSE
+        dx <- list()
+        dx$segments <- lapply(rep_len(0, 4), numeric)
+        names(dx$segments) <- c("x", "y", "xend", "yend")
+        dx$segments <- as_tibble(dx$segments)
+      }
       if (!dendrogram) dx$segments <- dx$segments[0,]
       ## Now set everything as factors
       df$Filename <- factor(labels[df$Filename], levels = labels[key])
