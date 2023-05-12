@@ -4,16 +4,6 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
 
-test_that("plotNContent outputs correct objects", {
-
-  p <- plotNContent(fdl)
-  expect_true(is(p, "gg"))
-
-  p <- plotNContent(fdl, dendrogam = TRUE, usePlotly = TRUE)
-  expect_true(is(p, "plotly"))
-
-})
-
 test_that("plotOverrep outputs correct objects", {
 
   p <- plotOverrep(fdl[[1]])

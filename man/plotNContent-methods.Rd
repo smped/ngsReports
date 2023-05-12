@@ -10,17 +10,19 @@
 \alias{plotNContent,FastpDataList-method}
 \title{Draw an N Content Plot}
 \usage{
-plotNContent(x, usePlotly = FALSE, labels, ...)
+plotNContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
+\S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
 \S4method{plotNContent}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 5,
   fail = 20,
+  showPwf = TRUE,
   ...,
   lineCol = "red"
 )
@@ -29,9 +31,11 @@ plotNContent(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 5,
   fail = 20,
+  showPwf = TRUE,
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
@@ -42,13 +46,15 @@ plotNContent(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
-  pattern = ".fastq.*|.fastp.*|.fq*",
+  pattern = ".(fast|fq|bam).*",
   module = c("Before_filtering", "After_filtering"),
+  moduleBy = c("facet", "colour", "linetype"),
   reads = c("read1", "read2"),
-  linetype = NULL,
-  colour = NULL,
-  lineCol = c("navyblue", "red3"),
-  facetBy = module ~ fqName,
+  readsBy = c("facet", "colour", "linetype"),
+  colourScale = NULL,
+  lineScale = NULL,
+  plotTheme = theme(),
+  plotlyLegend = FALSE,
   ...
 )
 
@@ -56,10 +62,14 @@ plotNContent(x, usePlotly = FALSE, labels, ...)
   x,
   usePlotly = FALSE,
   labels,
-  pattern = ".fastq.*|.fastp.*|.fq*",
+  pattern = ".(fast|fq|bam).*",
   module = c("Before_filtering", "After_filtering"),
   reads = c("read1", "read2"),
-  fill = scale_fill_viridis_c(),
+  fillScale = NULL,
+  plotTheme = theme(),
+  cluster = FALSE,
+  dendrogram = FALSE,
+  heat_w = 8,
   ...
 )
 }
@@ -72,13 +82,18 @@ object.}
 \item{labels}{An optional named vector of labels for the file names.
 All filenames must be present in the names.}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
+\item{pattern}{Regex used to trim the end of filenames}
+
+\item{...}{Used to pass additional attributes to theme() for FastqcData
+objects and to geom* calls for FastpData-based objects}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
 
 \item{warn, fail}{The default values for warn and fail are 5 and 10
 respectively (i.e. percentages)}
+
+\item{showPwf}{logical(1) Show the PASS/WARN/FAIL status}
 
 \item{lineCol}{Line colours}
 
@@ -91,19 +106,18 @@ then the dendrogram will be displayed.}
 
 \item{heat_w}{Relative width of any heatmap plot components}
 
-\item{pattern}{Regex used to trim filenames}
-
 \item{module}{Used for Fastp* structures to show results before or after
 filtering}
 
+\item{moduleBy, readsBy}{How to show each module or set of reads on the plot}
+
 \item{reads}{Show plots for read1, read2 or both.}
 
-\item{colour, linetype}{Data arguments to decorate plots. Should be drawn
-from columns in the formatted data, such as "module", "reads", "fqName"}
+\item{plotTheme}{\link[ggplot2]{theme} object}
 
-\item{facetBy}{Formula to facet the plot by. Passed to \code{facet_wrap()}}
+\item{plotlyLegend}{logical(1) Show legend on interactive plots}
 
-\item{fill}{continuous scale for ggplot objects}
+\item{fillScale, colourScale, lineScale}{ggplot2 scale objects}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
@@ -123,14 +137,17 @@ Otherwise, users can select line plots or heatmaps.
 }
 \examples{
 
-# Get the files included with the package
-packageDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
-
-# Load the FASTQC data as a FastqcDataList object
-fdl <- FastqcDataList(fl)
-
-# The default plot
-plotNContent(fdl[[1]])
+## Using a Fastp Data object
+fl <- system.file("extdata/fastp.json", package = "ngsReports")
+fp <- FastpData(fl)
+plotNContent(fp)
+plotNContent(
+  fp, pattern = "_001.+",
+  moduleBy = "colour", colourScale = scale_colour_brewer(palette = "Set1"),
+  plotTheme = theme(
+    legend.position = c(0.99, 0.99), legend.justification = c(1, 1),
+    plot.title = element_text(hjust = 0.5)
+  )
+)
 
 }

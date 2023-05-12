@@ -16,16 +16,18 @@
 #' @param x Can be a `FastqcData`, `FastqcDataList` or file paths
 #' @param usePlotly `logical`. Output as ggplot2 (default) or plotly
 #' object.
+#' @param labels An optional named vector of labels for the file names.
+#' All filenames must be present in the names.
+#' @param pattern Regex used to trim the end of filenames
 #' @param warn,fail The default values for warn and fail are 5 and 10
 #' respectively (i.e. percentages)
 #' @param pwfCols Object of class [PwfCols()] containing the colours
 #' for PASS/WARN/FAIL
-#' @param labels An optional named vector of labels for the file names.
-#' All filenames must be present in the names.
-#' @param pattern Regex used to trim filenames
+#' @param showPwf logical(1) Show the PASS/WARN/FAIL status
 #' @param module Used for Fastp* structures to show results before or after
 #' filtering
 #' @param reads Show plots for read1, read2 or both.
+#' @param moduleBy,readsBy How to show each module or set of reads on the plot
 #' @param lineCol Defaults to red
 #' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
@@ -33,26 +35,29 @@
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param heat_w Relative width of any heatmap plot components
-#' @param fill continuous scale for ggplot objects
+#' @param fillScale,colourScale,lineScale ggplot2 scale objects
+#' @param plotTheme \link[ggplot2]{theme} object
+#' @param plotlyLegend logical(1) Show legend on interactive plots
 #' @param lineCol Line colours
-#' @param colour,linetype Data arguments to decorate plots. Should be drawn
-#' from columns in the formatted data, such as "module", "reads", "fqName"
-#' @param facetBy Formula to facet the plot by. Passed to `facet_wrap()`
-#' @param ... Used to pass additional attributes to theme() and between methods
+#' @param ... Used to pass additional attributes to theme() for FastqcData
+#' objects and to geom* calls for FastpData-based objects
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
 #' @examples
 #'
-#' # Get the files included with the package
-#' packageDir <- system.file("extdata", package = "ngsReports")
-#' fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
-#'
-#' # Load the FASTQC data as a FastqcDataList object
-#' fdl <- FastqcDataList(fl)
-#'
-#' # The default plot
-#' plotNContent(fdl[[1]])
+#' ## Using a Fastp Data object
+#' fl <- system.file("extdata/fastp.json", package = "ngsReports")
+#' fp <- FastpData(fl)
+#' plotNContent(fp)
+#' plotNContent(
+#'   fp, pattern = "_001.+",
+#'   moduleBy = "colour", colourScale = scale_colour_brewer(palette = "Set1"),
+#'   plotTheme = theme(
+#'     legend.position = c(0.99, 0.99), legend.justification = c(1, 1),
+#'     plot.title = element_text(hjust = 0.5)
+#'   )
+#' )
 #'
 #' @docType methods
 #'
@@ -66,194 +71,196 @@
 #' @rdname plotNContent-methods
 #' @export
 setGeneric("plotNContent", function(
-    x, usePlotly = FALSE, labels, ...){
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
   standardGeneric("plotNContent")
 }
 )
 #' @rdname plotNContent-methods
 #' @export
 setMethod("plotNContent", signature = "ANY", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...){
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
   .errNotImp(x)
 }
 )
 #' @rdname plotNContent-methods
 #' @export
-setMethod("plotNContent", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...,
-    lineCol = "red"){
-
-  ## Get the NContent
-  df <- getModule(x, "Per_base_N_content")
-  colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
-
-  ## Handle empty/missing modules
-  msg <- c()
-  if (!length(df)) msg <- "No N Content Module Detected"
-  if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
-  if (!is.null(msg)) {
-    nPlot <- ngsReports:::.emptyPlot(msg)
-    if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
-    return(nPlot)
-  }
-
-  ## Sort out the colours
-  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-  stopifnot(.isValidPwf(pwfCols))
-  pwfCols <- setAlpha(pwfCols, 0.2)
-
-  ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
-  labels <- labels[names(labels) %in% df$Filename]
-  df$Filename <- labels[df$Filename]
-  df$Base <- factor(df$Base, levels = unique(df$Base))
-  df$xValue <- as.integer(df$Base)
-
-  ## Setup the BG colours
-  rects <- tibble(
-    xmin = 0, xmax = max(df$xValue),
-    ymin = c(0, warn, fail), ymax = c(warn, fail, 100),
-    Status = c("PASS", "WARN", "FAIL")
-  )
-
-  yLab <- "N Content (%)"
-  x <- "xValue"
-  nPlot <- ggplot(df) +
-    geom_rect(
-      data = rects,
-      aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
-    ) +
-    geom_line(aes(!!sym(x), Percentage), colour = lineCol) +
-    geom_point(
-      aes(!!sym(x), Percentage, group = Base),
-      size = 0, colour = rgb(0, 0, 0, 0)
-    ) +
-    scale_fill_manual(values = getColours(pwfCols)) +
-    scale_x_continuous(
-      breaks = unique(df$xValue), labels = levels(df$Base), expand = c(0,0)
-    ) +
-    scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
-    facet_wrap(~Filename) +
-    labs(x = "Position in Read (bp)", y = yLab) +
-    guides(fill = "none") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-
-  ## Add the basic customisations
-  nPlot <- .updateThemeFromDots(nPlot, ...)
-
-  if (usePlotly) {
-    nPlot <- nPlot +
-      xlab("") +
-      theme(legend.position = "none")
-    nPlot <- suppressMessages(plotly::ggplotly(nPlot))
-    # nPlot <- suppressMessages(
-    #   suppressWarnings(
-    #     plotly::subplot(
-    #       plotly::plotly_empty(),
-    #       nPlot,
-    #       widths = c(0.14,0.86)
-    #     )
-    #   )
-    # )
-    nPlot <- plotly::layout(nPlot, yaxis1 = list(title = yLab))
+setMethod(
+  "plotNContent", signature = "FastqcData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
+    warn = 5, fail = 20, showPwf = TRUE, ..., lineCol = "red"){
 
 
-    ## Set the hoverinfo for bg rectangles to the vertices only,
-    ## This will effectively hide them
-    nPlot$x$data <- lapply(nPlot$x$data, .hidePWFRects)
-    ## Hide the xValue parameter to make it look nicer
-    nPlot$x$data[[6]]$text <- gsub(
-      "(.+)(xValue.+)(Percentage.+)", "\\1\\3", nPlot$x$data[[6]]$text
+    ## Get the NContent
+    df <- getModule(x, "Per_base_N_content")
+    colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
+
+    ## Handle empty/missing modules
+    msg <- c()
+    if (!length(df)) msg <- "No N Content Module Detected"
+    if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
+    if (!is.null(msg)) {
+      p <- ngsReports:::.emptyPlot(msg)
+      if (usePlotly) p <- ggplotly(p, tooltip = "")
+      return(p)
+    }
+
+    ## Sort out the colours
+    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+    stopifnot(.isValidPwf(pwfCols))
+    pwfCols <- setAlpha(pwfCols, 0.2)
+
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, pattern)
+    labels <- labels[names(labels) %in% df$Filename]
+    df$Filename <- labels[df$Filename]
+    df$Base <- factor(df$Base, levels = unique(df$Base))
+    df$xValue <- as.integer(df$Base)
+
+    ## Setup the BG colours
+    rects <- tibble(
+      xmin = 0, xmax = max(df$xValue),
+      ymin = c(0, warn, fail), ymax = c(warn, fail, 100),
+      Status = c("PASS", "WARN", "FAIL")
     )
+
+    yLab <- "N Content (%)"
+    x <- "xValue"
+    p <- ggplot(df)
+    if (showPwf)
+      p <- p + geom_rect(
+        data = rects,
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = Status)
+      )
+
+    p <- p +
+      geom_line(aes(!!sym(x), Percentage), colour = lineCol) +
+      geom_point(
+        aes(!!sym(x), Percentage, group = Base),
+        size = 0, colour = rgb(0, 0, 0, 0)
+      ) +
+      scale_fill_manual(values = getColours(pwfCols)) +
+      scale_x_continuous(
+        breaks = unique(df$xValue), labels = levels(df$Base), expand = c(0,0)
+      ) +
+      scale_y_continuous(limits = c(0, 100), expand = c(0, 0)) +
+      facet_wrap(~Filename) +
+      labs(x = "Position in Read (bp)", y = yLab) +
+      guides(fill = "none") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+
+    ## Add the basic customisations
+    p <- .updateThemeFromDots(p, ...)
+
+    if (usePlotly) {
+      p <- p +
+        xlab("") +
+        theme(legend.position = "none")
+      p <- suppressMessages(plotly::ggplotly(p))
+      p <- plotly::layout(p, yaxis1 = list(title = yLab))
+
+
+      ## Set the hoverinfo for bg rectangles to the vertices only,
+      ## This will effectively hide them
+      p$x$data <- lapply(p$x$data, .hidePWFRects)
+      ## Hide the xValue parameter to make it look nicer
+      p$x$data[[6]]$text <- gsub(
+        "(.+)(xValue.+)(Percentage.+)", "\\1\\3", p$x$data[[6]]$text
+      )
+    }
+    p
   }
-  nPlot
-}
 )
 #' @rdname plotNContent-methods
 #' @export
-setMethod("plotNContent", signature = "FastqcDataList", function(
-    x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20,
+setMethod(
+  "plotNContent", signature = "FastqcDataList",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
+    warn = 5, fail = 20, showPwf = TRUE,
     cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...){
 
-  ## Get the NContent
-  df <- getModule(x, "Per_base_N_content")
-  colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
-  ## Handle empty/missing modules
-  msg <- c()
-  if (!length(df)) msg <- "No N Content Module Detected"
-  if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
-  if (!is.null(msg)) {
-    nPlot <- .emptyPlot(msg)
-    if (usePlotly) nPlot <- ggplotly(nPlot, tooltip = "")
-    return(nPlot)
-  }
+    ## Get the NContent
+    df <- getModule(x, "Per_base_N_content")
+    colnames(df) <- gsub("N-Count", "Percentage", colnames(df))
 
-  ## Sort out the colours
-  if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-  stopifnot(.isValidPwf(pwfCols))
-
-  ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
-  labels <- labels[names(labels) %in% df$Filename]
-
-  ## fill bins up to the max sequence length
-  df$Base <- lapply(
-    df$Base,
-    function(x){
-      rng <- as.integer(str_split(x, pattern = "-")[[1]])
-      seq(min(rng), max(rng), by = 1L)
+    ## Handle empty/missing modules
+    msg <- c()
+    if (!length(df)) msg <- "No N Content Module Detected"
+    if (sum(df[["Percentage"]]) == 0) msg <- "No N Content in Sequences"
+    if (!is.null(msg)) {
+      p <- .emptyPlot(msg)
+      if (usePlotly) p <- ggplotly(p, tooltip = "")
+      return(p)
     }
-  )
-  df <- unnest(df, Base)
 
-  ## Now define the order for a dendrogram if required
-  key <- names(labels)
-  cols <- c("Filename", "Base", "Percentage")
-  clusterDend <- .makeDendro(df[cols], "Filename", "Base", "Percentage")
-  dx <- ggdendro::dendro_data(clusterDend)
-  if (dendrogram | cluster) key <- labels(clusterDend)
-  if (!dendrogram) dx$segments <- dx$segments[0,]
-  df$Filename <- factor(labels[df$Filename], levels = labels[key])
+    ## Sort out the colours
+    if (missing(pwfCols)) pwfCols <- ngsReports::pwf
+    stopifnot(.isValidPwf(pwfCols))
 
-  cols <- .makePwfGradient(
-    df$Percentage, pwfCols,
-    breaks = c(0, warn, fail, 101), passLow = TRUE, na.value = "white"
-  )
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, pattern)
+    labels <- labels[names(labels) %in% df$Filename]
 
-  xLab <- "Position in Read (bp)"
-  hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
-  nPlot <- ggplot(df, aes(Base, Filename, fill = Percentage, label = Base)) +
-    geom_tile() +
-    do.call("scale_fill_gradientn", cols) +
-    scale_x_continuous(expand = c(0, 0)) +
-    scale_y_discrete(expand = c(0, 0), position = "right") +
-    labs(x = xLab, y = NULL, fill = "%N") +
-    ggtitle("Per Base N Content") +
-    theme_bw() +
-    theme(
-      panel.background = element_blank(),
-      plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"),
-      plot.title = element_text(hjust = hj),
-      axis.title.x = element_text(hjust = hj)
+    ## fill bins up to the max sequence length
+    df$Base <- lapply(
+      df$Base,
+      function(x){
+        rng <- as.integer(str_split(x, pattern = "-")[[1]])
+        seq(min(rng), max(rng), by = 1L)
+      }
     )
-  nPlot <- .updateThemeFromDots(nPlot, ...)
+    df <- unnest(df, Base)
 
-  ## Reset the status using current values
-  status <- dplyr::summarise(
-    dplyr::group_by(df, Filename), Percentage = max(Percentage, na.rm = TRUE)
-  )
-  status$Status <- cut(
-    status$Percentage, include.lowest = TRUE,
-    breaks = c(0, warn, fail, 101), labels = c("PASS", "WARN", "FAIL")
-  )
-  status <- subset(status, Filename %in% key)
-  status$Filename <- factor(labels[status$Filename], levels = labels[key])
+    ## Now define the order for a dendrogram if required
+    key <- names(labels)
+    cols <- c("Filename", "Base", "Percentage")
+    clusterDend <- .makeDendro(df[cols], "Filename", "Base", "Percentage")
+    dx <- ggdendro::dendro_data(clusterDend)
+    if (dendrogram | cluster) key <- labels(clusterDend)
+    if (!dendrogram) dx$segments <- dx$segments[0,]
+    df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
-  .prepHeatmap(nPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
+    cols <- .makePwfGradient(
+      df$Percentage, pwfCols,
+      breaks = c(0, warn, fail, 101), passLow = TRUE, na.value = "white"
+    )
 
-}
+    xLab <- "Position in Read (bp)"
+    hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
+    p <- ggplot(df, aes(Base, Filename, fill = Percentage, label = Base)) +
+      geom_tile() +
+      do.call("scale_fill_gradientn", cols) +
+      scale_x_continuous(expand = c(0, 0)) +
+      scale_y_discrete(expand = c(0, 0), position = "right") +
+      labs(x = xLab, y = NULL, fill = "%N") +
+      ggtitle("Per Base N Content") +
+      theme_bw() +
+      theme(
+        panel.background = element_blank(),
+        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"),
+        plot.title = element_text(hjust = hj),
+        axis.title.x = element_text(hjust = hj)
+      )
+    p <- .updateThemeFromDots(p, ...)
+
+    ## Reset the status using current values
+    status <- dplyr::summarise(
+      dplyr::group_by(df, Filename), Percentage = max(Percentage, na.rm = TRUE)
+    )
+    status$Status <- cut(
+      status$Percentage, include.lowest = TRUE,
+      breaks = c(0, warn, fail, 101), labels = c("PASS", "WARN", "FAIL")
+    )
+    status <- subset(status, Filename %in% key)
+    status$Filename <- factor(labels[status$Filename], levels = labels[key])
+    if (!showPwf) status <- status[0,]
+
+    .prepHeatmap(p, status, dx$segments, usePlotly, heat_w, pwfCols)
+
+  }
 )
 #' @importFrom dplyr bind_rows
 #' @importFrom tidyr unnest
@@ -265,16 +272,17 @@ setMethod("plotNContent", signature = "FastqcDataList", function(
 setMethod(
   "plotNContent", signature = "FastpData",
   function(
-    x, usePlotly = FALSE, labels, pattern = ".fastq.*|.fastp.*|.fq*",
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     module = c("Before_filtering", "After_filtering"),
-    reads = c("read1", "read2"), linetype = NULL, colour = NULL,
-    lineCol = c("navyblue", "red3"), facetBy = module ~ fqName, ...
+    moduleBy = c("facet", "colour", "linetype"),
+    reads = c("read1", "read2"), readsBy = c("facet", "colour", "linetype"),
+    colourScale = NULL, lineScale = NULL, plotTheme = theme(),
+    plotlyLegend = FALSE, ...
   ){
 
-    ## Check args
+    ## Check args and load
     mod <- match.arg(module, several.ok = TRUE) # We can plot B4/After
     reads <- match.arg(reads, several.ok = TRUE)
-
     data <- lapply(mod, function(m) getModule(x, m))
     names(data) <- mod
     data <- lapply(data, bind_rows, .id = "reads")
@@ -287,16 +295,6 @@ setMethod(
     df <- unnest(df, !!sym("content_curves"))
     df <- dplyr::select(df, any_of(cols))
 
-    ## Drop the suffix, or check the alternate labels
-    lbl_df <- dplyr::distinct(df, Filename, fqName)
-    fnames <- .makeLabels(lbl_df, labels, pattern = pattern, ...)
-    df$Filename <- factor(fnames[df$Filename], levels = fnames)
-    df$Filename <- fct_rev(df$Filename)
-    fqNames <- .makeLabels(lbl_df, labels, pattern = pattern, col = "fqName")
-    df$fqName <- fqNames[df$fqName]
-    df$Module <- factor(df$Module, levels = mod)
-    df$module <- df$Module ## Makes it easier for users to make typos
-
     ## Make a blank plot if no data is found
     if (!length(df)) {
       msg <- "No N Content in Reports"
@@ -305,33 +303,66 @@ setMethod(
       return(p)
     }
 
+    ## Drop the suffix, or check the alternate labels
+    lbl_df <- dplyr::distinct(df, Filename, fqName)
+    fnames <- .makeLabels(lbl_df, labels, pattern = pattern)
+    df$Filename <- factor(fnames[df$Filename], levels = fnames)
+    df$Filename <- fct_rev(df$Filename)
+    fqNames <- .makeLabels(lbl_df, labels, pattern = pattern, col = "fqName")
+    df$fqName <- fqNames[df$fqName]
+    df$Module <- factor(df$Module, levels = mod)
+    df$module <- df$Module ## Makes it easier for users to make typos
+
+    ## Sort out plotting args
+    readsBy <- match.arg(readsBy)
+    moduleBy <- match.arg(moduleBy)
+    if (readsBy == moduleBy & readsBy != "facet") stop(
+      "Cannot set the same ploting parameter to both reads and module"
+    )
+    lt <- col <- NULL
+    if (readsBy == "linetype") lt <- sym("fqName")
+    if (moduleBy == "linetype") lt <- sym("Module")
+    if (readsBy == "colour") col <- sym("fqName")
+    if (moduleBy == "colour") col <- sym("Module")
+    fm <- dplyr::case_when(
+      readsBy == "facet" & moduleBy == "facet" ~ "Module ~ fqName",
+      readsBy != "facet" & moduleBy == "facet" ~ ". ~ Module",
+      readsBy == "facet" & moduleBy != "facet" ~ ". ~ fqName",
+      TRUE ~ ". ~ ."
+    )
+    fm <- as.formula(fm)
+    if (is.null(colourScale)) colourScale <- scale_colour_discrete()
+    stopifnot(is(colourScale, "ScaleDiscrete"))
+    stopifnot(colourScale$aesthetics == "colour")
+    if (is.null(lineScale)) lineScale <- scale_linetype_discrete()
+    stopifnot(is(lineScale, "ScaleDiscrete"))
+    stopifnot(lineScale$aesthetics == "linetype")
+    stopifnot(is(plotTheme, "theme"))
+
+    ## Final mods for plotting
     df[["% N"]] <- round(100 * df$N, 2)
     df[["N Reads"]] <- comma(df$N * df$total_reads, 1)
     names(df) <- gsub("position", "Position", names(df))
     df_cols <- colnames(df)
-    if (!is.null(linetype)) linetype <- sym(match.arg(linetype, df_cols))
-    if (!is.null(colour)) colour <- sym(match.arg(colour, df_cols))
-    p <- ggplot(df) +
+    p <- ggplot(df, aes(label = !!sym("N Reads"))) +
       geom_line(
         aes(
-          Position, !!sym("% N"), colour = {{ colour }}, linetype = {{ linetype }}
-        )
+          Position, !!sym("% N"), colour = {{ col }}, linetype = {{ lt }}
+        ), ...
       ) +
-      facet_grid(facetBy) +
-      scale_colour_manual(values = lineCol) +
+      ggtitle("N Content") +
+      colourScale + lineScale +
       scale_y_continuous(
         labels = label_percent(scale = 1), expand = expansion(c(0.01, 0.05))
       ) +
+      facet_grid(fm) +
       labs(y = "% N") +
-      theme_bw()
-    p <- .updateThemeFromDots(p, ...)
+      theme_bw() +
+      plotTheme
 
     if (usePlotly) {
-      ############################################
-      ## This is problematic & needs work still ##
-      ############################################
-      p <- p + theme(legend.position = "none")
-      hv <- c("fqName", "Position", "% N", "N Reads", "colour")
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
+      hv <- c("fqName", "Position", "% N", "label", "colour", "linetype")
       p <- suppressWarnings(plotly::ggplotly(p, tooltip = hv))
     }
     p
@@ -347,22 +378,30 @@ setMethod(
 setMethod(
   "plotNContent", signature = "FastpDataList",
   function(
-    x, usePlotly = FALSE, labels, pattern = ".fastq.*|.fastp.*|.fq*",
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     module = c("Before_filtering", "After_filtering"),
-    reads = c("read1", "read2"), fill = scale_fill_viridis_c(), ...
+    reads = c("read1", "read2"), fillScale = NULL, plotTheme = theme(),
+    cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...
   ){
 
-
     ## Check args
-    mod <- match.arg(module, several.ok = TRUE) # We can plot B4/After
+    mod <- match.arg(module, several.ok = TRUE) # We can't plot B4/After if we cluster
     reads <- match.arg(reads, several.ok = TRUE)
-    stopifnot(is(fill, "ScaleContinuous"))
+    n_facets <- length(mod) * length(reads)
+    if ((dendrogram | cluster) & n_facets > 2) {
+      msg <- paste(
+        "Cannot cluster when plotting both modules and both sets of reads.",
+        "Setting cluster and dendrogram to FALSE"
+      )
+      message(msg)
+      cluster <- dendrogram <- FALSE
+    }
 
     ## Setup the data
     data <- lapply(mod, function(m) getModule(x, m)[reads])
     names(data) <- mod
     data <- lapply(data, bind_rows, .id = "reads")
-    df <- bind_rows(data,.id = "Module")
+    df <- bind_rows(data, .id = "Module")
     cols <- c(
       "Module", "reads", "Filename", "fqName", "total_reads", "content_curves",
       "N", "position"
@@ -370,14 +409,6 @@ setMethod(
     df <- dplyr::select(df, any_of(cols))
     df <- unnest(df, !!sym("content_curves"))
     df <- dplyr::select(df, any_of(cols))
-
-    ## Drop the suffix, or check the alternate labels
-    lbl_df <- dplyr::distinct(df, Filename, fqName)
-    fnames <- .makeLabels(lbl_df, labels, pattern = pattern, ...)
-    df$Filename <- factor(fnames[df$Filename], levels = fnames)
-    df$Filename <- forcats::fct_rev(df$Filename)
-    fqNames <- .makeLabels(lbl_df, labels, pattern = pattern, col = "fqName")
-    df$fqName <- fqNames[df$fqName]
 
     ## Make a blank plot if no data is found
     if (!length(df)) {
@@ -387,12 +418,48 @@ setMethod(
       return(p)
     }
 
+    ## Drop the suffix, or check the alternate labels
+    lbl_df <- dplyr::distinct(df, Filename, fqName)
+    fqNames <- .makeLabels(lbl_df, labels, pattern = pattern, col = "fqName")
+    df$fqName <- fqNames[df$fqName]
+    labels <- .makeLabels(lbl_df, labels, pattern = pattern)
+    key <- names(labels)
+    labels <- labels[key %in% df$Filename]
+
+    ## Set up the dendrogram & labels
+    n <- length(labels)
+    if (n == 1 & (cluster | dendrogram))
+      message("Cannot cluster one file. Ignoring cluster and dendgrogram")
+    if (n > 1 & (cluster | dendrogram)) {
+      df$rowVal <- paste(df$position, df$reads, df$Module)
+      clusterDend <- .makeDendro(df, "Filename", "rowVal", "N")
+      dx <- ggdendro::dendro_data(clusterDend)
+      if (dendrogram | cluster) key <- labels(clusterDend)
+    } else {
+      cluster <- dendrogram <- FALSE
+      dx <- list()
+      dx$segments <- lapply(rep_len(0, 4), numeric)
+      names(dx$segments) <- c("x", "y", "xend", "yend")
+      dx$segments <- as_tibble(dx$segments)
+    }
+    if (!dendrogram) dx$segments <- dx$segments[0,]
+    ## Now set everything as factors
+    lv <- labels[key]
+    df$Filename <- factor(labels[df$Filename], levels = lv)
+
+    if (is.null(fillScale)) fillScale <- scale_fill_viridis_c()
+    stopifnot(is(fillScale, "ScaleContinuous"))
+    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(plotTheme, "theme"))
+
     ## Tidy up for plotting
     df$Module <- factor(df$Module, levels = mod)
     df[["% N"]] <- percent(df$N, 0.01)
     df[["N Reads"]] <- comma(df$N * df$total_reads, 1)
     names(df) <- gsub("position", "Position", names(df))
-    fm <- as.formula("Module ~ reads")
+    fm <- as.formula(". ~ reads")
+    if (n_facets == 2 & length(mod) == 2) fm <- as.formula(". ~ Module")
+    if (n_facets == 4) fm <- as.formula("Module ~ reads")
     p <- ggplot(
       df,
       aes(
@@ -400,18 +467,23 @@ setMethod(
         percent = !!sym("% N"), total = !!sym("N Reads")
       )
     ) +
-      geom_raster() +
-      facet_grid(fm) +
-      scale_fill_viridis_c(labels = percent) +
-      scale_y_discrete(expand = rep(0, 4)) +
-      scale_x_continuous(expand = rep(0, 4))
-    p <- .updateThemeFromDots(p, ...)
+      geom_raster(...) +
+      facet_grid(fm, switch = "y") +
+      ggtitle("N Content") +
+      fillScale +
+      scale_y_discrete(expand = rep(0, 4), position = "right") +
+      scale_x_continuous(expand = rep(0, 4)) +
+      theme_bw() +
+      plotTheme
 
-    if (usePlotly) {
-      p <- p + theme(legend.position = "none")
-      hv <- c("fqName", "Position", "% N", "N Reads", "Module")
-      p <- suppressWarnings(plotly::ggplotly(p, tooltip = hv))
-    }
+    if (usePlotly) p <- p + theme(
+      axis.title.y = element_blank(), axis.text.y = element_blank(),
+      axis.ticks.y = element_blank()
+    )
+    tt <- c("fqName", "Position", "% N", "N Reads", "Module")
+    p <- .prepHeatmap(
+      p, tibble(), usePlotly, heat_w, segments = dx$segments, hv = tt
+    )
     p
   }
 )
