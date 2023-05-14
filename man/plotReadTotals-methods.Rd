@@ -28,11 +28,14 @@ plotReadTotals(
   x,
   usePlotly = FALSE,
   labels,
-  pattern = ".(fast|fq|bam|sam).*",
+  pattern = ".(fast|fq|bam).*",
   duplicated = TRUE,
   bars = c("stacked", "adjacent"),
+  vertBars = TRUE,
+  scaleY = 1,
   barCols = c("red", "blue"),
-  expand.x = c(0, 0.02),
+  expand.y = c(0, 0.02),
+  plotlyLegend = FALSE,
   ...
 )
 
@@ -40,14 +43,17 @@ plotReadTotals(
   x,
   usePlotly = FALSE,
   labels,
-  pattern = ".(fast|fq|bam|sam).*",
+  pattern = ".(fast|fq|bam).*",
   scalePaired = TRUE,
   scaleY = 1e+06,
   fillScale = NULL,
   labMin = 0.05,
+  status = TRUE,
   labVjust = 0.5,
   labFill = "white",
   plotTheme = theme(),
+  vertBars = FALSE,
+  plotlyLegend = FALSE,
   expand.y = c(0, 0.05),
   ...
 )
@@ -65,26 +71,31 @@ All filenames must be present in the names.}
 
 \item{...}{Used to pass additional attributes to theme()}
 
-\item{duplicated}{\code{logical}. Include deduplicated read total estimates
+\item{duplicated}{logical(1). Include deduplicated read total estimates
 to plot charts}
 
 \item{bars}{If \code{duplicated = TRUE}, show unique and deduplicated reads
 as "stacked" or "adjacent".}
 
-\item{barCols}{Colours for duplicated and unique reads.}
-
-\item{expand.x, expand.y}{Passed to \code{\link[ggplot2:expansion]{ggplot2::expansion}} inside the
-respective axis scale}
-
-\item{scalePaired}{Scale read totals by 0.5 when paired}
+\item{vertBars}{logical(1) Show bars as vertical or horizontal}
 
 \item{scaleY}{Scale read totals by this value. The default shows the y-axis
 in millions}
+
+\item{barCols}{Colours for duplicated and unique reads.}
+
+\item{expand.y}{Passed to \code{\link[ggplot2:expansion]{ggplot2::expansion}} for the axis showing totals}
+
+\item{plotlyLegend}{logical(1) Show legend on interactive plots}
+
+\item{scalePaired}{Scale read totals by 0.5 when paired}
 
 \item{fillScale}{ScaleDiscrete function to be applied to the plot}
 
 \item{labMin}{Only show labels for filtering categories higher than this
 values as a proportion of reads}
+
+\item{status}{logical(1) Include read status in the plot}
 
 \item{labVjust}{Used to place labels within each bar.}
 
@@ -107,6 +118,11 @@ Duplication levels are based on the value shown on FASTQC reports at the
 top of the DeDuplicatedTotals plot, which is known to be inaccurate.
 As it still gives a good guide as to sequence diversity it is included as
 the default. This can be turned off by setting \code{duplicated = FALSE}.
+
+For FastpDataList objects, duplication statistics are not part of the
+default module containing ReadTotals. However, the status of reads and the
+reason for being retained or filtered is, and as such these are shown
+instead of duplication statistics.
 }
 \examples{
 

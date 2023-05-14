@@ -9,33 +9,59 @@
 \alias{plotSeqLengthDistn,FastqcDataList-method}
 \title{Plot the Sequence Length Distribution}
 \usage{
-plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
+plotSeqLengthDistn(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  ...
+)
 
-\S4method{plotSeqLengthDistn}{ANY}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSeqLengthDistn}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  ...
+)
 
-\S4method{plotSeqLengthDistn}{character}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSeqLengthDistn}{character}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  ...
+)
 
 \S4method{plotSeqLengthDistn}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
+  counts = TRUE,
   plotType = c("line", "cdf"),
-  ...,
-  expand.x = expansion(0, 0.2)
+  expand.x = c(0, 0.2, 0, 0.2),
+  plotlyLegend = FALSE,
+  colour = "red",
+  ...
 )
 
 \S4method{plotSeqLengthDistn}{FastqcDataList}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   counts = FALSE,
   plotType = c("heatmap", "line", "cdf"),
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
   pwfCols,
-  ...,
-  heatCol = hcl.colors(50, "inferno")
+  showPwf = TRUE,
+  fillScale = NULL,
+  colourScale = NULL,
+  heatCol = hcl.colors(50, "inferno"),
+  ...
 )
 }
 \arguments{
@@ -44,10 +70,14 @@ plotSeqLengthDistn(x, usePlotly = FALSE, labels, ...)
 \item{usePlotly}{\code{logical}. Output as ggplot2 or plotly object.}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+All filenames must be present in the names.}
+
+\item{pattern}{Regex to remove from the end of any filenames}
 
 \item{...}{Used to pass additional attributes to theme()}
+
+\item{counts}{\code{logical} Should distributions be shown as counts or
+frequencies (percentages)}
 
 \item{plotType}{\code{character}. Can only take the values
 \code{plotType = "heatmap"} \code{plotType = "line"} or
@@ -56,8 +86,9 @@ File extensions are dropped by default.}
 \item{expand.x}{Output from \code{expansion()} or numeric vector of
 length 4. Passed to \code{scale_x_discrete}}
 
-\item{counts}{\code{logical} Should distributions be shown as counts or
-frequencies (percentages)}
+\item{plotlyLegend}{logical(1) Show legend for interactive line plots}
+
+\item{colour}{Line colour}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -71,6 +102,10 @@ will be displayed.}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail values in plot}
+
+\item{showPwf}{logical(1) Show PASS/WARN/FAIL status}
+
+\item{fillScale, colourScale}{Optional ggplot scale objects}
 
 \item{heatCol}{The colour scheme for the heatmap}
 }

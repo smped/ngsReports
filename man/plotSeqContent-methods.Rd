@@ -54,8 +54,10 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   module = c("Before_filtering", "After_filtering"),
   reads = c("read1", "read2"),
   readsBy = c("facet", "linetype"),
+  moduleBy = c("facet", "linetype"),
   bases = c("A", "T", "C", "G", "N", "GC"),
   colourScale = NULL,
+  lineScale = NULL,
   plotlyLegend = FALSE,
   plotTheme = theme(),
   expand.x = 0.02,
@@ -69,6 +71,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   labels,
   pattern = ".(fast|fq|bam).*",
   module = c("Before_filtering", "After_filtering"),
+  moduleBy = c("facet", "linetype"),
   reads = c("read1", "read2"),
   readsBy = c("facet", "linetype"),
   bases = c("A", "T", "C", "G", "N", "GC"),
@@ -79,6 +82,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   plotType = c("heatmap", "line", "residuals"),
   plotlyLegend = FALSE,
   colourScale = NULL,
+  lineScale = NULL,
   plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
@@ -95,8 +99,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
-All file names must be present in the names of the vector.
-File extensions are dropped by default.}
+All file names must be present in the names of the vector.}
 
 \item{pattern}{Regex to remove from the end of any filenames}
 
@@ -144,8 +147,11 @@ plots. Passed to \link[ggplot2]{facet_wrap}.}
 
 \item{reads}{Which set of reads to show}
 
-\item{readsBy}{When plotting both R1 & R2, separate by either linetype or
-use facet_wrap, called on the associated fqName}
+\item{readsBy, moduleBy}{When plotting both R1 & R2 and both modules,
+separate by either linetype or linetype}
+
+\item{lineScale}{Discrete scale_linetype object. Only relevant if plotting
+values by linetype}
 
 \item{warn, fail}{Default values for WARN and FAIL based on FastQC reports.
 Only applied to heatmaps for FastpDataList objects}
@@ -181,5 +187,9 @@ fdl <- FastqcDataList(fl)
 
 # The default plot
 plotSeqContent(fdl)
+
+fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+plotSeqContent(fp)
+plotSeqContent(fp, moduleBy = "linetype", bases = c("A", "C", "G", "T"))
 
 }

@@ -24,9 +24,10 @@
 #' `plotType = "cdf"`
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
-#' File extensions are dropped by default.
+#' @param pattern Regex to remove from the end of any filenames
 #' @param counts `logical` Should distributions be shown as counts or
 #' frequencies (percentages)
+#' @param colour Line colour
 #' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram `logical` redundant if `cluster` and
@@ -36,10 +37,13 @@
 #' @param heat_w Relative width of any heatmap plot components
 #' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in plot
+#' @param showPwf logical(1) Show PASS/WARN/FAIL status
 #' @param ... Used to pass additional attributes to theme()
 #' @param expand.x Output from `expansion()` or numeric vector of
 #' length 4. Passed to `scale_x_discrete`
+#' @param fillScale,colourScale Optional ggplot scale objects
 #' @param heatCol The colour scheme for the heatmap
+#' @param plotlyLegend logical(1) Show legend for interactive line plots
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
@@ -71,136 +75,129 @@
 #' @name plotSeqLengthDistn
 #' @rdname plotSeqLengthDistn-methods
 #' @export
-setGeneric("plotSeqLengthDistn", function(
-    x, usePlotly = FALSE, labels, ...){
-  standardGeneric("plotSeqLengthDistn")
-}
+setGeneric(
+  "plotSeqLengthDistn",
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+    standardGeneric("plotSeqLengthDistn")
+  }
 )
 #' @rdname plotSeqLengthDistn-methods
 #' @export
-setMethod("plotSeqLengthDistn", signature = "ANY", function(
-    x, usePlotly = FALSE, labels, ...){
-  .errNotImp(x)
-}
+setMethod(
+  "plotSeqLengthDistn", signature = "ANY",
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+    .errNotImp(x)
+  }
 )
 #' @rdname plotSeqLengthDistn-methods
 #' @export
-setMethod("plotSeqLengthDistn", signature = "character", function(
-    x, usePlotly = FALSE, labels, ...){
-  x <- FastqcDataList(x)
-  if (length(x) == 1) x <- x[[1]]
-  plotSeqLengthDistn(x, usePlotly, labels, ...)
-}
+setMethod(
+  "plotSeqLengthDistn", signature = "character",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...
+  ){
+    x <- FastqcDataList(x)
+    if (length(x) == 1) x <- x[[1]]
+    plotSeqLengthDistn(x, usePlotly, labels, pattern = pattern, ...)
+  }
 )
 #' @rdname plotSeqLengthDistn-methods
 #' @export
-setMethod("plotSeqLengthDistn", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, plotType = c("line", "cdf"), ...,
-    expand.x = expansion(0, 0.2)){
+setMethod(
+  "plotSeqLengthDistn", signature = "FastqcData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", counts = TRUE,
+    plotType = c("line", "cdf"), expand.x = c(0, 0.2, 0, 0.2),
+    plotlyLegend = FALSE, colour = "red", ...
+  ){
 
-  df <- getModule(x, "Sequence_Length_Distribution")
-  plotType <- match.arg(plotType)
+    df <- getModule(x, "Sequence_Length_Distribution")
+    plotType <- match.arg(plotType)
 
-  if (!length(df)) {
-    lenPlot <- .emptyPlot("No Sequence Length Module Detected")
-    if (usePlotly) lenPlot <- ggplotly(lenPlot, tooltip = "")
-    return(lenPlot)
-  }
+    if (!length(df)) {
+      p <- .emptyPlot("No Sequence Length Module Detected")
+      if (usePlotly) p <- ggplotly(p, tooltip = "")
+      return(p)
+    }
 
-  ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
-  labels <- labels[names(labels) %in% df$Filename]
-  df$Filename <- labels[df$Filename]
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(x, labels, pattern)
+    labels <- labels[names(labels) %in% df$Filename]
+    df$Filename <- labels[df$Filename]
 
-  ## Add zero counts for lengths either side of the included range
-  ## This is only required if a single value exists
-  if (nrow(df) == 1) {
-    df <- dplyr::bind_rows(
-      df,
-      dplyr::mutate(df, Lower = Lower - 1, Count = 0),
-      dplyr::mutate(df, Lower = Lower + 1, Count = 0)
-    )
-  }
+    ## Add zero counts for lengths either side of the included range
+    ## This is only required if a single value exists
+    if (nrow(df) == 1) {
+      df <- dplyr::bind_rows(
+        df,
+        dplyr::mutate(df, Lower = Lower - 1, Count = 0),
+        dplyr::mutate(df, Lower = Lower + 1, Count = 0)
+      )
+    }
 
-  df$Lower <- as.integer(df$Lower)
-  df <- dplyr::arrange_at(df, vars("Lower"))
-  df <- df[c("Filename", "Length", "Lower", "Count")]
-  df$Cumulative <- cumsum(df$Count)
-  df$Length <- factor(df$Lower, levels = unique(df$Lower))
+    df$Lower <- as.integer(df$Lower)
+    df <- dplyr::arrange_at(df, vars("Lower"))
+    df <- df[c("Filename", "Length", "Lower", "Count")]
+    df$Cumulative <- cumsum(df$Count)
+    df$Length <- factor(df$Lower, levels = unique(df$Lower))
+    df$Frequency <- df$Count / sum(df$Count)
+    df[["Cumulative Frequency"]] <- cumsum(df$Frequency)
 
-  ## Sort out some plotting parameters
-  stopifnot(is.numeric(expand.x), length(expand.x) == 4)
-  xLab <- "Sequence Length (bp)"
-  yLab <- c(cdf = "Cumulative Count", line = "Count")[plotType]
-  plotY <- c(cdf = "Cumulative", line = "Count")[plotType]
+    ## Sort out some plotting parameters
+    stopifnot(is.numeric(expand.x), length(expand.x) == 4)
+    xLab <- "Sequence Length (bp)"
+    type <- ifelse(counts, "Count", "Frequency")
+    yLab <- paste(c(cdf = "Cumulative", line = "")[plotType], type)
+    plotY <- c(cdf = "Cumulative", line = "Count")[plotType]
+    if (!counts)
+      plotY <- c(line = "Frequency", cdf = "Cumulative Frequency")[plotType]
+    lab_fun <- scales::comma
+    if (!counts) lab_fun <- scales::percent
 
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+    p <- ggplot(
+      df, aes(Length, !!sym(plotY), colour = Filename, group = Filename)
+    ) +
+      geom_line(colour = colour) +
+      facet_wrap(~Filename) +
+      labs(x = xLab, y = yLab) +
+      scale_x_discrete(expand = expand.x) +
+      scale_y_continuous(labels = lab_fun) +
+      theme_bw()
+    p <- .updateThemeFromDots(p, ...)
 
-  lenPlot <- ggplot(
-    df, aes(Length, !!sym(plotY), colour = Filename, group = Filename)
-  ) +
-    geom_line() +
-    facet_wrap(~Filename) +
-    labs(x = xLab, y = yLab) +
-    scale_x_discrete(expand = expand.x) +
-    scale_y_continuous(labels = scales::comma) +
-    theme_bw() +
-    theme(legend.position = "none")
+    if (usePlotly) {
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
+      p <- suppressMessages(plotly::ggplotly(p, tooltip = c("x", "y")))
+    }
 
-  if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
-
-  if (usePlotly) {
-    lenPlot <-
-      suppressMessages(plotly::ggplotly(lenPlot, tooltip = c("x", "y")))
-
-    lenPlot <- suppressMessages(
-      suppressWarnings(
-        plotly::subplot(
-          plotly::plotly_empty(),
-          lenPlot,
-          widths = c(0.14,0.86))
-      ))
-    lenPlot <- plotly::layout(
-      lenPlot,
-      xaxis2 = list(title = xLab),
-      yaxis2 = list(title = yLab)
-    )
+    p
 
   }
-
-  lenPlot
-
-}
 )
 #' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod(
   "plotSeqLengthDistn", signature = "FastqcDataList",
   function(
-    x, usePlotly = FALSE, labels, counts = FALSE,
-    plotType = c("heatmap", "line", "cdf"), cluster = FALSE,
-    dendrogram = FALSE, heat_w = 8, pwfCols, ...,
-    heatCol = hcl.colors(50, "inferno")
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", counts = FALSE,
+    plotType = c("heatmap", "line", "cdf"), cluster = FALSE, dendrogram = FALSE,
+    heat_w = 8, pwfCols, showPwf = TRUE,  fillScale = NULL, colourScale = NULL,
+    heatCol = hcl.colors(50, "inferno"), ...
   ){
 
     mod <- "Sequence_Length_Distribution"
     df <- getModule(x, mod)
     if (!length(df)) {
-      lenPlot <- .emptyPlot("No Sequence Length Module Detected")
-      if (usePlotly) lenPlot <- ggplotly(lenPlot, tooltip = "")
-      return(lenPlot)
+      p <- .emptyPlot("No Sequence Length Module Detected")
+      if (usePlotly) p <- ggplotly(p, tooltip = "")
+      return(p)
     }
 
     ## Check for valid plotType
     plotType <- match.arg(plotType)
 
     ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(x, labels, ...)
+    labels <- .makeLabels(x, labels, pattern)
     labels <- labels[names(labels) %in% df$Filename]
 
     ## Lengths will probably be binned so define the bins then expand
@@ -227,13 +224,6 @@ setMethod(
     freq_cols <- colnames(df) %in% c("Cumulative", "Freq")
     df[freq_cols] <- lapply(df[freq_cols], round, digits = 4)
 
-    ## Get any arguments for dotArgs that have been set manually
-    dotArgs <- list(...)
-    allowed <- names(formals(theme))
-    keepArgs <- which(names(dotArgs) %in% allowed)
-    userTheme <- c()
-    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
     ## Check axis expansion
     if (missing(pwfCols)) pwfCols <- pwf
 
@@ -254,21 +244,29 @@ setMethod(
       )
       yLabelFun <- ifelse(counts, scales::comma, scales::percent)
 
+      if (is.null(colourScale)) {
+        colourScale <- scale_colour_discrete()
+      }
+      stopifnot(is(colourScale, "ScaleDiscrete"))
+      stopifnot(colourScale$aesthetics == "colour")
+
       df$Filename <- labels[df$Filename]
-      lenPlot <- ggplot(
+      p <- ggplot(
         df, aes(Length, y = !!sym(plotY), colour = Filename, group = Filename)
       ) +
         geom_line() +
         labs(y = yLab) +
         scale_y_continuous(labels = yLabelFun) +
+        colourScale +
         theme_bw()
+      p <- .updateThemeFromDots(p, ...)
 
       if (usePlotly) {
         ttip <- c("x", "y", "colour")
-        lenPlot <- suppressMessages(
+        p <- suppressMessages(
           suppressWarnings(
             plotly::ggplotly(
-              lenPlot + theme(legend.position = "none"), tooltip = ttip
+              p + theme(legend.position = "none"), tooltip = ttip
             )
           )
         )
@@ -290,12 +288,24 @@ setMethod(
       df$Percent <- scales::percent(df$Freq, accuracy = 0.1)
       df$Total <- scales::comma(df$Count)
 
+      if (is.null(fillScale)) {
+        fillScale <- scale_fill_viridis_c(
+          option = "inferno", labels = scales::percent, limits = c(0, 1)
+        )
+        if (!is.null(heatCol))
+          fillScale <- scale_fill_gradientn(
+            colours = heatCol, labels = scales::percent, limits = c(0, 1)
+          )
+      }
+      stopifnot(is(fillScale, "ScaleContinuous"))
+      stopifnot(fillScale$aesthetics == "fill")
+
       ## Make the basic heatmap. The first aes sets the labels for plotly
       aes <- aes(
         `%` = Percent, Count = Total, Length = Length, Filenane = Filename
       )
       hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
-      lenPlot <- ggplot(df, aes) +
+      p <- ggplot(df, aes) +
         geom_rect(
           aes(
             xmin = Lower, xmax = Upper + 1,
@@ -305,13 +315,7 @@ setMethod(
         ) +
         labs(x = "Sequence Length", fill = "Percent") +
         ggtitle(gsub("_", " ", mod)) +
-        scale_fill_gradientn(
-          colours = heatCol, labels = scales::percent, limits = c(0, 1)
-        ) +
-        scale_colour_gradientn(
-          colours = heatCol, labels = scales::percent, limits = c(0, 1)
-        ) +
-        guides(colour = "none") +
+        fillScale +
         scale_x_continuous(expand = c(0, 0)) +
         scale_y_continuous(
           expand = c(0, 0), position = "right",
@@ -323,17 +327,16 @@ setMethod(
           plot.title = element_text(hjust = hj),
           axis.title.x = element_text(hjust = hj)
         )
-      if (!is.null(userTheme)) lenPlot <- lenPlot + userTheme
+      p <- .updateThemeFromDots(p, ...)
 
       ## Get the PWF status
       status <- subset(getSummary(x), Category == gsub("_", " ", mod))
       status$Filename <- factor(labels[status$Filename], levels = labels[key])
+      if (!showPwf) status <- status[0,]
 
-      lenPlot <- .prepHeatmap(
-        lenPlot, status, dx$segments, usePlotly, heat_w, pwfCols
-      )
+      p <- .prepHeatmap(p, status, dx$segments, usePlotly, heat_w, pwfCols)
 
     }
-    lenPlot
+    p
   }
 )

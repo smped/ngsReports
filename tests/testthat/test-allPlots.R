@@ -8,9 +8,14 @@ test_that("plotOverrep outputs correct objects", {
 
   p <- plotOverrep(fdl[[1]])
   expect_true(is(p, "gg"))
+  p <- plotOverrep(fdl[[1]], TRUE)
+  expect_true(is(p, "plotly"))
+
+  p <- plotOverrep(fdl, showPwf = FALSE)
+  expect_true(is(p, "gg"))
 
   p <- plotOverrep(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is(p, "patchwork"))
 
   p <- plotOverrep(fdl, dendrogam = TRUE)
   expect_true(is(p, "patchwork"))
@@ -20,43 +25,30 @@ test_that("plotOverrep outputs correct objects", {
 
 })
 
-test_that("plotReadTotals works", {
-  p <- plotReadTotals(fdl)
-  expect_true(is(p, "gg"))
-  p <- plotReadTotals(fdl, usePlotly = TRUE)
-  expect_true(is(p, "plotly"))
-})
-
-test_that("plotSeqContent outputs correct objects", {
-
-  p <- plotSeqContent(fdl[[1]])
-  expect_true(is(p, "gg"))
-
-  p <- plotSeqContent(fdl)
-  expect_true(is(p, "gg"))
-
-  p <- plotSeqContent(fdl, plotType = "line")
-  expect_true(is(p, "gg"))
-
-  p <- plotSeqContent(fdl, plotType = "residuals")
-  expect_true(is(p, "gg"))
-
-  p <- plotSeqContent(fdl, dendrogam = TRUE)
-  expect_true(is(p, "patchwork"))
-
-  p <- plotSeqContent(fdl, dendrogam = TRUE, usePlotly = TRUE)
-  expect_true(is(p, "plotly"))
-
-})
 
 
 test_that("plotSeqLengthDistn outputs correct objects", {
 
+  p <- plotSeqLengthDistn(path(fdl[[1]]))
+  expect_true(is(p, "gg"))
+
   p <- plotSeqLengthDistn(fdl[[1]])
+  expect_true(is(p, "gg"))
+
+  p <- plotSeqLengthDistn(fdl[[1]], counts = FALSE)
   expect_true(is(p, "gg"))
 
   p <- plotSeqLengthDistn(fdl[[1]], plotType = "cdf")
   expect_true(is(p, "gg"))
+
+  p <- plotSeqLengthDistn(fdl[[1]], TRUE)
+  expect_true(is(p, "plotly"))
+
+  p <- plotSeqLengthDistn(fdl[[1]], TRUE, plotType = "cdf")
+  expect_true(is(p, "plotly"))
+
+  p <- plotSeqLengthDistn(fdl[[1]], TRUE, plotType = "line")
+  expect_true(is(p, "plotly"))
 
   p <- plotSeqLengthDistn(fdl)
   expect_true(is(p, "gg"))
@@ -74,14 +66,28 @@ test_that("plotSeqLengthDistn outputs correct objects", {
 
 test_that("plotSeqQuals outputs correct objects", {
 
+  p <- plotSeqQuals(path(fdl[[1]]))
+  expect_true(is(p, "gg"))
+
   p <- plotSeqQuals(fdl[[1]])
   expect_true(is(p, "gg"))
 
+  p <- plotSeqQuals(fdl[[1]], counts = TRUE)
+  expect_true(is(p, "gg"))
+
+  p <- plotSeqQuals(fdl[[1]], TRUE)
+  expect_true(is(p, "plotly"))
+
   p <- plotSeqQuals(fdl)
+  expect_true(is(p, "patchwork"))
+
+  p <- plotSeqQuals(fdl, showPwf = FALSE)
   expect_true(is(p, "gg"))
 
   p <- plotSeqQuals(fdl, plotType = "line")
   expect_true(is(p, "gg"))
+  p <- plotSeqQuals(fdl, TRUE, plotType = "line")
+  expect_true(is(p, "plotly"))
 
   p <- plotSeqQuals(fdl, dendrogam = TRUE)
   expect_true(is(p, "patchwork"))

@@ -20,7 +20,6 @@
 #' @param usePlotly `logical`. Generate an interactive plot using plotly
 #' @param labels An optional named vector of labels for the file names.
 #' All file names must be present in the names of the vector.
-#' File extensions are dropped by default.
 #' @param pattern Regex to remove from the end of any filenames
 #' @param plotType `character`. Type of plot to generate. Must be "line",
 #' "heatmap" or "residuals"
@@ -35,12 +34,14 @@
 #' @param heat_w Relative width of any heatmap plot components
 #' @param module Fastp Module to show. Can only be Before/After_filtering
 #' @param reads Which set of reads to show
-#' @param readsBy When plotting both R1 & R2, separate by either linetype or
-#' use facet_wrap, called on the associated fqName
+#' @param readsBy,moduleBy When plotting both R1 & R2 and both modules,
+#' separate by either linetype or linetype
 #' @param bases Which bases to draw on the plot. Also becomes the default
 #' plotting order by setting these as factor levels
 #' @param colourScale Discrete colour scale as a ggplot ScaleDiscrete object
 #' If not provided, will default to \link[ggplot2]{scale_colour_manual}
+#' @param lineScale Discrete scale_linetype object. Only relevant if plotting
+#' values by linetype
 #' @param plotTheme \link[ggplot2]{theme} object to be applied. Note that all
 #' plots will have \link[ggplot2]{theme_bw} theme applied by default, as well as
 #' any additional themes supplied here
@@ -69,6 +70,10 @@
 #'
 #' # The default plot
 #' plotSeqContent(fdl)
+#'
+#' fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+#' plotSeqContent(fp)
+#' plotSeqContent(fp, moduleBy = "linetype", bases = c("A", "C", "G", "T"))
 #'
 #' @docType methods
 #'
@@ -157,12 +162,11 @@ setMethod(
       colourScale +
       guides(fill = "none") +
       labs(x = xLab, y = yLab) +
-      theme_bw() +
-      plotTheme
+      theme_bw() + plotTheme
 
     if (usePlotly) {
       ttip <- c("y", "label", "colour")
-      if (!plotlyLegend) p <- p + theme(show.legend = "none")
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
       p <- plotly::ggplotly(p, tooltip = ttip)
     }
 
@@ -428,33 +432,55 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     module = c("Before_filtering", "After_filtering"),
     reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
+    moduleBy = c("facet", "linetype"),
     bases = c("A", "T", "C", "G", "N", "GC"), colourScale = NULL,
-    plotlyLegend = FALSE, plotTheme = theme(), expand.x = 0.02,
-    expand.y = c(0, 0.05), ...
+    lineScale = NULL, plotlyLegend = FALSE, plotTheme = theme(),
+    expand.x = 0.02, expand.y = c(0, 0.05), ...
   ) {
 
-    module <- match.arg(module)
-    data <- getModule(x, module)
-    reads <- match.arg(reads, names(data), several.ok = TRUE)
-    df <- dplyr::bind_rows(data[reads])
-    df <- df[c("Filename", "fqName", "content_curves")]
+    module <- match.arg(module, several.ok = TRUE)
+    reads <- match.arg(reads, several.ok = TRUE)
+    data <- lapply(module, function(i) getModule(x, i)[reads])
+    names(data) <- module
+    data <- lapply(data, dplyr::bind_rows)
+    df <- bind_rows(data, .id = "Module")
+    df <- df[c("Filename", "fqName", "Module", "content_curves")]
     df <- unnest(df, !!sym("content_curves"))
     bases <- match.arg(bases, colnames(df), several.ok = TRUE)
     df <- pivot_longer(
       df, all_of(bases), names_to = "Base", values_to = "Frequency"
     )
     df$Base <- factor(df$Base, levels = bases)
+    df$Module <- factor(df$Module, levels = module)
+
+    ## Sort out plotting args
+    readsBy <- match.arg(readsBy)
+    moduleBy <- match.arg(moduleBy)
+    if (readsBy == moduleBy & readsBy != "facet") stop(
+      "Cannot set the same plotting parameter to both reads and module"
+    )
+    lt <- NULL
+    if (readsBy == "linetype") lt <- sym("fqName")
+    if (moduleBy == "linetype") lt <- sym("Module")
+    fm <- dplyr::case_when(
+      readsBy == "facet" & moduleBy == "facet" ~ "Module ~ fqName",
+      readsBy != "facet" & moduleBy == "facet" ~ ". ~ Module",
+      readsBy == "facet" & moduleBy != "facet" ~ ". ~ fqName",
+      TRUE ~ ". ~ ."
+    )
+    fm <- as.formula(fm)
 
     if (is.null(colourScale)) {
       ## Best guess based on those in a fastp report
-      basecols <- c(
-        A = "#807C58", `T` = "#601490", C = "green", G = "blue", N = "red",
-        GC = "grey20"
-      )[bases]
-      colourScale <- scale_colour_manual(values = basecols)
+      basecols <- c("#807C58", "#601490", "green", "blue", "red","grey20")
+      names(basecols) <- c("A", "T", "C", "G", "N", "GC")
+      colourScale <- scale_colour_manual(values = basecols[bases])
     }
     stopifnot(is(colourScale, "ScaleDiscrete"))
     stopifnot(colourScale$aesthetics == "colour")
+    if (is.null(lineScale)) lineScale <- scale_linetype_discrete()
+    stopifnot(is(lineScale, "ScaleDiscrete"))
+    stopifnot(lineScale$aesthetics == "linetype")
     stopifnot(is(plotTheme, "theme"))
 
     ## Sort out labels for nicer plotting
@@ -462,12 +488,7 @@ setMethod(
     df$fqName <- factor(fqLabels[df$fqName], levels = fqLabels)
     labels <- .makeLabels(df, labels, pattern)
     df$Filename <- factor(labels[df$Filename], levels = labels)
-    main <- paste0(unique(labels), ": ", gsub("_", " ", module))
-
-    ## How to show reads
-    readsBy <- match.arg(readsBy)
-    linetype <- NULL
-    if (readsBy == "linetype") linetype <- sym("fqName")
+    main <- unique(labels)
 
     ## Final tweaks for better plotly category labels
     names(df) <- gsub("position", "Position", names(df))
@@ -476,23 +497,21 @@ setMethod(
     p <- ggplot(
       df,
       aes(
-        Position, Frequency, colour = Base, linetype = {{ linetype }},
+        Position, Frequency, colour = Base, linetype = {{ lt }},
         name = Filename
       )
     ) +
       geom_line(...) +
+      facet_grid(fm) +
       ggtitle(main) +
       labs(x = "Position in Read") +
       scale_x_continuous(expand = expansion(rep_len(expand.x, 2))) +
       scale_y_continuous(
-        labels = label_percent(scale = 1), #breaks = seq(0, 100, by = 10),
-        limits = c(0, max(df$Frequency)),
+        labels = label_percent(scale = 1), limits = c(0, max(df$Frequency)),
         expand = expansion(rep_len(expand.y, 2))
       ) +
-      colourScale +
-      theme_bw() +
-      plotTheme
-    if (readsBy == "facet") p <- p + facet_wrap(~fqName)
+      colourScale + lineScale +
+      theme_bw() + plotTheme
 
     if (usePlotly) {
       if (!plotlyLegend) p <- p + theme(legend.position = "none")
@@ -512,21 +531,26 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     module = c("Before_filtering", "After_filtering"),
+    moduleBy = c("facet", "linetype"),
     reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
     bases = c("A", "T", "C", "G", "N", "GC"), showPwf = FALSE, pwfCols,
     warn = 10, fail = 20, plotType = c("heatmap", "line", "residuals"),
-    plotlyLegend = FALSE, colourScale = NULL, plotTheme = theme(),
+    plotlyLegend = FALSE, colourScale = NULL, lineScale = NULL,
+    plotTheme = theme(),
     cluster = FALSE, dendrogram = FALSE, heat_w = 8,
     expand.x = c(0.01), expand.y = c(0, 0.05), nc = 2, ...
   ){
 
-    ## Get the SequenceContent
-    module <- match.arg(module)
-    data <- getModule(x, module)
-    reads <- match.arg(reads, names(data), several.ok = TRUE)
-    readsBy <- match.arg(readsBy)
-    df <- bind_rows(data[reads], .id = "reads")
-    df <- df[c("Filename", "fqName", "reads", "content_curves")]
+    ## Check args
+    mod <- match.arg(module, several.ok = TRUE) # We can't plot B4/After if we cluster
+    reads <- match.arg(reads, several.ok = TRUE)
+
+    ## Setup the data
+    data <- lapply(mod, function(m) getModule(x, m)[reads])
+    names(data) <- mod
+    data <- lapply(data, bind_rows, .id = "reads")
+    df <- bind_rows(data, .id = "Module")
+    df <- df[c("Filename", "fqName", "Module", "reads", "content_curves")]
     df <- unnest(df, !!sym("content_curves"))
     bases <- match.arg(bases, colnames(df), several.ok = TRUE)
 
@@ -559,18 +583,41 @@ setMethod(
     labels <- .makeLabels(df, labels, pattern = pattern)
     key <- names(labels)
 
+    ## Layout for line plots
+    readsBy <- match.arg(readsBy)
+    moduleBy <- match.arg(moduleBy)
+    if (readsBy == moduleBy & plotType != "heatmap")
+      stop("Cannot set reads and module to the same parameter for line plots")
+    linetype <- NULL
+    if (readsBy == "linetype") linetype <- sym("reads")
+    if (moduleBy == "linetype") linetype <- sym("Module")
+    if (is.null(lineScale)) lineScale <- scale_linetype_discrete()
+    stopifnot(is(lineScale, "ScaleDiscrete"))
+    stopifnot(lineScale$aesthetics == "linetype")
+
     ## Axis labels
     xLab <- "Position in read (bp)"
     yLab <- "Percent (%)"
-    main <- gsub("_", " ", module)
+    main <- paste("Sequence Content:", paste(reads, collapse = " & "))
+    main <- stringr::str_to_title(main)
 
     if (plotType == "heatmap") {
+
+      n_facets <- length(mod) * length(reads)
+      if ((dendrogram | cluster) & n_facets > 2) {
+        msg <- paste(
+          "Cannot cluster when plotting both modules and both sets of reads.",
+          "Setting cluster and dendrogram to FALSE"
+        )
+        message(msg)
+        cluster <- dendrogram <- FALSE
+      }
 
       if (any(c("N", "GC") %in% bases))
         message("N/GC bases will be ignored when preparing a heatmap")
       bases <- c("A", "C", "G", "T")
       df <- dplyr::select(
-        df, Filename, !!sym("fqName"),
+        df, Filename, !!sym("fqName"), !!sym("Module"),
         !!sym("reads"), all_of(bases), !!sym("position")
       )
       df[bases] <- lapply(df[bases], function(x) round(100 * x, 2))
@@ -584,18 +631,31 @@ setMethod(
         green = df[["A"]] * df$opacity / maxFreq,
         blue = df[["C"]] * df$opacity / maxFreq
       )
-
       names(df) <- gsub("position", "Position", names(df))
 
+      ## Set up the dendrogram & labels
+      n <- length(labels)
+      if (n == 1 & (cluster | dendrogram))
+        message("Cannot cluster one file. Ignoring cluster and dendgrogram")
       ## Now define the order for a dendrogram if required
-      df_long <- tidyr::pivot_longer(
-        df, cols = all_of(bases), names_to = "Nt", values_to = "Percent"
-      )
-      df_long$Position <- paste(df_long$Position, df_long$Nt, df_long$reads)
-      df_long <- df_long[c("Filename", "Position", "Percent")]
-      clusterDend <- .makeDendro(df_long, "Filename", "Position", "Percent")
-      dx <- ggdendro::dendro_data(clusterDend)
-      if (dendrogram | cluster) key <- labels(clusterDend)
+      if (n > 1 & (cluster | dendrogram)) {
+        df_long <- tidyr::pivot_longer(
+          df, cols = all_of(bases), names_to = "Nt", values_to = "Percent"
+        )
+        df_long$Position <- paste(
+          df_long$Position, df_long$Nt, df_long$reads, df_long$Module
+        )
+        df_long <- df_long[c("Filename", "Position", "Percent")]
+        clusterDend <- .makeDendro(df_long, "Filename", "Position", "Percent")
+        dx <- ggdendro::dendro_data(clusterDend)
+        if (dendrogram | cluster) key <- labels(clusterDend)
+      } else {
+        cluster <- dendrogram <- FALSE
+        dx <- list()
+        dx$segments <- lapply(rep_len(0, 4), numeric)
+        names(dx$segments) <- c("x", "y", "xend", "yend")
+        dx$segments <- as_tibble(dx$segments)
+      }
       if (!dendrogram) dx$segments <- dx$segments[0,]
       ## Now set everything as factors
       df$Filename <- factor(labels[df$Filename], levels = labels[key])
@@ -617,8 +677,13 @@ setMethod(
       df[bases] <- lapply(df[bases], scales::percent, accuracy = 0.1, scale = 1)
       yBreaks <- seq_along(levels(df$Filename))
 
-      if (readsBy != "facet")
-        message("Reads can only be separated by facet for a heatmap")
+      fm <- case_when(
+        n_facets == 1 ~ ". ~ .",
+        n_facets == 2 & length(mod) == 2 ~ ". ~ Module",
+        n_facets == 2 & length(reads) == 2 ~ ". ~ reads",
+        TRUE ~ "Module ~ reads"
+      )
+      fm <- as.formula(fm)
 
       p <- ggplot(
         df,
@@ -630,7 +695,7 @@ setMethod(
         geom_rect(
           aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax), linetype = 0
         ) +
-        facet_wrap(~reads, ncol = nc) +
+        facet_grid(fm, switch = "y") +
         ggtitle(main) +
         scale_fill_manual(values = tileCols) +
         scale_x_continuous(expand = c(0, 0)) +
@@ -674,11 +739,9 @@ setMethod(
 
       ## Set colours for line plots & theme
       if (is.null(colourScale)) {
-        baseCols <- c(
-          A = "#807C58", `T` = "#601490", C = "green", G = "blue", N = "red",
-          GC = "grey20"
-        )[bases]
-        colourScale <- scale_colour_manual(values = baseCols)
+        baseCols <- c("#807C58", "#601490", "green", "blue", "red", "grey20")
+        names(baseCols) <- c("A", "T", "C", "G", "N", "GC")
+        colourScale <- scale_colour_manual(values = baseCols[bases])
       }
       stopifnot(is(colourScale, "ScaleDiscrete"))
       stopifnot(colourScale$aesthetics == "colour")
@@ -689,13 +752,14 @@ setMethod(
       rng <- diff(range(y_lim))
       y_lim <- y_lim + c(-1, 1) * expand.y * rng
 
-      ## Default settings should match readsBy == "facet"
-      linetype <- NULL
-      facets <- facet_grid(Filename ~ reads)
-      if (readsBy == "linetype") {
-        linetype <- sym("reads")
-        facets <- facet_wrap(~ Filename)
-      }
+      ## These settings are specific to plotType == "line" so should stay here
+      fm <- dplyr::case_when(
+        readsBy == "facet" ~ "Filename ~ reads",
+        moduleBy == "facet" ~ "Filename ~ Module",
+        TRUE ~ "Filename ~ ."
+      )
+      facets <- facet_grid(as.formula(fm))
+
       p <- ggplot(
         df,
         aes(
@@ -709,20 +773,17 @@ setMethod(
         data = rect_df, alpha = 0.1, inherit.aes = FALSE
       )
       ## The rest of the plot
-      p <- p +
-        geom_line(...) +
-        facets +
+      p <- p + geom_line(...) + facets +
         scale_y_continuous(
           limits = y_lim, expand = rep_len(0, 4),
           labels = scales::label_percent(scale = 1)
         ) +
         scale_x_continuous(limits = x_lim, expand = rep_len(0, 4)) +
         scale_fill_manual(values = getColours(pwfCols)[levels(status_df$Status)]) +
-        colourScale +
+        colourScale + lineScale +
         ggtitle(main) +
         labs(x = xLab, y = yLab, colour = "Base") +
-        theme_bw() +
-        plotTheme
+        theme_bw() + plotTheme
 
       if (usePlotly) {
         if (!plotlyLegend) p <- p + theme(legend.position = "none")
@@ -766,13 +827,13 @@ setMethod(
       stopifnot(is(colourScale, "ScaleDiscrete"))
       stopifnot(colourScale$aesthetics == "colour")
 
-      ## Default settings should match readsBy == "facet"
-      linetype <- NULL
-      facets <- facet_grid(Base ~ reads)
-      if (readsBy == "linetype") {
-        linetype <- sym("reads")
-        facets <- facet_wrap(~ Base)
-      }
+      ## These settings are specific to plotType == "line" so should stay here
+      fm <- dplyr::case_when(
+        readsBy == "facet" ~ "Base ~ reads",
+        moduleBy == "facet" ~ "Base ~ Module",
+        TRUE ~ "Base ~ ."
+      )
+      facets <- facet_grid(as.formula(fm))
 
       p <- ggplot(
         df,
@@ -781,18 +842,16 @@ setMethod(
           status = Status, fqName = !!sym("fqName"), linetype = {{ linetype }}
         )
       ) +
-        geom_line(...) +
-        facets +
+        geom_line(...) + facets +
         scale_y_continuous(labels = label_percent(scale = 1)) +
         scale_x_continuous(expand = expansion(rep_len(expand.x, 2))) +
-        colourScale +
+        colourScale + lineScale +
         ggtitle(main) +
         labs(x = xLab) +
-        theme_bw() +
-        plotTheme
+        theme_bw() + plotTheme
 
       if (usePlotly) {
-        ttip <- c("x", "colour", "label", "fqName")
+        ttip <- c("x", "colour", "label", "linetype", "fqName")
         if (showPwf) ttip <- c(ttip, "status")
         if (!plotlyLegend) p <- p + theme(legend.position = "none")
         p <- suppressMessages(

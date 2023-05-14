@@ -88,8 +88,8 @@ setMethod(
   "plotNContent", signature = "FastqcData",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
-    warn = 5, fail = 20, showPwf = TRUE, ..., lineCol = "red"){
-
+    warn = 5, fail = 20, showPwf = TRUE, ..., lineCol = "red"
+  ){
 
     ## Get the NContent
     df <- getModule(x, "Per_base_N_content")
@@ -179,8 +179,8 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
     warn = 5, fail = 20, showPwf = TRUE,
-    cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...){
-
+    cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...
+  ){
 
     ## Get the NContent
     df <- getModule(x, "Per_base_N_content")
@@ -317,7 +317,7 @@ setMethod(
     readsBy <- match.arg(readsBy)
     moduleBy <- match.arg(moduleBy)
     if (readsBy == moduleBy & readsBy != "facet") stop(
-      "Cannot set the same ploting parameter to both reads and module"
+      "Cannot set the same plotting parameter to both reads and module"
     )
     lt <- col <- NULL
     if (readsBy == "linetype") lt <- sym("fqName")

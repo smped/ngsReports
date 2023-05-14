@@ -13,11 +13,8 @@ plotSeqQuals(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
-  counts = FALSE,
-  alpha = 0.1,
-  warn = 30,
-  fail = 20,
   ...
 )
 
@@ -25,11 +22,8 @@ plotSeqQuals(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
-  counts = FALSE,
-  alpha = 0.1,
-  warn = 30,
-  fail = 20,
   ...
 )
 
@@ -37,11 +31,8 @@ plotSeqQuals(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
-  counts = FALSE,
-  alpha = 0.1,
-  warn = 30,
-  fail = 20,
   ...
 )
 
@@ -49,11 +40,15 @@ plotSeqQuals(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
+  showPwf = TRUE,
   counts = FALSE,
   alpha = 0.1,
   warn = 30,
   fail = 20,
+  colour = "red",
+  plotlyLegend = FALSE,
   ...
 )
 
@@ -61,16 +56,21 @@ plotSeqQuals(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   counts = FALSE,
   alpha = 0.1,
   warn = 30,
   fail = 20,
+  showPwf = TRUE,
   plotType = c("heatmap", "line"),
   dendrogram = FALSE,
   cluster = FALSE,
+  fillScale = NULL,
   heatCols = hcl.colors(100, "inferno"),
   heat_w = 8,
+  colourScale = NULL,
+  plotlyLegend = FALSE,
   ...
 )
 }
@@ -80,12 +80,18 @@ plotSeqQuals(
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
 
-\item{labels}{An optional named factor of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+\item{labels}{An optional named vector of labels for the file names.
+All file names must be present in the names of the vector.}
+
+\item{pattern}{Regex to remove from the end of any filenames}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
+
+\item{...}{Used to pass various potting parameters to theme.
+Can also be used to set size and colour for box outlines.}
+
+\item{showPwf}{logical(1) Show PASS/WARN/FAIL status}
 
 \item{counts}{\code{logical}. Plot the counts from each file if
 \code{counts = TRUE}, otherwise the frequencies will be plotted}
@@ -95,8 +101,9 @@ for PASS/WARN/FAIL}
 \item{warn, fail}{The default values for warn and fail are 5 and 10
 respectively (i.e. percentages)}
 
-\item{...}{Used to pass various potting parameters to theme.
-Can also be used to set size and colour for box outlines.}
+\item{colour}{Colour for single line plots}
+
+\item{plotlyLegend}{logical(1) Show legend for interactive line plots}
 
 \item{plotType}{\code{character}. Can only take the values
 \code{plotType = "heatmap"} or \code{plotType = "line"}}
@@ -107,6 +114,8 @@ then the dendrogram will be displayed.}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
+
+\item{fillScale, colourScale}{ggplot2 scales}
 
 \item{heatCols}{Colour palette for the heatmap}
 

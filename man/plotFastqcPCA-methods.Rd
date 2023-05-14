@@ -13,6 +13,7 @@ plotFastqcPCA(
   module = "Per_sequence_GC_content",
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   sz = 4,
   groups,
   ...
@@ -23,6 +24,7 @@ plotFastqcPCA(
   module = "Per_sequence_GC_content",
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   sz = 4,
   groups,
   ...
@@ -33,6 +35,7 @@ plotFastqcPCA(
   module = "Per_sequence_GC_content",
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   sz = 4,
   groups,
   ...
@@ -43,6 +46,7 @@ plotFastqcPCA(
   module = "Per_sequence_GC_content",
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   sz = 4,
   groups,
   pc = 1:2,
@@ -60,8 +64,9 @@ the desired FastQC module (eg. c("Per_base_sequence_quality",
 object.}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default}
+All file names must be present in the names of the vector.}
+
+\item{pattern}{Regex to remove from the end of any filenames}
 
 \item{sz}{The size of the text labels}
 
