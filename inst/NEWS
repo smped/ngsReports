@@ -1,3 +1,10 @@
+Changes in version 2.2.1
++ Improved plotting and parsing for FastpData and FastpDataList objects
++ Added the ability to hide PWF colours from most plots
++ Added the option of showing the legend in plotly line plots
++ Began passing ggplot2 scale and theme objects directly to Fastp and some Fastqc plotting functions
++ Added the pattern explicitly to most pltting functions
+
 Changes in version 2.1.5
 + Added FastpData and FastpDataList classes for working with fastp reports
 
