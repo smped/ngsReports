@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
       </span>
     </div>
 
@@ -63,29 +63,92 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for ANY</span></span>
-<span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for character</span></span>
-<span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for FastqcData</span></span>
-<span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">plotSeqContent</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  bases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"T"</span>, <span class="st">"C"</span>, <span class="st">"G"</span><span class="op">)</span>,</span>
+<span>  scaleColour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotTheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  expand.x <span class="op">=</span> <span class="fl">0.02</span>,</span>
+<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for FastqcDataList</span></span>
 <span><span class="fu">plotSeqContent</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
+<span>  showPwf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plotType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"heatmap"</span>, <span class="st">"line"</span>, <span class="st">"residuals"</span><span class="op">)</span>,</span>
+<span>  scaleColour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotTheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  dendrogram <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  heat_w <span class="op">=</span> <span class="fl">8</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  nc <span class="op">=</span> <span class="fl">2</span></span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  nc <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for FastpData</span></span>
+<span><span class="fu">plotSeqContent</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  module <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Before_filtering"</span>, <span class="st">"After_filtering"</span><span class="op">)</span>,</span>
+<span>  reads <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"read1"</span>, <span class="st">"read2"</span><span class="op">)</span>,</span>
+<span>  readsBy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"facet"</span>, <span class="st">"linetype"</span><span class="op">)</span>,</span>
+<span>  moduleBy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"facet"</span>, <span class="st">"linetype"</span><span class="op">)</span>,</span>
+<span>  bases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"T"</span>, <span class="st">"C"</span>, <span class="st">"G"</span>, <span class="st">"N"</span>, <span class="st">"GC"</span><span class="op">)</span>,</span>
+<span>  scaleColour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  scaleLine <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  plotTheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  expand.x <span class="op">=</span> <span class="fl">0.02</span>,</span>
+<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for FastpDataList</span></span>
+<span><span class="fu">plotSeqContent</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  module <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Before_filtering"</span>, <span class="st">"After_filtering"</span><span class="op">)</span>,</span>
+<span>  moduleBy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"facet"</span>, <span class="st">"linetype"</span><span class="op">)</span>,</span>
+<span>  reads <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"read1"</span>, <span class="st">"read2"</span><span class="op">)</span>,</span>
+<span>  readsBy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"facet"</span>, <span class="st">"linetype"</span><span class="op">)</span>,</span>
+<span>  bases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"T"</span>, <span class="st">"C"</span>, <span class="st">"G"</span>, <span class="st">"N"</span>, <span class="st">"GC"</span><span class="op">)</span>,</span>
+<span>  showPwf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">pwfCols</span>,</span>
+<span>  warn <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  fail <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  plotType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"heatmap"</span>, <span class="st">"line"</span>, <span class="st">"residuals"</span><span class="op">)</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  scaleColour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  scaleLine <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotTheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  dendrogram <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  heat_w <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  expand.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.01</span><span class="op">)</span>,</span>
+<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
+<span>  nc <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -101,18 +164,52 @@
 
 <dt>labels</dt>
 <dd><p>An optional named vector of labels for the file names.
-All file names must be present in the names of the vector.
-File extensions are dropped by default.</p></dd>
+All file names must be present in the names of the vector.</p></dd>
+
+
+<dt>pattern</dt>
+<dd><p>Regex to remove from the end of any filenames</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Used to pass additional attributes to theme() and between methods</p></dd>
+<dd><p>Used to pass additional attributes to plotting geoms</p></dd>
+
+
+<dt>bases</dt>
+<dd><p>Which bases to draw on the plot. Also becomes the default
+plotting order by setting these as factor levels</p></dd>
+
+
+<dt>scaleColour</dt>
+<dd><p>Discrete colour scale as a ggplot ScaleDiscrete object
+If not provided, will default to <a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_colour_manual</a></p></dd>
+
+
+<dt>plotTheme</dt>
+<dd><p><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a> object to be applied. Note that all
+plots will have <a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a> theme applied by default, as well as
+any additional themes supplied here</p></dd>
+
+
+<dt>plotlyLegend</dt>
+<dd><p>logical(1) Show legends for interactive plots. Ignored
+for heatmaps</p></dd>
+
+
+<dt>expand.x, expand.y</dt>
+<dd><p>Passed to <a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a> in the x- and
+y-axis scales respectively</p></dd>
 
 
 <dt>pwfCols</dt>
 <dd><p>Object of class <code><a href="PwfCols-class.html">PwfCols()</a></code> to give colours for
 pass, warning, and fail
 values in plot</p></dd>
+
+
+<dt>showPwf</dt>
+<dd><p>Show PASS/WARN/FAIL categories as would be defined in a FastQC
+report</p></dd>
 
 
 <dt>plotType</dt>
@@ -137,7 +234,30 @@ then the dendrogram will be displayed.</p></dd>
 
 <dt>nc</dt>
 <dd><p>Specify the number of columns if plotting a FastqcDataList as line
-plots. Passed to <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">ggplot2::facet_wrap</a></code>.</p></dd>
+plots. Passed to <a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a>.</p></dd>
+
+
+<dt>module</dt>
+<dd><p>Fastp Module to show. Can only be Before/After_filtering</p></dd>
+
+
+<dt>reads</dt>
+<dd><p>Which set of reads to show</p></dd>
+
+
+<dt>readsBy, moduleBy</dt>
+<dd><p>When plotting both R1 &amp; R2 and both modules,
+separate by either linetype or linetype</p></dd>
+
+
+<dt>scaleLine</dt>
+<dd><p>Discrete scale_linetype object. Only relevant if plotting
+values by linetype</p></dd>
+
+
+<dt>warn, fail</dt>
+<dd><p>Default values for WARN and FAIL based on FastQC reports.
+Only applied to heatmaps for FastpDataList objects</p></dd>
 
 </dl></div>
     <div id="value">
@@ -173,6 +293,12 @@ by taking the position-specific mean for each base.</p>
 <span class="r-in"><span><span class="co"># The default plot</span></span></span>
 <span class="r-in"><span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotSeqContent-methods-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">fp</span> <span class="op">&lt;-</span> <span class="fu"><a href="FastpData.html">FastpData</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/fastp.json"</span>, package <span class="op">=</span> <span class="st">"ngsReports"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">fp</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="plotSeqContent-methods-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span><span class="fu">plotSeqContent</span><span class="op">(</span><span class="va">fp</span>, moduleBy <span class="op">=</span> <span class="st">"linetype"</span>, bases <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"C"</span>, <span class="st">"G"</span>, <span class="st">"T"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="plotSeqContent-methods-3.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

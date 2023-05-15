@@ -157,6 +157,9 @@
     <loc>/reference/dot-splitByTab.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-updateThemeFromDots.html</loc>
+  </url>
+  <url>
     <loc>/reference/estGcDistn.html</loc>
   </url>
   <url>
@@ -230,6 +233,9 @@
   </url>
   <url>
     <loc>/reference/plotGcContent-methods.html</loc>
+  </url>
+  <url>
+    <loc>/reference/plotInsertSize-methods.html</loc>
   </url>
   <url>
     <loc>/reference/plotKmers-methods.html</loc>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
       </span>
     </div>
 
@@ -67,9 +67,7 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
-<span>  <span class="va">pwfCols</span>,</span>
-<span>  warn <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  fail <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -78,20 +76,7 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
-<span>  <span class="va">pwfCols</span>,</span>
-<span>  warn <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  fail <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for character</span></span>
-<span><span class="fu">plotAdapterContent</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">labels</span>,</span>
-<span>  <span class="va">pwfCols</span>,</span>
-<span>  warn <span class="op">=</span> <span class="fl">5</span>,</span>
-<span>  fail <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -100,9 +85,13 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
+<span>  showPwf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  warn <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  fail <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  scaleColour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -111,13 +100,48 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
+<span>  showPwf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  warn <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  fail <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  plotType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"heatmap"</span>, <span class="st">"line"</span><span class="op">)</span>,</span>
 <span>  adapterType <span class="op">=</span> <span class="st">"Total"</span>,</span>
 <span>  cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  dendrogram <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  heat_w <span class="op">=</span> <span class="fl">8L</span>,</span>
+<span>  scaleFill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  scaleColour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for FastpData</span></span>
+<span><span class="fu">plotAdapterContent</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  scaleFill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  plotTheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for FastpDataList</span></span>
+<span><span class="fu">plotAdapterContent</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  <span class="va">pwfCols</span>,</span>
+<span>  showPwf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  warn <span class="op">=</span> <span class="fl">5</span>,</span>
+<span>  fail <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  dendrogram <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  scaleFill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotTheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  heat_w <span class="op">=</span> <span class="fl">8L</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -137,8 +161,16 @@ object.</p></dd>
 
 <dt>labels</dt>
 <dd><p>An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.</p></dd>
+All filenames must be present in the names.</p></dd>
+
+
+<dt>pattern</dt>
+<dd><p>regex used to trim the ends of all filenames for plotting</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Used to pass additional attributes to theme() for FastQC objects
+and geoms for Fastp objects</p></dd>
 
 
 <dt>pwfCols</dt>
@@ -146,13 +178,19 @@ File extensions are dropped by default.</p></dd>
 for PASS/WARN/FAIL</p></dd>
 
 
+<dt>showPwf</dt>
+<dd><p>logical(1) Show PASS/WARN/FAIL status as would be included in
+a standard FastQC report</p></dd>
+
+
 <dt>warn, fail</dt>
 <dd><p>The default values for warn and fail are 5 and 10
 respectively (i.e. percentages)</p></dd>
 
 
-<dt>...</dt>
-<dd><p>Used to pass additional attributes to theme() and between methods</p></dd>
+<dt>plotlyLegend</dt>
+<dd><p>logical(1) Show legend when choosing interactive plots.
+Ignored for heatmaps</p></dd>
 
 
 <dt>plotType</dt>
@@ -179,6 +217,14 @@ then the dendrogram will be displayed.</p></dd>
 
 <dt>heat_w</dt>
 <dd><p>Width of the heatmap relative to other plot components</p></dd>
+
+
+<dt>scaleFill, scaleColour</dt>
+<dd><p>scale_fill\* and scale_colour_\* objects</p></dd>
+
+
+<dt>plotTheme</dt>
+<dd><p>Set theme elements by passing a <a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></p></dd>
 
 </dl></div>
     <div id="value">
@@ -227,6 +273,11 @@ as <code>TRUE</code></p>
 <span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Filename</span><span class="op">)</span> <span class="op">+</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotAdapterContent-methods-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># For FastpData object, the plots are slightly different</span></span></span>
+<span class="r-in"><span><span class="va">fp</span> <span class="op">&lt;-</span> <span class="fu"><a href="FastpData.html">FastpData</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/fastp.json"</span>, package <span class="op">=</span> <span class="st">"ngsReports"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plotAdapterContent</span><span class="op">(</span><span class="va">fp</span>, scaleFill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_brewer.html" class="external-link">scale_fill_brewer</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="st">"Set1"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="plotAdapterContent-methods-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

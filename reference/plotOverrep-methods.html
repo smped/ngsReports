@@ -18,7 +18,7 @@ FASTQC reports"><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/l
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
       </span>
     </div>
 
@@ -65,24 +65,47 @@ FASTQC reports</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotOverrep</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, <span class="va">pwfCols</span>, <span class="va">...</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotOverrep</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  <span class="va">pwfCols</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for ANY</span></span>
-<span><span class="fu">plotOverrep</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, <span class="va">pwfCols</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">plotOverrep</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  <span class="va">pwfCols</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for character</span></span>
-<span><span class="fu">plotOverrep</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, <span class="va">pwfCols</span>, <span class="va">...</span><span class="op">)</span></span>
+<span><span class="fu">plotOverrep</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  <span class="va">pwfCols</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for FastqcData</span></span>
 <span><span class="fu">plotOverrep</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  <span class="va">...</span>,</span>
-<span>  expand.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">expansion</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.6</span><span class="op">)</span></span>
+<span>  expand.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.05</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.6</span>, <span class="fl">0</span>, <span class="fl">0.6</span><span class="op">)</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for FastqcDataList</span></span>
@@ -90,14 +113,17 @@ FASTQC reports</p>
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
+<span>  showPwf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  dendrogram <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">...</span>,</span>
+<span>  scaleFill <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  paletteName <span class="op">=</span> <span class="st">"Set1"</span>,</span>
 <span>  panel_w <span class="op">=</span> <span class="fl">8</span>,</span>
 <span>  expand.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.05</span>, <span class="fl">0</span><span class="op">)</span>,</span>
-<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -114,8 +140,11 @@ ggplot. If <code>TRUE</code> plot will be rendered with plotly</p></dd>
 
 <dt>labels</dt>
 <dd><p>An optional named factor of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.</p></dd>
+All filenames must be present in the names.</p></dd>
+
+
+<dt>pattern</dt>
+<dd><p>Regex to remove from the end of any filenames</p></dd>
 
 
 <dt>pwfCols</dt>
@@ -136,6 +165,14 @@ for PASS/WARN/FAIL</p></dd>
 vectors of length 4. Passed to <code>scale_*_continuous()</code></p></dd>
 
 
+<dt>plotlyLegend</dt>
+<dd><p>Show legend on interactive plots</p></dd>
+
+
+<dt>showPwf</dt>
+<dd><p>Show PASS/WARN/FAIL status on the plot</p></dd>
+
+
 <dt>cluster</dt>
 <dd><p><code>logical</code> default <code>FALSE</code>. If set to <code>TRUE</code>,
 fastqc data will be clustered using hierarchical clustering</p></dd>
@@ -147,10 +184,14 @@ if both <code>cluster</code> and <code>dendrogram</code> are specified as <code>
 then the dendrogram will be displayed.</p></dd>
 
 
+<dt>scaleFill</dt>
+<dd><p>ggplot scale object</p></dd>
+
+
 <dt>paletteName</dt>
 <dd><p>Name of the palette for colouring the possible sources
 of the overrepresented sequences. Must be a palette name from
-<code>RColorBrewer</code></p></dd>
+<code>RColorBrewer</code>. Ignored if specifying the scaleFill separately</p></dd>
 
 
 <dt>panel_w</dt>
@@ -185,7 +226,7 @@ source and summarise as a percentage of the total reads.</p>
 <span class="r-in"><span><span class="co"># Load the FASTQC data as a FastqcDataList object</span></span></span>
 <span class="r-in"><span><span class="va">fdl</span> <span class="op">&lt;-</span> <span class="fu"><a href="FastqcDataList.html">FastqcDataList</a></span><span class="op">(</span><span class="va">fl</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Another example which isn't ideal</span></span></span>
+<span class="r-in"><span><span class="co"># A brief summary across all FastQC reports</span></span></span>
 <span class="r-in"><span><span class="fu">plotOverrep</span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="plotOverrep-methods-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>

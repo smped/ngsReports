@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
       </span>
     </div>
 
@@ -67,11 +67,8 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
-<span>  counts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  warn <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  fail <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -80,11 +77,8 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
-<span>  counts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  warn <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  fail <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -93,11 +87,8 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
-<span>  counts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">0.1</span>,</span>
-<span>  warn <span class="op">=</span> <span class="fl">30</span>,</span>
-<span>  fail <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -106,11 +97,15 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
+<span>  showPwf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  counts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  warn <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  fail <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  colour <span class="op">=</span> <span class="st">"red"</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -119,16 +114,21 @@
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  <span class="va">pwfCols</span>,</span>
 <span>  counts <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.1</span>,</span>
 <span>  warn <span class="op">=</span> <span class="fl">30</span>,</span>
 <span>  fail <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  showPwf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plotType <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"heatmap"</span>, <span class="st">"line"</span><span class="op">)</span>,</span>
 <span>  dendrogram <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cluster <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  scaleFill <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  heatCols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">100</span>, <span class="st">"inferno"</span><span class="op">)</span>,</span>
 <span>  heat_w <span class="op">=</span> <span class="fl">8</span>,</span>
+<span>  scaleColour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -145,14 +145,26 @@ ggplot. If <code>TRUE</code> plot will be rendered with plotly</p></dd>
 
 
 <dt>labels</dt>
-<dd><p>An optional named factor of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.</p></dd>
+<dd><p>An optional named vector of labels for the file names.
+All file names must be present in the names of the vector.</p></dd>
+
+
+<dt>pattern</dt>
+<dd><p>Regex to remove from the end of any filenames</p></dd>
 
 
 <dt>pwfCols</dt>
 <dd><p>Object of class <code><a href="PwfCols-class.html">PwfCols()</a></code> containing the colours
 for PASS/WARN/FAIL</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Used to pass various potting parameters to theme.
+Can also be used to set size and colour for box outlines.</p></dd>
+
+
+<dt>showPwf</dt>
+<dd><p>logical(1) Show PASS/WARN/FAIL status</p></dd>
 
 
 <dt>counts</dt>
@@ -169,9 +181,12 @@ for PASS/WARN/FAIL</p></dd>
 respectively (i.e. percentages)</p></dd>
 
 
-<dt>...</dt>
-<dd><p>Used to pass various potting parameters to theme.
-Can also be used to set size and colour for box outlines.</p></dd>
+<dt>colour</dt>
+<dd><p>Colour for single line plots</p></dd>
+
+
+<dt>plotlyLegend</dt>
+<dd><p>logical(1) Show legend for interactive line plots</p></dd>
 
 
 <dt>plotType</dt>
@@ -188,6 +203,10 @@ then the dendrogram will be displayed.</p></dd>
 <dt>cluster</dt>
 <dd><p><code>logical</code> default <code>FALSE</code>. If set to <code>TRUE</code>,
 fastqc data will be clustered using hierarchical clustering</p></dd>
+
+
+<dt>scaleFill, scaleColour</dt>
+<dd><p>ggplot2 scales</p></dd>
 
 
 <dt>heatCols</dt>

@@ -18,7 +18,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
       </span>
     </div>
 
@@ -70,6 +70,7 @@
 <span>  module <span class="op">=</span> <span class="st">"Per_sequence_GC_content"</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  sz <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  <span class="va">groups</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -81,6 +82,7 @@
 <span>  module <span class="op">=</span> <span class="st">"Per_sequence_GC_content"</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  sz <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  <span class="va">groups</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -92,6 +94,7 @@
 <span>  module <span class="op">=</span> <span class="st">"Per_sequence_GC_content"</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  sz <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  <span class="va">groups</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -103,6 +106,7 @@
 <span>  module <span class="op">=</span> <span class="st">"Per_sequence_GC_content"</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  sz <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  <span class="va">groups</span>,</span>
 <span>  pc <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span>,</span>
@@ -129,8 +133,11 @@ object.</p></dd>
 
 <dt>labels</dt>
 <dd><p>An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default</p></dd>
+All file names must be present in the names of the vector.</p></dd>
+
+
+<dt>pattern</dt>
+<dd><p>Regex to remove from the end of any filenames</p></dd>
 
 
 <dt>sz</dt>

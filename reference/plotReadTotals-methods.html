@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.1.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.1</span>
       </span>
     </div>
 
@@ -63,50 +63,44 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotReadTotals</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">labels</span>,</span>
-<span>  duplicated <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  bars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stacked"</span>, <span class="st">"adjacent"</span><span class="op">)</span>,</span>
-<span>  barCols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span>
-<span>  expand.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.02</span>, <span class="fl">0</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">plotReadTotals</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for ANY</span></span>
-<span><span class="fu">plotReadTotals</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">labels</span>,</span>
-<span>  duplicated <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  bars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stacked"</span>, <span class="st">"adjacent"</span><span class="op">)</span>,</span>
-<span>  barCols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span>
-<span>  expand.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.02</span>, <span class="fl">0</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for character</span></span>
-<span><span class="fu">plotReadTotals</span><span class="op">(</span></span>
-<span>  <span class="va">x</span>,</span>
-<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  <span class="va">labels</span>,</span>
-<span>  duplicated <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  bars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stacked"</span>, <span class="st">"adjacent"</span><span class="op">)</span>,</span>
-<span>  barCols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span>
-<span>  expand.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.02</span>, <span class="fl">0</span><span class="op">)</span>,</span>
-<span>  <span class="va">...</span></span>
-<span><span class="op">)</span></span>
+<span><span class="fu">plotReadTotals</span><span class="op">(</span><span class="va">x</span>, usePlotly <span class="op">=</span> <span class="cn">FALSE</span>, <span class="va">labels</span>, pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for FastqcDataList</span></span>
 <span><span class="fu">plotReadTotals</span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
 <span>  duplicated <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  bars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stacked"</span>, <span class="st">"adjacent"</span><span class="op">)</span>,</span>
+<span>  vertBars <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  divBy <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  barCols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"red"</span>, <span class="st">"blue"</span><span class="op">)</span>,</span>
-<span>  expand.x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0.02</span>, <span class="fl">0</span><span class="op">)</span>,</span>
+<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.02</span><span class="op">)</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for FastpDataList</span></span>
+<span><span class="fu">plotReadTotals</span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  usePlotly <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  <span class="va">labels</span>,</span>
+<span>  pattern <span class="op">=</span> <span class="st">".(fast|fq|bam).*"</span>,</span>
+<span>  adjPaired <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  divBy <span class="op">=</span> <span class="fl">1e+06</span>,</span>
+<span>  scaleFill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labMin <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  status <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  labelVJ <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  labelFill <span class="op">=</span> <span class="st">"white"</span>,</span>
+<span>  plotTheme <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  vertBars <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  plotlyLegend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  expand.y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -124,12 +118,19 @@ ggplot. If <code>TRUE</code> plot will be rendered with plotly</p></dd>
 
 <dt>labels</dt>
 <dd><p>An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.</p></dd>
+All filenames must be present in the names.</p></dd>
+
+
+<dt>pattern</dt>
+<dd><p>Regex used to trim the end of filenames</p></dd>
+
+
+<dt>...</dt>
+<dd><p>Used to pass additional attributes to theme()</p></dd>
 
 
 <dt>duplicated</dt>
-<dd><p><code>logical</code>. Include deduplicated read total estimates
+<dd><p>logical(1). Include deduplicated read total estimates
 to plot charts</p></dd>
 
 
@@ -138,17 +139,55 @@ to plot charts</p></dd>
 as "stacked" or "adjacent".</p></dd>
 
 
+<dt>vertBars</dt>
+<dd><p>logical(1) Show bars as vertical or horizontal</p></dd>
+
+
+<dt>divBy</dt>
+<dd><p>Scale read totals by this value. The default shows the y-axis
+in millions for FastpDataList objects, but does not scale FastQC objects,
+for the sake of backwards compatability</p></dd>
+
+
 <dt>barCols</dt>
 <dd><p>Colours for duplicated and unique reads.</p></dd>
 
 
-<dt>expand.x</dt>
-<dd><p>Output from <code><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">ggplot2::expansion</a></code> controlling x-axis
-expansion, or a numeric vector of length 4</p></dd>
+<dt>expand.y</dt>
+<dd><p>Passed to <code><a href="https://ggplot2.tidyverse.org/reference/expansion.html" class="external-link">ggplot2::expansion</a></code> for the axis showing totals</p></dd>
 
 
-<dt>...</dt>
-<dd><p>Used to pass additional attributes to theme()</p></dd>
+<dt>plotlyLegend</dt>
+<dd><p>logical(1) Show legend on interactive plots</p></dd>
+
+
+<dt>adjPaired</dt>
+<dd><p>Scale read totals by 0.5 when paired</p></dd>
+
+
+<dt>scaleFill</dt>
+<dd><p>ScaleDiscrete function to be applied to the plot</p></dd>
+
+
+<dt>labMin</dt>
+<dd><p>Only show labels for filtering categories higher than this
+values as a proportion of reads. Set to any number &gt; 1 to turn off labels</p></dd>
+
+
+<dt>status</dt>
+<dd><p>logical(1) Include read status in the plot</p></dd>
+
+
+<dt>labelVJ</dt>
+<dd><p>Relative vertical position to labels within each bar.</p></dd>
+
+
+<dt>labelFill</dt>
+<dd><p>Passed to <a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_label</a></p></dd>
+
+
+<dt>plotTheme</dt>
+<dd><p><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a> to be added to the plot</p></dd>
 
 </dl></div>
     <div id="value">
@@ -166,6 +205,10 @@ create a plot.</p>
 top of the DeDuplicatedTotals plot, which is known to be inaccurate.
 As it still gives a good guide as to sequence diversity it is included as
 the default. This can be turned off by setting <code>duplicated = FALSE</code>.</p>
+<p>For FastpDataList objects, duplication statistics are not part of the
+default module containing ReadTotals. However, the status of reads and the
+reason for being retained or filtered is, and as such these are shown
+instead of duplication statistics.</p>
     </div>
 
     <div id="ref-examples">
