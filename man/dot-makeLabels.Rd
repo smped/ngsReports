@@ -7,7 +7,7 @@
 .makeLabels(
   x,
   labels,
-  pattern = ".(fastq|fq|bam|sam|cram).*",
+  pattern = ".(fast|fq|bam|sam|cram).*",
   col = "Filename",
   ...
 )

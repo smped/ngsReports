@@ -4,24 +4,25 @@
 \name{plotNContent}
 \alias{plotNContent}
 \alias{plotNContent,ANY-method}
-\alias{plotNContent,character-method}
 \alias{plotNContent,FastqcData-method}
 \alias{plotNContent,FastqcDataList-method}
+\alias{plotNContent,FastpData-method}
+\alias{plotNContent,FastpDataList-method}
 \title{Draw an N Content Plot}
 \usage{
-plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
+plotNContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
-
-\S4method{plotNContent}{character}(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
+\S4method{plotNContent}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
 \S4method{plotNContent}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 5,
   fail = 20,
+  showPwf = TRUE,
   ...,
   lineCol = "red"
 )
@@ -30,9 +31,43 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 5,
   fail = 20,
+  showPwf = TRUE,
+  cluster = FALSE,
+  dendrogram = FALSE,
+  heat_w = 8,
+  scaleFill = NULL,
+  ...
+)
+
+\S4method{plotNContent}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  module = c("Before_filtering", "After_filtering"),
+  moduleBy = c("facet", "colour", "linetype"),
+  reads = c("read1", "read2"),
+  readsBy = c("facet", "colour", "linetype"),
+  scaleColour = NULL,
+  scaleLine = NULL,
+  plotTheme = theme(),
+  plotlyLegend = FALSE,
+  ...
+)
+
+\S4method{plotNContent}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  scaleFill = NULL,
+  plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
@@ -46,8 +81,12 @@ plotNContent(x, usePlotly = FALSE, labels, pwfCols, warn = 5, fail = 20, ...)
 object.}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default}
+All filenames must be present in the names.}
+
+\item{pattern}{Regex used to trim the end of filenames}
+
+\item{...}{Used to pass additional attributes to theme() for FastqcData
+objects and to geom* calls for FastpData-based objects}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
@@ -55,9 +94,9 @@ for PASS/WARN/FAIL}
 \item{warn, fail}{The default values for warn and fail are 5 and 10
 respectively (i.e. percentages)}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
+\item{showPwf}{logical(1) Show the PASS/WARN/FAIL status}
 
-\item{lineCol}{Defaults to red}
+\item{lineCol}{Line colours}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -67,6 +106,19 @@ if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
 \item{heat_w}{Relative width of any heatmap plot components}
+
+\item{scaleFill, scaleColour, scaleLine}{ggplot2 scale objects}
+
+\item{module}{Used for Fastp* structures to show results before or after
+filtering}
+
+\item{moduleBy, readsBy}{How to show each module or set of reads on the plot}
+
+\item{reads}{Show plots for read1, read2 or both.}
+
+\item{plotTheme}{\link[ggplot2]{theme} object}
+
+\item{plotlyLegend}{logical(1) Show legend on interactive plots}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
@@ -86,14 +138,17 @@ Otherwise, users can select line plots or heatmaps.
 }
 \examples{
 
-# Get the files included with the package
-packageDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
-
-# Load the FASTQC data as a FastqcDataList object
-fdl <- FastqcDataList(fl)
-
-# The default plot
-plotNContent(fdl[[1]])
+## Using a Fastp Data object
+fl <- system.file("extdata/fastp.json", package = "ngsReports")
+fp <- FastpData(fl)
+plotNContent(fp)
+plotNContent(
+  fp, pattern = "_001.+",
+  moduleBy = "colour", scaleColour = scale_colour_brewer(palette = "Set1"),
+  plotTheme = theme(
+    legend.position = c(0.99, 0.99), legend.justification = c(1, 1),
+    plot.title = element_text(hjust = 0.5)
+  )
+)
 
 }

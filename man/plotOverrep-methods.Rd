@@ -9,35 +9,61 @@
 \alias{plotOverrep,FastqcDataList-method}
 \title{Plot a summary of Over-represented Sequences}
 \usage{
-plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
+plotOverrep(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  pwfCols,
+  ...
+)
 
-\S4method{plotOverrep}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
+\S4method{plotOverrep}{ANY}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  pwfCols,
+  ...
+)
 
-\S4method{plotOverrep}{character}(x, usePlotly = FALSE, labels, pwfCols, ...)
+\S4method{plotOverrep}{character}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  pwfCols,
+  ...
+)
 
 \S4method{plotOverrep}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   n = 10,
-  ...,
-  expand.x = expansion(mult = c(0, 0.05)),
-  expand.y = expansion(0, 0.6)
+  expand.x = c(0, 0, 0.05, 0),
+  expand.y = c(0, 0.6, 0, 0.6),
+  plotlyLegend = FALSE,
+  ...
 )
 
 \S4method{plotOverrep}{FastqcDataList}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
+  showPwf = TRUE,
   cluster = FALSE,
   dendrogram = FALSE,
-  ...,
+  scaleFill = NULL,
   paletteName = "Set1",
   panel_w = 8,
   expand.x = c(0, 0, 0.05, 0),
-  expand.y = rep(0, 4)
+  expand.y = rep(0, 4),
+  ...
 )
 }
 \arguments{
@@ -47,8 +73,9 @@ plotOverrep(x, usePlotly = FALSE, labels, pwfCols, ...)
 ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named factor of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+All filenames must be present in the names.}
+
+\item{pattern}{Regex to remove from the end of any filenames}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} containing the colours
 for PASS/WARN/FAIL}
@@ -60,6 +87,10 @@ for PASS/WARN/FAIL}
 \item{expand.x, expand.y}{Output from \code{expansion()} or numeric
 vectors of length 4. Passed to \verb{scale_*_continuous()}}
 
+\item{plotlyLegend}{Show legend on interactive plots}
+
+\item{showPwf}{Show PASS/WARN/FAIL status on the plot}
+
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
@@ -67,9 +98,11 @@ fastqc data will be clustered using hierarchical clustering}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
+\item{scaleFill}{ggplot scale object}
+
 \item{paletteName}{Name of the palette for colouring the possible sources
 of the overrepresented sequences. Must be a palette name from
-\code{RColorBrewer}}
+\code{RColorBrewer}. Ignored if specifying the scaleFill separately}
 
 \item{panel_w}{Width of main panel on output}
 }
@@ -101,7 +134,7 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
 
-# Another example which isn't ideal
+# A brief summary across all FastQC reports
 plotOverrep(fdl)
 
 }

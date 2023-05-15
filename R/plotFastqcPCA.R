@@ -21,8 +21,8 @@
 #' @param usePlotly `logical`. Output as ggplot2 (default) or plotly
 #' object.
 #' @param labels An optional named vector of labels for the file names.
-#' All filenames must be present in the names.
-#' File extensions are dropped by default
+#' All file names must be present in the names of the vector.
+#' @param pattern Regex to remove from the end of any filenames
 #' @param sz The size of the text labels
 #' @param pc The two components to be plotted
 #' @param groups Optional factor of the same length as x. If provided,
@@ -57,92 +57,96 @@
 #' @name plotFastqcPCA
 #' @rdname plotFastqcPCA-methods
 #' @export
-setGeneric("plotFastqcPCA", function(
-    x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels, sz = 4,
-    groups, ...
-){
-    standardGeneric("plotFastqcPCA")
-}
-)
-#' @rdname plotFastqcPCA-methods
-#' @export
-setMethod("plotFastqcPCA", signature = "ANY", function(
-    x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels, sz = 4,
-    groups, ...){
-    .errNotImp(x)
-}
-)
-#' @rdname plotFastqcPCA-methods
-#' @export
-setMethod("plotFastqcPCA", signature = "character", function(
-    x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels, sz = 4,
-    groups, ...){
-    x <- FastqcDataList(x)
-    if (length(x) == 1) x <- FastqcData(x[[1]]) # This will raise an error
-    plotFastqcPCA(x, module, usePlotly, labels, sz, groups, ... )
-}
-)
-#' @rdname plotFastqcPCA-methods
-#' @export
-setMethod("plotFastqcPCA", signature = "FastqcDataList", function(
-    x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels, sz = 4,
-    groups, pc = 1:2, ...
-){
-
-    availMods <- c(
-        "Per_base_sequence_quality", "Per_sequence_quality_scores",
-        "Per_sequence_GC_content", "Per_base_sequence_content",
-        "Sequence_Length_Distribution"
-    )
-    module <- match.arg(module, availMods)
-    ## Ensure two components are selected as integers
-    pc <- as.integer(pc)
-    stopifnot(length(unique(pc)) > 1)
-    stopifnot(!any(is.na(pc)))
-    pc <- paste0("PC", unique(pc)[seq_len(2)])
-
-    ## Get any theme arguments for dotArgs that have been set manually
-    dotArgs <- list(...)
-    allowed <- names(formals(theme))
-    keepArgs <- which(names(dotArgs) %in% allowed)
-    userTheme <- c()
-    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
-    ## Define the data preparation function
-    pFun <- paste0(".generate", module, "PCA")
-    args <- list(x = x)
-    mat <- do.call(pFun, args)
-
-    ## The PCA
-    pca <- prcomp(mat, center = TRUE, scale. = TRUE)
-    vars <- summary(pca)$importance["Proportion of Variance", pc]
-    df <- as.data.frame(pca$x[, pc])
-    df <- rownames_to_column(df, "Filename")
-
-    ## Check any groups
-    plot_aes <- aes(!!sym(pc[[1]]), !!sym(pc[[2]]))
-    showGroups <- !missing(groups)
-    if (showGroups) {
-        stopifnot(length(groups) == length(x))
-        stopifnot(is.factor(groups))
-        df$group <- groups
-        plot_aes <- aes(!!sym(pc[[1]]), !!sym(pc[[2]]), colour = group)
+setGeneric(
+    "plotFastqcPCA",
+    function(
+        x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels,
+        pattern = ".(fast|fq|bam).*", sz = 4, groups, ...
+    ){
+        standardGeneric("plotFastqcPCA")
     }
-    df$Label <- .makeLabels(df, labels, ...)
+)
+#' @rdname plotFastqcPCA-methods
+#' @export
+setMethod(
+    "plotFastqcPCA", signature = "ANY",
+    function(
+        x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels,
+        pattern = ".(fast|fq|bam).*", sz = 4, groups, ...
+    ){
+        .errNotImp(x)
+    }
+)
+#' @rdname plotFastqcPCA-methods
+#' @export
+setMethod(
+    "plotFastqcPCA", signature = "character",
+    function(
+        x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels,
+        pattern = ".(fast|fq|bam).*", sz = 4, groups, ...
+    ){
+        x <- FastqcDataList(x)
+        if (length(x) == 1) x <- FastqcData(x[[1]]) # This will raise an error
+        plotFastqcPCA(x, module, usePlotly, labels, pattern, sz, groups, ... )
+    }
+)
+#' @rdname plotFastqcPCA-methods
+#' @export
+setMethod(
+    "plotFastqcPCA", signature = "FastqcDataList",
+    function(
+        x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels,
+        pattern = ".(fast|fq|bam).*", sz = 4, groups, pc = 1:2, ...
+    ){
 
-    p <- ggplot(data = df, mapping = plot_aes) +
-        geom_text(aes(label = Label), show.legend = FALSE, size = sz) +
-        theme_bw() +
-        labs(
-            x = paste0(pc[[1]], " (", percent(vars[[1]]), ")"),
-            y = paste0(pc[[2]], " (", percent(vars[[2]]), ")"),
-            colour = "Group"
+        availMods <- c(
+            "Per_base_sequence_quality", "Per_sequence_quality_scores",
+            "Per_sequence_GC_content", "Per_base_sequence_content",
+            "Sequence_Length_Distribution"
         )
-    if (showGroups) p <- p + stat_ellipse()
-    if (!is.null(userTheme)) p <- p + userTheme
-    if (usePlotly) p <- plotly::ggplotly(p)
-    p
-}
+        module <- match.arg(module, availMods)
+        ## Ensure two components are selected as integers
+        pc <- as.integer(pc)
+        stopifnot(length(unique(pc)) > 1)
+        stopifnot(!any(is.na(pc)))
+        pc <- paste0("PC", unique(pc)[seq_len(2)])
+
+
+        ## Define the data preparation function
+        pFun <- paste0(".generate", module, "PCA")
+        args <- list(x = x)
+        mat <- do.call(pFun, args)
+
+        ## The PCA
+        pca <- prcomp(mat, center = TRUE, scale. = TRUE)
+        vars <- summary(pca)$importance["Proportion of Variance", pc]
+        df <- as.data.frame(pca$x[, pc])
+        df <- rownames_to_column(df, "Filename")
+
+        ## Check any groups
+        plot_aes <- aes(!!sym(pc[[1]]), !!sym(pc[[2]]))
+        showGroups <- !missing(groups)
+        if (showGroups) {
+            stopifnot(length(groups) == length(x))
+            stopifnot(is.factor(groups))
+            df$group <- groups
+            plot_aes <- aes(!!sym(pc[[1]]), !!sym(pc[[2]]), colour = group)
+        }
+        df$Label <- .makeLabels(df, labels, pattern)
+
+        p <- ggplot(data = df, mapping = plot_aes) +
+            geom_text(aes(label = Label), show.legend = FALSE, size = sz) +
+            theme_bw() +
+            labs(
+                x = paste0(pc[[1]], " (", percent(vars[[1]]), ")"),
+                y = paste0(pc[[2]], " (", percent(vars[[2]]), ")"),
+                colour = "Group"
+            )
+        p <- .updateThemeFromDots(p, ...length())
+        if (showGroups) p <- p + stat_ellipse()
+        if (usePlotly) p <- plotly::ggplotly(p)
+        p
+    }
 
 )
 

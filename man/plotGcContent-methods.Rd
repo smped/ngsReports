@@ -4,62 +4,33 @@
 \name{plotGcContent}
 \alias{plotGcContent}
 \alias{plotGcContent,ANY-method}
-\alias{plotGcContent,character-method}
 \alias{plotGcContent,FastqcData-method}
 \alias{plotGcContent,FastqcDataList-method}
+\alias{plotGcContent,FastpData-method}
+\alias{plotGcContent,FastpDataList-method}
 \title{Plot the Per Sequence GC Content}
 \usage{
-plotGcContent(
-  x,
-  usePlotly = FALSE,
-  labels,
-  theoreticalGC = TRUE,
-  gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens",
-  GCobject,
-  Fastafile,
-  n = 1e+06,
-  ...
-)
+plotGcContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotGcContent}{ANY}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  theoreticalGC = TRUE,
-  gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens",
-  GCobject,
-  Fastafile,
-  n = 1e+06,
-  ...
-)
-
-\S4method{plotGcContent}{character}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  theoreticalGC = TRUE,
-  gcType = c("Genome", "Transcriptome"),
-  species = "Hsapiens",
-  GCobject,
-  Fastafile,
-  n = 1e+06,
-  ...
-)
+\S4method{plotGcContent}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
 \S4method{plotGcContent}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   theoreticalGC = TRUE,
   gcType = c("Genome", "Transcriptome"),
   species = "Hsapiens",
   GCobject,
+  plotlyLegend = FALSE,
   Fastafile,
   n = 1e+06,
   counts = FALSE,
-  lineCols = c("red", "blue"),
+  scaleColour = NULL,
+  lineCols = c("red3", "black"),
+  linetype = 1,
+  linewidth = 0.5,
   ...
 )
 
@@ -67,6 +38,7 @@ plotGcContent(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   theoreticalGC = TRUE,
   gcType = c("Genome", "Transcriptome"),
   species = "Hsapiens",
@@ -74,10 +46,53 @@ plotGcContent(
   Fastafile,
   n = 1e+06,
   plotType = c("heatmap", "line", "cdf"),
-  pwfCols,
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
+  pwfCols,
+  showPwf = TRUE,
+  scaleFill = NULL,
+  scaleColour = NULL,
+  plotlyLegend = FALSE,
+  lineCols = RColorBrewer::brewer.pal(12, "Paired"),
+  linetype = 1,
+  linewidth = 0.5,
+  ...
+)
+
+\S4method{plotGcContent}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  plotType = "bar",
+  scaleFill = NULL,
+  plotlyLegend = FALSE,
+  plotTheme = theme(),
+  ...
+)
+
+\S4method{plotGcContent}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  theoreticalGC = TRUE,
+  gcType = c("Genome", "Transcriptome"),
+  species = "Hsapiens",
+  GCobject,
+  Fastafile,
+  n = 1e+06,
+  plotType = "bar",
+  scaleFill = NULL,
+  plotTheme = theme(),
+  plotlyLegend = FALSE,
   ...
 )
 }
@@ -88,14 +103,18 @@ vector of file paths}
 \item{usePlotly}{\code{logical} Default \code{FALSE} will render using
 ggplot. If \code{TRUE} plot will be rendered with plotly}
 
-\item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+\item{labels}{An optional named vector of labels for the file names.}
+
+\item{pattern}{Pattern to remove from the end of filenames}
+
+\item{...}{Used to pass various potting parameters to themes and geoms.}
 
 \item{theoreticalGC}{\code{logical} default is \code{FALSE} to give the true
 GC content, set to \code{TRUE} to normalize values of GC_Content by the
 theoretical values using \code{\link[=gcTheoretical]{gcTheoretical()}}. \code{species} must be
-specified.}
+specified. For Fastqc* objects, the entire distributions will be used,
+wheras for the Fastp* objects, only the expected mean value is shown as a
+horizontal line}
 
 \item{gcType}{\code{character} Select type of data to normalize GC
 content against. Accepts either "Genome" (default) or "Transcriptome".}
@@ -107,24 +126,24 @@ accompanied by a species. Species currently supported can be obtained using
 \item{GCobject}{an object of class GCTheoretical.
 Defaults to the gcTheoretical object supplied with the package}
 
+\item{plotlyLegend}{logical(1) Show legend on interactive line plots}
+
 \item{Fastafile}{a fasta file contains DNA sequences to generate theoretical
 GC content}
 
 \item{n}{number of simulated reads to generate theoretical GC content from
 \code{Fastafile}}
 
-\item{...}{Used to pass various potting parameters to theme.}
-
 \item{counts}{\code{logical}. Plot the counts from each file if
 \code{counts = TRUE}, otherwise frequencies will be plotted.
 Ignored if calling the function on a FastqcDataList.}
 
-\item{lineCols}{Colors for observed and theoretical GC lines in single plots}
+\item{scaleColour}{ggplot2 scale for line colours}
+
+\item{lineCols, linetype, linewidth}{Line colour type and width for observed
+and theoretical GC lines}
 
 \item{plotType}{Takes values "line", "heatmap" or "cdf"}
-
-\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
-pass, warning, and fail values in plot}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
@@ -134,6 +153,15 @@ if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram  will be displayed.}
 
 \item{heat_w}{Relative width of any heatmap plot components}
+
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
+pass, warning, and fail values in plot}
+
+\item{showPwf}{logical(1) Show Pwf Status on the plot}
+
+\item{scaleFill}{ggplot2 scale for filling heatmap cells or bars}
+
+\item{plotTheme}{\link[ggplot2]{theme} object}
 }
 \value{
 A ggplot2 or plotly object

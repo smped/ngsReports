@@ -22,13 +22,17 @@
 #' vector of file paths
 #' @param usePlotly `logical` Default `FALSE` will render using
 #' ggplot. If `TRUE` plot will be rendered with plotly
+#' @param labels An optional named vector of labels for the file names.
+#' @param pattern Pattern to remove from the end of filenames
 #' @param counts `logical`. Plot the counts from each file if
 #' `counts = TRUE`, otherwise frequencies will be plotted.
 #' Ignored if calling the function on a FastqcDataList.
 #' @param theoreticalGC `logical` default is `FALSE` to give the true
 #' GC content, set to `TRUE` to normalize values of GC_Content by the
 #' theoretical values using [gcTheoretical()]. `species` must be
-#' specified.
+#' specified. For Fastqc* objects, the entire distributions will be used,
+#' wheras for the Fastp* objects, only the expected mean value is shown as a
+#' horizontal line
 #' @param gcType `character` Select type of data to normalize GC
 #' content against. Accepts either "Genome" (default) or "Transcriptome".
 #' @param GCobject an object of class GCTheoretical.
@@ -40,20 +44,23 @@
 #' @param species `character` if `gcTheory` is `TRUE` it must be
 #' accompanied by a species. Species currently supported can be obtained using
 #' `mData(gcTheoretical)`
-#' @param labels An optional named vector of labels for the file names.
-#' All filenames must be present in the names.
-#' File extensions are dropped by default.
 #' @param plotType Takes values "line", "heatmap" or "cdf"
 #' @param pwfCols Object of class [PwfCols()] to give colours for
 #' pass, warning, and fail values in plot
+#' @param showPwf logical(1) Show Pwf Status on the plot
 #' @param cluster `logical` default `FALSE`. If set to `TRUE`,
 #' fastqc data will be clustered using hierarchical clustering
 #' @param dendrogram `logical` redundant if `cluster` is `FALSE`
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram  will be displayed.
-#' @param lineCols Colors for observed and theoretical GC lines in single plots
 #' @param heat_w Relative width of any heatmap plot components
-#' @param ... Used to pass various potting parameters to theme.
+#' @param plotlyLegend logical(1) Show legend on interactive line plots
+#' @param scaleFill ggplot2 scale for filling heatmap cells or bars
+#' @param scaleColour ggplot2 scale for line colours
+#' @param plotTheme \link[ggplot2]{theme} object
+#' @param lineCols,linetype,linewidth Line colour type and width for observed
+#' and theoretical GC lines
+#' @param ... Used to pass various potting parameters to themes and geoms.
 #'
 #' @return A ggplot2 or plotly object
 #'
@@ -82,50 +89,37 @@
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
 #' @export
-setGeneric("plotGcContent", function(
-    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
-    GCobject, Fastafile, n = 1e+6, ...){
-  standardGeneric("plotGcContent")
-}
+setGeneric(
+  "plotGcContent",
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+    standardGeneric("plotGcContent")
+  }
 )
 #' @rdname plotGcContent-methods
 #' @export
 setMethod("plotGcContent", signature = "ANY", function(
-    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
-    GCobject, Fastafile, n = 1e+6, ...){
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",  ...){
   .errNotImp(x)
 }
 )
 #' @rdname plotGcContent-methods
 #' @export
-setMethod("plotGcContent", signature = "character", function(
-    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
-    GCobject, Fastafile, n = 1e+6, ...){
-  x <- FastqcDataList(x)
-  if (length(x) == 1) x <- x[[1]]
-  plotGcContent(
-    x, usePlotly, labels, theoreticalGC, gcType, species,
-    GCobject, Fastafile, n, ...
-  )
-}
-)
-#' @rdname plotGcContent-methods
-#' @export
-setMethod("plotGcContent", signature = "FastqcData", function(
-    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
-    GCobject, Fastafile, n = 1e+6, counts = FALSE, lineCols = c("red", "blue"),
-    ...){
+setMethod(
+  "plotGcContent", signature = "FastqcData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
+    theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
+    species = "Hsapiens", GCobject, plotlyLegend = FALSE,
+    Fastafile, n = 1e6, counts = FALSE, scaleColour = NULL,
+    lineCols = c("red3", "black"), linetype = 1, linewidth = 0.5, ...
+  ){
 
   df <- getModule(x, "Per_sequence_GC_content")
 
   if (!length(df)) {
-    gcPlot <- .emptyPlot("No Duplication Levels Module Detected")
-    if (usePlotly) gcPlot <- ggplotly(gcPlot, tooltip = "")
-    return(gcPlot)
+    p <- .emptyPlot("No GC Content Data Detected")
+    if (usePlotly) p <- ggplotly(p, tooltip = "")
+    return(p)
   }
 
   df$Type <- "GC count per read"
@@ -134,16 +128,9 @@ setMethod("plotGcContent", signature = "FastqcData", function(
   yLab <- c("Frequency", "Count")[counts + 1]
 
   ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
+  labels <- .makeLabels(x, labels, pattern)
   labels <- labels[names(labels) %in% df$Filename]
   df$Filename <- labels[df$Filename]
-
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   ## Tidy up the GC content variables
   if (missing(GCobject)) GCobject <- ngsReports::gcTheoretical
@@ -187,10 +174,10 @@ setMethod("plotGcContent", signature = "FastqcData", function(
     df$Type <- as.factor(df$Type)
     df$Freq <- round(df$Freq, 4)
 
-    gcPlot <- ggplot(
+    p <- ggplot(
       df, aes(!!sym(vals[[1]]), !!sym(vals[[2]]), colour = !!sym(vals[[3]]))
     ) +
-      geom_line()
+      geom_line(linetype = linetype, linewidth = linewidth)
   }
   else{
 
@@ -202,14 +189,22 @@ setMethod("plotGcContent", signature = "FastqcData", function(
       df <- dplyr::bind_rows(df, gcTheoryDF)
     }
     ## Initialise the plot using counts
-    gcPlot <- ggplot(
+    p <- ggplot(
       df, aes(!!sym(vals[[1]]), !!sym(vals[[2]]), colour = !!sym(vals[[3]]))
     ) +
-      geom_line()
+      geom_line(linetype = linetype, linewidth = linewidth)
   }
 
-  gcPlot <- gcPlot +
-    scale_colour_manual(values = lineCols) +
+  if (is.null(scaleColour)) {
+    if (is.null(lineCols)) lineCols <- c("red3", "black")
+    lineCols <- rep_len(lineCols, 2)
+    scaleColour <- scale_colour_manual(values = lineCols)
+  }
+  stopifnot(is(scaleColour, "ScaleDiscrete"))
+  stopifnot(scaleColour$aesthetics == "colour")
+
+  p <- p +
+    scaleColour +
     scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
     labs(x = xLab, y = yLab, colour = c()) +
     ggtitle(label = labels, subtitle = subTitle) +
@@ -221,55 +216,53 @@ setMethod("plotGcContent", signature = "FastqcData", function(
       plot.title = element_text(hjust = 0.5),
       plot.subtitle = element_text(hjust = 0.5)
     )
-  if (!is.null(userTheme)) gcPlot <- gcPlot + userTheme
+  p <- .updateThemeFromDots(p, ...)
 
   if (usePlotly) {
     value <- c("Freq", "Count")[counts + 1]
     ttip <- c("GC_Content", value, "Type")
-    gcPlot <- gcPlot + ggtitle(label = labels, subtitle = c())
-    gcPlot <- suppressWarnings(
-      suppressMessages(plotly::ggplotly(gcPlot, tooltip = ttip)
+    p <- p + ggtitle(label = labels, subtitle = c())
+    if (!plotlyLegend) p <- p + theme(legend.position = "none")
+    p <- suppressWarnings(
+      suppressMessages(plotly::ggplotly(p, tooltip = ttip)
       )
     )
-    gcPlot <- plotly::layout(gcPlot, legend = list(x = 0.622, y = 1))
-    gcPlot <- suppressMessages(
-      plotly::subplot(
-        plotly::plotly_empty(),
-        gcPlot,
-        widths = c(0.14,0.86)
-      )
-    )
-    gcPlot <- plotly::layout(
-      gcPlot,
-      xaxis2 = list(title = xLab),
-      yaxis2 = list(title = yLab)
+    p <- plotly::layout(
+      p, xaxis1 = list(title = xLab), yaxis1 = list(title = yLab)
     )
 
   }
 
   ## Draw the plot
-  gcPlot
+  p
 }
 )
 #' @rdname plotGcContent-methods
 #' @export
-setMethod("plotGcContent", signature = "FastqcDataList", function(
-    x, usePlotly = FALSE, labels, theoreticalGC = TRUE,
-    gcType = c("Genome", "Transcriptome"), species = "Hsapiens",
-    GCobject, Fastafile, n=1e+6, plotType = c("heatmap", "line", "cdf"),
-    pwfCols, cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...){
+setMethod(
+  "plotGcContent", signature = "FastqcDataList",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
+    theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
+    species = "Hsapiens",  GCobject, Fastafile, n=1e6,
+    plotType = c("heatmap", "line", "cdf"),
+    cluster = FALSE, dendrogram = FALSE, heat_w = 8,
+    pwfCols, showPwf = TRUE, scaleFill = NULL, scaleColour = NULL,
+    plotlyLegend = FALSE, lineCols = RColorBrewer::brewer.pal(12, "Paired"),
+    linetype = 1, linewidth = 0.5, ...
+  ){
 
   mod <- "Per_sequence_GC_content"
   df <- getModule(x, mod)
 
   if (!length(df)) {
-    gcPlot <- .emptyPlot("No Duplication Levels Module Detected")
-    if (usePlotly) gcPlot <- ggplotly(gcPlot, tooltip = "")
-    return(gcPlot)
+    p <- .emptyPlot("No GC Content Levels Data Detected")
+    if (usePlotly) p <- ggplotly(p, tooltip = "")
+    return(p)
   }
 
   ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, ...)
+  labels <- .makeLabels(x, labels, pattern)
   labels <- labels[names(labels) %in% df$Filename]
 
   ## Always use frequencies not counts
@@ -279,16 +272,6 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
   })
   df <- dplyr::bind_rows(df)
   df <- df[c("Filename", "GC_Content", "Percent")]
-
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  if ("size" %in% names(dotArgs)) lineWidth <- dotArgs$size
-  else lineWidth <- c(line = 0.5, heatmap = 0.2)[plotType]
-
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
 
   ## Initialise objects then fill if required
   gcTheoryDF <- c()
@@ -324,15 +307,22 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
   plotType <- match.arg(plotType)
   xLab <- "GC Content (%)"
 
-  if (plotType %in% c("cdf", "line")){
+  if (plotType %in% c("cdf", "line")) {
 
     ## Setup a palette with black as the first colour.
     ## Use the paired palette for easier visualisation of paired data
-    ## Onlt used for plotType = "line" or plotType = "cdf
+    ## Only used for plotType = "line" or plotType = "cdf
     n <- length(x)
-    lineCols <- RColorBrewer::brewer.pal(min(12, n), "Paired")
-    lineCols <- colorRampPalette(lineCols)(n)
-    lineCols <- c("#000000", lineCols)
+    if (is.null(scaleColour)) {
+      if (is.null(lineCols)) lineCols <- RColorBrewer::brewer.pal(12, "Paired")
+      ## For backward compatability
+      if (length(lineCols) > n) lineCols <- lineCols[seq_len(n)]
+      lineCols <- colorRampPalette(lineCols)(n)
+      lineCols <- c("#000000", lineCols)
+      scaleColour <- scale_colour_manual(values = lineCols)
+    }
+    stopifnot(is(scaleColour, "ScaleDiscrete"))
+    stopifnot(scaleColour$aethetics == "colour")
 
     ## Select axis labels and plotting values
     ylab <- c(cdf = "Cumulative (%)", line = "Reads (%)")[plotType]
@@ -343,7 +333,7 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     df$Filename <- factor(df$Filename, levels = unique(df$Filename))
 
     ## Calculate the CDF then rejoin if required
-    if (plotType == "cdf"){
+    if (plotType == "cdf") {
       df <- lapply(
         split(df, f = df$Filename),
         function(y){
@@ -357,13 +347,13 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     ## Round down to 2 decimal places for playing more nicely with plotly
     df[["Percent"]] <- round(df[["Percent"]], 2)
 
-    gcPlot <- ggplot(
+    p <- ggplot(
       df, aes(!!sym("GC_Content"), Percent, colour = Filename)
     ) +
-      geom_line() +
+      geom_line(linetype = linetype, linewidth = linewidth) +
       scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
       scale_y_continuous(labels = .addPercent) +
-      scale_colour_manual(values = lineCols) +
+      scaleColour +
       labs(x = xLab, y = ylab, colour = c()) +
       ggtitle(label = c(), subtitle = subTitle) +
       theme_bw() +
@@ -371,20 +361,15 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5)
       )
-
-    if (!is.null(userTheme)) gcPlot <- gcPlot + userTheme
+    p <- .updateThemeFromDots(p, ...)
 
     if (usePlotly) {
 
-      gcPlot <- gcPlot +
-        labs(colour = "Filename") +
-        theme(legend.position = "none") +
-        ggtitle(NULL)
-      gcPlot <- suppressWarnings(
+      p <- p + labs(colour = "Filename") + ggtitle(NULL)
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
+      p <- suppressWarnings(
         suppressMessages(
-          plotly::ggplotly(
-            gcPlot,
-            tooltip = c("x", "y", "colour")
+          plotly::ggplotly(p, tooltip = c("x", "y", "colour")
           )
         )
       )
@@ -417,27 +402,34 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
     if (!dendrogram) dx$segments <- dx$segments[0,]
 
+    if (is.null(scaleFill)) {
+      scaleFill <- scale_fill_gradient2(
+        low = "#932667FF", #viridisLite::inferno(1, begin = 0.4),
+        high = "#F6D645FF", #inferno(1, begin = 0.9),
+        midpoint = 0,
+        mid = "#000004FF", #inferno(1, begin = 0)
+      )
+    }
+    stopifnot(is(scaleFill, "ScaleContinuous"))
+    stopifnot(scaleFill$aesthetics == "fill")
+
     ## Draw the heatmap
     hj <- 0.5 * heat_w / (heat_w + 1)
-    gcPlot <- ggplot(df, aes(!!sym("GC_Content"), Filename, fill = Percent)) +
+    p <- ggplot(df, aes(!!sym("GC_Content"), Filename, fill = Percent)) +
       geom_tile() +
       ggtitle(ttl) +
       labs(x = xLab, fill = fillLab, y = c()) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_discrete(expand = c(0, 0), position = "right") +
-      scale_fill_gradient2(
-        low = "#932667FF", #viridisLite::inferno(1, begin = 0.4),
-        high = "#F6D645FF", #inferno(1, begin = 0.9),
-        midpoint = 0,
-        mid = "#000004FF", #inferno(1, begin = 0)
-      ) +
+      scaleFill +
       theme(
         panel.grid.minor = element_blank(), panel.background = element_blank(),
         plot.title = element_text(hjust = hj),
         axis.title.x = element_text(hjust = hj),
-        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
       )
-    if (!is.null(userTheme)) gcPlot <- gcPlot + userTheme
+    if (showPwf | dendrogram)
+      p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
+    p <- .updateThemeFromDots(p, ...)
 
     ## Get the PWF status
     status <- getSummary(x)
@@ -450,11 +442,190 @@ setMethod("plotGcContent", signature = "FastqcDataList", function(
     )
 
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
-    gcPlot <-
-      .prepHeatmap(gcPlot, status, dx$segments, usePlotly, heat_w, pwfCols)
+    if (!showPwf) status <- status[0, ]
+    p <- .prepHeatmap(p, status, dx$segments, usePlotly, heat_w, pwfCols)
 
   }
 
-  gcPlot
+  p
 }
+)
+#' @importFrom dplyr bind_rows
+#' @importFrom scales percent
+#' @rdname plotGcContent-methods
+#' @export
+setMethod(
+  "plotGcContent", signature = "FastpData",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
+    theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
+    species = "Hsapiens", GCobject, Fastafile, n = 1e6, plotType = "bar",
+    scaleFill = NULL, plotlyLegend = FALSE, plotTheme = theme(), ...
+  ){
+
+    plotType <- match.arg(plotType)
+    mod <- "Summary"
+    steps <-  c("Before_filtering", "After_filtering")
+    data <- getModule(x, mod)
+    data <- data[names(data) %in% steps]
+    df <- bind_rows(data, .id = "Step")
+    cols <- c("Step", "Filename", "gc_content")
+    df <- df[names(df) %in% cols]
+    df$Step <- factor(df$Step, levels = steps)
+
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(df, labels, pattern = pattern,...)
+    labels <- labels[names(labels) %in% df$Filename]
+    df$Filename <- factor(labels[df$Filename], levels = labels)
+
+    ## Get the theoretical mean GC
+    exp_mean <- mean(df$gc_content)
+    if (theoreticalGC) {
+      if (!missing(Fastafile)) {
+        rdLen <- data[[1]]$read1_mean_length
+        gc_df <- estGcDistn(Fastafile, n, rdLen)
+        gc_df$GC_Content
+        species <- "Freq"
+      }
+      else{
+        if (missing(GCobject)) GCobject <- ngsReports::gcTheoretical
+        gcType <- stringr::str_to_title(gcType)
+        gcType <- match.arg(gcType)
+        avail <- gcAvail(GCobject, gcType)
+        species <- match.arg(species, avail$Name)
+        gc_df <- getGC(GCobject, species, gcType)
+      }
+      gc_df$p <- cumsum(gc_df[[species]])
+      gc_df$d <- abs(gc_df$p - 0.5)
+      gc_df <- gc_df[which(rank(gc_df$d) <= 2),]
+      exp_mean <- weighted.mean(gc_df$GC_Content / 100, 1 / gc_df$d)
+    }
+
+    if (is.null(scaleFill)) {
+      cols <- c("navyblue", "red3")
+      cols <- rep_len(cols, length(steps))
+      names(cols) <- steps
+      scaleFill <- scale_fill_manual(values = cols)
+    }
+    stopifnot(is(scaleFill, "ScaleDiscrete"))
+    stopifnot(scaleFill$aesthetics == "fill")
+    stopifnot(is(plotTheme, "theme"))
+
+    df[["% GC"]] <- percent(df$gc_content, 0.1)
+    p <- NULL
+    if (plotType == "bar") {
+
+      p <- ggplot(
+        df,
+        aes(
+          !!sym("Step"), !!sym("gc_content"), fill = !!sym("Step"),
+          main = Filename, label = !!sym("% GC")
+        )
+      ) +
+        geom_col() +
+        geom_hline(yintercept = exp_mean, ...) +
+        scaleFill +
+        scale_y_continuous(labels = percent, expand = expansion(c(0, 0.05))) +
+        labs(y = "% GC") +
+        ggtitle(unique(df$Filename)) +
+        theme_bw() +
+        plotTheme
+
+      if (usePlotly) {
+        if (!plotlyLegend) p <- p + theme(legend.position = "none")
+        hv <- c("x", "main", "label")
+        p <- plotly::ggplotly(p, tooltip = hv)
+      }
+    }
+    p
+  }
+)
+#' @importFrom dplyr bind_rows
+#' @importFrom scales percent
+#' @rdname plotGcContent-methods
+#' @export
+setMethod(
+  "plotGcContent", signature = "FastpDataList",
+  function(
+    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
+    theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
+    species = "Hsapiens", GCobject, Fastafile, n=1e6, plotType = "bar",
+    scaleFill = NULL, plotTheme = theme(), plotlyLegend = FALSE, ...
+  ){
+
+    plotType <- match.arg(plotType)
+    mod <- "Summary"
+    steps <-  c("Before_filtering", "After_filtering")
+    data <- getModule(x, mod)
+    data <- data[names(data) %in% steps]
+    df <- bind_rows(data, .id = "Step")
+    cols <- c("Step", "Filename", "gc_content")
+    df <- df[names(df) %in% cols]
+    df$Step <- factor(df$Step, levels = steps)
+
+    ## Drop the suffix, or check the alternate labels
+    labels <- .makeLabels(df, labels, pattern = pattern)
+    labels <- labels[names(labels) %in% df$Filename]
+    df$Filename <- factor(labels[df$Filename], levels = labels)
+
+    ## Get the theoretical mean GC
+    exp_mean <- mean(df$gc_content)
+    if (theoreticalGC) {
+      if (!missing(Fastafile)) {
+        rdLen <- data[[1]]$read1_mean_length
+        gc_df <- estGcDistn(Fastafile, n, rdLen)
+        gc_df$GC_Content
+        species <- "Freq"
+      }
+      else{
+        if (missing(GCobject)) GCobject <- ngsReports::gcTheoretical
+        gcType <- stringr::str_to_title(gcType)
+        gcType <- match.arg(gcType)
+        avail <- gcAvail(GCobject, gcType)
+        species <- match.arg(species, avail$Name)
+        gc_df <- getGC(GCobject, species, gcType)
+      }
+      gc_df$p <- cumsum(gc_df[[species]])
+      gc_df$d <- abs(gc_df$p - 0.5)
+      gc_df <- gc_df[which(rank(gc_df$d) <= 2),]
+      exp_mean <- weighted.mean(gc_df$GC_Content / 100, 1 / gc_df$d)
+    }
+
+    if (plotType == "bar") {
+
+      ## Add columns for nicer plotting with plotly
+      df[["% GC"]] <- percent(df$gc_content, 0.01)
+      if (is.null(scaleFill)) {
+        fillCol = c("navyblue", "red3")
+        fillCol <- rep_len(fillCol, length(steps))
+        names(fillCol) <- steps
+        scaleFill <- scale_fill_manual(values = fillCol)
+      }
+      stopifnot(is(scaleFill, "ScaleDiscrete"))
+      stopifnot(scaleFill$aesthetics == "fill")
+      stopifnot(is(plotTheme, "theme"))
+
+      p <- ggplot(
+        df,
+        aes(
+          Filename, !!sym("gc_content"), fill = !!sym("Step"),
+          rate = !!sym("% GC")
+        )
+      ) +
+        geom_col(position = "dodge") +
+        geom_hline(yintercept = exp_mean, ...) +
+        scale_y_continuous(expand = expansion(c(0, 0.05)), labels = percent) +
+        scaleFill +
+        labs(y = "GC Content (%)") +
+        theme_bw() +
+        plotTheme
+    }
+
+    if (usePlotly) {
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
+      hv <- c("Filename", "% GC", "Step")
+      p <- plotly::ggplotly(p, tooltip = hv)
+    }
+    p
+  }
 )

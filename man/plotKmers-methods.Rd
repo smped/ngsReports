@@ -4,36 +4,55 @@
 \name{plotKmers}
 \alias{plotKmers}
 \alias{plotKmers,ANY-method}
-\alias{plotKmers,character-method}
 \alias{plotKmers,FastqcData-method}
 \alias{plotKmers,FastqcDataList-method}
+\alias{plotKmers,FastpData-method}
 \title{Plot Overrepresented Kmers}
 \usage{
-plotKmers(x, usePlotly = FALSE, labels, ...)
+plotKmers(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotKmers}{ANY}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotKmers}{character}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotKmers}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
 \S4method{plotKmers}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   n = 6,
-  ...,
   linewidth = 0.5,
-  pal = c("red", "blue", "green", "black", "magenta", "yellow")
+  plotlyLegend = FALSE,
+  scaleColour = NULL,
+  pal = c("red", "blue", "green", "black", "magenta", "yellow"),
+  ...
 )
 
 \S4method{plotKmers}{FastqcDataList}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   cluster = FALSE,
   dendrogram = FALSE,
   pwfCols,
+  showPwf = TRUE,
+  scaleFill = NULL,
   heatCol = hcl.colors(50, "inferno"),
   heat_w = 8,
+  ...
+)
+
+\S4method{plotKmers}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  readsBy = c("facet", "mean", "diff"),
+  trans = "log2",
+  scaleFill = NULL,
+  plotTheme = theme(),
+  plotlyLegend = FALSE,
   ...
 )
 }
@@ -44,15 +63,18 @@ plotKmers(x, usePlotly = FALSE, labels, ...)
 ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+All filenames must be present in the names.}
 
-\item{...}{Used to pass various potting parameters to theme.
-Can also be used to set size and colour for box outlines.}
+\item{pattern}{regex to drop from the end of filenames}
+
+\item{...}{Used to pass parameters to theme for FastqcData objects and to
+geoms for FastpData objects}
 
 \item{n}{\code{numeric}. The number of Kmers to show.}
 
 \item{linewidth}{Passed to \code{geom_line()}}
+
+\item{plotlyLegend}{Show legend for interactive plots}
 
 \item{pal}{The colour palette. If the vector supplied is less than n,
 \code{grDevices::colorRampPalette()} will be used}
@@ -67,10 +89,27 @@ then the dendrogram will be displayed.}
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail values in the plot}
 
+\item{showPwf}{Show the PASS/WARN/FAIL status}
+
+\item{scaleFill, scaleColour}{ggplot2 scales to be used for colour palettes}
+
 \item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno}
 from the viridis set of palettes}
 
 \item{heat_w}{Relative width of any heatmap plot components}
+
+\item{module}{The module to obtain data from when using a FastpData object}
+
+\item{reads}{Either read1 or read2. Only used when using a FastpData object}
+
+\item{readsBy}{Strategy for visualising both read1 and read2. Can be set to
+show each set of reads by facet, or within the same plot taking the mean of
+the enrichment above mean, or the difference in the enrichment above mean}
+
+\item{trans}{Function for transforming the count/mean ratio. Set as NULL
+to use the ratio without transformation}
+
+\item{plotTheme}{\link[ggplot2]{theme} object}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object
@@ -96,5 +135,14 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
 plotKmers(fdl[[1]])
+
+# Use a FastpData object
+fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+fp <- FastpData(fl)
+plotKmers(fp, size = 2)
+plotKmers(
+  fp, reads = "read1", size = 2, trans = NULL,
+  scaleFill = scale_fill_gradient(low = "white", high = "black")
+)
 
 }

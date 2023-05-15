@@ -162,7 +162,7 @@
 #'
 #' @keywords internal
 .makeLabels <- function(
-    x, labels, pattern = ".(fastq|fq|bam|sam|cram).*", col = "Filename", ...){
+    x, labels, pattern = ".(fast|fq|bam|sam|cram).*", col = "Filename", ...){
 
   if (is(x, "FastqcDataList") | is(x, "FastqcData")) {
     ## Form a single column data.frame
@@ -209,7 +209,6 @@
 #' underlying `ggplot` object will be returned.
 #'
 #' @import ggplot2
-#' @importFrom plotly ggplotly
 #'
 #' @keywords internal
 #'
@@ -241,7 +240,7 @@
   ## Convert to plotly
   if (usePlotly) {
     sideBar <- suppressWarnings(
-      suppressMessages(ggplotly(sideBar, tooltip = c("y", "fill")))
+      suppressMessages(plotly::ggplotly(sideBar, tooltip = c("y", "fill")))
     )
   }
   sideBar
@@ -261,7 +260,6 @@
 #'
 #' @import ggplot2
 #' @importFrom ggdendro theme_dendro
-#' @importFrom plotly ggplotly
 #'
 #' @keywords internal
 #'
@@ -275,7 +273,7 @@
     scale_y_reverse(expand = c(0, 0)) +
     scale_x_continuous(expand = c(0, 0.5)) +
     theme_dendro()
-  ggplotly(dendro, tooltip = NULL)
+  plotly::ggplotly(dendro, tooltip = NULL)
 }
 
 
@@ -348,7 +346,8 @@
 #' @param x a ggplot2 heatmap produced by ngsReports
 #' @param status a tibble with the columns Filename and Status
 #' @param segments a dendrogram produced during clustering of samples
-#' @param usePlotly logica(1)
+#' @param usePlotly logical(1)
+#' @param hv character vector of fields to include in hoverinfo
 #'
 #' @return
 #' Either a ggplot2 object assembled using patchwork, or an interactive plotly
@@ -358,13 +357,13 @@
 #' @import ggplot2
 #'
 #' @keywords internal
-.prepHeatmap <- function(x, status, segments, usePlotly, heat_w = 8, pwf) {
+.prepHeatmap <- function(x, status, segments, usePlotly, heat_w = 8, pwf, hv = NULL) {
 
   stopifnot(is(x, "gg"))
-  stopifnot(all(c("Filename", "Status") %in% colnames(status)))
+  hasStatus <- as.logical(nrow(status))
   stopifnot(all(c("x", "y", "xend", "yend") %in% colnames(segments)))
 
-  if(missing(pwf)) pwf <- ngsReports::pwf
+  if (missing(pwf)) pwf <- ngsReports::pwf
 
   ## Create the dendrogram if required. This is independent of plotly
   add_dend <- nrow(segments) > 0
@@ -385,56 +384,140 @@
       )
   }
 
-  ## Now create the sideBar
-  sideBar <- .makeSidebar(status, levels(status$Filename), pwf, usePlotly)
+  x_lab <- x$labels$x
+  if (hasStatus) {
+    stopifnot(all(c("Filename", "Status") %in% colnames(status)))
+    ## Now create the sideBar
+    sideBar <- .makeSidebar(status, levels(status$Filename), pwf, usePlotly)
 
-  if (!usePlotly) {
+    if (!usePlotly) {
 
-    sideBar <- sideBar + theme(plot.margin = unit(c(5.5, 0, 5.5, 0), "points"))
-    out <- sideBar
-    if (add_dend) out <- dendPlot + sideBar
-    out <- out + x +  plot_layout(widths = panel_w)
+      sideBar <- sideBar + theme(plot.margin = unit(c(5.5, 0, 5.5, 0), "points"))
+      out <- sideBar
+      if (add_dend) out <- dendPlot + sideBar
+      out <- out + x +  plot_layout(widths = panel_w)
 
-  } else {
-
-    ## Setup additional formatting
-    x <- x + theme(
-      plot.title = element_text(hjust = 0.5), axis.text.y = element_blank(),
-      axis.ticks.y = element_blank(), legend.position = "none"
-    )
-    title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
-    panel_w <- panel_w / sum(panel_w)
-
-    if (add_dend) {
-      out <- suppressWarnings(
-        suppressMessages(
-          plotly::subplot(
-            .renderDendro(segments), sideBar, x,
-            widths = panel_w, margin = 0.001, shareY = TRUE
-          )
-        )
-      )
-      out <- plotly::layout(
-        out, title = list(x = title_x), xaxis3 = list(title = x$labels$x),
-        margin = list(b = 50, t = 50)
-      )
     } else {
-      out <- suppressWarnings(
-        suppressMessages(
-          plotly::subplot(
-            sideBar, x,
-            widths = panel_w, margin = 0.001, shareY = TRUE
+
+      ## Setup additional formatting
+      x <- x + theme(
+        plot.title = element_text(hjust = 0.5), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(), legend.position = "none"
+      )
+      title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
+      panel_w <- panel_w / sum(panel_w)
+      if (is.null(hv)) hv <- "all"
+      x <- plotly::ggplotly(x, tooltip = hv)
+
+      if (add_dend) {
+        out <- suppressWarnings(
+          suppressMessages(
+            plotly::subplot(
+              .renderDendro(segments), sideBar, x,
+              widths = panel_w, margin = 0.001, shareY = TRUE
+            )
           )
         )
-      )
-      out <- plotly::layout(
-        out, title = list(x = title_x), xaxis2 = list(title = x$labels$x),
-        margin = list(b = 50, t = 50)
-      )
+        out <- plotly::layout(
+          out, title = list(x = title_x), xaxis3 = list(title = x_lab),
+          margin = list(b = 50, t = 50)
+        )
+      } else {
+        out <- suppressWarnings(
+          suppressMessages(
+            plotly::subplot(
+              sideBar, x,
+              widths = panel_w, margin = 0.001, shareY = TRUE
+            )
+          )
+        )
+        out <- plotly::layout(
+          out, title = list(x = title_x), xaxis2 = list(title = x_lab),
+          margin = list(b = 50, t = 50)
+        )
+      }
     }
 
+  } else {
+    panel_w <- panel_w[c(1, 3)]
+    if (!usePlotly) {
+
+      out <- x
+      if (add_dend) out <- dendPlot + x + plot_layout(widths = panel_w)
+
+    } else {
+
+      ## Setup additional formatting
+      x <- x + theme(
+        plot.title = element_text(hjust = 0.5), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(), legend.position = "none"
+      )
+      title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
+      panel_w <- panel_w / sum(panel_w)
+      if (is.null(hv)) hv <- "all"
+      x <- plotly::ggplotly(x, tooltip = hv)
+
+      if (add_dend) {
+        out <- suppressWarnings(
+          suppressMessages(
+            plotly::subplot(
+              .renderDendro(segments), x,
+              widths = panel_w, margin = 0.001, shareY = TRUE
+            )
+          )
+        )
+        out <- plotly::layout(
+          out, title = list(x = title_x), xaxis2 = list(title = x_lab),
+          margin = list(b = 50, t = 50)
+        )
+      } else {
+        out <- x
+      }
+
+    }
   }
 
   out
 
+}
+
+#' Add custom theme elements from dotArgs
+#'
+#' @param p ggplot object
+#' @param ... Standard dot arguments
+#'
+#' @return ggplot2 object
+#' @keywords internal
+.updateThemeFromDots <- function(p, ...){
+  ## Get any arguments for dotArgs that have been set manually
+  dotArgs <- list(...)
+  allowed <- names(formals(theme))
+  keepArgs <- which(names(dotArgs) %in% allowed)
+  userTheme <- c()
+  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+  ## Add the basic customisations
+  if (!is.null(userTheme)) p <- p + userTheme
+  p
+}
+
+
+#' @title Hide PWF tooltips from line plots
+#' @description Hide tooltips from PWF rectangles in line plots
+#' @param x plotlyObject$x$data
+#' @return plotlyObject$x$data
+#' @keywords internal
+.hidePWFRects <- function(x){
+  ## If there is a name component & it contains
+  ## PASS/WARN/FAIL set the hoverinfo to none
+  if (any(grepl("(PASS|WARN|FAIL|Status)", x$text))) {
+    x$hoverinfo <- "none"
+    x$text <- ""
+  }
+  if (!is.null(x$name)) {
+    if (any(grepl("(PASS|WARN|FAIL|Status)", x$name))) {
+      x$hoverinfo <- "none"
+      x$text <- ""
+    }
+  }
+  x
 }

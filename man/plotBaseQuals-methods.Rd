@@ -6,39 +6,25 @@
 \alias{plotBaseQuals,ANY-method}
 \alias{plotBaseQuals,FastqcData-method}
 \alias{plotBaseQuals,FastqcDataList-method}
+\alias{plotBaseQuals,FastpData-method}
 \alias{plotBaseQuals,FastpDataList-method}
 \title{Plot the Base Qualities for each file}
 \usage{
-plotBaseQuals(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pwfCols,
-  warn = 25,
-  fail = 20,
-  boxWidth = 0.8,
-  ...
-)
+plotBaseQuals(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotBaseQuals}{ANY}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pwfCols,
-  warn = 25,
-  fail = 20,
-  boxWidth = 0.8,
-  ...
-)
+\S4method{plotBaseQuals}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
 \S4method{plotBaseQuals}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 25,
   fail = 20,
   boxWidth = 0.8,
+  showPwf = TRUE,
+  plotlyLegend = FALSE,
   ...
 )
 
@@ -46,9 +32,11 @@ plotBaseQuals(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 25,
   fail = 20,
+  showPwf = TRUE,
   boxWidth = 0.8,
   plotType = c("heatmap", "boxplot"),
   plotValue = "Mean",
@@ -59,17 +47,39 @@ plotBaseQuals(
   ...
 )
 
+\S4method{plotBaseQuals}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  pwfCols,
+  warn = 25,
+  fail = 20,
+  showPwf = FALSE,
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  readsBy = c("facet", "linetype"),
+  bases = c("A", "T", "C", "G", "mean"),
+  scaleColour = NULL,
+  plotTheme = theme(),
+  plotlyLegend = FALSE,
+  ...
+)
+
 \S4method{plotBaseQuals}{FastpDataList}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 25,
   fail = 20,
-  plotType = c("heatmap"),
-  reads = c("read1", "read2"),
+  showPwf = FALSE,
   module = c("Before_filtering", "After_filtering"),
+  plotType = "heatmap",
   plotValue = c("mean", "A", "T", "C", "G"),
+  scaleFill = NULL,
+  plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8L,
@@ -84,8 +94,12 @@ vector of file paths}
 ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+All filenames must be present in the names.}
+
+\item{pattern}{Regex to remove from the end of the Fastp report and Fastq
+file names}
+
+\item{...}{Used to pass additional attributes to theme() and between methods}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail values in plot}
@@ -95,7 +109,10 @@ respectively (i.e. percentages)}
 
 \item{boxWidth}{set the width of boxes when using a boxplot}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
+\item{showPwf}{Include the Pwf status colours}
+
+\item{plotlyLegend}{logical(1) Show legend for interactive plots. Only called
+when drawing line plots}
 
 \item{plotType}{\code{character} Can be either \code{"boxplot"} or
 \code{"heatmap"}}
@@ -115,9 +132,20 @@ Only used if drawing boxplots for multiple files in a FastqcDataList}
 
 \item{heat_w}{Relative width of any heatmap plot components}
 
-\item{reads}{Plot heatmaps for read1 or read2 when using a FastpDataList}
-
 \item{module}{Select Before and After filtering when using a FastpDataList}
+
+\item{reads}{Create plots for read1, read2 or all when using a FastpDataList}
+
+\item{readsBy}{If paired reads are present, separate using either linetype
+or by facet}
+
+\item{bases}{Which bases to include on the plot}
+
+\item{scaleColour}{ggplot discrete colour scale, passed to lines}
+
+\item{plotTheme}{\link[ggplot2]{theme} object}
+
+\item{scaleFill}{ggplot2 continuous scale. Passed to heatmap cells}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object
@@ -153,5 +181,11 @@ plotBaseQuals(fdl)
 
 # The default plot for a single library is the standard boxplot
 plotBaseQuals(fdl[[1]])
+
+# FastpData objects have qyalities by base
+fp <-  FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+plotBaseQuals(
+  fp, plotTheme = theme(plot.title = element_text(hjust = 0.5))
+)
 
 }

@@ -4,30 +4,93 @@
 \name{plotSeqContent}
 \alias{plotSeqContent}
 \alias{plotSeqContent,ANY-method}
-\alias{plotSeqContent,character-method}
 \alias{plotSeqContent,FastqcData-method}
 \alias{plotSeqContent,FastqcDataList-method}
+\alias{plotSeqContent,FastpData-method}
+\alias{plotSeqContent,FastpDataList-method}
 \title{Plot the per base content as a heatmap}
 \usage{
-plotSeqContent(x, usePlotly = FALSE, labels, ...)
+plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotSeqContent}{ANY}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSeqContent}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotSeqContent}{character}(x, usePlotly = FALSE, labels, ...)
-
-\S4method{plotSeqContent}{FastqcData}(x, usePlotly = FALSE, labels, ...)
+\S4method{plotSeqContent}{FastqcData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  bases = c("A", "T", "C", "G"),
+  scaleColour = NULL,
+  plotTheme = theme(),
+  plotlyLegend = FALSE,
+  expand.x = 0.02,
+  expand.y = c(0, 0.05),
+  ...
+)
 
 \S4method{plotSeqContent}{FastqcDataList}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
+  showPwf = TRUE,
   plotType = c("heatmap", "line", "residuals"),
+  scaleColour = NULL,
+  plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
-  ...,
-  nc = 2
+  plotlyLegend = FALSE,
+  nc = 2,
+  ...
+)
+
+\S4method{plotSeqContent}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  module = c("Before_filtering", "After_filtering"),
+  reads = c("read1", "read2"),
+  readsBy = c("facet", "linetype"),
+  moduleBy = c("facet", "linetype"),
+  bases = c("A", "T", "C", "G", "N", "GC"),
+  scaleColour = NULL,
+  scaleLine = NULL,
+  plotlyLegend = FALSE,
+  plotTheme = theme(),
+  expand.x = 0.02,
+  expand.y = c(0, 0.05),
+  ...
+)
+
+\S4method{plotSeqContent}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  module = c("Before_filtering", "After_filtering"),
+  moduleBy = c("facet", "linetype"),
+  reads = c("read1", "read2"),
+  readsBy = c("facet", "linetype"),
+  bases = c("A", "T", "C", "G", "N", "GC"),
+  showPwf = FALSE,
+  pwfCols,
+  warn = 10,
+  fail = 20,
+  plotType = c("heatmap", "line", "residuals"),
+  plotlyLegend = FALSE,
+  scaleColour = NULL,
+  scaleLine = NULL,
+  plotTheme = theme(),
+  cluster = FALSE,
+  dendrogram = FALSE,
+  heat_w = 8,
+  expand.x = c(0.01),
+  expand.y = c(0, 0.05),
+  nc = 2,
+  ...
 )
 }
 \arguments{
@@ -36,14 +99,34 @@ plotSeqContent(x, usePlotly = FALSE, labels, ...)
 \item{usePlotly}{\code{logical}. Generate an interactive plot using plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
-All file names must be present in the names of the vector.
-File extensions are dropped by default.}
+All file names must be present in the names of the vector.}
 
-\item{...}{Used to pass additional attributes to theme() and between methods}
+\item{pattern}{Regex to remove from the end of any filenames}
+
+\item{...}{Used to pass additional attributes to plotting geoms}
+
+\item{bases}{Which bases to draw on the plot. Also becomes the default
+plotting order by setting these as factor levels}
+
+\item{scaleColour}{Discrete colour scale as a ggplot ScaleDiscrete object
+If not provided, will default to \link[ggplot2]{scale_colour_manual}}
+
+\item{plotTheme}{\link[ggplot2]{theme} object to be applied. Note that all
+plots will have \link[ggplot2]{theme_bw} theme applied by default, as well as
+any additional themes supplied here}
+
+\item{plotlyLegend}{logical(1) Show legends for interactive plots. Ignored
+for heatmaps}
+
+\item{expand.x, expand.y}{Passed to \link[ggplot2]{expansion} in the x- and
+y-axis scales respectively}
 
 \item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
 pass, warning, and fail
 values in plot}
+
+\item{showPwf}{Show PASS/WARN/FAIL categories as would be defined in a FastQC
+report}
 
 \item{plotType}{\code{character}. Type of plot to generate. Must be "line",
 "heatmap" or "residuals"}
@@ -58,7 +141,20 @@ then the dendrogram will be displayed.}
 \item{heat_w}{Relative width of any heatmap plot components}
 
 \item{nc}{Specify the number of columns if plotting a FastqcDataList as line
-plots. Passed to \code{ggplot2::facet_wrap}.}
+plots. Passed to \link[ggplot2]{facet_wrap}.}
+
+\item{module}{Fastp Module to show. Can only be Before/After_filtering}
+
+\item{reads}{Which set of reads to show}
+
+\item{readsBy, moduleBy}{When plotting both R1 & R2 and both modules,
+separate by either linetype or linetype}
+
+\item{scaleLine}{Discrete scale_linetype object. Only relevant if plotting
+values by linetype}
+
+\item{warn, fail}{Default values for WARN and FAIL based on FastQC reports.
+Only applied to heatmaps for FastpDataList objects}
 }
 \value{
 A ggplot2 object or an interactive plotly object
@@ -91,5 +187,9 @@ fdl <- FastqcDataList(fl)
 
 # The default plot
 plotSeqContent(fdl)
+
+fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+plotSeqContent(fp)
+plotSeqContent(fp, moduleBy = "linetype", bases = c("A", "C", "G", "T"))
 
 }

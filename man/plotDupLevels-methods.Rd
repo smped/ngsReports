@@ -4,25 +4,28 @@
 \name{plotDupLevels}
 \alias{plotDupLevels}
 \alias{plotDupLevels,ANY-method}
-\alias{plotDupLevels,character-method}
 \alias{plotDupLevels,FastqcData-method}
 \alias{plotDupLevels,FastqcDataList-method}
+\alias{plotDupLevels,FastpData-method}
+\alias{plotDupLevels,FastpDataList-method}
 \title{Plot the combined Sequence_Duplication_Levels information}
 \usage{
-plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
+plotDupLevels(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotDupLevels}{ANY}(x, usePlotly = FALSE, labels, pwfCols, ...)
-
-\S4method{plotDupLevels}{character}(x, usePlotly = FALSE, labels, pwfCols, ...)
+\S4method{plotDupLevels}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
 \S4method{plotDupLevels}{FastqcData}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 20,
   fail = 50,
-  lineCols = c("red", "blue"),
+  showPwf = TRUE,
+  plotlyLegend = FALSE,
+  lineCol = c("red", "blue"),
+  lineWidth = 1,
   ...
 )
 
@@ -30,15 +33,58 @@ plotDupLevels(x, usePlotly = FALSE, labels, pwfCols, ...)
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   pwfCols,
   warn = 20,
   fail = 50,
+  showPwf = TRUE,
+  plotlyLegend = FALSE,
   deduplication = c("pre", "post"),
   plotType = c("heatmap", "line"),
   cluster = FALSE,
   dendrogram = FALSE,
   heatCol = hcl.colors(50, "inferno"),
   heat_w = 8,
+  ...
+)
+
+\S4method{plotDupLevels}{FastpData}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  pwfCols,
+  warn = 20,
+  fail = 50,
+  showPwf = FALSE,
+  maxLevel = 10,
+  lineCol = "red",
+  barFill = "dodgerblue4",
+  barCol = barFill,
+  plotlyLegend = FALSE,
+  plotTheme = theme(),
+  ...
+)
+
+\S4method{plotDupLevels}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  pwfCols,
+  warn = 20,
+  fail = 50,
+  showPwf = FALSE,
+  plotlyLegend = FALSE,
+  plotType = c("bar", "heatmap"),
+  barFill = "blue",
+  barCol = "blue",
+  cluster = FALSE,
+  dendrogram = FALSE,
+  scaleFill = NULL,
+  plotTheme = theme(),
+  heat_w = 8,
+  maxLevel = 10,
   ...
 )
 }
@@ -52,15 +98,22 @@ ggplot. If \code{TRUE} plot will be rendered with plotly}
 All filenames must be present in the names.
 File extensions are dropped by default.}
 
-\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
-pass, warning, and fail values in the plot}
+\item{pattern}{regex to remove from the end of fastp & fastq file names}
 
 \item{...}{Used to pass additional attributes to theme() and between methods}
+
+\item{pwfCols}{Object of class \code{\link[=PwfCols]{PwfCols()}} to give colours for
+pass, warning, and fail values in the plot}
 
 \item{warn, fail}{The default values for warn and fail are 20 and 50
 respectively (i.e. percentages)}
 
-\item{lineCols}{Colours of the lines drawn for individual libraries}
+\item{showPwf}{logical(1) Show PWF rectangles in the background}
+
+\item{plotlyLegend}{logical(1) Show legend for line plots when using
+interactive plots}
+
+\item{lineCol, lineWidth}{Colours and width of lines drawn}
 
 \item{deduplication}{Plot Duplication levels 'pre' or 'post' deduplication.
 Can only take values "pre" and "post"}
@@ -70,13 +123,21 @@ Can only take values "pre" and "post"}
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{dendrogram}{\code{logical} redundant if \code{cluster} is \code{FALSE}
-if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
-then the dendrogram will be displayed.}
+\item{dendrogram}{\code{logical} Plot will automatically be clustered if TRUE.}
 
 \item{heatCol}{Colour palette used for the heatmap}
 
 \item{heat_w}{Relative width of the heatmap relative to other plot components}
+
+\item{maxLevel}{The maximum duplication level to plot. Beyond this level, all
+values will be summed}
+
+\item{barFill, barCol}{Colours for bars when calling geom_col()}
+
+\item{plotTheme}{\link[ggplot2]{theme} object. Applied after a call to
+theme_bw()}
+
+\item{scaleFill}{Discrete scale used to fill heatmap cells}
 }
 \value{
 A standard ggplot2 or plotly object

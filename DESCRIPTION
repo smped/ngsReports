@@ -30,7 +30,7 @@ Depends:
 Imports:
     Biostrings,
     checkmate,
-    dplyr (>= 1.0.0),
+    dplyr (>= 1.1.0),
     DT,
     forcats,
     ggdendro,
@@ -93,6 +93,7 @@ Collate:
     'plotDupLevels.R'
     'plotFastqcPCA.R'
     'plotGcContent.R'
+    'plotInsertSize.R'
     'plotKmers.R'
     'plotNContent.R'
     'plotOverrep.R'

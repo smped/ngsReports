@@ -4,51 +4,45 @@
 \name{plotReadTotals}
 \alias{plotReadTotals}
 \alias{plotReadTotals,ANY-method}
-\alias{plotReadTotals,character-method}
 \alias{plotReadTotals,FastqcDataList-method}
+\alias{plotReadTotals,FastpDataList-method}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(
-  x,
-  usePlotly = FALSE,
-  labels,
-  duplicated = TRUE,
-  bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"),
-  expand.x = c(0, 0, 0.02, 0),
-  ...
-)
+plotReadTotals(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotReadTotals}{ANY}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  duplicated = TRUE,
-  bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"),
-  expand.x = c(0, 0, 0.02, 0),
-  ...
-)
-
-\S4method{plotReadTotals}{character}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  duplicated = TRUE,
-  bars = c("stacked", "adjacent"),
-  barCols = c("red", "blue"),
-  expand.x = c(0, 0, 0.02, 0),
-  ...
-)
+\S4method{plotReadTotals}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(
   x,
   usePlotly = FALSE,
   labels,
+  pattern = ".(fast|fq|bam).*",
   duplicated = TRUE,
   bars = c("stacked", "adjacent"),
+  vertBars = TRUE,
+  divBy = 1,
   barCols = c("red", "blue"),
-  expand.x = c(0, 0, 0.02, 0),
+  expand.y = c(0, 0.02),
+  plotlyLegend = FALSE,
+  ...
+)
+
+\S4method{plotReadTotals}{FastpDataList}(
+  x,
+  usePlotly = FALSE,
+  labels,
+  pattern = ".(fast|fq|bam).*",
+  adjPaired = TRUE,
+  divBy = 1e+06,
+  scaleFill = NULL,
+  labMin = 0.05,
+  status = TRUE,
+  labelVJ = 0.5,
+  labelFill = "white",
+  plotTheme = theme(),
+  vertBars = FALSE,
+  plotlyLegend = FALSE,
+  expand.y = c(0, 0.05),
   ...
 )
 }
@@ -59,21 +53,44 @@ plotReadTotals(
 ggplot. If \code{TRUE} plot will be rendered with plotly}
 
 \item{labels}{An optional named vector of labels for the file names.
-All filenames must be present in the names.
-File extensions are dropped by default.}
+All filenames must be present in the names.}
 
-\item{duplicated}{\code{logical}. Include deduplicated read total estimates
+\item{pattern}{Regex used to trim the end of filenames}
+
+\item{...}{Used to pass additional attributes to theme()}
+
+\item{duplicated}{logical(1). Include deduplicated read total estimates
 to plot charts}
 
 \item{bars}{If \code{duplicated = TRUE}, show unique and deduplicated reads
 as "stacked" or "adjacent".}
 
+\item{vertBars}{logical(1) Show bars as vertical or horizontal}
+
+\item{divBy}{Scale read totals by this value. The default shows the y-axis
+in millions for FastpDataList objects, but does not scale FastQC objects,
+for the sake of backwards compatability}
+
 \item{barCols}{Colours for duplicated and unique reads.}
 
-\item{expand.x}{Output from \code{\link[ggplot2:expansion]{ggplot2::expansion}} controlling x-axis
-expansion, or a numeric vector of length 4}
+\item{expand.y}{Passed to \code{\link[ggplot2:expansion]{ggplot2::expansion}} for the axis showing totals}
 
-\item{...}{Used to pass additional attributes to theme()}
+\item{plotlyLegend}{logical(1) Show legend on interactive plots}
+
+\item{adjPaired}{Scale read totals by 0.5 when paired}
+
+\item{scaleFill}{ScaleDiscrete function to be applied to the plot}
+
+\item{labMin}{Only show labels for filtering categories higher than this
+values as a proportion of reads. Set to any number > 1 to turn off labels}
+
+\item{status}{logical(1) Include read status in the plot}
+
+\item{labelVJ}{Relative vertical position to labels within each bar.}
+
+\item{labelFill}{Passed to \link[ggplot2]{geom_label}}
+
+\item{plotTheme}{\link[ggplot2]{theme} to be added to the plot}
 }
 \value{
 Returns a ggplot or plotly object
@@ -90,6 +107,11 @@ Duplication levels are based on the value shown on FASTQC reports at the
 top of the DeDuplicatedTotals plot, which is known to be inaccurate.
 As it still gives a good guide as to sequence diversity it is included as
 the default. This can be turned off by setting \code{duplicated = FALSE}.
+
+For FastpDataList objects, duplication statistics are not part of the
+default module containing ReadTotals. However, the status of reads and the
+reason for being retained or filtered is, and as such these are shown
+instead of duplication statistics.
 }
 \examples{
 

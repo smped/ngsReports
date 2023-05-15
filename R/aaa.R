@@ -21,6 +21,7 @@ globalVariables(
         "Percentage",
         "Position",
         "Quality",
+        "Rate",
         "Reads",
         "Residuals",
         "Sequence",

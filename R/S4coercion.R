@@ -85,7 +85,7 @@ setAs(".FastpFile", "FastpData", function(from){
 
     ## Initialise an empty list too parse the data into
     ## Modules should be as defined in the man page for FastpData
-    isPaired <- grepl("paired", data$summary$sequencing)
+    isPaired <- grepl("(-I|--in2)", data$command)
     out <- list()
     out[["Summary"]] <- .getFpSummary(data)
     out[["Adapters"]] <- .getFpAdapters(data)
@@ -138,14 +138,14 @@ setAs(".FastpFile", "FastpData", function(from){
     r1 <- unlist(ad$read1_adapter_counts)
     tbl_r1 <- tibble(Sequence = names(r1), Occurences = as.integer(r1))
     tbl_r1$Occurence_rate <- tbl_r1$Occurences / n_reads
-    tbl_r1$adapter_length <- str_count(tbl_r1$Sequence, "[ACGT]")
+    tbl_r1$adapter_length <- str_count(tbl_r1$Sequence, "[ACGTN]")
     tbl_r1$adapter_length[tbl_r1$Sequence == "others"] <- NA_integer_
 
     ## R2
     r2 <- unlist(ad$read2_adapter_counts)
     tbl_r2 <- tibble(Sequence = names(r2), Occurences = as.integer(r2))
     tbl_r2$Occurence_rate <- tbl_r2$Occurences / n_reads
-    tbl_r2$adapter_length <- str_count(tbl_r2$Sequence, "[ACGT]")
+    tbl_r2$adapter_length <- str_count(tbl_r2$Sequence, "[ACGTN]")
     tbl_r2$adapter_length[tbl_r2$Sequence == "others"] <- NA_integer_
     tbl_r2
 
@@ -160,7 +160,10 @@ setAs(".FastpFile", "FastpData", function(from){
         histogram = data$duplication$histogram,
         mean_gc = data$duplication$mean_g,
     )
+    hist$duplication_rate <- numeric(nrow(hist))
     hist$duplication_level <- seq_len(nrow(hist))
+    if (nrow(hist))
+        hist$duplication_rate <- hist$histogram / sum(hist$histogram)
     tbl$histogram <- list(hist)
     tbl
 }
@@ -179,6 +182,7 @@ setAs(".FastpFile", "FastpData", function(from){
 .getFpBeforeAfter <- function(data, type = c("before", "after"), paired){
 
     type <- match.arg(type)
+    count <- NULL
 
     ## Setup the kmer values
     atcg <- c("A", "T", "C", "G")
@@ -215,6 +219,20 @@ setAs(".FastpFile", "FastpData", function(from){
     kmer_tbl$suffix <- gsub("^([ATCG]{3})([ATCG]{2})", "\\2", kmer_tbl$kmer)
     kmer_tbl$suffix <- factor(kmer_tbl$suffix, levels = col_levels)
     tbl$kmer_count <- list(kmer_tbl)
+
+    overrep <- data[[mod]]$overrepresented_sequences
+    if (length(overrep) > 0) {
+        tbl$overrepresented_sequences <- list(
+            tibble(
+                sequence = names(overrep),
+                count = as.integer(unlist(overrep)),
+                ## I don't know why we multiply by 2, but it gives the same
+                ## value as the html report
+                rate = nchar(sequence) * count * 2 / tbl$total_bases
+            )
+        )
+    }
+
     out <- list(read1 = tbl)
 
     ## Check for the read2 module
@@ -241,6 +259,19 @@ setAs(".FastpFile", "FastpData", function(from){
         kmer_tbl$suffix <- gsub("^([ATCG]{3})([ATCG]{2})", "\\2", kmer_tbl$kmer)
         kmer_tbl$suffix <- factor(kmer_tbl$suffix, levels = col_levels)
         tbl$kmer_count <- list(kmer_tbl)
+
+        overrep <- data[[mod]]$overrepresented_sequences
+        if (length(overrep) > 0) {
+            tbl$overrepresented_sequences <- list(
+                tibble(
+                    sequence = names(overrep),
+                    count = as.integer(unlist(overrep)),
+                    ## I don't know why we multiply by 2, but it gives the same
+                    ## value as the html report
+                    rate = nchar(sequence) * count * 2 / tbl$total_bases
+                )
+            )
+        }
         out[["read2"]] <- tbl
     }
     out
