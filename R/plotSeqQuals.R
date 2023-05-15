@@ -36,7 +36,7 @@
 #' @param ... Used to pass various potting parameters to theme.
 #' Can also be used to set size and colour for box outlines.
 #' @param plotlyLegend logical(1) Show legend for interactive line plots
-#' @param fillScale,colourScale ggplot2 scales
+#' @param scaleFill,scaleColour ggplot2 scales
 #'
 #' @return A standard ggplot2 object, or an interactive plotly object
 #'
@@ -218,8 +218,8 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
     counts = FALSE, alpha = 0.1, warn = 30, fail = 20, showPwf = TRUE,
     plotType = c("heatmap", "line"), dendrogram = FALSE, cluster = FALSE,
-    fillScale = NULL, heatCols = hcl.colors(100, "inferno"), heat_w = 8,
-    colourScale = NULL, plotlyLegend = FALSE, ...
+    scaleFill = NULL, heatCols = hcl.colors(100, "inferno"), heat_w = 8,
+    scaleColour = NULL, plotlyLegend = FALSE, ...
   ){
 
     ## Read in data
@@ -269,29 +269,30 @@ setMethod(
       df$Filename <- factor(labels[df$Filename], levels = labels[key])
       if (!dendrogram) dx$segments <- dx$segments[0,]
 
-      if (is.null(fillScale)) {
-        fillScale <- scale_fill_viridis_c(option = "inferno", limits = c(0, 1))
+      if (is.null(scaleFill)) {
+        scaleFill <- scale_fill_viridis_c(option = "inferno", limits = c(0, 1))
         if (!is.null(heatCols)) {
-          fillScale <- scale_fill_gradientn(colours = heatCols, limits = c(0, 1))
+          scaleFill <- scale_fill_gradientn(colours = heatCols, limits = c(0, 1))
         }
       }
-      stopifnot(is(fillScale, "ScaleContinuous"))
-      stopifnot(fillScale$aesthetics == "fill")
+      stopifnot(is(scaleFill, "ScaleContinuous"))
+      stopifnot(scaleFill$aesthetics == "fill")
 
       hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
       p <- ggplot(df, aes(Quality, Filename, C = Total)) +
         geom_tile(aes(fill = Frequency)) +
         ggtitle("Per Sequence Quality Score") +
         labs(x = xLab, y = c()) +
-        fillScale +
+        scaleFill +
         scale_x_continuous(expand = c(0, 0)) +
         scale_y_discrete(expand = c(0, 0), position = "right") +
         theme(
           panel.grid.minor = element_blank(), panel.background = element_blank(),
-          plot.margin = unit(c(0.5, 0.5, 0.5, 0), "points"),
           plot.title = element_text(hjust = hj),
           axis.title.x = element_text(hjust = hj)
         )
+      if (showPwf | dendrogram)
+        p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
       p <- .updateThemeFromDots(p, ...)
 
       status <- getSummary(x)
@@ -329,9 +330,9 @@ setMethod(
         rects$ymax <- max(df$Frequency)
       }
 
-      if (is.null(colourScale)) colourScale <- scale_colour_discrete()
-      stopifnot(is(colourScale, "ScaleDiscrete"))
-      stopifnot(colourScale$aesthetics == "colour")
+      if (is.null(scaleColour)) scaleColour <- scale_colour_discrete()
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
 
       p <- ggplot(df)
       if (showPwf) p <- p + geom_rect(
@@ -346,7 +347,7 @@ setMethod(
           limits = c(0, rects$ymax[1]), expand = c(0, 0), labels = yLabelFun
         ) +
         scale_x_continuous(expand = c(0, 0)) +
-        colourScale +
+        scaleColour +
         labs(x = xLab, y = yLab) +
         guides(fill = "none") +
         theme_bw()

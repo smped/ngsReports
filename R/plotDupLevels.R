@@ -36,7 +36,7 @@
 #' @param showPwf logical(1) Show PWF rectangles in the background
 #' @param plotlyLegend logical(1) Show legend for line plots when using
 #' interactive plots
-#' @param fillScale Discrete scale used to fill heatmap cells
+#' @param scaleFill Discrete scale used to fill heatmap cells
 #' @param plotTheme \link[ggplot2]{theme} object. Applied after a call to
 #' theme_bw()
 #' @param maxLevel The maximum duplication level to plot. Beyond this level, all
@@ -188,12 +188,15 @@ setMethod(
 )
 #' @rdname plotDupLevels-methods
 #' @export
-setMethod("plotDupLevels",signature = "FastqcDataList", function(
+setMethod(
+  "plotDupLevels",signature = "FastqcDataList",
+  function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    pwfCols, warn = 20, fail = 50, showPwf = TRUE,
+    pwfCols, warn = 20, fail = 50, showPwf = TRUE, plotlyLegend = FALSE,
     deduplication = c("pre", "post"), plotType = c("heatmap", "line"),
     cluster = FALSE, dendrogram = FALSE,  heatCol = hcl.colors(50, "inferno"),
-    heat_w = 8, ...){
+    heat_w = 8, ...
+  ){
 
   mod <- "Sequence_Duplication_Levels"
   df <- getModule(x, mod)
@@ -271,7 +274,7 @@ setMethod("plotDupLevels",signature = "FastqcDataList", function(
     if (usePlotly) {
 
       tt <- c("colour", type, "Duplication_Level")
-      p <- p + theme(legend.position = "none")
+      if (!plotlyLegend) p <- p + theme(legend.position = "none")
       p <- suppressMessages(plotly::ggplotly(p, tooltip = tt))
 
       ## Make sure there are no hovers over the background rectangles
@@ -483,9 +486,9 @@ setMethod(
   "plotDupLevels",signature = "FastpDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    pwfCols, warn = 20, fail = 50, showPwf = FALSE,
+    pwfCols, warn = 20, fail = 50, showPwf = FALSE, plotlyLegend = FALSE,
     plotType = c("bar", "heatmap"), barFill = "blue", barCol = "blue",
-    cluster = FALSE, dendrogram = FALSE,  fillScale = NULL, plotTheme = theme(),
+    cluster = FALSE, dendrogram = FALSE,  scaleFill = NULL, plotTheme = theme(),
     heat_w = 8, maxLevel = 10, ...
   ){
 
@@ -555,7 +558,7 @@ setMethod(
       p <- .updateThemeFromDots(p, ...)
       if (usePlotly) {
         hv <- c("Filename", "Rate")
-        p <- p + theme(legend.position = "none")
+        if (!plotlyLegend) p <- p + theme(legend.position = "none")
         p <- plotly::ggplotly(p, tooltip = hv)
         p$x$data <- lapply(p$x$data, .hidePWFRects)
       }
@@ -627,10 +630,10 @@ setMethod(
       )
       if (!showPwf) status_df <- status_df[0, ]
 
-      if (is.null(fillScale))
-        fillScale <- scale_fill_viridis_d(option = "inferno")
-      stopifnot(is(fillScale, "ScaleDiscrete"))
-      stopifnot(fillScale$aesthetics == "fill")
+      if (is.null(scaleFill))
+        scaleFill <- scale_fill_viridis_d(option = "inferno")
+      stopifnot(is(scaleFill, "ScaleDiscrete"))
+      stopifnot(scaleFill$aesthetics == "fill")
       stopifnot(is(plotTheme, "theme"))
 
       ## Tidy up for plotting
@@ -650,7 +653,7 @@ setMethod(
           breaks = unique(df$y), labels = levels(df$Filename), expand = c(0, 0),
           position = "right"
         ) +
-        fillScale +
+        scaleFill +
         labs(
           x = "% of Library", y = "Filename", fill = "Duplication\nLevel"
         ) +

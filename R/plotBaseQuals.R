@@ -19,14 +19,14 @@
 #' vector of file paths
 #' @param usePlotly `logical` Default `FALSE` will render using
 #' ggplot. If `TRUE` plot will be rendered with plotly
-#' @param nc `numeric`. The number of columns to create in the plot layout.
-#' Only used if drawing boxplots for multiple files in a FastqcDataList
-#' @param warn,fail The default values for warn and fail are 30 and 20
-#' respectively (i.e. percentages)
 #' @param labels An optional named vector of labels for the file names.
 #' All filenames must be present in the names.
 #' @param pattern Regex to remove from the end of the Fastp report and Fastq
 #' file names
+#' @param nc `numeric`. The number of columns to create in the plot layout.
+#' Only used if drawing boxplots for multiple files in a FastqcDataList
+#' @param warn,fail The default values for warn and fail are 30 and 20
+#' respectively (i.e. percentages)
 #' @param plotType `character` Can be either `"boxplot"` or
 #' `"heatmap"`
 #' @param plotValue `character` Type of data to be presented. Can be
@@ -46,8 +46,8 @@
 #' then the dendrogram will be displayed.
 #' @param boxWidth set the width of boxes when using a boxplot
 #' @param heat_w Relative width of any heatmap plot components
-#' @param colourScale ggplot discrete colour scale, passed to lines
-#' @param fillScale ggplot2 continuous scale. Passed to heatmap cells
+#' @param scaleColour ggplot discrete colour scale, passed to lines
+#' @param scaleFill ggplot2 continuous scale. Passed to heatmap cells
 #' @param plotTheme \link[ggplot2]{theme} object
 #' @param plotlyLegend logical(1) Show legend for interactive plots. Only called
 #' when drawing line plots
@@ -378,11 +378,13 @@ setMethod(
         scale_x_continuous(expand = c(0, 0)) +
         scale_y_discrete(expand = expansion(0), position = "right") +
         theme(
-          panel.grid.minor = element_blank(), panel.background = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank(),
           plot.title = element_text(hjust = hj),
-          axis.title.x = element_text(hjust = hj),
-          plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
+          axis.title.x = element_text(hjust = hj)
         )
+      if (dendrogram | showPwf)
+        p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
 
       ## Get any arguments for dotArgs that have been set manually
       p <- .updateThemeFromDots(p, ...)
@@ -413,7 +415,7 @@ setMethod(
     module = c("Before_filtering", "After_filtering"),
     reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
     bases = c("A", "T", "C", "G", "mean"),
-    colourScale = NULL, plotTheme = theme(), plotlyLegend = FALSE, ...
+    scaleColour = NULL, plotTheme = theme(), plotlyLegend = FALSE, ...
   ){
 
     ## Get the data
@@ -468,15 +470,15 @@ setMethod(
     rects <- dplyr::filter(rects, !!sym("ymax") > min(ylim))
     rects[["ymin"]][rects[["ymin"]] < min(ylim)] <- min(ylim)
 
-    ## The colourScale
-    if (is.null(colourScale)) {
+    ## The scaleColour
+    if (is.null(scaleColour)) {
       line_cols = c(
         A = "#807C58", `T` = "#601490", C = "green", G = "blue", mean = "grey30"
       )[bases]
-      colourScale <- scale_colour_manual(values = line_cols)
+      scaleColour <- scale_colour_manual(values = line_cols)
     }
-    stopifnot(is(colourScale, "ScaleDiscrete"))
-    stopifnot(colourScale$aesthetics == "colour")
+    stopifnot(is(scaleColour, "ScaleDiscrete"))
+    stopifnot(scaleColour$aesthetics == "colour")
     stopifnot(is(plotTheme, "theme"))
 
     names(df) <- stringr::str_to_title(names(df))
@@ -496,7 +498,7 @@ setMethod(
           linetype = {{ linetype }}
         ), ...
       ) +
-      colourScale +
+      scaleColour +
       scale_fill_manual(values = getColours(pwfCols)) +
       scale_x_continuous(expand = rep(0, 4), limits = xlim) +
       scale_y_continuous(expand = rep(0, 4), limits = ylim) +
@@ -535,7 +537,7 @@ setMethod(
     pwfCols, warn = 25, fail = 20, showPwf = FALSE,
     module = c("Before_filtering", "After_filtering"),
     plotType = "heatmap", plotValue = c("mean", "A", "T", "C", "G"),
-    fillScale = NULL, plotTheme = theme(), cluster = FALSE,
+    scaleFill = NULL, plotTheme = theme(), cluster = FALSE,
     dendrogram = FALSE, heat_w = 8L, ...
   ){
 
@@ -573,15 +575,15 @@ setMethod(
     ## Sort out the colours
     if (missing(pwfCols)) pwfCols <- ngsReports::pwf
     stopifnot(.isValidPwf(pwfCols))
-    if (is.null(fillScale)) {
+    if (is.null(scaleFill)) {
       cols <- .makePwfGradient(
         vals = na.omit(df[[plotValue]]), pwfCols = pwfCols,
         breaks = c(0, fail, warn, phredMax), passLow = FALSE, na.value = "white"
       )
-      fillScale <- do.call("scale_fill_gradientn", cols)
+      scaleFill <- do.call("scale_fill_gradientn", cols)
     }
-    stopifnot(is(fillScale, "ScaleContinuous"))
-    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(scaleFill, "ScaleContinuous"))
+    stopifnot(scaleFill$aesthetics == "fill")
     stopifnot(is(plotTheme, "theme"))
 
     ## Start the heatmap
@@ -592,7 +594,7 @@ setMethod(
       geom_tile() +
       labs(x = xlab, y = c()) +
       ggtitle(main) +
-      fillScale +
+      scaleFill +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_discrete(expand = expansion(0), position = "right") +
       theme_bw() +

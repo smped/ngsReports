@@ -39,6 +39,7 @@ plotNContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
+  scaleFill = NULL,
   ...
 )
 
@@ -51,8 +52,8 @@ plotNContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   moduleBy = c("facet", "colour", "linetype"),
   reads = c("read1", "read2"),
   readsBy = c("facet", "colour", "linetype"),
-  colourScale = NULL,
-  lineScale = NULL,
+  scaleColour = NULL,
+  scaleLine = NULL,
   plotTheme = theme(),
   plotlyLegend = FALSE,
   ...
@@ -65,7 +66,7 @@ plotNContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   pattern = ".(fast|fq|bam).*",
   module = c("Before_filtering", "After_filtering"),
   reads = c("read1", "read2"),
-  fillScale = NULL,
+  scaleFill = NULL,
   plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
@@ -106,6 +107,8 @@ then the dendrogram will be displayed.}
 
 \item{heat_w}{Relative width of any heatmap plot components}
 
+\item{scaleFill, scaleColour, scaleLine}{ggplot2 scale objects}
+
 \item{module}{Used for Fastp* structures to show results before or after
 filtering}
 
@@ -116,8 +119,6 @@ filtering}
 \item{plotTheme}{\link[ggplot2]{theme} object}
 
 \item{plotlyLegend}{logical(1) Show legend on interactive plots}
-
-\item{fillScale, colourScale, lineScale}{ggplot2 scale objects}
 }
 \value{
 A standard ggplot2 object, or an interactive plotly object
@@ -143,7 +144,7 @@ fp <- FastpData(fl)
 plotNContent(fp)
 plotNContent(
   fp, pattern = "_001.+",
-  moduleBy = "colour", colourScale = scale_colour_brewer(palette = "Set1"),
+  moduleBy = "colour", scaleColour = scale_colour_brewer(palette = "Set1"),
   plotTheme = theme(
     legend.position = c(0.99, 0.99), legend.justification = c(1, 1),
     plot.title = element_text(hjust = 0.5)

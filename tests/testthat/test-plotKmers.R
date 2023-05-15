@@ -39,5 +39,5 @@ test_that("FastpData objects plot correctly", {
 test_that("Correct Errors are produced", {
   expect_message(plotKmers(fpl), "Method not.*")
   expect_error(plotKmers(fp, plotTheme = ""))
-  expect_error(plotKmers(fp, fillScale = scale_fill_grey())) # Discrete Scale
+  expect_error(plotKmers(fp, scaleFill = scale_fill_grey())) # Discrete Scale
 })

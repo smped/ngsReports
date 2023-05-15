@@ -21,7 +21,7 @@ plotKmers(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   n = 6,
   linewidth = 0.5,
   plotlyLegend = FALSE,
-  colourScale = NULL,
+  scaleColour = NULL,
   pal = c("red", "blue", "green", "black", "magenta", "yellow"),
   ...
 )
@@ -35,7 +35,7 @@ plotKmers(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   dendrogram = FALSE,
   pwfCols,
   showPwf = TRUE,
-  fillScale = NULL,
+  scaleFill = NULL,
   heatCol = hcl.colors(50, "inferno"),
   heat_w = 8,
   ...
@@ -50,7 +50,7 @@ plotKmers(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   reads = c("read1", "read2"),
   readsBy = c("facet", "mean", "diff"),
   trans = "log2",
-  fillScale = NULL,
+  scaleFill = NULL,
   plotTheme = theme(),
   plotlyLegend = FALSE,
   ...
@@ -91,7 +91,7 @@ pass, warning, and fail values in the plot}
 
 \item{showPwf}{Show the PASS/WARN/FAIL status}
 
-\item{fillScale, colourScale}{ggplot2 scales to be used for colour palettes}
+\item{scaleFill, scaleColour}{ggplot2 scales to be used for colour palettes}
 
 \item{heatCol}{Colour palette used for the heatmap. Default is \code{inferno}
 from the viridis set of palettes}
@@ -142,7 +142,7 @@ fp <- FastpData(fl)
 plotKmers(fp, size = 2)
 plotKmers(
   fp, reads = "read1", size = 2, trans = NULL,
-  fillScale = scale_fill_gradient(low = "white", high = "black")
+  scaleFill = scale_fill_gradient(low = "white", high = "black")
 )
 
 }

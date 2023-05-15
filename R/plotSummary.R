@@ -92,13 +92,6 @@ setMethod("plotSummary", signature = "FastqcDataList", function(
   df$Status <- factor(df$Status, levels = rev(c("PASS", "WARN", "FAIL")))
   df$StatusNum <- as.integer(df$Status)
 
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-
   ## Make sure cluster is TRUE if the dendrogram is requested
   if (dendrogram && !cluster) {
     message("cluster will be set to TRUE when dendrogram = TRUE")
@@ -128,9 +121,7 @@ setMethod("plotSummary", signature = "FastqcDataList", function(
     theme(axis.text.x = element_text(
       angle = 90, hjust = 1, vjust = 0.5
     ))
-
-  ## Add any parameters from dotArgs
-  if (!is.null(userTheme)) sumPlot <- sumPlot + userTheme
+  sumPlot <- .updateThemeFromDots(sumPlot, ...)
 
   if (usePlotly) {
 

@@ -66,10 +66,10 @@ plotSeqQuals(
   plotType = c("heatmap", "line"),
   dendrogram = FALSE,
   cluster = FALSE,
-  fillScale = NULL,
+  scaleFill = NULL,
   heatCols = hcl.colors(100, "inferno"),
   heat_w = 8,
-  colourScale = NULL,
+  scaleColour = NULL,
   plotlyLegend = FALSE,
   ...
 )
@@ -115,7 +115,7 @@ then the dendrogram will be displayed.}
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE},
 fastqc data will be clustered using hierarchical clustering}
 
-\item{fillScale, colourScale}{ggplot2 scales}
+\item{scaleFill, scaleColour}{ggplot2 scales}
 
 \item{heatCols}{Colour palette for the heatmap}
 

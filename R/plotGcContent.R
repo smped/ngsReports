@@ -55,8 +55,8 @@
 #' then the dendrogram  will be displayed.
 #' @param heat_w Relative width of any heatmap plot components
 #' @param plotlyLegend logical(1) Show legend on interactive line plots
-#' @param fillScale ggplot2 scale for filling heatmap cells or bars
-#' @param colourScale ggplot2 scale for line colours
+#' @param scaleFill ggplot2 scale for filling heatmap cells or bars
+#' @param scaleColour ggplot2 scale for line colours
 #' @param plotTheme \link[ggplot2]{theme} object
 #' @param lineCols,linetype,linewidth Line colour type and width for observed
 #' and theoretical GC lines
@@ -110,7 +110,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
     species = "Hsapiens", GCobject, plotlyLegend = FALSE,
-    Fastafile, n = 1e6, counts = FALSE, colourScale = NULL,
+    Fastafile, n = 1e6, counts = FALSE, scaleColour = NULL,
     lineCols = c("red3", "black"), linetype = 1, linewidth = 0.5, ...
   ){
 
@@ -195,16 +195,16 @@ setMethod(
       geom_line(linetype = linetype, linewidth = linewidth)
   }
 
-  if (is.null(colourScale)) {
+  if (is.null(scaleColour)) {
     if (is.null(lineCols)) lineCols <- c("red3", "black")
     lineCols <- rep_len(lineCols, 2)
-    colourScale <- scale_colour_manual(values = lineCols)
+    scaleColour <- scale_colour_manual(values = lineCols)
   }
-  stopifnot(is(colourScale, "ScaleDiscrete"))
-  stopifnot(colourScale$aesthetics == "colour")
+  stopifnot(is(scaleColour, "ScaleDiscrete"))
+  stopifnot(scaleColour$aesthetics == "colour")
 
   p <- p +
-    colourScale +
+    scaleColour +
     scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
     labs(x = xLab, y = yLab, colour = c()) +
     ggtitle(label = labels, subtitle = subTitle) +
@@ -247,7 +247,7 @@ setMethod(
     species = "Hsapiens",  GCobject, Fastafile, n=1e6,
     plotType = c("heatmap", "line", "cdf"),
     cluster = FALSE, dendrogram = FALSE, heat_w = 8,
-    pwfCols, showPwf = TRUE, fillScale = NULL, colourScale = NULL,
+    pwfCols, showPwf = TRUE, scaleFill = NULL, scaleColour = NULL,
     plotlyLegend = FALSE, lineCols = RColorBrewer::brewer.pal(12, "Paired"),
     linetype = 1, linewidth = 0.5, ...
   ){
@@ -313,16 +313,16 @@ setMethod(
     ## Use the paired palette for easier visualisation of paired data
     ## Only used for plotType = "line" or plotType = "cdf
     n <- length(x)
-    if (is.null(colourScale)) {
+    if (is.null(scaleColour)) {
       if (is.null(lineCols)) lineCols <- RColorBrewer::brewer.pal(12, "Paired")
       ## For backward compatability
       if (length(lineCols) > n) lineCols <- lineCols[seq_len(n)]
       lineCols <- colorRampPalette(lineCols)(n)
       lineCols <- c("#000000", lineCols)
-      colourScale <- scale_colour_manual(values = lineCols)
+      scaleColour <- scale_colour_manual(values = lineCols)
     }
-    stopifnot(is(colourScale, "ScaleDiscrete"))
-    stopifnot(colourScale$aethetics == "colour")
+    stopifnot(is(scaleColour, "ScaleDiscrete"))
+    stopifnot(scaleColour$aethetics == "colour")
 
     ## Select axis labels and plotting values
     ylab <- c(cdf = "Cumulative (%)", line = "Reads (%)")[plotType]
@@ -353,7 +353,7 @@ setMethod(
       geom_line(linetype = linetype, linewidth = linewidth) +
       scale_x_continuous(breaks = seq(0, 100, by = 10), expand = c(0.02, 0)) +
       scale_y_continuous(labels = .addPercent) +
-      colourScale +
+      scaleColour +
       labs(x = xLab, y = ylab, colour = c()) +
       ggtitle(label = c(), subtitle = subTitle) +
       theme_bw() +
@@ -402,16 +402,16 @@ setMethod(
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
     if (!dendrogram) dx$segments <- dx$segments[0,]
 
-    if (is.null(fillScale)) {
-      fillScale <- scale_fill_gradient2(
+    if (is.null(scaleFill)) {
+      scaleFill <- scale_fill_gradient2(
         low = "#932667FF", #viridisLite::inferno(1, begin = 0.4),
         high = "#F6D645FF", #inferno(1, begin = 0.9),
         midpoint = 0,
         mid = "#000004FF", #inferno(1, begin = 0)
       )
     }
-    stopifnot(is(fillScale, "ScaleContinuous"))
-    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(scaleFill, "ScaleContinuous"))
+    stopifnot(scaleFill$aesthetics == "fill")
 
     ## Draw the heatmap
     hj <- 0.5 * heat_w / (heat_w + 1)
@@ -421,7 +421,7 @@ setMethod(
       labs(x = xLab, fill = fillLab, y = c()) +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_discrete(expand = c(0, 0), position = "right") +
-      fillScale +
+      scaleFill +
       theme(
         panel.grid.minor = element_blank(), panel.background = element_blank(),
         plot.title = element_text(hjust = hj),
@@ -460,7 +460,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
     species = "Hsapiens", GCobject, Fastafile, n = 1e6, plotType = "bar",
-    fillScale = NULL, plotlyLegend = FALSE, plotTheme = theme(), ...
+    scaleFill = NULL, plotlyLegend = FALSE, plotTheme = theme(), ...
   ){
 
     plotType <- match.arg(plotType)
@@ -501,14 +501,14 @@ setMethod(
       exp_mean <- weighted.mean(gc_df$GC_Content / 100, 1 / gc_df$d)
     }
 
-    if (is.null(fillScale)) {
+    if (is.null(scaleFill)) {
       cols <- c("navyblue", "red3")
       cols <- rep_len(cols, length(steps))
       names(cols) <- steps
-      fillScale <- scale_fill_manual(values = cols)
+      scaleFill <- scale_fill_manual(values = cols)
     }
-    stopifnot(is(fillScale, "ScaleDiscrete"))
-    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(scaleFill, "ScaleDiscrete"))
+    stopifnot(scaleFill$aesthetics == "fill")
     stopifnot(is(plotTheme, "theme"))
 
     df[["% GC"]] <- percent(df$gc_content, 0.1)
@@ -524,7 +524,7 @@ setMethod(
       ) +
         geom_col() +
         geom_hline(yintercept = exp_mean, ...) +
-        fillScale +
+        scaleFill +
         scale_y_continuous(labels = percent, expand = expansion(c(0, 0.05))) +
         labs(y = "% GC") +
         ggtitle(unique(df$Filename)) +
@@ -550,7 +550,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
     species = "Hsapiens", GCobject, Fastafile, n=1e6, plotType = "bar",
-    fillScale = NULL, plotTheme = theme(), plotlyLegend = FALSE, ...
+    scaleFill = NULL, plotTheme = theme(), plotlyLegend = FALSE, ...
   ){
 
     plotType <- match.arg(plotType)
@@ -595,14 +595,14 @@ setMethod(
 
       ## Add columns for nicer plotting with plotly
       df[["% GC"]] <- percent(df$gc_content, 0.01)
-      if (is.null(fillScale)) {
+      if (is.null(scaleFill)) {
         fillCol = c("navyblue", "red3")
         fillCol <- rep_len(fillCol, length(steps))
         names(fillCol) <- steps
-        fillScale <- scale_fill_manual(values = fillCol)
+        scaleFill <- scale_fill_manual(values = fillCol)
       }
-      stopifnot(is(fillScale, "ScaleDiscrete"))
-      stopifnot(fillScale$aesthetics == "fill")
+      stopifnot(is(scaleFill, "ScaleDiscrete"))
+      stopifnot(scaleFill$aesthetics == "fill")
       stopifnot(is(plotTheme, "theme"))
 
       p <- ggplot(
@@ -615,7 +615,7 @@ setMethod(
         geom_col(position = "dodge") +
         geom_hline(yintercept = exp_mean, ...) +
         scale_y_continuous(expand = expansion(c(0, 0.05)), labels = percent) +
-        fillScale +
+        scaleFill +
         labs(y = "GC Content (%)") +
         theme_bw() +
         plotTheme

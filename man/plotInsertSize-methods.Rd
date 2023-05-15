@@ -28,7 +28,7 @@ plotInsertSize(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   pattern = ".(fast|fq|bam).*",
   plotType = c("heatmap"),
   plotTheme = theme(),
-  fillScale = NULL,
+  scaleFill = NULL,
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
@@ -55,7 +55,7 @@ All file names must be present in the names of the vector.}
 
 \item{expand.x, expand.y}{Axis expansions}
 
-\item{fillScale}{Continuous scale used to fill heatmap cells. Defaults to the
+\item{scaleFill}{Continuous scale used to fill heatmap cells. Defaults to the
 "inferno" palette}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE}, data will be

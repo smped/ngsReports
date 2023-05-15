@@ -46,5 +46,5 @@ test_that("plotBaseQuals (Fastp) output correct objects",{
 
 test_that("plotBaseQuals errors correctly", {
   expect_error(plotBaseQuals(fp, plotTheme = ""))
-  expect_error(plotBaseQuals(fp, colourScale = ""))
+  expect_error(plotBaseQuals(fp, scaleColour = ""))
 })

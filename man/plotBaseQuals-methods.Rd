@@ -60,7 +60,7 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   reads = c("read1", "read2"),
   readsBy = c("facet", "linetype"),
   bases = c("A", "T", "C", "G", "mean"),
-  colourScale = NULL,
+  scaleColour = NULL,
   plotTheme = theme(),
   plotlyLegend = FALSE,
   ...
@@ -78,7 +78,7 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   module = c("Before_filtering", "After_filtering"),
   plotType = "heatmap",
   plotValue = c("mean", "A", "T", "C", "G"),
-  fillScale = NULL,
+  scaleFill = NULL,
   plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
@@ -141,11 +141,11 @@ or by facet}
 
 \item{bases}{Which bases to include on the plot}
 
-\item{colourScale}{ggplot discrete colour scale, passed to lines}
+\item{scaleColour}{ggplot discrete colour scale, passed to lines}
 
 \item{plotTheme}{\link[ggplot2]{theme} object}
 
-\item{fillScale}{ggplot2 continuous scale. Passed to heatmap cells}
+\item{scaleFill}{ggplot2 continuous scale. Passed to heatmap cells}
 }
 \value{
 A standard ggplot2 object or an interactive plotly object

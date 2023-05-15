@@ -58,7 +58,7 @@ plotOverrep(
   showPwf = TRUE,
   cluster = FALSE,
   dendrogram = FALSE,
-  fillScale = NULL,
+  scaleFill = NULL,
   paletteName = "Set1",
   panel_w = 8,
   expand.x = c(0, 0, 0.05, 0),
@@ -98,11 +98,11 @@ fastqc data will be clustered using hierarchical clustering}
 if both \code{cluster} and \code{dendrogram} are specified as \code{TRUE}
 then the dendrogram will be displayed.}
 
-\item{fillScale}{ggplot scale object}
+\item{scaleFill}{ggplot scale object}
 
 \item{paletteName}{Name of the palette for colouring the possible sources
 of the overrepresented sequences. Must be a palette name from
-\code{RColorBrewer}. Ignored if specifying the fillScale separately}
+\code{RColorBrewer}. Ignored if specifying the scaleFill separately}
 
 \item{panel_w}{Width of main panel on output}
 }

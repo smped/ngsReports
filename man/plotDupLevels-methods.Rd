@@ -38,6 +38,7 @@ plotDupLevels(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   warn = 20,
   fail = 50,
   showPwf = TRUE,
+  plotlyLegend = FALSE,
   deduplication = c("pre", "post"),
   plotType = c("heatmap", "line"),
   cluster = FALSE,
@@ -74,12 +75,13 @@ plotDupLevels(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   warn = 20,
   fail = 50,
   showPwf = FALSE,
+  plotlyLegend = FALSE,
   plotType = c("bar", "heatmap"),
   barFill = "blue",
   barCol = "blue",
   cluster = FALSE,
   dendrogram = FALSE,
-  fillScale = NULL,
+  scaleFill = NULL,
   plotTheme = theme(),
   heat_w = 8,
   maxLevel = 10,
@@ -135,7 +137,7 @@ values will be summed}
 \item{plotTheme}{\link[ggplot2]{theme} object. Applied after a call to
 theme_bw()}
 
-\item{fillScale}{Discrete scale used to fill heatmap cells}
+\item{scaleFill}{Discrete scale used to fill heatmap cells}
 }
 \value{
 A standard ggplot2 or plotly object

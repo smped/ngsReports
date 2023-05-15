@@ -35,7 +35,7 @@
 #' if both `cluster` and `dendrogram` are specified as `TRUE`
 #' then the dendrogram will be displayed.
 #' @param heat_w Relative width of any heatmap plot components
-#' @param fillScale,colourScale,lineScale ggplot2 scale objects
+#' @param scaleFill,scaleColour,scaleLine ggplot2 scale objects
 #' @param plotTheme \link[ggplot2]{theme} object
 #' @param plotlyLegend logical(1) Show legend on interactive plots
 #' @param lineCol Line colours
@@ -52,7 +52,7 @@
 #' plotNContent(fp)
 #' plotNContent(
 #'   fp, pattern = "_001.+",
-#'   moduleBy = "colour", colourScale = scale_colour_brewer(palette = "Set1"),
+#'   moduleBy = "colour", scaleColour = scale_colour_brewer(palette = "Set1"),
 #'   plotTheme = theme(
 #'     legend.position = c(0.99, 0.99), legend.justification = c(1, 1),
 #'     plot.title = element_text(hjust = 0.5)
@@ -160,7 +160,6 @@ setMethod(
       p <- suppressMessages(plotly::ggplotly(p))
       p <- plotly::layout(p, yaxis1 = list(title = yLab))
 
-
       ## Set the hoverinfo for bg rectangles to the vertices only,
       ## This will effectively hide them
       p$x$data <- lapply(p$x$data, .hidePWFRects)
@@ -178,8 +177,8 @@ setMethod(
   "plotNContent", signature = "FastqcDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
-    warn = 5, fail = 20, showPwf = TRUE,
-    cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...
+    warn = 5, fail = 20, showPwf = TRUE, cluster = FALSE, dendrogram = FALSE,
+    heat_w = 8, scaleFill = NULL, ...
   ){
 
     ## Get the NContent
@@ -223,16 +222,21 @@ setMethod(
     if (!dendrogram) dx$segments <- dx$segments[0,]
     df$Filename <- factor(labels[df$Filename], levels = labels[key])
 
-    cols <- .makePwfGradient(
-      df$Percentage, pwfCols,
-      breaks = c(0, warn, fail, 101), passLow = TRUE, na.value = "white"
-    )
+    if (is.null(scaleFill)) {
+      cols <- .makePwfGradient(
+        df$Percentage, pwfCols,
+        breaks = c(0, warn, fail, 101), passLow = TRUE, na.value = "white"
+      )
+      scaleFill <- do.call("scale_fill_gradientn", cols)
+    }
+    stopifnot(is(scaleFill, "ScaleContinuous"))
+    stopifnot(scaleFill$aesthetics == "fill")
 
     xLab <- "Position in Read (bp)"
     hj <- 0.5 * heat_w / (heat_w + 1 + dendrogram)
     p <- ggplot(df, aes(Base, Filename, fill = Percentage, label = Base)) +
       geom_tile() +
-      do.call("scale_fill_gradientn", cols) +
+      scaleFill +
       scale_x_continuous(expand = c(0, 0)) +
       scale_y_discrete(expand = c(0, 0), position = "right") +
       labs(x = xLab, y = NULL, fill = "%N") +
@@ -240,10 +244,11 @@ setMethod(
       theme_bw() +
       theme(
         panel.background = element_blank(),
-        plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"),
         plot.title = element_text(hjust = hj),
         axis.title.x = element_text(hjust = hj)
       )
+    if (dendrogram | showPwf)
+      p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
     p <- .updateThemeFromDots(p, ...)
 
     ## Reset the status using current values
@@ -276,7 +281,7 @@ setMethod(
     module = c("Before_filtering", "After_filtering"),
     moduleBy = c("facet", "colour", "linetype"),
     reads = c("read1", "read2"), readsBy = c("facet", "colour", "linetype"),
-    colourScale = NULL, lineScale = NULL, plotTheme = theme(),
+    scaleColour = NULL, scaleLine = NULL, plotTheme = theme(),
     plotlyLegend = FALSE, ...
   ){
 
@@ -331,12 +336,12 @@ setMethod(
       TRUE ~ ". ~ ."
     )
     fm <- as.formula(fm)
-    if (is.null(colourScale)) colourScale <- scale_colour_discrete()
-    stopifnot(is(colourScale, "ScaleDiscrete"))
-    stopifnot(colourScale$aesthetics == "colour")
-    if (is.null(lineScale)) lineScale <- scale_linetype_discrete()
-    stopifnot(is(lineScale, "ScaleDiscrete"))
-    stopifnot(lineScale$aesthetics == "linetype")
+    if (is.null(scaleColour)) scaleColour <- scale_colour_discrete()
+    stopifnot(is(scaleColour, "ScaleDiscrete"))
+    stopifnot(scaleColour$aesthetics == "colour")
+    if (is.null(scaleLine)) scaleLine <- scale_linetype_discrete()
+    stopifnot(is(scaleLine, "ScaleDiscrete"))
+    stopifnot(scaleLine$aesthetics == "linetype")
     stopifnot(is(plotTheme, "theme"))
 
     ## Final mods for plotting
@@ -346,12 +351,11 @@ setMethod(
     df_cols <- colnames(df)
     p <- ggplot(df, aes(label = !!sym("N Reads"))) +
       geom_line(
-        aes(
-          Position, !!sym("% N"), colour = {{ col }}, linetype = {{ lt }}
-        ), ...
+        aes(Position, !!sym("% N"), colour = {{ col }}, linetype = {{ lt }}),
+        ...
       ) +
       ggtitle("N Content") +
-      colourScale + lineScale +
+      scaleColour + scaleLine +
       scale_y_continuous(
         labels = label_percent(scale = 1), expand = expansion(c(0.01, 0.05))
       ) +
@@ -380,7 +384,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     module = c("Before_filtering", "After_filtering"),
-    reads = c("read1", "read2"), fillScale = NULL, plotTheme = theme(),
+    reads = c("read1", "read2"), scaleFill = NULL, plotTheme = theme(),
     cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...
   ){
 
@@ -447,9 +451,9 @@ setMethod(
     lv <- labels[key]
     df$Filename <- factor(labels[df$Filename], levels = lv)
 
-    if (is.null(fillScale)) fillScale <- scale_fill_viridis_c()
-    stopifnot(is(fillScale, "ScaleContinuous"))
-    stopifnot(fillScale$aesthetics == "fill")
+    if (is.null(scaleFill)) scaleFill <- scale_fill_viridis_c()
+    stopifnot(is(scaleFill, "ScaleContinuous"))
+    stopifnot(scaleFill$aesthetics == "fill")
     stopifnot(is(plotTheme, "theme"))
 
     ## Tidy up for plotting
@@ -470,11 +474,13 @@ setMethod(
       geom_raster(...) +
       facet_grid(fm, switch = "y") +
       ggtitle("N Content") +
-      fillScale +
+      scaleFill +
       scale_y_discrete(expand = rep(0, 4), position = "right") +
       scale_x_continuous(expand = rep(0, 4)) +
       theme_bw() +
       plotTheme
+    if (dendrogram)
+      p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
 
     if (usePlotly) p <- p + theme(
       axis.title.y = element_blank(), axis.text.y = element_blank(),

@@ -41,7 +41,7 @@
 #' @param ... Used to pass additional attributes to theme()
 #' @param expand.x Output from `expansion()` or numeric vector of
 #' length 4. Passed to `scale_x_discrete`
-#' @param fillScale,colourScale Optional ggplot scale objects
+#' @param scaleFill,scaleColour Optional ggplot scale objects
 #' @param heatCol The colour scheme for the heatmap
 #' @param plotlyLegend logical(1) Show legend for interactive line plots
 #'
@@ -181,7 +181,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", counts = FALSE,
     plotType = c("heatmap", "line", "cdf"), cluster = FALSE, dendrogram = FALSE,
-    heat_w = 8, pwfCols, showPwf = TRUE,  fillScale = NULL, colourScale = NULL,
+    heat_w = 8, pwfCols, showPwf = TRUE,  scaleFill = NULL, scaleColour = NULL,
     heatCol = hcl.colors(50, "inferno"), ...
   ){
 
@@ -244,11 +244,11 @@ setMethod(
       )
       yLabelFun <- ifelse(counts, scales::comma, scales::percent)
 
-      if (is.null(colourScale)) {
-        colourScale <- scale_colour_discrete()
+      if (is.null(scaleColour)) {
+        scaleColour <- scale_colour_discrete()
       }
-      stopifnot(is(colourScale, "ScaleDiscrete"))
-      stopifnot(colourScale$aesthetics == "colour")
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
 
       df$Filename <- labels[df$Filename]
       p <- ggplot(
@@ -257,7 +257,7 @@ setMethod(
         geom_line() +
         labs(y = yLab) +
         scale_y_continuous(labels = yLabelFun) +
-        colourScale +
+        scaleColour +
         theme_bw()
       p <- .updateThemeFromDots(p, ...)
 
@@ -288,17 +288,17 @@ setMethod(
       df$Percent <- scales::percent(df$Freq, accuracy = 0.1)
       df$Total <- scales::comma(df$Count)
 
-      if (is.null(fillScale)) {
-        fillScale <- scale_fill_viridis_c(
+      if (is.null(scaleFill)) {
+        scaleFill <- scale_fill_viridis_c(
           option = "inferno", labels = scales::percent, limits = c(0, 1)
         )
         if (!is.null(heatCol))
-          fillScale <- scale_fill_gradientn(
+          scaleFill <- scale_fill_gradientn(
             colours = heatCol, labels = scales::percent, limits = c(0, 1)
           )
       }
-      stopifnot(is(fillScale, "ScaleContinuous"))
-      stopifnot(fillScale$aesthetics == "fill")
+      stopifnot(is(scaleFill, "ScaleContinuous"))
+      stopifnot(scaleFill$aesthetics == "fill")
 
       ## Make the basic heatmap. The first aes sets the labels for plotly
       aes <- aes(
@@ -315,7 +315,7 @@ setMethod(
         ) +
         labs(x = "Sequence Length", fill = "Percent") +
         ggtitle(gsub("_", " ", mod)) +
-        fillScale +
+        scaleFill +
         scale_x_continuous(expand = c(0, 0)) +
         scale_y_continuous(
           expand = c(0, 0), position = "right",
@@ -323,10 +323,11 @@ setMethod(
         ) +
         theme_bw() +
         theme(
-          plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"),
           plot.title = element_text(hjust = hj),
           axis.title.x = element_text(hjust = hj)
         )
+      if (showPwf | dendrogram)
+        p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
       p <- .updateThemeFromDots(p, ...)
 
       ## Get the PWF status

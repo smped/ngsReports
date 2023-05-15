@@ -58,8 +58,8 @@ plotSeqLengthDistn(
   heat_w = 8,
   pwfCols,
   showPwf = TRUE,
-  fillScale = NULL,
-  colourScale = NULL,
+  scaleFill = NULL,
+  scaleColour = NULL,
   heatCol = hcl.colors(50, "inferno"),
   ...
 )
@@ -105,7 +105,7 @@ pass, warning, and fail values in plot}
 
 \item{showPwf}{logical(1) Show PASS/WARN/FAIL status}
 
-\item{fillScale, colourScale}{Optional ggplot scale objects}
+\item{scaleFill, scaleColour}{Optional ggplot scale objects}
 
 \item{heatCol}{The colour scheme for the heatmap}
 }

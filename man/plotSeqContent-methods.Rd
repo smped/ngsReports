@@ -20,7 +20,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   labels,
   pattern = ".(fast|fq|bam).*",
   bases = c("A", "T", "C", "G"),
-  colourScale = NULL,
+  scaleColour = NULL,
   plotTheme = theme(),
   plotlyLegend = FALSE,
   expand.x = 0.02,
@@ -36,7 +36,7 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   pwfCols,
   showPwf = TRUE,
   plotType = c("heatmap", "line", "residuals"),
-  colourScale = NULL,
+  scaleColour = NULL,
   plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
@@ -56,8 +56,8 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   readsBy = c("facet", "linetype"),
   moduleBy = c("facet", "linetype"),
   bases = c("A", "T", "C", "G", "N", "GC"),
-  colourScale = NULL,
-  lineScale = NULL,
+  scaleColour = NULL,
+  scaleLine = NULL,
   plotlyLegend = FALSE,
   plotTheme = theme(),
   expand.x = 0.02,
@@ -81,8 +81,8 @@ plotSeqContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   fail = 20,
   plotType = c("heatmap", "line", "residuals"),
   plotlyLegend = FALSE,
-  colourScale = NULL,
-  lineScale = NULL,
+  scaleColour = NULL,
+  scaleLine = NULL,
   plotTheme = theme(),
   cluster = FALSE,
   dendrogram = FALSE,
@@ -108,7 +108,7 @@ All file names must be present in the names of the vector.}
 \item{bases}{Which bases to draw on the plot. Also becomes the default
 plotting order by setting these as factor levels}
 
-\item{colourScale}{Discrete colour scale as a ggplot ScaleDiscrete object
+\item{scaleColour}{Discrete colour scale as a ggplot ScaleDiscrete object
 If not provided, will default to \link[ggplot2]{scale_colour_manual}}
 
 \item{plotTheme}{\link[ggplot2]{theme} object to be applied. Note that all
@@ -150,7 +150,7 @@ plots. Passed to \link[ggplot2]{facet_wrap}.}
 \item{readsBy, moduleBy}{When plotting both R1 & R2 and both modules,
 separate by either linetype or linetype}
 
-\item{lineScale}{Discrete scale_linetype object. Only relevant if plotting
+\item{scaleLine}{Discrete scale_linetype object. Only relevant if plotting
 values by linetype}
 
 \item{warn, fail}{Default values for WARN and FAIL based on FastQC reports.

@@ -30,14 +30,15 @@
 #' @param barCols Colours for duplicated and unique reads.
 #' @param expand.y Passed to [`ggplot2::expansion`] for the axis showing totals
 #' @param vertBars logical(1) Show bars as vertical or horizontal
-#' @param scalePaired Scale read totals by 0.5 when paired
-#' @param scaleY Scale read totals by this value. The default shows the y-axis
-#' in millions
-#' @param fillScale ScaleDiscrete function to be applied to the plot
+#' @param adjPaired Scale read totals by 0.5 when paired
+#' @param divBy Scale read totals by this value. The default shows the y-axis
+#' in millions for FastpDataList objects, but does not scale FastQC objects,
+#' for the sake of backwards compatability
+#' @param scaleFill ScaleDiscrete function to be applied to the plot
 #' @param labMin Only show labels for filtering categories higher than this
-#' values as a proportion of reads
-#' @param labVjust Used to place labels within each bar.
-#' @param labFill Passed to \link[ggplot2]{geom_label}
+#' values as a proportion of reads. Set to any number > 1 to turn off labels
+#' @param labelVJ Relative vertical position to labels within each bar.
+#' @param labelFill Passed to \link[ggplot2]{geom_label}
 #' @param plotTheme \link[ggplot2]{theme} to be added to the plot
 #' @param plotlyLegend logical(1) Show legend on interactive plots
 #' @param ... Used to pass additional attributes to theme()
@@ -71,7 +72,7 @@
 #' @export
 setGeneric(
   "plotReadTotals",
-  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam|sam).*", ...){
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
     standardGeneric("plotReadTotals")
   }
 )
@@ -79,7 +80,7 @@ setGeneric(
 #' @export
 setMethod(
   "plotReadTotals", signature = "ANY",
-  function(x, usePlotly = FALSE, labels, ...){
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
     .errNotImp(x)
   })
 #' @importFrom scales comma
@@ -90,7 +91,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels,  pattern = ".(fast|fq|bam).*",
     duplicated = TRUE, bars = c("stacked", "adjacent"), vertBars = TRUE,
-    scaleY = 1, barCols = c("red","blue"), expand.y = c(0, 0.02),
+    divBy = 1, barCols = c("red","blue"), expand.y = c(0, 0.02),
     plotlyLegend = FALSE, ...
   ){
 
@@ -105,8 +106,8 @@ setMethod(
   ## Get the colours for the barplot
   barCols <- rep_len(barCols, duplicated + 1)
   y_col <- "Read Totals"
-  if (scaleY != 1) y_col <- paste0("Read Totals (x", comma(scaleY, 1), ")")
-  df[[y_col]] <- df$Total_Sequences / scaleY
+  if (divBy != 1) y_col <- paste0("Read Totals (x", comma(divBy, 1), ")")
+  df[[y_col]] <- df$Total_Sequences / divBy
 
   ## Check the axis expansion
   stopifnot(is.numeric(expand.y))
@@ -139,7 +140,7 @@ setMethod(
     ##Setup the df for plotting
     types <- c("Unique", "Duplicated")
     df$Unique <- df$Percentage * df[[y_col]] / 100
-    df$Unique <- round(df$Unique, log10(scaleY))
+    df$Unique <- round(df$Unique, log10(divBy))
     df$Duplicated <- df[[y_col]] - df$Unique
     df <- df[c("Filename", types)]
     df <- tidyr::gather(df, "Type", !!sym(y_col), one_of(types))
@@ -180,8 +181,8 @@ setMethod(
   "plotReadTotals", signature = "FastpDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    scalePaired  = TRUE, scaleY = 1e6, fillScale = NULL, labMin = 0.05,
-    status = TRUE, labVjust = 0.5, labFill = "white", plotTheme = theme(),
+    adjPaired  = TRUE, divBy = 1e6, scaleFill = NULL, labMin = 0.05,
+    status = TRUE, labelVJ = 0.5, labelFill = "white", plotTheme = theme(),
     vertBars = FALSE, plotlyLegend = FALSE, expand.y = c(0, 0.05), ...
   ){
 
@@ -210,11 +211,11 @@ setMethod(
     paired <- getModule(x, "paired")
     df <- dplyr::left_join(df, paired, by = "Filename")
     y_col <- "Read Totals"
-    if (scaleY != 1) y_col <- paste0("Read Totals (x", comma(scaleY, 1), ")")
-    df[[y_col]] <- df$total / scaleY
-    if (scalePaired) df[[y_col]][df$paired] <- 0.5 * df[[y_col]][df$paired]
+    if (divBy != 1) y_col <- paste0("Read Totals (x", comma(divBy, 1), ")")
+    df[[y_col]] <- df$total / divBy
+    if (adjPaired) df[[y_col]][df$paired] <- 0.5 * df[[y_col]][df$paired]
     df <- mutate(df, cumsum = cumsum(!!sym(y_col)), .by = Filename)
-    df$label_y <- df$cumsum - (1 - labVjust) * df[[y_col]]
+    df$label_y <- df$cumsum - (1 - labelVJ) * df[[y_col]]
 
     ## Drop the suffix, or check the alternate labels
     labels <- .makeLabels(df, labels, pattern = pattern, ...)
@@ -222,16 +223,16 @@ setMethod(
 
     ## Add additional columns for a nice plotly figure
     df$Total <- df$total
-    if (scalePaired) df$Total[df$paired] <- 0.5 * df$Total[df$paired]
+    if (adjPaired) df$Total[df$paired] <- 0.5 * df$Total[df$paired]
     df$Total <- comma(df$Total)
     df[["% Reads"]] <- percent(df$rate, 0.01)
     fill_col <- "Filtering Result"
     names(df) <- gsub("result", fill_col, names(df))
-    if (is.null(fillScale)) {
-      fillScale <- scale_fill_viridis_d(option = "cividis", direction = -1)
+    if (is.null(scaleFill)) {
+      scaleFill <- scale_fill_viridis_d(option = "cividis", direction = -1)
     }
-    stopifnot(is(fillScale, "ScaleDiscrete"))
-    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(scaleFill, "ScaleDiscrete"))
+    stopifnot(scaleFill$aesthetics == "fill")
     stopifnot(is(plotTheme, "theme"))
     fill_col <- sym(fill_col)
     if (!status) fill_col <- NULL
@@ -247,7 +248,7 @@ setMethod(
       scale_y_continuous(
         labels = comma, expand = expansion(rep_len(expand.y, 2))
       ) +
-      fillScale +
+      scaleFill +
       theme_bw() +
       plotTheme
     if (vertBars) p <- p + coord_flip()
@@ -257,7 +258,8 @@ setMethod(
         aes(
           Filename, y = !!sym("label_y"), label = percent(!!sym("rate"), 0.1)
         ),
-        data = dplyr::filter(df, !!sym("rate") >= labMin), fill = labFill, ...
+        data = dplyr::filter(df, !!sym("rate") >= labMin), fill = labelFill,
+        ...
       )
     } else {
       if (!plotlyLegend) p <- p + theme(legend.position = "none")

@@ -27,7 +27,7 @@ plotGcContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   Fastafile,
   n = 1e+06,
   counts = FALSE,
-  colourScale = NULL,
+  scaleColour = NULL,
   lineCols = c("red3", "black"),
   linetype = 1,
   linewidth = 0.5,
@@ -51,8 +51,8 @@ plotGcContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   heat_w = 8,
   pwfCols,
   showPwf = TRUE,
-  fillScale = NULL,
-  colourScale = NULL,
+  scaleFill = NULL,
+  scaleColour = NULL,
   plotlyLegend = FALSE,
   lineCols = RColorBrewer::brewer.pal(12, "Paired"),
   linetype = 1,
@@ -72,7 +72,7 @@ plotGcContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   Fastafile,
   n = 1e+06,
   plotType = "bar",
-  fillScale = NULL,
+  scaleFill = NULL,
   plotlyLegend = FALSE,
   plotTheme = theme(),
   ...
@@ -90,7 +90,7 @@ plotGcContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   Fastafile,
   n = 1e+06,
   plotType = "bar",
-  fillScale = NULL,
+  scaleFill = NULL,
   plotTheme = theme(),
   plotlyLegend = FALSE,
   ...
@@ -138,7 +138,7 @@ GC content}
 \code{counts = TRUE}, otherwise frequencies will be plotted.
 Ignored if calling the function on a FastqcDataList.}
 
-\item{colourScale}{ggplot2 scale for line colours}
+\item{scaleColour}{ggplot2 scale for line colours}
 
 \item{lineCols, linetype, linewidth}{Line colour type and width for observed
 and theoretical GC lines}
@@ -159,7 +159,7 @@ pass, warning, and fail values in plot}
 
 \item{showPwf}{logical(1) Show Pwf Status on the plot}
 
-\item{fillScale}{ggplot2 scale for filling heatmap cells or bars}
+\item{scaleFill}{ggplot2 scale for filling heatmap cells or bars}
 
 \item{plotTheme}{\link[ggplot2]{theme} object}
 }

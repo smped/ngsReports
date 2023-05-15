@@ -35,7 +35,7 @@ plotAdapterContent(
   showPwf = TRUE,
   warn = 5,
   fail = 10,
-  colourScale = NULL,
+  scaleColour = NULL,
   plotlyLegend = FALSE,
   ...
 )
@@ -54,8 +54,8 @@ plotAdapterContent(
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8L,
-  fillScale = NULL,
-  colourScale = NULL,
+  scaleFill = NULL,
+  scaleColour = NULL,
   plotlyLegend = FALSE,
   ...
 )
@@ -65,7 +65,7 @@ plotAdapterContent(
   usePlotly = FALSE,
   labels,
   pattern = ".(fast|fq|bam).*",
-  fillScale = NULL,
+  scaleFill = NULL,
   plotlyLegend = FALSE,
   plotTheme = theme(),
   ...
@@ -82,7 +82,7 @@ plotAdapterContent(
   fail = 10,
   cluster = FALSE,
   dendrogram = FALSE,
-  fillScale = NULL,
+  scaleFill = NULL,
   plotTheme = theme(),
   heat_w = 8L,
   ...
@@ -131,7 +131,7 @@ then the dendrogram will be displayed.}
 
 \item{heat_w}{Width of the heatmap relative to other plot components}
 
-\item{fillScale, colourScale}{scale_fill\* and scale_colour_\* objects}
+\item{scaleFill, scaleColour}{scale_fill\* and scale_colour_\* objects}
 
 \item{plotTheme}{Set theme elements by passing a \link[ggplot2]{theme}}
 }
@@ -180,6 +180,6 @@ guides(colour = "none")
 
 # For FastpData object, the plots are slightly different
 fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
-plotAdapterContent(fp, fillScale = scale_fill_brewer(palette = "Set1"))
+plotAdapterContent(fp, scaleFill = scale_fill_brewer(palette = "Set1"))
 
 }

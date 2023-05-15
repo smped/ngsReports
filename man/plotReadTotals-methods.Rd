@@ -8,21 +8,9 @@
 \alias{plotReadTotals,FastpDataList-method}
 \title{Draw a barplot of read totals}
 \usage{
-plotReadTotals(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pattern = ".(fast|fq|bam|sam).*",
-  ...
-)
+plotReadTotals(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
-\S4method{plotReadTotals}{ANY}(
-  x,
-  usePlotly = FALSE,
-  labels,
-  pattern = ".(fast|fq|bam|sam).*",
-  ...
-)
+\S4method{plotReadTotals}{ANY}(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
 
 \S4method{plotReadTotals}{FastqcDataList}(
   x,
@@ -32,7 +20,7 @@ plotReadTotals(
   duplicated = TRUE,
   bars = c("stacked", "adjacent"),
   vertBars = TRUE,
-  scaleY = 1,
+  divBy = 1,
   barCols = c("red", "blue"),
   expand.y = c(0, 0.02),
   plotlyLegend = FALSE,
@@ -44,13 +32,13 @@ plotReadTotals(
   usePlotly = FALSE,
   labels,
   pattern = ".(fast|fq|bam).*",
-  scalePaired = TRUE,
-  scaleY = 1e+06,
-  fillScale = NULL,
+  adjPaired = TRUE,
+  divBy = 1e+06,
+  scaleFill = NULL,
   labMin = 0.05,
   status = TRUE,
-  labVjust = 0.5,
-  labFill = "white",
+  labelVJ = 0.5,
+  labelFill = "white",
   plotTheme = theme(),
   vertBars = FALSE,
   plotlyLegend = FALSE,
@@ -79,8 +67,9 @@ as "stacked" or "adjacent".}
 
 \item{vertBars}{logical(1) Show bars as vertical or horizontal}
 
-\item{scaleY}{Scale read totals by this value. The default shows the y-axis
-in millions}
+\item{divBy}{Scale read totals by this value. The default shows the y-axis
+in millions for FastpDataList objects, but does not scale FastQC objects,
+for the sake of backwards compatability}
 
 \item{barCols}{Colours for duplicated and unique reads.}
 
@@ -88,18 +77,18 @@ in millions}
 
 \item{plotlyLegend}{logical(1) Show legend on interactive plots}
 
-\item{scalePaired}{Scale read totals by 0.5 when paired}
+\item{adjPaired}{Scale read totals by 0.5 when paired}
 
-\item{fillScale}{ScaleDiscrete function to be applied to the plot}
+\item{scaleFill}{ScaleDiscrete function to be applied to the plot}
 
 \item{labMin}{Only show labels for filtering categories higher than this
-values as a proportion of reads}
+values as a proportion of reads. Set to any number > 1 to turn off labels}
 
 \item{status}{logical(1) Include read status in the plot}
 
-\item{labVjust}{Used to place labels within each bar.}
+\item{labelVJ}{Relative vertical position to labels within each bar.}
 
-\item{labFill}{Passed to \link[ggplot2]{geom_label}}
+\item{labelFill}{Passed to \link[ggplot2]{geom_label}}
 
 \item{plotTheme}{\link[ggplot2]{theme} to be added to the plot}
 }

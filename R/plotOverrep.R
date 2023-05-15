@@ -36,8 +36,8 @@
 #' vectors of length 4. Passed to `scale_*_continuous()`
 #' @param paletteName Name of the palette for colouring the possible sources
 #' of the overrepresented sequences. Must be a palette name from
-#' `RColorBrewer`. Ignored if specifying the fillScale separately
-#' @param fillScale ggplot scale object
+#' `RColorBrewer`. Ignored if specifying the scaleFill separately
+#' @param scaleFill ggplot scale object
 #' @param plotlyLegend Show legend on interactive plots
 #'
 #'
@@ -183,7 +183,7 @@ setMethod(
   "plotOverrep", signature = "FastqcDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
-    showPwf = TRUE, cluster = FALSE, dendrogram = FALSE, fillScale = NULL,
+    showPwf = TRUE, cluster = FALSE, dendrogram = FALSE, scaleFill = NULL,
     paletteName = "Set1", panel_w = 8, expand.x = c(0, 0, 0.05, 0),
     expand.y = rep(0, 4), ...
   ){
@@ -226,14 +226,14 @@ setMethod(
     stopifnot(is.numeric(expand.y), length(expand.y) == 4)
 
     ## Define the palette
-    if (is.null(fillScale)) {
-      fillScale <- scale_fill_brewer(palette = "Set1")
+    if (is.null(scaleFill)) {
+      scaleFill <- scale_fill_brewer(palette = "Set1")
       if (paletteName %in% rownames(RColorBrewer::brewer.pal.info)) {
-        fillScale <- scale_fill_brewer(palette = paletteName)
+        scaleFill <- scale_fill_brewer(palette = paletteName)
       }
     }
-    stopifnot(is(fillScale, "ScaleDiscrete"))
-    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(scaleFill, "ScaleDiscrete"))
+    stopifnot(scaleFill$aesthetics == "fill")
 
     xLab <- "Overrepresented Sequences (% of Total)"
     p <- ggplot(
@@ -243,9 +243,10 @@ setMethod(
       labs(x = xLab,y = c(), fill = src) +
       scale_y_discrete(position = "right", expand = expand.y) +
       scale_x_continuous(expand = expand.x, labels = scales::percent) +
-      fillScale +
-      theme_bw() +
-      theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
+      scaleFill +
+      theme_bw()
+    if (showPwf)
+      p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
     p <- .updateThemeFromDots(p, ...)
 
     ## Prepare the status

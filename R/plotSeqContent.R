@@ -38,9 +38,9 @@
 #' separate by either linetype or linetype
 #' @param bases Which bases to draw on the plot. Also becomes the default
 #' plotting order by setting these as factor levels
-#' @param colourScale Discrete colour scale as a ggplot ScaleDiscrete object
+#' @param scaleColour Discrete colour scale as a ggplot ScaleDiscrete object
 #' If not provided, will default to \link[ggplot2]{scale_colour_manual}
-#' @param lineScale Discrete scale_linetype object. Only relevant if plotting
+#' @param scaleLine Discrete scale_linetype object. Only relevant if plotting
 #' values by linetype
 #' @param plotTheme \link[ggplot2]{theme} object to be applied. Note that all
 #' plots will have \link[ggplot2]{theme_bw} theme applied by default, as well as
@@ -95,10 +95,11 @@ setGeneric(
 )
 #' @rdname plotSeqContent-methods
 #' @export
-setMethod("plotSeqContent", signature = "ANY", function(
-    x, usePlotly = FALSE, labels, pattern, ...){
-  .errNotImp(x)
-}
+setMethod(
+  "plotSeqContent", signature = "ANY",
+  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+    .errNotImp(x)
+  }
 )
 #' @importFrom scales label_percent
 #' @rdname plotSeqContent-methods
@@ -107,7 +108,7 @@ setMethod(
   "plotSeqContent", signature = "FastqcData",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    bases = c("A", "T", "C", "G"), colourScale = NULL, plotTheme = theme(),
+    bases = c("A", "T", "C", "G"), scaleColour = NULL, plotTheme = theme(),
     plotlyLegend = FALSE, expand.x = 0.02, expand.y = c(0, 0.05), ...
   ){
 
@@ -141,12 +142,12 @@ setMethod(
     # df <- zoo::na.locf(df)
 
     ## set colours & theme
-    if (is.null(colourScale)) {
+    if (is.null(scaleColour)) {
       baseCols <- c(`T` = "red", G = "black", A = "green", C = "blue")[bases]
-      colourScale <- scale_colour_manual(values = baseCols)
+      scaleColour <- scale_colour_manual(values = baseCols)
     }
-    stopifnot(is(colourScale, "ScaleDiscrete"))
-    stopifnot(colourScale$aesthetics == "colour")
+    stopifnot(is(scaleColour, "ScaleDiscrete"))
+    stopifnot(scaleColour$aesthetics == "colour")
     stopifnot(is(plotTheme, "theme"))
 
     xLab <- "Position in read (bp)"
@@ -159,7 +160,7 @@ setMethod(
         expand = expansion(rep_len(expand.y, 2))
       ) +
       scale_x_continuous(expand = expansion(rep_len(expand.x, 2))) +
-      colourScale +
+      scaleColour +
       guides(fill = "none") +
       labs(x = xLab, y = yLab) +
       theme_bw() + plotTheme
@@ -181,7 +182,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
     showPwf = TRUE, plotType = c("heatmap", "line", "residuals"),
-    colourScale = NULL, plotTheme = theme(), cluster = FALSE,
+    scaleColour = NULL, plotTheme = theme(), cluster = FALSE,
     dendrogram = FALSE, heat_w = 8, plotlyLegend = FALSE, nc = 2, ...
   ){
 
@@ -295,15 +296,15 @@ setMethod(
         theme_bw() +
         theme(
           legend.position = "none", panel.grid = element_blank(),
-          plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1)),
-          plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
+          plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1))
         ) +
         plotTheme
+      if (showPwf | dendrogram)
+        p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
 
       if (!showPwf) status <- status[0,]
 
-      p <-
-        .prepHeatmap(p, status, dx$segments, usePlotly, heat_w, pwfCols)
+      p <- .prepHeatmap(p, status, dx$segments, usePlotly, heat_w, pwfCols)
 
     }
 
@@ -326,12 +327,12 @@ setMethod(
       df <- subset(df, diff != 0)
 
       ## Set colours for line plots & theme
-      if (is.null(colourScale)) {
+      if (is.null(scaleColour)) {
         baseCols <- c(`T` = "red", G = "black", A = "green", C = "blue")
-        colourScale <- scale_colour_manual(values = baseCols)
+        scaleColour <- scale_colour_manual(values = baseCols)
       }
-      stopifnot(is(colourScale, "ScaleDiscrete"))
-      stopifnot(colourScale$aesthetics == "colour")
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
 
       p <- ggplot(df, aes(Base, Percent, colour = Nt))
       if (showPwf) p <- p + geom_rect(
@@ -347,7 +348,7 @@ setMethod(
         ) +
         scale_x_continuous(expand = c(0, 0)) +
         scale_fill_manual(values = getColours(pwfCols)[levels(status$Status)]) +
-        colourScale +
+        scaleColour +
         labs(x = xLab, y = yLab, colour = "Base") +
         theme_bw() +
         plotTheme
@@ -384,11 +385,11 @@ setMethod(
       df <- left_join(df, status, by = "Filename")
 
       ## Set colours for line plots & theme
-      if (is.null(colourScale)) {
-        colourScale <- scale_colour_brewer(palette = "Paired")
+      if (is.null(scaleColour)) {
+        scaleColour <- scale_colour_brewer(palette = "Paired")
       }
-      stopifnot(is(colourScale, "ScaleDiscrete"))
-      stopifnot(colourScale$aesthetics == "colour")
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
 
       Deviation <- c()
       p <- ggplot(
@@ -401,7 +402,7 @@ setMethod(
         facet_wrap(~Nt) +
         scale_y_continuous(labels = .addPercent) +
         scale_x_continuous(expand = c(0, 0)) +
-        colourScale +
+        scaleColour +
         labs(x = xLab) +
         theme_bw() +
         plotTheme
@@ -410,9 +411,7 @@ setMethod(
         ttip <- c("x", "colour", "label", "status")
         if (!plotlyLegend) p <- p + theme(legend.position = "none")
         p <- suppressMessages(
-          suppressWarnings(
-            plotly::ggplotly(p, tooltip = ttip)
-          )
+          suppressWarnings(plotly::ggplotly(p, tooltip = ttip))
         )
       }
 
@@ -433,8 +432,8 @@ setMethod(
     module = c("Before_filtering", "After_filtering"),
     reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
     moduleBy = c("facet", "linetype"),
-    bases = c("A", "T", "C", "G", "N", "GC"), colourScale = NULL,
-    lineScale = NULL, plotlyLegend = FALSE, plotTheme = theme(),
+    bases = c("A", "T", "C", "G", "N", "GC"), scaleColour = NULL,
+    scaleLine = NULL, plotlyLegend = FALSE, plotTheme = theme(),
     expand.x = 0.02, expand.y = c(0, 0.05), ...
   ) {
 
@@ -470,17 +469,17 @@ setMethod(
     )
     fm <- as.formula(fm)
 
-    if (is.null(colourScale)) {
+    if (is.null(scaleColour)) {
       ## Best guess based on those in a fastp report
       basecols <- c("#807C58", "#601490", "green", "blue", "red","grey20")
       names(basecols) <- c("A", "T", "C", "G", "N", "GC")
-      colourScale <- scale_colour_manual(values = basecols[bases])
+      scaleColour <- scale_colour_manual(values = basecols[bases])
     }
-    stopifnot(is(colourScale, "ScaleDiscrete"))
-    stopifnot(colourScale$aesthetics == "colour")
-    if (is.null(lineScale)) lineScale <- scale_linetype_discrete()
-    stopifnot(is(lineScale, "ScaleDiscrete"))
-    stopifnot(lineScale$aesthetics == "linetype")
+    stopifnot(is(scaleColour, "ScaleDiscrete"))
+    stopifnot(scaleColour$aesthetics == "colour")
+    if (is.null(scaleLine)) scaleLine <- scale_linetype_discrete()
+    stopifnot(is(scaleLine, "ScaleDiscrete"))
+    stopifnot(scaleLine$aesthetics == "linetype")
     stopifnot(is(plotTheme, "theme"))
 
     ## Sort out labels for nicer plotting
@@ -510,7 +509,7 @@ setMethod(
         labels = label_percent(scale = 1), limits = c(0, max(df$Frequency)),
         expand = expansion(rep_len(expand.y, 2))
       ) +
-      colourScale + lineScale +
+      scaleColour + scaleLine +
       theme_bw() + plotTheme
 
     if (usePlotly) {
@@ -535,7 +534,7 @@ setMethod(
     reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
     bases = c("A", "T", "C", "G", "N", "GC"), showPwf = FALSE, pwfCols,
     warn = 10, fail = 20, plotType = c("heatmap", "line", "residuals"),
-    plotlyLegend = FALSE, colourScale = NULL, lineScale = NULL,
+    plotlyLegend = FALSE, scaleColour = NULL, scaleLine = NULL,
     plotTheme = theme(),
     cluster = FALSE, dendrogram = FALSE, heat_w = 8,
     expand.x = c(0.01), expand.y = c(0, 0.05), nc = 2, ...
@@ -591,9 +590,9 @@ setMethod(
     linetype <- NULL
     if (readsBy == "linetype") linetype <- sym("reads")
     if (moduleBy == "linetype") linetype <- sym("Module")
-    if (is.null(lineScale)) lineScale <- scale_linetype_discrete()
-    stopifnot(is(lineScale, "ScaleDiscrete"))
-    stopifnot(lineScale$aesthetics == "linetype")
+    if (is.null(scaleLine)) scaleLine <- scale_linetype_discrete()
+    stopifnot(is(scaleLine, "ScaleDiscrete"))
+    stopifnot(scaleLine$aesthetics == "linetype")
 
     ## Axis labels
     xLab <- "Position in read (bp)"
@@ -707,10 +706,11 @@ setMethod(
         theme_bw() +
         theme(
           legend.position = "none", panel.grid = element_blank(),
-          plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1)),
-          plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points")
+          plot.title = element_text(hjust = 0.5 * heat_w / (heat_w + 1))
         ) +
         plotTheme
+      if (showPwf | dendrogram)
+        p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
       tt <- c(bases, "fqName", "Position")
       if (!showPwf) status_df <- status_df[0, ]
       p <- .prepHeatmap(p, status_df, dx$segments, usePlotly, heat_w, pwfCols, tt)
@@ -738,13 +738,13 @@ setMethod(
       rect_df$End <- x_lim[[2]]
 
       ## Set colours for line plots & theme
-      if (is.null(colourScale)) {
+      if (is.null(scaleColour)) {
         baseCols <- c("#807C58", "#601490", "green", "blue", "red", "grey20")
         names(baseCols) <- c("A", "T", "C", "G", "N", "GC")
-        colourScale <- scale_colour_manual(values = baseCols[bases])
+        scaleColour <- scale_colour_manual(values = baseCols[bases])
       }
-      stopifnot(is(colourScale, "ScaleDiscrete"))
-      stopifnot(colourScale$aesthetics == "colour")
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
 
       names(df) <- gsub("position", "Position", names(df))
       expand.y <- rep_len(expand.y, 2)
@@ -780,7 +780,7 @@ setMethod(
         ) +
         scale_x_continuous(limits = x_lim, expand = rep_len(0, 4)) +
         scale_fill_manual(values = getColours(pwfCols)[levels(status_df$Status)]) +
-        colourScale + lineScale +
+        scaleColour + scaleLine +
         ggtitle(main) +
         labs(x = xLab, y = yLab, colour = "Base") +
         theme_bw() + plotTheme
@@ -814,18 +814,18 @@ setMethod(
       df <- left_join(df, status_df, by = "Filename")
 
       ## Set colours for line plots & theme
-      if (is.null(colourScale)) {
+      if (is.null(scaleColour)) {
         n <- length(labels)
         if (n <= 9) {
-          colourScale <- scale_colour_brewer(palette = "Set1")
+          scaleColour <- scale_colour_brewer(palette = "Set1")
         } else {
           cols <- hcl.colors(n, "Dark 2")
           names(cols) <- labels
-          colourScale <- scale_colour_manual(values = cols)
+          scaleColour <- scale_colour_manual(values = cols)
         }
       }
-      stopifnot(is(colourScale, "ScaleDiscrete"))
-      stopifnot(colourScale$aesthetics == "colour")
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
 
       ## These settings are specific to plotType == "line" so should stay here
       fm <- dplyr::case_when(
@@ -845,7 +845,7 @@ setMethod(
         geom_line(...) + facets +
         scale_y_continuous(labels = label_percent(scale = 1)) +
         scale_x_continuous(expand = expansion(rep_len(expand.x, 2))) +
-        colourScale + lineScale +
+        scaleColour + scaleLine +
         ggtitle(main) +
         labs(x = xLab) +
         theme_bw() + plotTheme

@@ -18,7 +18,7 @@
 #' if both `cluster` and `dendrogram` are specified as `TRUE` the dendrogram
 #' will be displayed.
 #' @param heat_w Width of the heatmap relative to other plot components
-#' @param fillScale Continuous scale used to fill heatmap cells. Defaults to the
+#' @param scaleFill Continuous scale used to fill heatmap cells. Defaults to the
 #' "inferno" palette
 #' @param ... Passed to `geom*` functions during plotting
 #'
@@ -147,7 +147,7 @@ setMethod(
   "plotInsertSize", signature = "FastpDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    plotType = c("heatmap"), plotTheme = theme(), fillScale = NULL,
+    plotType = c("heatmap"), plotTheme = theme(), scaleFill = NULL,
     cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...
   ){
 
@@ -158,13 +158,14 @@ setMethod(
     df <- dplyr::filter(df, !!sym("insert_size") <= maxInsert)
 
     labels <- .makeLabels(df, labels, pattern, "Filename")
+    labels <- labels[names(labels) %in% df$Filename]
     key <- names(labels)
 
-    if (is.null(fillScale)) {
-      fillScale <- scale_fill_viridis_c(labels = percent, option = "inferno")
+    if (is.null(scaleFill)) {
+      scaleFill <- scale_fill_viridis_c(labels = percent, option = "inferno")
     }
-    stopifnot(is(fillScale, "ScaleContinuous"))
-    stopifnot(fillScale$aesthetics == "fill")
+    stopifnot(is(scaleFill, "ScaleContinuous"))
+    stopifnot(scaleFill$aesthetics == "fill")
     stopifnot(is(plotTheme, "theme"))
     plotType <- match.arg(plotType)
 
@@ -201,9 +202,11 @@ setMethod(
         ggtitle("Insert Size Distribution") +
         scale_x_continuous(expand = rep_len(0, 4)) +
         scale_y_discrete(expand = rep_len(0, 4), position = "right") +
-        fillScale +
+        scaleFill +
         theme_bw() +
         plotTheme
+      if (dendrogram)
+        p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))
 
       tt <- c("Filename", "Insert Size", "%", "Total")
       p <- .prepHeatmap(
