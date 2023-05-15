@@ -28,9 +28,11 @@ reference:
     - plotBaseQuals
     - plotDupLevels
     - plotGcContent
+    - plotInsertSize
     - plotKmers
     - plotNContent
     - plotOverrep
+    - plotReadTotals
     - plotFastqcPCA
     - starts_with("plotSeq")
     - writeHtmlReport
