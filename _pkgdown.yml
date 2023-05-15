@@ -28,6 +28,7 @@ reference:
     - plotBaseQuals
     - plotDupLevels
     - plotGcContent
+    - plotInsertSize
     - plotKmers
     - plotNContent
     - plotOverrep
