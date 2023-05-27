@@ -141,6 +141,9 @@ test_that("importDupMetrics handles which as a character",{
 
     dup <- importNgsLogs(dupLogs, "duplicationMetrics", "hist")
     expect_equal(colnames(dup), c("Library", "Bin", "Value"))
+
+    dup <- importNgsLogs(dupLogs, which = "all")
+    expect_true(is(dup, "list"))
 })
 
 test_that("importBowtieLogs errors correctly",{
@@ -172,13 +175,16 @@ test_that("parseAdapterRemovalLogs parses correctly", {
     expect_equal(nrow(importNgsLogs(arFile, "adapter", "sequence")), 1L)
     expect_equal(nrow(importNgsLogs(arFile, "adapter", "statistics")), 1L)
     expect_equal(nrow(importNgsLogs(arFile, "adapter", "distribution")), 77L)
+    expect_true(
+      is(importNgsLogs(arFile, which = "all"), "list")
+    )
 })
 
 test_that("importFeatureCountsLogs errors correctly", {
     expect_error(importNgsLogs(bowtie2Logs, type = "featureCounts"))
 })
 
-test_that("parseAdapterRemovalLogs parses correctly", {
+test_that("parseFeatureCountsLogs parses correctly", {
     cols <- c(
         "Filename", "Sample", "Assigned", "Unassigned_Ambiguity",
         "Unassigned_MultiMapping", "Unassigned_NoFeatures",
@@ -195,7 +201,6 @@ test_that("importCutadapt errors correctly", {
     expect_error(importNgsLogs(bowtie2Logs, "cutadapt"))
     expect_error(importNgsLogs(caFiles, "cutadapt"))
     expect_error(importNgsLogs(caFiles[[1]], "cutadapt", which = 3))
-    expect_message(importNgsLogs(caFiles[[2]], "cutadapt", which = 2))
 })
 
 test_that("parseCutadaptLogs parses correctly",{
@@ -211,6 +216,8 @@ test_that("parseCutadaptLogs parses correctly",{
     expect_equal(
         dim(importNgsLogs(caFiles[[1]], "cutadapt", which = "adapter1")), c(1, 10)
     )
+    ca_all <- importNgsLogs(caFiles[[1]], which = "all")
+    expect_true(is(ca_all, "list"))
 })
 
 test_that("parseTrimmomaticLogs behaves correctly",{

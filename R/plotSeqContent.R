@@ -438,7 +438,9 @@ setMethod(
   ) {
 
     module <- match.arg(module, several.ok = TRUE)
+    nMod = length(module)
     reads <- match.arg(reads, several.ok = TRUE)
+    nReads <- length(reads)
     data <- lapply(module, function(i) getModule(x, i)[reads])
     names(data) <- module
     data <- lapply(data, dplyr::bind_rows)
@@ -459,8 +461,8 @@ setMethod(
       "Cannot set the same plotting parameter to both reads and module"
     )
     lt <- NULL
-    if (readsBy == "linetype") lt <- sym("fqName")
-    if (moduleBy == "linetype") lt <- sym("Module")
+    if (readsBy == "linetype" & nReads > 1) lt <- sym("fqName")
+    if (moduleBy == "linetype" & nMod > 1) lt <- sym("Module")
     fm <- dplyr::case_when(
       readsBy == "facet" & moduleBy == "facet" ~ "Module ~ fqName",
       readsBy != "facet" & moduleBy == "facet" ~ ". ~ Module",
@@ -542,7 +544,9 @@ setMethod(
 
     ## Check args
     mod <- match.arg(module, several.ok = TRUE) # We can't plot B4/After if we cluster
+    nMod <- length(mod)
     reads <- match.arg(reads, several.ok = TRUE)
+    nReads <- length(reads)
 
     ## Setup the data
     data <- lapply(mod, function(m) getModule(x, m)[reads])
@@ -585,11 +589,11 @@ setMethod(
     ## Layout for line plots
     readsBy <- match.arg(readsBy)
     moduleBy <- match.arg(moduleBy)
-    if (readsBy == moduleBy & plotType != "heatmap")
+    if (all(readsBy == moduleBy, plotType != "heatmap", nMod > 1, nReads > 1))
       stop("Cannot set reads and module to the same parameter for line plots")
     linetype <- NULL
-    if (readsBy == "linetype") linetype <- sym("reads")
-    if (moduleBy == "linetype") linetype <- sym("Module")
+    if (readsBy == "linetype" & nReads > 1) linetype <- sym("reads")
+    if (moduleBy == "linetype" & nMod > 1) linetype <- sym("Module")
     if (is.null(scaleLine)) scaleLine <- scale_linetype_discrete()
     stopifnot(is(scaleLine, "ScaleDiscrete"))
     stopifnot(scaleLine$aesthetics == "linetype")
@@ -754,8 +758,8 @@ setMethod(
 
       ## These settings are specific to plotType == "line" so should stay here
       fm <- dplyr::case_when(
-        readsBy == "facet" ~ "Filename ~ reads",
-        moduleBy == "facet" ~ "Filename ~ Module",
+        readsBy == "facet" & nReads > 1 ~ "Filename ~ reads",
+        moduleBy == "facet" & nMod > 1 ~ "Filename ~ Module",
         TRUE ~ "Filename ~ ."
       )
       facets <- facet_grid(as.formula(fm))
@@ -803,7 +807,7 @@ setMethod(
       )
       names(df) <- gsub("position", "Position", names(df))
       ## Calculate the Residuals for each base/position
-      df <- group_by(df, Position, Base)
+      df <- group_by(df, Position, Base, reads)
       df <- dplyr::mutate(df, Residuals = Percent - mean(Percent))
       df <- ungroup(df)
       df[["Residuals"]] <- round(100 * df[["Residuals"]], 2)
@@ -829,8 +833,8 @@ setMethod(
 
       ## These settings are specific to plotType == "line" so should stay here
       fm <- dplyr::case_when(
-        readsBy == "facet" ~ "Base ~ reads",
-        moduleBy == "facet" ~ "Base ~ Module",
+        readsBy == "facet" & nReads > 1~ "Base ~ reads",
+        moduleBy == "facet" & nMod > 1 ~ "Base ~ Module",
         TRUE ~ "Base ~ ."
       )
       facets <- facet_grid(as.formula(fm))

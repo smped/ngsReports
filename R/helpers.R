@@ -11,7 +11,7 @@
 #' @param x A character vector
 #' @param firstRowToNames logical Should the first element be used for column
 #' names
-#' @param tab character The string used torepresent the tab symbol
+#' @param tab character The string used to represent the tab symbol
 #'
 #' @return
 #' A data frame

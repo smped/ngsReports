@@ -19,7 +19,8 @@ type for all implemented types.}
 
 \item{which}{Which element of the parsed object to return. Ignored in all
 file types except when \code{type} is set to duplicationMetrics, cutadapt or
-adapterRemoval. See details for possible values}
+adapterRemoval. See details for possible values.
+To return all elements, set this value to 'all'}
 
 \item{stripPaths}{logical(1). Remove paths from the Filename column}
 }
