@@ -43,7 +43,8 @@
 #' type for all implemented types.
 #' @param which Which element of the parsed object to return. Ignored in all
 #' file types except when `type` is set to duplicationMetrics, cutadapt or
-#' adapterRemoval. See details for possible values
+#' adapterRemoval. See details for possible values.
+#' To return all elements, set this value to 'all'
 #' @param stripPaths logical(1). Remove paths from the Filename column
 #'
 #' @return A `tibble`.
@@ -84,18 +85,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     "trimmomatic",
     "umitoolsDedup"
   )
-
   type <- match.arg(type, c("autoDetect", possTypes))
-
-
-  ## Sort out the which argument
-  if (missing(which)) {
-    which <- 1L
-    if (type == "adapterRemoval") {
-      message("Defaulting to the statistics module for Adapter Removal")
-      which <- 3L
-    }
-  }
 
   ## Load the data
   data <- suppressWarnings(lapply(x, readLines))
@@ -106,6 +96,15 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   if (type == "autoDetect") {
     type <- unlist(lapply(data, .getToolName, possTypes = possTypes))
     type <- unique(type)
+  }
+
+  ## Sort out the which argument
+  if (missing(which)) {
+    which <- 1L
+    if (type == "adapterRemoval") {
+      message("Defaulting to the statistics module for Adapter Removal")
+      which <- 3L
+    }
   }
 
   ## Change to title case for easier parsing below
@@ -137,10 +136,10 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   ## Parse the data using the helpers defined as private functions
   if (is.character(which)) which <- paste0("'", which, "'")
   pFun <- paste0(".parse", type, "Logs(data, which = ", which, ")")
-  df <- eval(parse(text = pFun))
-
-  ## Return a tibble
-  as_tibble(df)
+  out <- eval(parse(text = pFun))
+  ## Return a tibble if only one module
+  if (!grepl("all", which)) out <- as_tibble(out)
+  out
 
 }
 
@@ -251,12 +250,15 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
       all(names(.splitByTab(x[metricsHeader + 1])) == metricCols)
 
     ## Check the HISTOGRAM data
-    histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
-    stopifnot(length(histHeader) == 1) # Must appear only once
-    histCols <- c("BIN")
-    checkHistCols <-
-      all(names(.splitByTab(x[histHeader + 1]))[seq_along(histCols)] == histCols)
-
+    checkHistCols <- TRUE
+    if (any(grepl("HISTOGRAM", x))) {
+      histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
+      stopifnot(length(histHeader) == 1) # Must appear only once
+      histCols <- c("BIN")
+      checkHistCols <- all(
+        names(.splitByTab(x[histHeader + 1]))[seq_along(histCols)] == histCols
+      )
+    }
     all(checkMetCols, checkHistCols)
 
   } else FALSE #give false value if missing
@@ -684,7 +686,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 .parseDuplicationMetricsLogs <- function(data, which = 1){
 
   if (is.character(which))
-    which <- match.arg(which, c("metrics", "histogram"))
+    which <- match.arg(which, c("metrics", "histogram", "all"))
   if (is.numeric(which)) stopifnot(which %in% c(1, 2))
 
   ## Collect the metrics from all files as a tibble
@@ -709,6 +711,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   metrics <- as_tibble(metrics)
 
   ## Collect the histogram data from all files as a tibble
+  ## This may not be present, so this is an optional step
   histData <- lapply(data, function(x){
     # ## Find the library name
     cmd <- stringr::str_subset(x, "(INPUT|input)")
@@ -719,25 +722,31 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
     ## Find the header then remove up until that line
     histHeader <- grep("HISTOGRAM\tjava.lang.Double", x)
-    x <- x[-seq_len(histHeader)]
-    ## Remove any blank lines (this is the last line)
-    x <- x[!grepl("^$", x)]
-    df <- .splitByTab(x)
-    df$LIBRARY <- ip
-    dplyr::select(df, "LIBRARY", everything())
+    df <- NULL
+    if (length(histHeader)) {
+      x <- x[-seq_len(histHeader)]
+      ## Remove any blank lines (this is the last line)
+      x <- x[!grepl("^$", x)]
+      df <- .splitByTab(x)
+      df$LIBRARY <- ip
+      df <- dplyr::select(df, "LIBRARY", everything())
+    }
+    df
   })
   histData <- dplyr::bind_rows(histData)
   ## Ensure the correct types
-  histData <- lapply(
-    histData,
-    function(x) {
-      any_na <- any(is.na(suppressWarnings(as.numeric(x))))
-      if (!any_na) x <- as.numeric(x)
-      x
-    }
-  )
-  histData$BIN <- as.integer(histData$BIN)
-  histData <- as_tibble(histData)
+  if (ncol(histData)) {
+    histData <- lapply(
+      histData,
+      function(x) {
+        any_na <- any(is.na(suppressWarnings(as.numeric(x))))
+        if (!any_na) x <- as.numeric(x)
+        x
+      }
+    )
+    histData$BIN <- as.integer(histData$BIN)
+    histData <- as_tibble(histData)
+  }
 
   ## Setup the output, then format the column names
   out <- list(metrics = metrics, histogram = histData)
@@ -748,7 +757,8 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
       colnames(x) <- stringr::str_to_title(colnames(x))
       x
     })
-  out[[which]]
+  if (which != "all") out <- out[[which]]
+  out
 }
 
 #' @title Parse data from Adapter Removal log files
@@ -771,7 +781,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   ## No parsing of the version number has been implemented (1st row)
   ## Note that for each file, 'distribution' will return a tibble
   ## with nrow > 1
-  modNames <- c("sequences", "settings", "statistics", "distribution")
+  modNames <- c("sequences", "settings", "statistics", "distribution", "all")
   if (is.character(which)) which <- match.arg(which, modNames)
   if (is.numeric(which)) stopifnot(which %in% seq_len(4))
 
@@ -833,16 +843,25 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
       statistics = statistics,
       distribution = distribution
     )
-    out[[which]]
+    if (which != 'all') out <- out[which]
+    out
   }
 
   arOut <- lapply(data, .parseArSingle, which = which)
-  arOut <- lapply(names(arOut), function(x){
-    x <- dplyr::mutate(arOut[[x]], Filename = x)
-    dplyr::select(x, Filename, everything())
-  })
-  ## Now bind all tibbles & returns
-  bind_rows(arOut)
+  nMod <- unique(vapply(arOut, length, integer(1)))
+  stopifnot(length(nMod) == 1)
+  arOut <- lapply(
+    seq_len(nMod),
+    function(i) {
+      dplyr::bind_rows(lapply(arOut, function(x) x[[i]]), .id = "Filename")
+    }
+  )
+  if (which == 'all') {
+    names(arOut) <- modNames[seq_len(4)]
+  } else {
+    arOut <- arOut[[1]]
+  }
+  arOut
 
 }
 
@@ -864,21 +883,19 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   ## configuration. The only stable name is `summary`.
   ## For this reason module name checking will be handled inside the
   ## parsing function
+  isMinimal <- vapply(data, length, integer(1)) == 2
+  if (sum(isMinimal) > 0 & mean(isMinimal) != 1) stop(
+    "A mix of minimal and full cutadapt reports was detected"
+  )
+  if (all(isMinimal)) which <- 1
 
   .parseCutAdaptSingle <- function(x, which){
 
     ## Check if it is a minimal report & return the df if TRUE
-    isMinimal <- length(x) == 2
-    if (isMinimal) {
+    if (length(x) == 2) {
       df <- .splitByTab(x)
       ## Values may sometimes be > 2^31 so convert to doubles
       df <- dplyr::mutate_if(df, colnames(df) != "status", as.numeric)
-      if (which != 1) message(
-        paste0(
-          "Minimal report provided.",
-          "The 'which' argument will be ignored"
-        )
-      )
       return(df)
     }
 
@@ -893,10 +910,12 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     if (is.numeric(which) & which > length(foundMods)) stop(
       "Invalid module selected. The maximum number is ", length(foundMods)
     )
-    if (is.character(which) & sum(grepl(which, foundMods)) != 1) stop(
-      "Unable to determine module. Valid modules are ",
-      paste(foundMods, collapse = "/")
-    )
+    if (is.character(which) & which != "all") {
+      if (sum(grepl(which, foundMods)) != 1) stop(
+        "Unable to determine module. Valid modules are ",
+        paste(foundMods, collapse = "/")
+      )
+    }
 
     ## Now split into the modules
     x <- split(x, f = cumsum(mods))
@@ -996,16 +1015,31 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     )
 
     ## Return the required module
-    out[[which]]
+    if (which != "all") out <- out[which]
+    out
   }
 
   caOut <- lapply(data, .parseCutAdaptSingle, which = which)
-  caOut <- lapply(names(caOut), function(x){
-    x <- dplyr::mutate(caOut[[x]], Filename = x)
-    dplyr::select(x, Filename, everything())
-  })
-  ## Now bind all tibbles & returns
-  bind_rows(caOut)
+  if (all(isMinimal)) {
+    caOut <- bind_rows(caOut, .id = "Filename")
+    return(caOut)
+  }
+
+  nMod <- unique(vapply(caOut, length, integer(1)))
+  stopifnot(length(nMod) == 1)
+  modNames <- as.character(unlist(lapply(caOut, names)))
+  caOut <- lapply(
+    seq_len(nMod),
+    function(i) {
+      dplyr::bind_rows(lapply(caOut, function(x) x[[i]]), .id = "Filename")
+    }
+  )
+  if (which == 'all') {
+    names(caOut) <- modNames
+  } else {
+    caOut <- caOut[[1]]
+  }
+  caOut
 
 }
 

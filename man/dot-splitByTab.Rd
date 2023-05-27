@@ -12,7 +12,7 @@
 \item{firstRowToNames}{logical Should the first element be used for column
 names}
 
-\item{tab}{character The string used torepresent the tab symbol}
+\item{tab}{character The string used to represent the tab symbol}
 }
 \value{
 A data frame
