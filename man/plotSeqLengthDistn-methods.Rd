@@ -61,6 +61,7 @@ plotSeqLengthDistn(
   scaleFill = NULL,
   scaleColour = NULL,
   heatCol = hcl.colors(50, "inferno"),
+  plotlyLegend = FALSE,
   ...
 )
 }

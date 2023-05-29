@@ -182,7 +182,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", counts = FALSE,
     plotType = c("heatmap", "line", "cdf"), cluster = FALSE, dendrogram = FALSE,
     heat_w = 8, pwfCols, showPwf = TRUE,  scaleFill = NULL, scaleColour = NULL,
-    heatCol = hcl.colors(50, "inferno"), ...
+    heatCol = hcl.colors(50, "inferno"), plotlyLegend = FALSE, ...
   ){
 
     mod <- "Sequence_Length_Distribution"
@@ -263,11 +263,10 @@ setMethod(
 
       if (usePlotly) {
         ttip <- c("x", "y", "colour")
+        if (!plotlyLegend) p <-  p + theme(legend.position = "none")
         p <- suppressMessages(
           suppressWarnings(
-            plotly::ggplotly(
-              p + theme(legend.position = "none"), tooltip = ttip
-            )
+            plotly::ggplotly(p, tooltip = ttip)
           )
         )
       }
