@@ -595,7 +595,7 @@ setMethod(
   else{
     df <- dplyr::filter(df, Type == adapterType)
   }
-  df$Percent <- round(df$Percent, 2)
+  df$Percent <- round(df$Percent, 3)
   ## Set any binned values to be continuous
   df$Position <- lapply(
     df$Position,
