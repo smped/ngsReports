@@ -610,13 +610,15 @@ setAs(".FastpFile", "FastpData", function(from){
     ## Check for the required values
     reqVals <- c(
         "Duplication_Level",
-        "Percentage_of_deduplicated",
+        ## "Percentage_of_deduplicated", # Omitted with FastQC > 0.12
         "Percentage_of_total"
     )
-    stopifnot(reqVals %in% names(df))
+    cols <- names(df)
+    stopifnot(reqVals %in% cols)
 
     ## Convert percentages to numeric
-    df[reqVals[-1]] <- lapply(df[reqVals[-1]], as.numeric)
+    num_cols <- setdiff(cols, "Duplication_Level")
+    df[num_cols] <- lapply(df[num_cols], as.numeric)
 
     ## Return a list with both values
     list(
