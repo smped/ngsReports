@@ -34,7 +34,7 @@ FastqcDataList <- function(x){
     stopifnot(length(x) > 0)
     if (!any(is(x, "character"), is(x, "list"))) .errNotImp(x)
 
-    if (is.character(x)){
+    if (is.character(x)) {
         fls <- lapply(x, .FastqcFile)
         fdl <- lapply(fls, as, "FastqcData")
         names(fdl) <- x
