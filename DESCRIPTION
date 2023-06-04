@@ -1,6 +1,6 @@
 Package: ngsReports
-Version: 2.3.3
-Date: 2023/05/30
+Version: 2.3.4
+Date: 2023/06/05
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Stevie", "Pederson", 
