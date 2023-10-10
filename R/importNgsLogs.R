@@ -8,7 +8,7 @@
 #' @details Imports one or more log files as output by tools such as:
 #' `bowtie`, `bowtie2`, `featureCounts`, `Hisat2`,
 #' `STAR`, `picard MarkDuplicates`, `cutadapt`, `flagstat`, `macs2Callpeak`
-#' `Adapter Removal`, `trimmomatic` `quast` or `busco`.
+#' `Adapter Removal`, `trimmomatic`, `rnaseqcMetrics`, `quast` or `busco`.
 #' `autoDetect` can be used to detect the log type by parsing the file.
 #'
 #' The featureCounts log file corresponds to the `counts.out.summary`,
@@ -38,7 +38,7 @@
 #' @param type `character`. The type of file being imported. Can be one of
 #' `bowtie`, `bowtie2`, `hisat2`, `star`, `flagstat`,
 #' `featureCounts`, `duplicationMetrics`, `cutadapt`, `umitoolsDedup`,
-#' `macs2Callpeak`, `adapterRemoval`, `quast` or `busco`
+#' `macs2Callpeak`, `adapterRemoval`, `rnaseqcMetrics`, `quast` or `busco`
 #' Defaults to `type = "auto"` which will automatically detect the file
 #' type for all implemented types.
 #' @param which Which element of the parsed object to return. Ignored in all
@@ -71,8 +71,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   ## Check for a valid filetype
   possTypes <- c(
     "adapterRemoval",
-    "bowtie",
-    "bowtie2",
+    "bowtie", "bowtie2",
     "busco",
     "cutadapt",
     "duplicationMetrics",
@@ -80,6 +79,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     "flagstat",
     "hisat2",
     "macs2Callpeak",
+    "rnaseqcMetrics",
     "quast",
     "star",
     "trimmomatic",
@@ -471,6 +471,23 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   isComplete <- grepl("job finished", x[[n]])
   hasData <- sum(grepl("INFO", x)) > 0
   all(isUmiTools, isDedup, isComplete, hasData)
+}
+
+#' @title Check for correct structure of rnaseqc metrics
+#' @description Check for correct structure of rnaseqc metrics files
+#' @details Checks for all the required fields in the lines provided
+#' @param x Character vector as output when readLines to a supplied file
+#' @return logical(1)
+#' @keywords internal
+.isValidRnaseqcMetricsLog <- function(x){
+  ## Just check some key fields which should distinguish these files
+  hasSampleFirst <- which(grepl("Sample", x)) == 1
+  rt_pattern <- "(Exon|Intron|Intergen|Intragen)ic Rate"
+  hasAllRates <- sum(grepl(paste0("^", rt_pattern), x)) == 4
+  hasAllHQRates <- sum(grepl(paste("High Quality", rt_pattern), x)) == 4
+  tot_pattern <- "Total (Bases|Reads|Mapped)"
+  hasAllTotals <- sum(grepl(tot_pattern, x)) == 3
+  all(hasSampleFirst, hasAllRates, hasAllHQRates, hasAllTotals)
 }
 
 #' @title Parse data from Bowtie log files
@@ -1567,5 +1584,26 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
   )
   df$duration <- lubridate::as.duration(df$duration)
   df
+
+}
+
+#' @title Parse data from rnaseqc metrics files
+#' @description Parse data from rnaseqc metrics files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
+#' @return data.frame
+#' @importFrom stats setNames
+#' @keywords internal
+.parseRnaseqcMetricsLogs <- function(data, ...){
+
+  df_list <- lapply(data, .splitByTab, firstRowToNames = FALSE)
+  tbl_list <- lapply(df_list, \(x) setNames(as.list(x[[2]]), x[[1]]))
+  tbl_list <- lapply(tbl_list, tibble::as_tibble) # Respects column names
+  tbl <- dplyr::bind_rows(tbl_list, .id = "Filename")
+  nm <- names(tbl)
+  i <- setdiff(nm, c("Sample", "Filename"))
+  tbl[i] <- lapply(tbl[i], as.numeric)
+  tbl
 
 }
