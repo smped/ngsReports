@@ -3,9 +3,9 @@ test_that("Fails on file which is not fasta",{
     expect_error(estGcDistn(fl))
 })
 
-faFile <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package = "ngsReports")
+faFile <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta.gz", package = "ngsReports")
 
-if (requireNamespace("truncnorm", quietly = TRUE)){
+if (requireNamespace("truncnorm", quietly = TRUE)) {
 
     test_that("Character method works as expected",{
         # This implicitly tests the DNAStringSet method

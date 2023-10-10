@@ -71,7 +71,7 @@
 #' # The default plot
 #' plotSeqContent(fdl)
 #'
-#' fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+#' fp <- FastpData(system.file("extdata/fastp.json.gz", package = "ngsReports"))
 #' plotSeqContent(fp)
 #' plotSeqContent(fp, moduleBy = "linetype", bases = c("A", "C", "G", "T"))
 #'

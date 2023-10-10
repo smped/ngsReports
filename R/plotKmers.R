@@ -58,7 +58,7 @@
 #' plotKmers(fdl[[1]])
 #'
 #' # Use a FastpData object
-#' fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+#' fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
 #' fp <- FastpData(fl)
 #' plotKmers(fp, size = 2)
 #' plotKmers(

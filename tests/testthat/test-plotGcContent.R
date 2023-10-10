@@ -35,7 +35,7 @@ test_that("plotGcContent outputs correct objects", {
 
 test_that("plotGcContent works for Fastp structures", {
 
-  fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+  fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
   fpl <- FastpDataList(fl)
 
   p <- plotGcContent(fpl[[1]])

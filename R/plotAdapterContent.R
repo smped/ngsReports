@@ -73,7 +73,7 @@
 #' guides(colour = "none")
 #'
 #' # For FastpData object, the plots are slightly different
-#' fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+#' fp <- FastpData(system.file("extdata/fastp.json.gz", package = "ngsReports"))
 #' plotAdapterContent(fp, scaleFill = scale_fill_brewer(palette = "Set1"))
 #'
 #' @docType methods

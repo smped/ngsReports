@@ -16,7 +16,7 @@ test_that("Correct values cannot be assigned",{
 })
 
 test_that("Correct values returned for fastp files", {
-    fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+    fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
     fp <- FastpData(fl)
     nm <- c(
         read1 = "S010_20170320003-4_ffpedna_pan-cancer-v1_S10_R1_001.fastq",

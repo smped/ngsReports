@@ -32,7 +32,7 @@ test_that("plotAdapterContent outputs correct object classes", {
 
 test_that("FastpData plots correctly", {
 
-  fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+  fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
   fp <- FastpData(fl)
   p <- plotAdapterContent(fp)
   expect_true(is(p, "gg"))
@@ -44,7 +44,7 @@ test_that("FastpData plots correctly", {
 
 test_that("FastpDataList plots correctly", {
 
-  fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+  fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
   fp <- FastpData(fl)
   fpl <- FastpDataList(path(fp))
   p <- plotAdapterContent(fpl)

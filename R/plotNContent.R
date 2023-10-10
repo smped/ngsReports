@@ -47,7 +47,7 @@
 #' @examples
 #'
 #' ## Using a Fastp Data object
-#' fl <- system.file("extdata/fastp.json", package = "ngsReports")
+#' fl <- system.file("extdata/fastp.json.gz", package = "ngsReports")
 #' fp <- FastpData(fl)
 #' plotNContent(fp)
 #' plotNContent(

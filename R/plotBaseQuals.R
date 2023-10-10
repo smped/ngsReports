@@ -71,7 +71,7 @@
 #' plotBaseQuals(fdl[[1]])
 #'
 #' # FastpData objects have qyalities by base
-#' fp <-  FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+#' fp <-  FastpData(system.file("extdata/fastp.json.gz", package = "ngsReports"))
 #' plotBaseQuals(
 #'   fp, plotTheme = theme(plot.title = element_text(hjust = 0.5))
 #' )

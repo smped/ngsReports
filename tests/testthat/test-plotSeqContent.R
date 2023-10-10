@@ -3,7 +3,7 @@ packageDir <- system.file("extdata", package = "ngsReports")
 fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
-fp <- FastpData(system.file("extdata/fastp.json", package = "ngsReports"))
+fp <- FastpData(system.file("extdata/fastp.json.gz", package = "ngsReports"))
 fpl <- FastpDataList(path(fp))
 
 test_that("plotSeqContent outputs correct objects", {

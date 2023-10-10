@@ -113,7 +113,7 @@ test_that("autodetect works", {
 
     expect_equal(as.character(type), tools)
 
-    f <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta", package = "ngsReports")
+    f <- system.file("extdata", "Athaliana.TAIR10.tRNA.fasta.gz", package = "ngsReports")
     expect_error(importNgsLogs(f), "No matching file type was found")
 
 })
@@ -269,3 +269,37 @@ test_that("umitools dedup parses", {
   )
   expect_equal(colnames(df), expCols)
 })
+
+test_that("rnaseqc metrics parse", {
+  fl <- system.file("extdata", "chr1.bam.metrics.tsv.gz", package = "ngsReports")
+  df <- importNgsLogs(fl)
+  nm <- c(
+    "Filename", "Sample", "Mapping Rate", "Unique Rate of Mapped",
+    "Duplicate Rate of Mapped", "Duplicate Rate of Mapped, excluding Globins",
+    "Base Mismatch", "End 1 Mapping Rate", "End 2 Mapping Rate",
+    "End 1 Mismatch Rate", "End 2 Mismatch Rate", "Expression Profiling Efficiency",
+    "High Quality Rate", "Exonic Rate", "Intronic Rate", "Intergenic Rate",
+    "Intragenic Rate", "Ambiguous Alignment Rate", "High Quality Exonic Rate",
+    "High Quality Intronic Rate", "High Quality Intergenic Rate",
+    "High Quality Intragenic Rate", "High Quality Ambiguous Alignment Rate",
+    "Discard Rate", "rRNA Rate", "End 1 Sense Rate", "End 2 Sense Rate",
+    "Avg. Splits per Read", "Alternative Alignments", "Chimeric Fragments",
+    "Chimeric Alignment Rate", "Duplicate Reads", "End 1 Antisense",
+    "End 2 Antisense", "End 1 Bases", "End 2 Bases", "End 1 Mapped Reads",
+    "End 2 Mapped Reads", "End 1 Mismatches", "End 2 Mismatches",
+    "End 1 Sense", "End 2 Sense", "Exonic Reads", "Failed Vendor QC",
+    "High Quality Reads", "Intergenic Reads", "Intragenic Reads",
+    "Ambiguous Reads", "Intronic Reads", "Low Mapping Quality", "Low Quality Reads",
+    "Mapped Duplicate Reads", "Mapped Reads", "Mapped Unique Reads",
+    "Mismatched Bases", "Non-Globin Reads", "Non-Globin Duplicate Reads",
+    "Reads used for Intron/Exon counts", "rRNA Reads", "Total Bases",
+    "Total Mapped Pairs", "Total Reads", "Unique Mapping, Vendor QC Passed Reads",
+    "Unpaired Reads", "Read Length", "Genes Detected", "Estimated Library Complexity",
+    "Genes used in 3' bias", "Mean 3' bias", "Median 3' bias", "3' bias Std",
+    "3' bias MAD_Std", "3' Bias, 25th Percentile", "3' Bias, 75th Percentile",
+    "Median of Avg Transcript Coverage", "Median of Transcript Coverage Std",
+    "Median of Transcript Coverage CV", "Median Exon CV", "Exon CV MAD"
+  )
+  expect_true(all(colnames(df) == nm))
+}
+)

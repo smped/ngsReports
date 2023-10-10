@@ -7,7 +7,7 @@ test_that(".FastpFile fails on incorrect structure", {
 })
 
 test_that("fastp file loads correctly", {
-  fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+  fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
   expect_true(is(.FastpFile(fl), ".FastpFile"))
   fp <- FastpData(fl)
   expect_true(is(fp, "FastpData"))

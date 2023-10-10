@@ -28,7 +28,7 @@ test_that("plotDupLevels outputs correct objects from FastQC", {
 })
 
 test_that("plotDupLevels fastp outputs are correct",{
-  fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+  fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
   fp <- FastpData(fl)
   p <- plotDupLevels(fp)
   expect_true(is(p, "gg"))

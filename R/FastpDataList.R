@@ -15,7 +15,7 @@
 setClass("FastpDataList", contains = "list")
 setValidity("FastpDataList", .isValidFastpDataList)
 
-#' @param x Character vector of file paths specifying paths to fastp json output
+#' @param x Character vector of file paths specifying paths to fastp.json.gz output
 #' @rdname FastpDataList
 #' @aliases FastpDataList-class
 #' @export

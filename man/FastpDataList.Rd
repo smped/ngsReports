@@ -9,7 +9,7 @@
 FastpDataList(x)
 }
 \arguments{
-\item{x}{Character vector of file paths specifying paths to fastp json output}
+\item{x}{Character vector of file paths specifying paths to fastp.json.gz output}
 }
 \value{
 An object of class FastpDataList

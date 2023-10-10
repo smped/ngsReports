@@ -4,7 +4,7 @@ fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:2]
 # Load the FASTQC data as a FastqcDataList object
 fdl <- FastqcDataList(fl)
 
-fl <- system.file("extdata", "fastp.json", package = "ngsReports")
+fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
 fp <- FastpData(fl)
 fpl <- FastpDataList(path(fp))
 

@@ -32,7 +32,7 @@
 #' @examples
 #' # Get the files included with the package
 #' packageDir <- system.file("extdata", package = "ngsReports")
-#' fl <- list.files(packageDir, pattern = "fastp.json", full.names = TRUE)
+#' fl <- list.files(packageDir, pattern = "fastp.json.gz", full.names = TRUE)
 #' fp <- FastpData(fl)
 #' plotInsertSize(
 #'   fp, counts = TRUE, fill = "steelblue4",
