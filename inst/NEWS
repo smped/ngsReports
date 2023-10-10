@@ -1,3 +1,6 @@
+Changes in version 2.3.5
++ added support for rnaseqc metrics files
+
 Changes in version 2.1.5
 + Added FastpData and FastpDataList classes for working with fastp reports
 
