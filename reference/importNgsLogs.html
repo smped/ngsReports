@@ -81,7 +81,7 @@ same type. Duplicate file paths will be silently ignored.</p></dd>
 <dd><p><code>character</code>. The type of file being imported. Can be one of
 <code>bowtie</code>, <code>bowtie2</code>, <code>hisat2</code>, <code>star</code>, <code>flagstat</code>,
 <code>featureCounts</code>, <code>duplicationMetrics</code>, <code>cutadapt</code>, <code>umitoolsDedup</code>,
-<code>macs2Callpeak</code>, <code>adapterRemoval</code>, <code>quast</code> or <code>busco</code>
+<code>macs2Callpeak</code>, <code>adapterRemoval</code>, <code>rnaseqcMetrics</code>, <code>quast</code> or <code>busco</code>
 Defaults to <code>type = "auto"</code> which will automatically detect the file
 type for all implemented types.</p></dd>
 
@@ -110,7 +110,7 @@ but have been modified for easier handling under R naming conventions.</p>
     <p>Imports one or more log files as output by tools such as:
 <code>bowtie</code>, <code>bowtie2</code>, <code>featureCounts</code>, <code>Hisat2</code>,
 <code>STAR</code>, <code>picard MarkDuplicates</code>, <code>cutadapt</code>, <code>flagstat</code>, <code>macs2Callpeak</code>
-<code>Adapter Removal</code>, <code>trimmomatic</code> <code>quast</code> or <code>busco</code>.
+<code>Adapter Removal</code>, <code>trimmomatic</code>, <code>rnaseqcMetrics</code>, <code>quast</code> or <code>busco</code>.
 <code>autoDetect</code> can be used to detect the log type by parsing the file.</p>
 <p>The featureCounts log file corresponds to the <code>counts.out.summary</code>,
 not the main <code>counts.out</code> file.</p>

@@ -88,6 +88,9 @@
     <loc>/reference/dot-isValidQuastLog.html</loc>
   </url>
   <url>
+    <loc>/reference/dot-isValidRnaseqcMetricsLog.html</loc>
+  </url>
+  <url>
     <loc>/reference/dot-isValidStarLog.html</loc>
   </url>
   <url>
@@ -137,6 +140,9 @@
   </url>
   <url>
     <loc>/reference/dot-parseQuastLogs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-parseRnaseqcMetricsLogs.html</loc>
   </url>
   <url>
     <loc>/reference/dot-parseStarLogs.html</loc>
