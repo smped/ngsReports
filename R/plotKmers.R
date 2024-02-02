@@ -350,7 +350,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     module = c("Before_filtering", "After_filtering"),
     reads = c("read1", "read2"), readsBy = c("facet", "mean", "diff"),
-    trans = "log2", scaleFill = NULL, plotTheme = theme(),
+    trans = "log2", scaleFill = NULL, plotTheme = theme_get(),
     plotlyLegend = FALSE, ...
   ){
 

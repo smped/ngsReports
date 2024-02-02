@@ -182,7 +182,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     adjPaired  = TRUE, divBy = 1e6, scaleFill = NULL, labMin = 0.05,
-    status = TRUE, labelVJ = 0.5, labelFill = "white", plotTheme = theme(),
+    status = TRUE, labelVJ = 0.5, labelFill = "white", plotTheme = theme_get(),
     vertBars = FALSE, plotlyLegend = FALSE, expand.y = c(0, 0.05), ...
   ){
 

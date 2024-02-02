@@ -281,7 +281,7 @@ setMethod(
     module = c("Before_filtering", "After_filtering"),
     moduleBy = c("facet", "colour", "linetype"),
     reads = c("read1", "read2"), readsBy = c("facet", "colour", "linetype"),
-    scaleColour = NULL, scaleLine = NULL, plotTheme = theme(),
+    scaleColour = NULL, scaleLine = NULL, plotTheme = theme_get(),
     plotlyLegend = FALSE, ...
   ){
 
@@ -384,7 +384,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     module = c("Before_filtering", "After_filtering"),
-    reads = c("read1", "read2"), scaleFill = NULL, plotTheme = theme(),
+    reads = c("read1", "read2"), scaleFill = NULL, plotTheme = theme_get(),
     cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...
   ){
 

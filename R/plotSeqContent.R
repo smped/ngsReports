@@ -108,7 +108,7 @@ setMethod(
   "plotSeqContent", signature = "FastqcData",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    bases = c("A", "T", "C", "G"), scaleColour = NULL, plotTheme = theme(),
+    bases = c("A", "T", "C", "G"), scaleColour = NULL, plotTheme = theme_get(),
     plotlyLegend = FALSE, expand.x = 0.02, expand.y = c(0, 0.05), ...
   ){
 
@@ -182,7 +182,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols,
     showPwf = TRUE, plotType = c("heatmap", "line", "residuals"),
-    scaleColour = NULL, plotTheme = theme(), cluster = FALSE,
+    scaleColour = NULL, plotTheme = theme_get(), cluster = FALSE,
     dendrogram = FALSE, heat_w = 8, plotlyLegend = FALSE, nc = 2, ...
   ){
 
@@ -433,7 +433,7 @@ setMethod(
     reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
     moduleBy = c("facet", "linetype"),
     bases = c("A", "T", "C", "G", "N", "GC"), scaleColour = NULL,
-    scaleLine = NULL, plotlyLegend = FALSE, plotTheme = theme(),
+    scaleLine = NULL, plotlyLegend = FALSE, plotTheme = theme_get(),
     expand.x = 0.02, expand.y = c(0, 0.05), ...
   ) {
 
@@ -537,7 +537,7 @@ setMethod(
     bases = c("A", "T", "C", "G", "N", "GC"), showPwf = FALSE, pwfCols,
     warn = 10, fail = 20, plotType = c("heatmap", "line", "residuals"),
     plotlyLegend = FALSE, scaleColour = NULL, scaleLine = NULL,
-    plotTheme = theme(),
+    plotTheme = theme_get(),
     cluster = FALSE, dendrogram = FALSE, heat_w = 8,
     expand.x = c(0.01), expand.y = c(0, 0.05), nc = 2, ...
   ){

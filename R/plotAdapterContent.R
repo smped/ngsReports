@@ -370,7 +370,7 @@ setMethod(
   "plotAdapterContent", signature = "FastpData",
   function(
     x, usePlotly = FALSE, labels, pattern =  ".(fast|fq|bam).*",
-    scaleFill = NULL, plotlyLegend = FALSE, plotTheme = theme(), ...
+    scaleFill = NULL, plotlyLegend = FALSE, plotTheme = theme_get(), ...
   ){
 
     mod <- "Adapters"
@@ -444,7 +444,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern =  ".(fast|fq|bam).*", pwfCols,
     showPwf = FALSE, warn = 5, fail = 10, cluster = FALSE, dendrogram = FALSE,
-    scaleFill = NULL, plotTheme = theme(), heat_w = 8L, ...
+    scaleFill = NULL, plotTheme = theme_get(), heat_w = 8L, ...
   ){
 
     mod <- "Adapters"

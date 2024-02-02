@@ -415,7 +415,7 @@ setMethod(
     module = c("Before_filtering", "After_filtering"),
     reads = c("read1", "read2"), readsBy = c("facet", "linetype"),
     bases = c("A", "T", "C", "G", "mean"),
-    scaleColour = NULL, plotTheme = theme(), plotlyLegend = FALSE, ...
+    scaleColour = NULL, plotTheme = theme_get(), plotlyLegend = FALSE, ...
   ){
 
     ## Get the data
@@ -537,7 +537,7 @@ setMethod(
     pwfCols, warn = 25, fail = 20, showPwf = FALSE,
     module = c("Before_filtering", "After_filtering"),
     plotType = "heatmap", plotValue = c("mean", "A", "T", "C", "G"),
-    scaleFill = NULL, plotTheme = theme(), cluster = FALSE,
+    scaleFill = NULL, plotTheme = theme_get(), cluster = FALSE,
     dendrogram = FALSE, heat_w = 8L, ...
   ){
 

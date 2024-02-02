@@ -367,7 +367,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     pwfCols, warn = 20, fail = 50, showPwf = FALSE, maxLevel = 10,
     lineCol = "red", barFill = "dodgerblue4", barCol = barFill,
-    plotlyLegend = FALSE, plotTheme = theme(), ...
+    plotlyLegend = FALSE, plotTheme = theme_get(), ...
   ){
 
     mod <- "Duplication"
@@ -488,7 +488,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     pwfCols, warn = 20, fail = 50, showPwf = FALSE, plotlyLegend = FALSE,
     plotType = c("bar", "heatmap"), barFill = "blue", barCol = "blue",
-    cluster = FALSE, dendrogram = FALSE,  scaleFill = NULL, plotTheme = theme(),
+    cluster = FALSE, dendrogram = FALSE,  scaleFill = NULL, plotTheme = theme_get(),
     heat_w = 8, maxLevel = 10, ...
   ){
 

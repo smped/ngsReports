@@ -460,7 +460,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
     species = "Hsapiens", GCobject, Fastafile, n = 1e6, plotType = "bar",
-    scaleFill = NULL, plotlyLegend = FALSE, plotTheme = theme(), ...
+    scaleFill = NULL, plotlyLegend = FALSE, plotTheme = theme_get(), ...
   ){
 
     plotType <- match.arg(plotType)
@@ -550,7 +550,7 @@ setMethod(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     theoreticalGC = TRUE, gcType = c("Genome", "Transcriptome"),
     species = "Hsapiens", GCobject, Fastafile, n=1e6, plotType = "bar",
-    scaleFill = NULL, plotTheme = theme(), plotlyLegend = FALSE, ...
+    scaleFill = NULL, plotTheme = theme_get(), plotlyLegend = FALSE, ...
   ){
 
     plotType <- match.arg(plotType)

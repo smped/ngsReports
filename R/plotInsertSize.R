@@ -58,7 +58,7 @@ setMethod(
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
     plotType = c("histogram", "cumulative"), counts = FALSE,
-    plotTheme = theme(), expand.x = 0.01, expand.y = c(0, 0.05), ...
+    plotTheme = theme_get(), expand.x = 0.01, expand.y = c(0, 0.05), ...
   ){
 
     module <- "Insert_size"
@@ -147,7 +147,7 @@ setMethod(
   "plotInsertSize", signature = "FastpDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    plotType = c("heatmap"), plotTheme = theme(), scaleFill = NULL,
+    plotType = c("heatmap"), plotTheme = theme_get(), scaleFill = NULL,
     cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...
   ){
 
