@@ -15,7 +15,7 @@ plotInsertSize(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   pattern = ".(fast|fq|bam).*",
   plotType = c("histogram", "cumulative"),
   counts = FALSE,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   expand.x = 0.01,
   expand.y = c(0, 0.05),
   ...
@@ -27,7 +27,7 @@ plotInsertSize(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   labels,
   pattern = ".(fast|fq|bam).*",
   plotType = c("heatmap"),
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   scaleFill = NULL,
   cluster = FALSE,
   dendrogram = FALSE,

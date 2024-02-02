@@ -69,7 +69,7 @@
 #' @importFrom tidyr pivot_wider complete nesting unnest
 #' @importFrom tidyselect everything any_of
 #' @importFrom grDevices hcl.colors
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #' @import ggplot2
 #'
 #' @name plotSeqLengthDistn

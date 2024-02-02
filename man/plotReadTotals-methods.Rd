@@ -39,7 +39,7 @@ plotReadTotals(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   status = TRUE,
   labelVJ = 0.5,
   labelFill = "white",
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   vertBars = FALSE,
   plotlyLegend = FALSE,
   expand.y = c(0, 0.05),

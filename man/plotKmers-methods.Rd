@@ -51,7 +51,7 @@ plotKmers(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   readsBy = c("facet", "mean", "diff"),
   trans = "log2",
   scaleFill = NULL,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   plotlyLegend = FALSE,
   ...
 )

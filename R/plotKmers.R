@@ -339,7 +339,7 @@ setMethod(
 
   }
 )
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #' @importFrom forcats fct_rev
 #' @importFrom dplyr reframe group_by bind_rows
 #' @rdname plotKmers-methods

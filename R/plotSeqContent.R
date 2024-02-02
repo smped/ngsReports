@@ -421,7 +421,7 @@ setMethod(
   }
 )
 #' @importFrom tidyr unnest pivot_longer
-#' @importFrom rlang sym "!!"
+#' @importFrom rlang sym !!
 #' @importFrom scales label_percent
 #' @rdname plotSeqContent-methods
 #' @export
@@ -624,6 +624,8 @@ setMethod(
         !!sym("reads"), all_of(bases), !!sym("position")
       )
       df[bases] <- lapply(df[bases], function(x) round(100 * x, 2))
+      if ("Module" %in% names(df))
+        df[["Module"]] <- factor(df[["Module"]], levels = mod)
 
       ## Round to 2 digits to reduce the complexity of the colour palette
       maxFreq <- max(unlist(df[bases]))

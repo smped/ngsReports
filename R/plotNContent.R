@@ -271,7 +271,7 @@ setMethod(
 #' @importFrom tidyr unnest
 #' @importFrom tidyselect any_of
 #' @importFrom scales label_percent comma
-#' @importFrom rlang sym "!!"
+#' @importFrom rlang sym !!
 #' @rdname plotNContent-methods
 #' @export
 setMethod(
@@ -376,7 +376,7 @@ setMethod(
 #' @importFrom tidyr unnest
 #' @importFrom tidyselect any_of
 #' @importFrom scales percent comma
-#' @importFrom rlang sym "!!"
+#' @importFrom rlang sym !!
 #' @rdname plotNContent-methods
 #' @export
 setMethod(

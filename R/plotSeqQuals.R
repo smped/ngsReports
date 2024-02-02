@@ -62,7 +62,7 @@
 #' @importFrom scales percent comma percent_format
 #' @importFrom tidyr pivot_wider complete nesting
 #' @importFrom grDevices hcl.colors
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #' @import ggplot2
 #'
 #' @name plotSeqQuals

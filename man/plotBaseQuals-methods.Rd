@@ -61,7 +61,7 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   readsBy = c("facet", "linetype"),
   bases = c("A", "T", "C", "G", "mean"),
   scaleColour = NULL,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   plotlyLegend = FALSE,
   ...
 )
@@ -79,7 +79,7 @@ plotBaseQuals(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   plotType = "heatmap",
   plotValue = c("mean", "A", "T", "C", "G"),
   scaleFill = NULL,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8L,

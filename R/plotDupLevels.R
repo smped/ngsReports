@@ -69,7 +69,7 @@
 #' @importFrom tidyselect contains
 #' @importFrom forcats fct_inorder
 #' @import tibble
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #'
 #' @name plotDupLevels
 #' @rdname plotDupLevels-methods
@@ -355,7 +355,7 @@ setMethod(
 }
 )
 #' @importFrom stats weighted.mean
-#' @importFrom rlang sym "!!"
+#' @importFrom rlang sym !!
 #' @importFrom dplyr group_by ungroup summarise
 #' @importFrom tidyr unnest
 #' @importFrom scales percent
@@ -475,7 +475,7 @@ setMethod(
   }
 )
 #' @importFrom tidyr unnest
-#' @importFrom rlang sym "!!"
+#' @importFrom rlang sym !!
 #' @importFrom dplyr group_by mutate summarise ungroup
 #' @importFrom grDevices colorRampPalette
 #' @importFrom stats weighted.mean

@@ -38,7 +38,7 @@
 #' @importFrom scales percent
 #' @importFrom tidyr pivot_wider
 #' @importFrom zoo na.locf
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #' @import ggplot2
 #' @import tibble
 #'

@@ -83,7 +83,7 @@
 #' @import tibble
 #' @importFrom tidyr unnest
 #' @importFrom stringr str_split
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #'
 #' @name plotBaseQuals
 #' @rdname plotBaseQuals-methods
@@ -404,7 +404,7 @@ setMethod(
 )
 #' @importFrom tidyselect everything all_of
 #' @importFrom tidyr pivot_longer
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #' @rdname plotBaseQuals-methods
 #' @export
 setMethod(

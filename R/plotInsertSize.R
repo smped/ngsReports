@@ -50,7 +50,7 @@ setGeneric(
   }
 )
 #' @importFrom tidyr unnest
-#' @importFrom rlang sym "!!"
+#' @importFrom rlang sym !!
 #' @rdname plotInsertSize-methods
 #' @export
 setMethod(
@@ -139,7 +139,7 @@ setMethod(
   }
 )
 #' @importFrom tidyr unnest
-#' @importFrom rlang sym "!!"
+#' @importFrom rlang sym !!
 #' @importFrom scales percent comma
 #' @rdname plotInsertSize-methods
 #' @export

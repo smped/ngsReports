@@ -62,7 +62,7 @@ plotDupLevels(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   barFill = "dodgerblue4",
   barCol = barFill,
   plotlyLegend = FALSE,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   ...
 )
 
@@ -82,7 +82,7 @@ plotDupLevels(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   cluster = FALSE,
   dendrogram = FALSE,
   scaleFill = NULL,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   heat_w = 8,
   maxLevel = 10,
   ...

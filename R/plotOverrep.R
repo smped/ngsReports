@@ -59,7 +59,7 @@
 #'
 #' @importFrom plotly layout ggplotly
 #' @importFrom grDevices rgb
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #' @import ggplot2
 #'
 #' @name plotOverrep

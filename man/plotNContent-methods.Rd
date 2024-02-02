@@ -54,7 +54,7 @@ plotNContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   readsBy = c("facet", "colour", "linetype"),
   scaleColour = NULL,
   scaleLine = NULL,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   plotlyLegend = FALSE,
   ...
 )
@@ -67,7 +67,7 @@ plotNContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   module = c("Before_filtering", "After_filtering"),
   reads = c("read1", "read2"),
   scaleFill = NULL,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,

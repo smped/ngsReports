@@ -1,6 +1,6 @@
 Package: ngsReports
-Version: 2.5.0
-Date: 2023/10/11
+Version: 2.5.1
+Date: 2024/02/02
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
     person("Stevie", "Pederson", 
@@ -54,7 +54,7 @@ Imports:
     utils,
     zoo
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Collate: 
     'AllGenerics.R'
     'validationFunctions.R'

@@ -67,7 +67,7 @@ plotAdapterContent(
   pattern = ".(fast|fq|bam).*",
   scaleFill = NULL,
   plotlyLegend = FALSE,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   ...
 )
 
@@ -83,7 +83,7 @@ plotAdapterContent(
   cluster = FALSE,
   dendrogram = FALSE,
   scaleFill = NULL,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   heat_w = 8L,
   ...
 )

@@ -85,7 +85,7 @@
 #' @importFrom stats hclust dist
 #' @import ggplot2
 #' @importFrom stringr str_to_title
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #' @name plotGcContent
 #' @rdname plotGcContent-methods
 #' @export

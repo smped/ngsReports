@@ -74,7 +74,7 @@ plotGcContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   plotType = "bar",
   scaleFill = NULL,
   plotlyLegend = FALSE,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   ...
 )
 
@@ -91,7 +91,7 @@ plotGcContent(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   n = 1e+06,
   plotType = "bar",
   scaleFill = NULL,
-  plotTheme = theme(),
+  plotTheme = theme_get(),
   plotlyLegend = FALSE,
   ...
 )

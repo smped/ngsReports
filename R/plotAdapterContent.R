@@ -435,7 +435,7 @@ setMethod(
 )
 #' @importFrom tidyr complete unnest
 #' @importFrom dplyr summarise group_by bind_rows
-#' @importFrom rlang "!!" sym
+#' @importFrom rlang !! sym
 #' @importFrom tidyselect any_of
 #' @rdname plotAdapterContent-methods
 #' @export
