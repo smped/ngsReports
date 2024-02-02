@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.1</span>
       </span>
     </div>
 
@@ -58,9 +58,25 @@
 
 <div id="todo" class="section level1">
 
-<ul><li>Build more plotting/reporting functions for fastp reports</li>
-<li>Add methylation logs from SammyB</li>
-<li>Add samtools stats as a new S4 class</li>
+<ul class="task-list"><li>
+<input type="checkbox" checked>Check how themes are handled &amp; use <code>theme_get()</code> as default if none supplied</li>
+<li>
+<input type="checkbox" checked>Ensure factor levels are correct for <code>Before_filtering</code> and <code>After_filtering</code>
+</li>
+<li>
+<input type="checkbox">Add line plot to <code><a href="reference/plotInsertSize-methods.html">plotInsertSize()</a></code>
+</li>
+<li>
+<input type="checkbox">Add options to facet by base for <code><a href="reference/plotBaseQuals-methods.html">plotBaseQuals()</a></code> for a <code>FastpDataList</code> object</li>
+<li>
+<input type="checkbox">Add Overrepresented Sequences for <code>FastpData</code> and <code>FastpDataList</code>
+</li>
+<li>
+<input type="checkbox">Build more plotting/reporting functions for fastp reports</li>
+<li>
+<input type="checkbox">Add methylation logs from SammyB</li>
+<li>
+<input type="checkbox">Add samtools stats as a new S4 class</li>
 </ul></div>
 
   </div>
