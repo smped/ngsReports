@@ -31,7 +31,6 @@ Imports:
     Biostrings,
     checkmate,
     dplyr (>= 1.1.0),
-    DT,
     forcats,
     ggdendro,
     grDevices (>= 3.6.0),
@@ -40,7 +39,6 @@ Imports:
     lifecycle,
     lubridate,
     methods,
-    pander,
     plotly (>= 4.9.4),
     readr,
     reshape2,
@@ -109,7 +107,9 @@ VignetteBuilder: knitr
 Suggests: 
   BiocStyle, 
   Cairo,
-  knitr, 
+  DT,
+  knitr,
+  pander,
   testthat,
   truncnorm
 biocViews: QualityControl, ReportWriting
