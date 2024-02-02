@@ -330,9 +330,10 @@ setMethod(
         rects$ymax <- max(df$Frequency)
       }
 
-      if (is.null(scaleColour)) scaleColour <- scale_colour_discrete()
-      stopifnot(is(scaleColour, "ScaleDiscrete"))
-      stopifnot(scaleColour$aesthetics == "colour")
+      if (!is.null(scaleColour)) {
+        stopifnot(is(scaleColour, "ScaleDiscrete"))
+        stopifnot(scaleColour$aesthetics == "colour")
+      }
 
       p <- ggplot(df)
       if (showPwf) p <- p + geom_rect(

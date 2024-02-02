@@ -1,6 +1,7 @@
 Changes in version 2.5.1
 + Changed method for setting default theme using plotTheme
 + Set factor levels for plotSeqContent for FastpDataList
++ Added line & cumulative plotTypes for plotInsertSize
 
 Changes in version 2.3.5
 + added support for rnaseqc metrics files

@@ -20,6 +20,7 @@
 #' @param heat_w Width of the heatmap relative to other plot components
 #' @param scaleFill Continuous scale used to fill heatmap cells. Defaults to the
 #' "inferno" palette
+#' @param scaleColour Discrete scale for adding line colours
 #' @param ... Passed to `geom*` functions during plotting
 #'
 #' @details
@@ -139,7 +140,8 @@ setMethod(
   }
 )
 #' @importFrom tidyr unnest
-#' @importFrom rlang sym !!
+#' @importFrom rlang sym !! :=
+#' @importFrom dplyr mutate across
 #' @importFrom scales percent comma
 #' @rdname plotInsertSize-methods
 #' @export
@@ -147,8 +149,9 @@ setMethod(
   "plotInsertSize", signature = "FastpDataList",
   function(
     x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    plotType = c("heatmap"), plotTheme = theme_get(), scaleFill = NULL,
-    cluster = FALSE, dendrogram = FALSE, heat_w = 8, ...
+    plotType = c("heatmap", "line", "cumulative"), plotTheme = theme_get(),
+    scaleFill = NULL, scaleColour = NULL, cluster = FALSE, dendrogram = FALSE,
+    heat_w = 8, ...
   ){
 
     module <- "Insert_size"
@@ -161,19 +164,50 @@ setMethod(
     labels <- labels[names(labels) %in% df$Filename]
     key <- names(labels)
 
-    if (is.null(scaleFill)) {
-      scaleFill <- scale_fill_viridis_c(labels = percent, option = "inferno")
-    }
-    stopifnot(is(scaleFill, "ScaleContinuous"))
-    stopifnot(scaleFill$aesthetics == "fill")
+    ## Check Theme & rename df columns for nicer looking plots
     stopifnot(is(plotTheme, "theme"))
     plotType <- match.arg(plotType)
+    names(df) <- gsub("insert_size", "Insert Size", names(df))
+    names(df) <- gsub("^freq$", "Frequency", names(df))
+
+    ## Needed for either cumulative or line
+    if (!is.null(scaleColour)) {
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
+    }
+
+    if (plotType %in% c("line", "cumulative")) {
+
+      vals <- c(line = "Frequency", cumulative = "Cumulative Frequency")
+      yval <- vals[plotType]
+      df <- mutate(
+        df, !!sym("Cumulative Frequency") := cumsum(!!sym("Frequency")),
+        .by = Filename
+      )
+      df <- mutate(df, across(all_of(unname(vals)), \(x) round(100 * x, 3)))
+      df$Filename <- factor(labels[df$Filename], levels = labels[key])
+      p <- ggplot(df, aes(!!sym("Insert Size"), !!sym(yval))) +
+        geom_line(aes(colour = Filename)) +
+        plotTheme +
+        scaleColour +
+        scale_y_continuous(labels = scales::percent_format(scale = 1))
+      p <- .updateThemeFromDots(p, ...)
+      if (usePlotly) {
+        p <- plotly::ggplotly(p)
+      }
+    }
 
     if (plotType == "heatmap") {
 
+      if (is.null(scaleFill)) {
+        scaleFill <- scale_fill_viridis_c(labels = percent, option = "inferno")
+      }
+      stopifnot(is(scaleFill, "ScaleContinuous"))
+      stopifnot(scaleFill$aesthetics == "fill")
+
       n <- length(x)
       if (n > 1) {
-        clusterDend <- .makeDendro(df, "Filename", "insert_size", "freq")
+        clusterDend <- .makeDendro(df, "Filename", "Insert Size", "Frequency")
         dx <- ggdendro::dendro_data(clusterDend)
         if (dendrogram | cluster) key <- labels(clusterDend)
       } else {
@@ -186,24 +220,21 @@ setMethod(
       if (!dendrogram) dx$segments <- dx$segments[0,]
       ## Now set everything as factors
       df$Filename <- factor(labels[df$Filename], levels = labels[key])
-      names(df) <- gsub("insert_size", "Insert Size", names(df))
-      df[["%"]] <- percent(df$freq, 0.01)
+      df[["%"]] <- percent(df$Frequency, 0.01)
       df$Total <- comma(df$histogram)
 
       p <- ggplot(
         df,
         aes(
-          x = !!sym("Insert Size"), y = Filename, fill = !!sym("freq"),
+          x = !!sym("Insert Size"), y = Filename, fill = !!sym("Frequency"),
           perc = !!sym("%"), total = !!sym("Total")
         )
       ) +
         geom_raster() +
-        labs(fill = "Frequency") +
         ggtitle("Insert Size Distribution") +
         scale_x_continuous(expand = rep_len(0, 4)) +
         scale_y_discrete(expand = rep_len(0, 4), position = "right") +
         scaleFill +
-        theme_bw() +
         plotTheme
       if (dendrogram)
         p <- p + theme(plot.margin = unit(c(5.5, 5.5, 5.5, 0), "points"))

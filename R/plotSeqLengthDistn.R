@@ -244,11 +244,10 @@ setMethod(
       )
       yLabelFun <- ifelse(counts, scales::comma, scales::percent)
 
-      if (is.null(scaleColour)) {
-        scaleColour <- scale_colour_discrete()
+      if (!is.null(scaleColour)) {
+        stopifnot(is(scaleColour, "ScaleDiscrete"))
+        stopifnot(scaleColour$aesthetics == "colour")
       }
-      stopifnot(is(scaleColour, "ScaleDiscrete"))
-      stopifnot(scaleColour$aesthetics == "colour")
 
       df$Filename <- labels[df$Filename]
       p <- ggplot(

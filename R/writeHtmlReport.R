@@ -36,8 +36,6 @@
 #' writeHtmlReport(fastqcDir = tempdir())
 #' }
 #'
-#' @importFrom pander pander
-#' @importFrom DT datatable formatPercentage formatRound
 #' @export
 writeHtmlReport <- function(
     fastqcDir, template, outDir, usePlotly = TRUE, species = "Hsapiens",

@@ -553,6 +553,7 @@ setMethod(
     names(data) <- mod
     data <- lapply(data, bind_rows, .id = "reads")
     df <- bind_rows(data, .id = "Module")
+    df[["Module"]] <- factor(df[["Module"]], levels = mod)
     df <- df[c("Filename", "fqName", "Module", "reads", "content_curves")]
     df <- unnest(df, !!sym("content_curves"))
     bases <- match.arg(bases, colnames(df), several.ok = TRUE)
@@ -624,8 +625,6 @@ setMethod(
         !!sym("reads"), all_of(bases), !!sym("position")
       )
       df[bases] <- lapply(df[bases], function(x) round(100 * x, 2))
-      if ("Module" %in% names(df))
-        df[["Module"]] <- factor(df[["Module"]], levels = mod)
 
       ## Round to 2 digits to reduce the complexity of the colour palette
       maxFreq <- max(unlist(df[bases]))

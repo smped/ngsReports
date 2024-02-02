@@ -336,12 +336,14 @@ setMethod(
       TRUE ~ ". ~ ."
     )
     fm <- as.formula(fm)
-    if (is.null(scaleColour)) scaleColour <- scale_colour_discrete()
-    stopifnot(is(scaleColour, "ScaleDiscrete"))
-    stopifnot(scaleColour$aesthetics == "colour")
-    if (is.null(scaleLine)) scaleLine <- scale_linetype_discrete()
-    stopifnot(is(scaleLine, "ScaleDiscrete"))
-    stopifnot(scaleLine$aesthetics == "linetype")
+    if (!is.null(scaleColour)) {
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
+    }
+    if (!is.null(scaleLine)) {
+      stopifnot(is(scaleLine, "ScaleDiscrete"))
+      stopifnot(scaleLine$aesthetics == "linetype")
+    }
     stopifnot(is(plotTheme, "theme"))
 
     ## Final mods for plotting

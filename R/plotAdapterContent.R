@@ -158,9 +158,10 @@ setMethod(
       Status = c("PASS", "WARN", "FAIL")
     )
 
-    if (is.null(scaleColour)) scaleColour <- scale_colour_discrete()
-    stopifnot(is(scaleColour, "ScaleDiscrete"))
-    stopifnot(scaleColour$aesthetics == "colour")
+    if (!is.null(scaleColour)) {
+      stopifnot(is(scaleColour, "ScaleDiscrete"))
+      stopifnot(scaleColour$aesthetics == "colour")
+    }
 
     ## Create the basic plot
     xLab <- "Position in read (bp)"
@@ -326,9 +327,10 @@ setMethod(
         Status = c("PASS", "WARN", "FAIL")
       )
 
-      if (is.null(scaleColour)) scaleColour <- scale_colour_discrete()
-      stopifnot(is(scaleColour, "ScaleDiscrete"))
-      stopifnot(scaleColour$aesthetics == "colour")
+      if (!is.null(scaleColour)) {
+        stopifnot(is(scaleColour, "ScaleDiscrete"))
+        stopifnot(scaleColour$aesthetics == "colour")
+      }
 
       ## Create the basic plot
       p <- ggplot(df)

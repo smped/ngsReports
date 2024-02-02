@@ -130,7 +130,7 @@
   cols <- c(rowVal, colVal, value)
   stopifnot(all(cols %in% names(df)))
   df <- df[cols]
-  fm <- as.formula(paste0(rowVal, "~", colVal))
+  fm <- as.formula(paste0("`", rowVal, "`~`", colVal, "`"))
   mat <- reshape2::acast(df, fm, value.var = value)
   mat[is.na(mat)] <- 0
   clust <- hclust(dist(mat), method = "ward.D2")

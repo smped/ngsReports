@@ -26,9 +26,10 @@ plotInsertSize(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...)
   usePlotly = FALSE,
   labels,
   pattern = ".(fast|fq|bam).*",
-  plotType = c("heatmap"),
+  plotType = c("heatmap", "line", "cumulative"),
   plotTheme = theme_get(),
   scaleFill = NULL,
+  scaleColour = NULL,
   cluster = FALSE,
   dendrogram = FALSE,
   heat_w = 8,
@@ -57,6 +58,8 @@ All file names must be present in the names of the vector.}
 
 \item{scaleFill}{Continuous scale used to fill heatmap cells. Defaults to the
 "inferno" palette}
+
+\item{scaleColour}{Discrete scale for adding line colours}
 
 \item{cluster}{\code{logical} default \code{FALSE}. If set to \code{TRUE}, data will be
 clustered using hierarchical clustering}
