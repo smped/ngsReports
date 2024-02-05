@@ -102,6 +102,7 @@ Collate:
     'plotSummary.R'
     'pwf.R'
     'readTotals.R'
+    'summariseOverrep.R'
     'writeHtmlReport.R'
 VignetteBuilder: knitr
 Suggests: 
