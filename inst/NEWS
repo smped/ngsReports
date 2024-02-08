@@ -1,3 +1,6 @@
+Changes in version 2.5.2
++ Added `summariseOverrep()`
+
 Changes in version 2.5.1
 + Changed method for setting default theme using plotTheme
 + Set factor levels for plotSeqContent for FastpDataList
