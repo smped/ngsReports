@@ -25,36 +25,36 @@
 #'
 .splitByTab <- function(x, firstRowToNames = TRUE, tab = "\\t"){
 
-  stopifnot(is.character(x))
+    stopifnot(is.character(x))
 
-  ## Check for the tab marker in every line
-  linesWithTab <- stringr::str_detect(x, tab)
-  if (sum(linesWithTab) != length(x))
-    stop("Some elements of x are missing the tab separator")
+    ## Check for the tab marker in every line
+    linesWithTab <- stringr::str_detect(x, tab)
+    if (sum(linesWithTab) != length(x))
+        stop("Some elements of x are missing the tab separator")
 
-  ## Take the first element as defining the number of columns
-  nCol <- stringr::str_count(x[1], pattern = tab) + 1
+    ## Take the first element as defining the number of columns
+    nCol <- stringr::str_count(x[1], pattern = tab) + 1
 
-  ## Count the number of tabs in each line
-  nTabs <- stringr::str_count(string = x, pattern = tab)
-  if (any(nTabs != (nCol - 1)))
-    stop("Differing number of delimiters in some rows")
+    ## Count the number of tabs in each line
+    nTabs <- stringr::str_count(string = x, pattern = tab)
+    if (any(nTabs != (nCol - 1)))
+        stop("Differing number of delimiters in some rows")
 
-  if (firstRowToNames) {
+    if (firstRowToNames) {
 
-    ## Get the first element as a vector of names
-    nm <- stringr::str_split_fixed(x[1], pattern = tab, n = nCol)
+        ## Get the first element as a vector of names
+        nm <- stringr::str_split_fixed(x[1], pattern = tab, n = nCol)
 
-    ## Split the remainder
-    df <- stringr::str_split_fixed(x[-1], pattern = tab, n = nCol)
-    colnames(df) <- nm
-  }
-  else {
-    df <- stringr::str_split_fixed(x, pattern = tab, n = nCol)
-  }
-  ## Return a generic data.frame
-  ## This leaves tidying to each module
-  as.data.frame(df, stringsAsFactors = FALSE)
+        ## Split the remainder
+        df <- stringr::str_split_fixed(x[-1], pattern = tab, n = nCol)
+        colnames(df) <- nm
+    }
+    else {
+        df <- stringr::str_split_fixed(x, pattern = tab, n = nCol)
+    }
+    ## Return a generic data.frame
+    ## This leaves tidying to each module
+    as.data.frame(df, stringsAsFactors = FALSE)
 }
 
 #' @title Add a percentage sign
@@ -73,8 +73,8 @@
 #' @keywords internal
 #'
 .addPercent <- function(x){
-  if (is.factor(x)) message("Factors will be converted to characters")
-  paste0(x, "%")
+    if (is.factor(x)) message("Factors will be converted to characters")
+    paste0(x, "%")
 }
 
 #' @title Create an empty plot with supplied text
@@ -93,11 +93,11 @@
 #' @keywords internal
 #'
 .emptyPlot <- function(x){
-  ggplot() +
-    geom_text(aes(x = 0.5, y = 0.8, label = x)) +
-    theme_void() +
-    xlim(c(0, 1)) +
-    ylim(c(0, 1))
+    ggplot() +
+        geom_text(aes(x = 0.5, y = 0.8, label = x)) +
+        theme_void() +
+        xlim(c(0, 1)) +
+        ylim(c(0, 1))
 }
 
 #' @title Make the dendrogram for heatmap-style plots
@@ -127,14 +127,14 @@
 #' @keywords internal
 .makeDendro <- function(df, rowVal, colVal, value){
 
-  cols <- c(rowVal, colVal, value)
-  stopifnot(all(cols %in% names(df)))
-  df <- df[cols]
-  fm <- as.formula(paste0("`", rowVal, "`~`", colVal, "`"))
-  mat <- reshape2::acast(df, fm, value.var = value)
-  mat[is.na(mat)] <- 0
-  clust <- hclust(dist(mat), method = "ward.D2")
-  as.dendrogram(clust)
+    cols <- c(rowVal, colVal, value)
+    stopifnot(all(cols %in% names(df)))
+    df <- df[cols]
+    fm <- as.formula(paste0("`", rowVal, "`~`", colVal, "`"))
+    mat <- reshape2::acast(df, fm, value.var = value)
+    mat[is.na(mat)] <- 0
+    clust <- hclust(dist(mat), method = "ward.D2")
+    as.dendrogram(clust)
 
 }
 
@@ -162,36 +162,35 @@
 #'
 #' @keywords internal
 .makeLabels <- function(
-    x, labels, pattern = ".(fast|fq|bam|sam|cram).*", col = "Filename", ...){
+        x, labels, pattern = ".(fast|fq|bam|sam|cram).*", col = "Filename", ...
+){
 
-  if (is(x, "FastqcDataList") | is(x, "FastqcData")) {
-    ## Form a single column data.frame
-    x <- structure(
-      list(fqName(x)),
-      names = col,
-      row.names = seq_along(x),
-      class = "data.frame"
-    )
-  }
+    if (is(x, "FastqcDataList") | is(x, "FastqcData")) {
+        ## Form a single column data.frame
+        x <- structure(
+            list(fqName(x)), names = col, row.names = seq_along(x),
+            class = "data.frame"
+        )
+    }
 
-  stopifnot(is(x, "data.frame"))
+    stopifnot(is(x, "data.frame"))
 
-  col <- match.arg(col, colnames(x))
+    col <- match.arg(col, colnames(x))
 
-  ## If no labels are provided, just remove the file suffix as
-  ## determined by the supplied pattern
-  if (missing(labels)) {
-    labels <- structure(
-      gsub(pattern, "", unique(x[[col]])), # Remove the pattern
-      names = unique(x[[col]]) # Ensure a named vector
-    )
-  }
-  if (!all(x[[col]] %in% names(labels)))
-    stop("Names of supplied labels must match all filenames.")
-  if (any(duplicated(labels))) stop("Labels must be unique.")
+    ## If no labels are provided, just remove the file suffix as
+    ## determined by the supplied pattern
+    if (missing(labels)) {
+        labels <- structure(
+            gsub(pattern, "", unique(x[[col]])), # Remove the pattern
+            names = unique(x[[col]]) # Ensure a named vector
+        )
+    }
+    if (!all(x[[col]] %in% names(labels)))
+        stop("Names of supplied labels must match all filenames.")
+    if (any(duplicated(labels))) stop("Labels must be unique.")
 
-  ## Now return only the supplied labels which are in the df
-  labels[names(labels) %in% x[[col]]]
+    ## Now return only the supplied labels which are in the df
+    labels[names(labels) %in% x[[col]]]
 }
 
 #' @title Shortcut for making the status sidebar
@@ -214,36 +213,34 @@
 #'
 .makeSidebar <- function(status, key, pwfCols, usePlotly = TRUE){
 
-  stopifnot(.isValidPwf(pwfCols))
-  nx <- length(status$Filename)
-  ## make sure status is in right order so key can apply
-  ## This only works because the factor levels of the 'Filename' column
-  ## correspond to the order of the key as determined earlier the plotting
-  ## functions. This step is now essentially redundant
-  status <- status[order(status$Filename),]
-  ## Make the basic plot
-  sideBar <- ggplot(status, aes(1, Filename, key = key)) +
-    geom_tile(aes(fill = Status)) +
-    geom_hline(yintercept = seq(1.5, nx), colour = "grey20", linewidth = 0.2) +
-    scale_fill_manual(values = getColours(pwfCols)) +
-    scale_y_discrete(expand = c(0, 0)) +
-    scale_x_continuous(expand = c(0, 0)) +
-    theme(
-      panel.grid.minor = element_blank(),
-      panel.background = element_blank(),
-      legend.position = "none",
-      axis.title = element_blank(),
-      axis.text = element_blank(),
-      axis.ticks = element_blank()
-    )
+    stopifnot(.isValidPwf(pwfCols))
+    nx <- length(status$Filename)
+    ## make sure status is in right order so key can apply
+    ## This only works because the factor levels of the 'Filename' column
+    ## correspond to the order of the key as determined earlier the plotting
+    ## functions. This step is now essentially redundant
+    status <- status[order(status$Filename),]
+    ## Make the basic plot
+    sideBar <- ggplot(status, aes(1, Filename, key = key)) +
+        geom_tile(aes(fill = Status)) +
+        geom_hline(yintercept = seq(1.5, nx), colour = "grey20", linewidth = 0.2) +
+        scale_fill_manual(values = getColours(pwfCols)) +
+        scale_y_discrete(expand = c(0, 0)) +
+        scale_x_continuous(expand = c(0, 0)) +
+        theme(
+            panel.grid.minor = element_blank(),
+            panel.background = element_blank(),
+            legend.position = "none", axis.title = element_blank(),
+            axis.text = element_blank(), axis.ticks = element_blank()
+        )
 
-  ## Convert to plotly
-  if (usePlotly) {
-    sideBar <- suppressWarnings(
-      suppressMessages(plotly::ggplotly(sideBar, tooltip = c("y", "fill")))
-    )
-  }
-  sideBar
+    ## Convert to plotly
+    if (usePlotly) {
+        sideBar <- suppressWarnings(
+            suppressMessages(plotly::ggplotly(sideBar, tooltip = c("y", "fill")))
+        )
+    }
+    sideBar
 }
 
 #' @title  Set up dendrograms for interactive plots
@@ -264,16 +261,14 @@
 #' @keywords internal
 #'
 .renderDendro <- function(df) {
-  ## Based on the example ggdend
-  dendro <- ggplot() +
-    geom_segment(
-      data = df, aes(x, y, xend = xend, yend = yend)
-    ) +
-    coord_flip() +
-    scale_y_reverse(expand = c(0, 0)) +
-    scale_x_continuous(expand = c(0, 0.5)) +
-    theme_dendro()
-  plotly::ggplotly(dendro, tooltip = NULL)
+    ## Based on the example ggdend
+    dendro <- ggplot() +
+        geom_segment(data = df, aes(x, y, xend = xend, yend = yend)) +
+        coord_flip() +
+        scale_y_reverse(expand = c(0, 0)) +
+        scale_x_continuous(expand = c(0, 0.5)) +
+        theme_dendro()
+    plotly::ggplotly(dendro, tooltip = NULL)
 }
 
 
@@ -301,41 +296,42 @@
 #' @keywords internal
 #'
 .makePwfGradient <- function(
-    vals, pwfCols, breaks = c(0, 5, 10, 100),  passLow = TRUE,
-    na.value = "white"){
+        vals, pwfCols, breaks = c(0, 5, 10, 100),  passLow = TRUE,
+        na.value = "white"
+){
 
-  ## passLow defines whether pass is the low score or the high score
-  ## organise the colours based on this
-  o <- seq_len(4)
-  if (!passLow) o <- rev(o)
-  gradCols <- getColours(pwfCols)[o] # Get the default gradient colours
+    ## passLow defines whether pass is the low score or the high score
+    ## organise the colours based on this
+    o <- seq_len(4)
+    if (!passLow) o <- rev(o)
+    gradCols <- getColours(pwfCols)[o] # Get the default gradient colours
 
-  ## Find which of the pwf bins are present
-  bins <- cut(vals, breaks = breaks, include.lowest = TRUE)
-  bins <- range(as.integer(bins))
-  bins <- unique(bins)
+    ## Find which of the pwf bins are present
+    bins <- cut(vals, breaks = breaks, include.lowest = TRUE)
+    bins <- range(as.integer(bins))
+    bins <- unique(bins)
 
-  ## Create an even sequence between the min & max of the range
-  n <- seq(breaks[min(bins)], breaks[max(bins) + 1], length.out = 101)
-  n <- cut(n, breaks = breaks)
-  n <- split(n, n)
+    ## Create an even sequence between the min & max of the range
+    n <- seq(breaks[min(bins)], breaks[max(bins) + 1], length.out = 101)
+    n <- cut(n, breaks = breaks)
+    n <- split(n, n)
 
-  ## Now create a colour vector between the extreme points
-  cols <- lapply(bins, function(x){
-    l <- length(n[[x]]) + 1
-    colorRampPalette(gradCols[c(x,x + 1)])(l)[-l]
-  })
-  cols <- as.character(c(unlist(cols), gradCols[max(bins) + 1]))
+    ## Now create a colour vector between the extreme points
+    cols <- lapply(bins, function(x){
+        l <- length(n[[x]]) + 1
+        colorRampPalette(gradCols[c(x,x + 1)])(l)[-l]
+    })
+    cols <- as.character(c(unlist(cols), gradCols[max(bins) + 1]))
 
-  ## Remove any breaks outside of the range
-  breaks <- breaks[seq(min(bins), max(bins) + 1)]
+    ## Remove any breaks outside of the range
+    breaks <- breaks[seq(min(bins), max(bins) + 1)]
 
-  ## Return a list for passing to do.call("scale_fill_gradientn", args)
-  list(
-    colours = cols, breaks = breaks,
-    limits = range(breaks),
-    na.value = na.value
-  )
+    ## Return a list for passing to do.call("scale_fill_gradientn", args)
+    list(
+        colours = cols, breaks = breaks,
+        limits = range(breaks),
+        na.value = na.value
+    )
 
 }
 
@@ -357,127 +353,132 @@
 #' @import ggplot2
 #'
 #' @keywords internal
-.prepHeatmap <- function(x, status, segments, usePlotly, heat_w = 8, pwf, hv = NULL) {
+.prepHeatmap <- function(
+        x, status, segments, usePlotly, heat_w = 8, pwf, hv = NULL
+) {
 
-  stopifnot(is(x, "gg"))
-  hasStatus <- as.logical(nrow(status))
-  stopifnot(all(c("x", "y", "xend", "yend") %in% colnames(segments)))
+    stopifnot(is(x, "gg"))
+    hasStatus <- as.logical(nrow(status))
+    stopifnot(all(c("x", "y", "xend", "yend") %in% colnames(segments)))
 
-  if (missing(pwf)) pwf <- ngsReports::pwf
+    if (missing(pwf)) pwf <- ngsReports::pwf
 
-  ## Create the dendrogram if required. This is independent of plotly
-  add_dend <- nrow(segments) > 0
-  panel_w <- c(1, heat_w)
-  if (add_dend) {
-    n <- max(segments$xend)
-    panel_w <- c(1, 1, heat_w)
-    dendPlot <- ggplot(segments) +
-      geom_segment(aes(x = yend, y = xend, xend = y, yend = x)) +
-      scale_x_reverse(expand = expansion(0)) +
-      scale_y_continuous(limits = c(0, n) + 0.5, expand = expansion(0)) +
-      labs(x = "", y = c()) +
-      theme_minimal() +
-      theme(
-        panel.grid = element_blank(),
-        axis.text = element_blank(), axis.ticks = element_blank(),
-        plot.margin = unit(c(5.5, 0, 5.5, 5.5), "points")
-      )
-  }
-
-  x_lab <- x$labels$x
-  if (hasStatus) {
-    stopifnot(all(c("Filename", "Status") %in% colnames(status)))
-    ## Now create the sideBar
-    sideBar <- .makeSidebar(status, levels(status$Filename), pwf, usePlotly)
-
-    if (!usePlotly) {
-
-      sideBar <- sideBar + theme(plot.margin = unit(c(5.5, 0, 5.5, 0), "points"))
-      out <- sideBar
-      if (add_dend) out <- dendPlot + sideBar
-      out <- out + x +  plot_layout(widths = panel_w)
-
-    } else {
-
-      ## Setup additional formatting
-      x <- x + theme(
-        plot.title = element_text(hjust = 0.5), axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(), legend.position = "none"
-      )
-      title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
-      panel_w <- panel_w / sum(panel_w)
-      if (is.null(hv)) hv <- "all"
-      x <- plotly::ggplotly(x, tooltip = hv)
-
-      if (add_dend) {
-        out <- suppressWarnings(
-          suppressMessages(
-            plotly::subplot(
-              .renderDendro(segments), sideBar, x,
-              widths = panel_w, margin = 0.001, shareY = TRUE
+    ## Create the dendrogram if required. This is independent of plotly
+    add_dend <- nrow(segments) > 0
+    panel_w <- c(1, heat_w)
+    if (add_dend) {
+        n <- max(segments$xend)
+        panel_w <- c(1, 1, heat_w)
+        dendPlot <- ggplot(segments) +
+            geom_segment(aes(x = yend, y = xend, xend = y, yend = x)) +
+            scale_x_reverse(expand = expansion(0)) +
+            scale_y_continuous(limits = c(0, n) + 0.5, expand = expansion(0)) +
+            labs(x = "", y = c()) +
+            theme_minimal() +
+            theme(
+                panel.grid = element_blank(),
+                axis.text = element_blank(), axis.ticks = element_blank(),
+                plot.margin = unit(c(5.5, 0, 5.5, 5.5), "points")
             )
-          )
-        )
-        out <- plotly::layout(
-          out, title = list(x = title_x), xaxis3 = list(title = x_lab),
-          margin = list(b = 50, t = 50)
-        )
-      } else {
-        out <- suppressWarnings(
-          suppressMessages(
-            plotly::subplot(
-              sideBar, x,
-              widths = panel_w, margin = 0.001, shareY = TRUE
-            )
-          )
-        )
-        out <- plotly::layout(
-          out, title = list(x = title_x), xaxis2 = list(title = x_lab),
-          margin = list(b = 50, t = 50)
-        )
-      }
     }
 
-  } else {
-    panel_w <- panel_w[c(1, 3)]
-    if (!usePlotly) {
+    x_lab <- x$labels$x
+    if (hasStatus) {
+        stopifnot(all(c("Filename", "Status") %in% colnames(status)))
+        ## Now create the sideBar
+        sideBar <- .makeSidebar(status, levels(status$Filename), pwf, usePlotly)
 
-      out <- x
-      if (add_dend) out <- dendPlot + x + plot_layout(widths = panel_w)
+        if (!usePlotly) {
+
+            sideBar <- sideBar +
+                theme(plot.margin = unit(c(5.5, 0, 5.5, 0), "points"))
+            out <- sideBar
+            if (add_dend) out <- dendPlot + sideBar
+            out <- out + x +  plot_layout(widths = panel_w)
+
+        } else {
+
+            ## Setup additional formatting
+            x <- x + theme(
+                plot.title = element_text(hjust = 0.5),
+                axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+                legend.position = "none"
+            )
+            title_x <- 1 - 0.5 * (heat_w + 1) / sum(panel_w)
+            panel_w <- panel_w / sum(panel_w)
+            if (is.null(hv)) hv <- "all"
+            x <- plotly::ggplotly(x, tooltip = hv)
+
+            if (add_dend) {
+                out <- suppressWarnings(
+                    suppressMessages(
+                        plotly::subplot(
+                            .renderDendro(segments), sideBar, x,
+                            widths = panel_w, margin = 0.001, shareY = TRUE
+                        )
+                    )
+                )
+                out <- plotly::layout(
+                    out, title = list(x = title_x), xaxis3 = list(title = x_lab),
+                    margin = list(b = 50, t = 50)
+                )
+            } else {
+                out <- suppressWarnings(
+                    suppressMessages(
+                        plotly::subplot(
+                            sideBar, x,
+                            widths = panel_w, margin = 0.001, shareY = TRUE
+                        )
+                    )
+                )
+                out <- plotly::layout(
+                    out, title = list(x = title_x),
+                    xaxis2 = list(title = x_lab), margin = list(b = 50, t = 50)
+                )
+            }
+        }
 
     } else {
+        panel_w <- panel_w[c(1, 3)]
+        if (!usePlotly) {
 
-      ## Setup additional formatting
-      x <- x + theme(
-        plot.title = element_text(hjust = 0.5), axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(), legend.position = "none"
-      )
-      title_x = 1 - 0.5 * (heat_w + 1) / sum(panel_w)
-      panel_w <- panel_w / sum(panel_w)
-      if (is.null(hv)) hv <- "all"
-      x <- plotly::ggplotly(x, tooltip = hv)
+            out <- x
+            if (add_dend) out <- dendPlot + x + plot_layout(widths = panel_w)
 
-      if (add_dend) {
-        out <- suppressWarnings(
-          suppressMessages(
-            plotly::subplot(
-              .renderDendro(segments), x,
-              widths = panel_w, margin = 0.001, shareY = TRUE
+        } else {
+
+            ## Setup additional formatting
+            x <- x + theme(
+                plot.title = element_text(hjust = 0.5),
+                axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+                legend.position = "none"
             )
-          )
-        )
-        out <- plotly::layout(
-          out, title = list(x = title_x), xaxis2 = list(title = x_lab),
-          margin = list(b = 50, t = 50)
-        )
-      } else {
-        out <- x
-      }
+            title_x <- 1 - 0.5 * (heat_w + 1) / sum(panel_w)
+            panel_w <- panel_w / sum(panel_w)
+            if (is.null(hv)) hv <- "all"
+            x <- plotly::ggplotly(x, tooltip = hv)
 
+            if (add_dend) {
+                out <- suppressWarnings(
+                    suppressMessages(
+                        plotly::subplot(
+                            .renderDendro(segments), x,
+                            widths = panel_w, margin = 0.001, shareY = TRUE
+                        )
+                    )
+                )
+                out <- plotly::layout(
+                    out, title = list(x = title_x),
+                    xaxis2 = list(title = x_lab), margin = list(b = 50, t = 50)
+                )
+            } else {
+                out <- x
+            }
+
+        }
     }
-  }
 
-  out
+    out
 
 }
 
@@ -489,15 +490,15 @@
 #' @return ggplot2 object
 #' @keywords internal
 .updateThemeFromDots <- function(p, ...){
-  ## Get any arguments for dotArgs that have been set manually
-  dotArgs <- list(...)
-  allowed <- names(formals(theme))
-  keepArgs <- which(names(dotArgs) %in% allowed)
-  userTheme <- c()
-  if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
-  ## Add the basic customisations
-  if (!is.null(userTheme)) p <- p + userTheme
-  p
+    ## Get any arguments for dotArgs that have been set manually
+    dotArgs <- list(...)
+    allowed <- names(formals(theme))
+    keepArgs <- which(names(dotArgs) %in% allowed)
+    userTheme <- c()
+    if (length(keepArgs) > 0) userTheme <- do.call(theme, dotArgs[keepArgs])
+    ## Add the basic customisations
+    if (!is.null(userTheme)) p <- p + userTheme
+    p
 }
 
 
@@ -507,17 +508,17 @@
 #' @return plotlyObject$x$data
 #' @keywords internal
 .hidePWFRects <- function(x){
-  ## If there is a name component & it contains
-  ## PASS/WARN/FAIL set the hoverinfo to none
-  if (any(grepl("(PASS|WARN|FAIL|Status)", x$text))) {
-    x$hoverinfo <- "none"
-    x$text <- ""
-  }
-  if (!is.null(x$name)) {
-    if (any(grepl("(PASS|WARN|FAIL|Status)", x$name))) {
-      x$hoverinfo <- "none"
-      x$text <- ""
+    ## If there is a name component & it contains
+    ## PASS/WARN/FAIL set the hoverinfo to none
+    if (any(grepl("(PASS|WARN|FAIL|Status)", x$text))) {
+        x$hoverinfo <- "none"
+        x$text <- ""
     }
-  }
-  x
+    if (!is.null(x$name)) {
+        if (any(grepl("(PASS|WARN|FAIL|Status)", x$name))) {
+            x$hoverinfo <- "none"
+            x$text <- ""
+        }
+    }
+    x
 }

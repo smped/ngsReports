@@ -71,202 +71,208 @@
 #' @rdname plotReadTotals-methods
 #' @export
 setGeneric(
-  "plotReadTotals",
-  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-    standardGeneric("plotReadTotals")
-  }
+    "plotReadTotals",
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+        standardGeneric("plotReadTotals")
+    }
 )
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod(
-  "plotReadTotals", signature = "ANY",
-  function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-    .errNotImp(x)
-  })
+    "plotReadTotals", signature = "ANY",
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+        .errNotImp(x)
+    })
 #' @importFrom scales comma
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod(
-  "plotReadTotals", signature = "FastqcDataList",
-  function(
-    x, usePlotly = FALSE, labels,  pattern = ".(fast|fq|bam).*",
-    duplicated = TRUE, bars = c("stacked", "adjacent"), vertBars = TRUE,
-    divBy = 1, barCols = c("red","blue"), expand.y = c(0, 0.02),
-    plotlyLegend = FALSE, ...
-  ){
+    "plotReadTotals", signature = "FastqcDataList",
+    function(
+        x, usePlotly = FALSE, labels,  pattern = ".(fast|fq|bam).*",
+        duplicated = TRUE, bars = c("stacked", "adjacent"), vertBars = TRUE,
+        divBy = 1, barCols = c("red","blue"), expand.y = c(0, 0.02),
+        plotlyLegend = FALSE, ...
+    ){
 
-  stopifnot(is.logical(duplicated))
-  df <- readTotals(x)
+        stopifnot(is.logical(duplicated))
+        df <- readTotals(x)
 
-  ## Drop the suffix, or check the alternate labels
-  labels <- .makeLabels(x, labels, pattern = pattern, ...)
-  df$Filename <- labels[df$Filename]
-  df$Filename <- forcats::fct_inorder(df$Filename)
+        ## Drop the suffix, or check the alternate labels
+        labels <- .makeLabels(x, labels, pattern = pattern, ...)
+        df$Filename <- labels[df$Filename]
+        df$Filename <- forcats::fct_inorder(df$Filename)
 
-  ## Get the colours for the barplot
-  barCols <- rep_len(barCols, duplicated + 1)
-  y_col <- "Read Totals"
-  if (divBy != 1) y_col <- paste0("Read Totals (x", comma(divBy, 1), ")")
-  df[[y_col]] <- df$Total_Sequences / divBy
+        ## Get the colours for the barplot
+        barCols <- rep_len(barCols, duplicated + 1)
+        y_col <- "Read Totals"
+        if (divBy != 1) y_col <- paste0("Read Totals (x", comma(divBy, 1), ")")
+        df[[y_col]] <- df$Total_Sequences / divBy
 
-  ## Check the axis expansion
-  stopifnot(is.numeric(expand.y))
-  expand.y <- expansion(rep_len(expand.y, 2))
-  yMax <- max(df[[y_col]])
+        ## Check the axis expansion
+        stopifnot(is.numeric(expand.y))
+        expand.y <- expansion(rep_len(expand.y, 2))
+        yMax <- max(df[[y_col]])
 
-  if (!duplicated) {
+        if (!duplicated) {
 
-    p <- ggplot(df, aes(x = Filename, y = !!sym(y_col))) +
-      geom_bar(stat = "identity", fill = barCols) +
-      scale_y_continuous(
-        labels = comma, limits = c(0, yMax), expand = expand.y
-      ) +
-      theme_bw()
-    if (vertBars) p <- p + coord_flip()
-    p <- .updateThemeFromDots(p, ...)
-    if (usePlotly) p <- plotly::ggplotly(p)
+            p <- ggplot(df, aes(x = Filename, y = !!sym(y_col))) +
+                geom_bar(stat = "identity", fill = barCols) +
+                scale_y_continuous(
+                    labels = comma, limits = c(0, yMax), expand = expand.y
+                ) +
+                theme_bw()
+            if (vertBars) p <- p + coord_flip()
+            p <- .updateThemeFromDots(p, ...)
+            if (usePlotly) p <- plotly::ggplotly(p)
 
-  }
+        }
 
-  if (duplicated) {
+        if (duplicated) {
 
-    ## Add the information to a joined data.frame
-    deDup <- getModule(x, "Total_Deduplicated_Percentage")
-    deDup$Filename <- labels[deDup$Filename]
-    deDup$Filename <- factor(deDup$Filename, levels = levels(df$Filename))
-    names(deDup) <- gsub("Total_Deduplicated_", "", names(deDup))
-    df <- dplyr::left_join(deDup, df, by = "Filename")
+            ## Add the information to a joined data.frame
+            deDup <- getModule(x, "Total_Deduplicated_Percentage")
+            deDup$Filename <- labels[deDup$Filename]
+            deDup$Filename <- factor(
+                deDup$Filename, levels = levels(df$Filename)
+            )
+            names(deDup) <- gsub("Total_Deduplicated_", "", names(deDup))
+            df <- dplyr::left_join(deDup, df, by = "Filename")
 
-    ##Setup the df for plotting
-    types <- c("Unique", "Duplicated")
-    df$Unique <- df$Percentage * df[[y_col]] / 100
-    df$Unique <- round(df$Unique, log10(divBy))
-    df$Duplicated <- df[[y_col]] - df$Unique
-    df <- df[c("Filename", types)]
-    df <- tidyr::gather(df, "Type", !!sym(y_col), one_of(types))
+            ##Setup the df for plotting
+            types <- c("Unique", "Duplicated")
+            df$Unique <- df$Percentage * df[[y_col]] / 100
+            df$Unique <- round(df$Unique, log10(divBy))
+            df$Duplicated <- df[[y_col]] - df$Unique
+            df <- df[c("Filename", types)]
+            df <- tidyr::gather(df, "Type", !!sym(y_col), one_of(types))
 
-    bars <- match.arg(bars)
-    barPos <- c(adjacent = "dodge", stacked = "stack")[bars]
+            bars <- match.arg(bars)
+            barPos <- c(adjacent = "dodge", stacked = "stack")[bars]
 
-    ## Make the plot
-    p <- ggplot(df, aes(x = Filename, y = !!sym(y_col), fill = Type)) +
-      geom_bar(stat = "identity", position = barPos) +
-      scale_y_continuous(
-        labels = comma, limits = c(0, yMax), expand = expand.y
-      ) +
-      scale_fill_manual(values = barCols) +
-      theme_bw()
-    if (vertBars) p <- p + coord_flip()
-    p <- .updateThemeFromDots(p, ...)
+            ## Make the plot
+            p <- ggplot(df, aes(x = Filename, y = !!sym(y_col), fill = Type)) +
+                geom_bar(stat = "identity", position = barPos) +
+                scale_y_continuous(
+                    labels = comma, limits = c(0, yMax), expand = expand.y
+                ) +
+                scale_fill_manual(values = barCols) +
+                theme_bw()
+            if (vertBars) p <- p + coord_flip()
+            p <- .updateThemeFromDots(p, ...)
 
-    if (usePlotly) {
+            if (usePlotly) {
 
-      # Hide the legend
-      if (!plotlyLegend) p <- p + theme(legend.position = "none")
-      # Render as a plotly object
-      p <- suppressMessages(suppressWarnings(plotly::ggplotly(p)))
+                # Hide the legend
+                if (!plotlyLegend) p <- p + theme(legend.position = "none")
+                # Render as a plotly object
+                p <- suppressMessages(suppressWarnings(plotly::ggplotly(p)))
+            }
+
+        }
+
+        ## Draw the plot
+        p
     }
-
-  }
-
-  ## Draw the plot
-  p
-}
 )
 #' @importFrom dplyr mutate
 #' @importFrom scales percent comma
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod(
-  "plotReadTotals", signature = "FastpDataList",
-  function(
-    x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
-    adjPaired  = TRUE, divBy = 1e6, scaleFill = NULL, labMin = 0.05,
-    status = TRUE, labelVJ = 0.5, labelFill = "white", plotTheme = theme_get(),
-    vertBars = FALSE, plotlyLegend = FALSE, expand.y = c(0, 0.05), ...
-  ){
+    "plotReadTotals", signature = "FastpDataList",
+    function(
+        x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",
+        adjPaired  = TRUE, divBy = 1e6, scaleFill = NULL, labMin = 0.05,
+        status = TRUE, labelVJ = 0.5, labelFill = "white",
+        plotTheme = theme_get(), vertBars = FALSE, plotlyLegend = FALSE,
+        expand.y = c(0, 0.05), ...
+    ){
 
-    ## Sort out the summary data
-    module <- "Summary"
-    data <- getModule(x, module)
-    df <- data$Filtering_result
-    df <- dplyr::filter(df, !!sym("total") > 0)
-    if (!nrow(df)) {
-      ## If no filtering was performed, just use the Before_filtering data
-      df <- data$Before_filtering
-      stopifnot(nrow(df))
-      df$total <- df$total_reads
-      df$result <- "total_reads"
-      df$rate <- 1
+        ## Sort out the summary data
+        module <- "Summary"
+        data <- getModule(x, module)
+        df <- data$Filtering_result
+        df <- dplyr::filter(df, !!sym("total") > 0)
+        if (!nrow(df)) {
+            ## If no filtering was performed, just use the Before_filtering data
+            df <- data$Before_filtering
+            stopifnot(nrow(df))
+            df$total <- df$total_reads
+            df$result <- "total_reads"
+            df$rate <- 1
+        }
+
+        ## Get the correct order for filling columns
+        levels <- sort(rank(df$total))
+        levels <- unique(names(levels))
+        df$result <- factor(df$result, levels = levels)
+        df$result <- forcats::fct_relabel(
+            df$result,
+            \(x) str_remove_all(str_to_title(gsub("_", " ", x)), " Reads")
+        )
+        paired <- getModule(x, "paired")
+        df <- dplyr::left_join(df, paired, by = "Filename")
+        y_col <- "Read Totals"
+        if (divBy != 1) y_col <- paste0("Read Totals (x", comma(divBy, 1), ")")
+        df[[y_col]] <- df$total / divBy
+        if (adjPaired) df[[y_col]][df$paired] <- 0.5 * df[[y_col]][df$paired]
+        df <- mutate(df, cumsum = cumsum(!!sym(y_col)), .by = Filename)
+        df$label_y <- df$cumsum - (1 - labelVJ) * df[[y_col]]
+
+        ## Drop the suffix, or check the alternate labels
+        labels <- .makeLabels(df, labels, pattern = pattern, ...)
+        df$Filename <- factor(labels[df$Filename], levels = labels)
+
+        ## Add additional columns for a nice plotly figure
+        df$Total <- df$total
+        if (adjPaired) df$Total[df$paired] <- 0.5 * df$Total[df$paired]
+        df$Total <- comma(df$Total)
+        df[["% Reads"]] <- percent(df$rate, 0.01)
+        fill_col <- "Filtering Result"
+        names(df) <- gsub("result", fill_col, names(df))
+        if (is.null(scaleFill)) scaleFill <- scale_fill_viridis_d(
+            option = "cividis", direction = -1
+        )
+        stopifnot(is(scaleFill, "ScaleDiscrete"))
+        stopifnot(scaleFill$aesthetics == "fill")
+        stopifnot(is(plotTheme, "theme"))
+        fill_col <- sym(fill_col)
+        if (!status) fill_col <- NULL
+
+        p <- ggplot(
+            df,
+            aes(
+                Filename, !!sym(y_col), fill = {{ fill_col }},
+                total = !!sym("Total"),
+                paired = !!sym("paired"), percent = !!sym("% Reads")
+            )
+        ) +
+            geom_col(...) +
+            scale_y_continuous(
+                labels = comma, expand = expansion(rep_len(expand.y, 2))
+            ) +
+            scaleFill +
+            theme_bw() +
+            plotTheme
+        if (vertBars) p <- p + coord_flip()
+
+        if (!usePlotly) {
+            if (status) p <- p + geom_label(
+                aes(
+                    Filename, y = !!sym("label_y"),
+                    label = percent(!!sym("rate"), 0.1)
+                ),
+                data = dplyr::filter(df, !!sym("rate") >= labMin),
+                fill = labelFill,
+                ...
+            )
+        } else {
+            if (!plotlyLegend) p <- p + theme(legend.position = "none")
+            tt <- c("Filename", "Filtering Result", "Total", "% Reads")
+            p <- plotly::ggplotly(p, tooltip = tt)
+        }
+
+        p
     }
-
-    ## Get the correct order for filling columns
-    levels <- sort(rank(df$total))
-    levels <- unique(names(levels))
-    df$result <- factor(df$result, levels = levels)
-    df$result <- forcats::fct_relabel(
-      df$result,
-      function(x) str_remove_all(str_to_title(gsub("_", " ", x)), " Reads")
-    )
-    paired <- getModule(x, "paired")
-    df <- dplyr::left_join(df, paired, by = "Filename")
-    y_col <- "Read Totals"
-    if (divBy != 1) y_col <- paste0("Read Totals (x", comma(divBy, 1), ")")
-    df[[y_col]] <- df$total / divBy
-    if (adjPaired) df[[y_col]][df$paired] <- 0.5 * df[[y_col]][df$paired]
-    df <- mutate(df, cumsum = cumsum(!!sym(y_col)), .by = Filename)
-    df$label_y <- df$cumsum - (1 - labelVJ) * df[[y_col]]
-
-    ## Drop the suffix, or check the alternate labels
-    labels <- .makeLabels(df, labels, pattern = pattern, ...)
-    df$Filename <- factor(labels[df$Filename], levels = labels)
-
-    ## Add additional columns for a nice plotly figure
-    df$Total <- df$total
-    if (adjPaired) df$Total[df$paired] <- 0.5 * df$Total[df$paired]
-    df$Total <- comma(df$Total)
-    df[["% Reads"]] <- percent(df$rate, 0.01)
-    fill_col <- "Filtering Result"
-    names(df) <- gsub("result", fill_col, names(df))
-    if (is.null(scaleFill)) {
-      scaleFill <- scale_fill_viridis_d(option = "cividis", direction = -1)
-    }
-    stopifnot(is(scaleFill, "ScaleDiscrete"))
-    stopifnot(scaleFill$aesthetics == "fill")
-    stopifnot(is(plotTheme, "theme"))
-    fill_col <- sym(fill_col)
-    if (!status) fill_col <- NULL
-
-    p <- ggplot(
-      df,
-      aes(
-        Filename, !!sym(y_col), fill = {{ fill_col }}, total = !!sym("Total"),
-        paired = !!sym("paired"), percent = !!sym("% Reads")
-      )
-    ) +
-      geom_col(...) +
-      scale_y_continuous(
-        labels = comma, expand = expansion(rep_len(expand.y, 2))
-      ) +
-      scaleFill +
-      theme_bw() +
-      plotTheme
-    if (vertBars) p <- p + coord_flip()
-
-    if (!usePlotly) {
-      if (status) p <- p + geom_label(
-        aes(
-          Filename, y = !!sym("label_y"), label = percent(!!sym("rate"), 0.1)
-        ),
-        data = dplyr::filter(df, !!sym("rate") >= labMin), fill = labelFill,
-        ...
-      )
-    } else {
-      if (!plotlyLegend) p <- p + theme(legend.position = "none")
-      tt <- c("Filename", "Filtering Result", "Total", "% Reads")
-      p <- plotly::ggplotly(p, tooltip = tt)
-    }
-
-    p
-  }
 )

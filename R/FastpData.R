@@ -36,19 +36,19 @@
 #' @rdname FastpData
 #' @aliases FastpData-class
 setClass(
-  "FastpData",
-  slots = c(
-    Summary = "list",
-    Adapters = "data.frame",
-    Duplication = "data.frame",
-    Insert_size = "data.frame",
-    Before_filtering = "list",
-    After_filtering = "list",
-    paired = "logical",
-    command = "character",
-    version = "character",
-    path = "character"
-  )
+    "FastpData",
+    slots = c(
+        Summary = "list",
+        Adapters = "data.frame",
+        Duplication = "data.frame",
+        Insert_size = "data.frame",
+        Before_filtering = "list",
+        After_filtering = "list",
+        paired = "logical",
+        command = "character",
+        version = "character",
+        path = "character"
+    )
 )
 setValidity("FastpData", .isValidFastpData)
 
@@ -57,28 +57,30 @@ setValidity("FastpData", .isValidFastpData)
 #' @rdname FastpData
 #' @export
 FastpData <- function(x){
-  stopifnot(!is.null(x))
-  fl <- .FastpFile(x)
-  as(fl, "FastpData")
+    stopifnot(!is.null(x))
+    fl <- .FastpFile(x)
+    as(fl, "FastpData")
 }
 
 ## The show method doesn't need exporting
 setMethod(
-  "show",
-  "FastpData",
-  function(object){
-    isPaired <- object@paired
-    reads <- object@Summary$Before_filtering$total_reads
-    cat("Source Fastp file is located in", object@path)
-    cat(
-      "\nSource Fastq file(s) contains",
-      ifelse(
-        isPaired,
-        paste(c(scales::comma(reads/2, 1), "paired-end"), collapse = " "),
-        paste(c(scales::comma(reads, 1), "single-end"), collapse = " ")
-      ),
-      "reads.\n"
-    )
-  }
+    "show",
+    "FastpData",
+    function(object){
+        isPaired <- object@paired
+        reads <- object@Summary$Before_filtering$total_reads
+        cat("Source Fastp file is located in", object@path)
+        cat(
+            "\nSource Fastq file(s) contains",
+            ifelse(
+                isPaired,
+                paste(
+                    c(scales::comma(reads/2, 1), "paired-end"), collapse = " "
+                ),
+                paste(c(scales::comma(reads, 1), "single-end"), collapse = " ")
+            ),
+            "reads.\n"
+        )
+    }
 )
 

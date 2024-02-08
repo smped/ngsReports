@@ -54,8 +54,8 @@ jobs:
         config:
           - { os: ubuntu-latest, r: 'next', bioc: 'devel', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
           ## Dockers for macOS and Windows can't handle r: 'next' at this stage
-          - { os: macOS-latest, r: 'next', bioc: 'devel'}
-          - { os: windows-latest, r: 'next', bioc: 'devel'}
+          - { os: macOS-latest, r: '4.3', bioc: '3.18'}
+          - { os: windows-latest, r: '4.3', bioc: '3.18'}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}

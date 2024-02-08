@@ -19,7 +19,7 @@ Description: This package provides methods and object classes for parsing
     objects.
 URL: https://github.com/smped/ngsReports
 BugReports: https://github.com/smped/ngsReports/issues
-License: file LICENSE
+License: LGPL-3
 Encoding: UTF-8
 Depends:
   R (>= 4.2.0),
@@ -40,7 +40,6 @@ Imports:
     lubridate,
     methods,
     plotly (>= 4.9.4),
-    readr,
     reshape2,
     rlang,
     rmarkdown,
@@ -111,6 +110,7 @@ Suggests:
   DT,
   knitr,
   pander,
+  readr,
   testthat,
   truncnorm
 biocViews: QualityControl, ReportWriting

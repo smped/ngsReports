@@ -49,7 +49,7 @@ plotFastqcPCA(
   pattern = ".(fast|fq|bam).*",
   sz = 4,
   groups,
-  pc = 1:2,
+  pc = c(1, 2),
   ...
 )
 }

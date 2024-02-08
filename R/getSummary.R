@@ -73,9 +73,7 @@ setMethod("getSummary", ".FastqcFile", function(object){
         ## Check in case it has been deleted post-instantiation though
         fl <- file.path(path, "summary.txt")
         if (!file.exists(fl)) stop("'summary.txt' could not be found.")
-        summaryData <- suppressMessages(
-            readr::read_tsv(fl, col_names = FALSE)
-        )
+        summaryData <- utils::read.delim(fl, header = FALSE)
     }
     colnames(summaryData) <- c("Status", "Category", "Filename")
     if (!any(modules %in% summaryData$Category))

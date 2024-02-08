@@ -5,6 +5,9 @@
 \alias{PwfCols-class}
 \alias{PwfCols}
 \title{The PwfCols class and associated methods}
+\value{
+An S4 object of class PwfCols
+}
 \description{
 Define the PwfCols class and associated methods
 }

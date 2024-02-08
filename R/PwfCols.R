@@ -17,6 +17,8 @@
 #' @slot MAX A vector of length 1, defining the colour for an extreme FAIL or
 #' NA in rgb format. Defaults to rgb(1, 1, 1)
 #'
+#' @return An S4 object of class PwfCols
+#'
 #' @include validationFunctions.R
 #' @aliases PwfCols
 setClass("PwfCols", slots = c(
