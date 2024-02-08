@@ -35,6 +35,7 @@ reference:
     - plotReadTotals
     - plotFastqcPCA
     - starts_with("plotSeq")
+    - summariseOverrep
     - writeHtmlReport
     - maxAdapterContent
     - fqName
