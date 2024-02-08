@@ -8,9 +8,10 @@ test_that(".makeDendro errors correctly with incorrect columns",{
     expect_error(.makeDendro(df, "X", "Y", "Z"))
 })
 
-df <- data.frame(Filename = rep(c("A", "B"), times = 2),
-                 Position = rep(c(1, 2), each= 2),
-                 Value = 0)
+df <- data.frame(
+  Filename = rep(c("A", "B"), times = 2), Position = rep(c(1, 2), each = 2),
+  Value = 0
+)
 clus <- .makeDendro(df, rowVal = "Filename", colVal = "Position", value = "Value")
 
 test_that(".makeDendro produces a correct dendrogram",{

@@ -1,9 +1,3 @@
-## This just perfoms generic tests for the correct objects for each function
-packageDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
-# Load the FASTQC data as a FastqcDataList object
-fdl <- FastqcDataList(fl)
-fpl <- FastpDataList(system.file("extdata/fastp.json.gz", package = "ngsReports"))
 
 test_that("plotReadTotals works for FastQC objects", {
   p <- plotReadTotals(fdl)

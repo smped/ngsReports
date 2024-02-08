@@ -6,8 +6,8 @@ test_that("Example file exists",{
 })
 
 # Extract the fastqc data as the lines using the code from `FastqcData()`
-fl <- file.path( gsub(".zip$", "", basename(x)), "fastqc_data.txt")
-uz <- unz(x, fl)
+f <- file.path( gsub(".zip$", "", basename(x)), "fastqc_data.txt")
+uz <- unz(x, f)
 fqcLines <- readLines(uz)
 close(uz)
 

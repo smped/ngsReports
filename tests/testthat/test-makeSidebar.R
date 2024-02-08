@@ -1,7 +1,3 @@
-# This will give the correct structure as a stand alone process
-packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:2]
-fdl <- FastqcDataList(fileList)
 status <- getSummary(fdl)
 status <- subset(status, Category == "Basic Statistics")
 key <- status$Filename

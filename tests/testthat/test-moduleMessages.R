@@ -1,13 +1,14 @@
-f <- c(
+test_that("All modules give correct messages",{
+
+  f <- c(
     system.file("extdata/ATTG_R1_fastqc.zip", package = "ngsReports"),
     system.file(
-        "extdata/errorTestingFiles/moduleNamesNoData.zip",
-        package = "ngsReports"
+      "extdata/errorTestingFiles/moduleNamesNoData.zip",
+      package = "ngsReports"
     )
-)
-fdl <- FastqcDataList(f)
+  )
+  fdl <- FastqcDataList(f)
 
-test_that("All modules give correct messages",{
   expect_message(getModule(fdl, "Adapter_Content"))
   expect_message(getModule(fdl, "Basic_Statistics"))
   expect_message(getModule(fdl, "Kmer_Content"))

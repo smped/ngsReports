@@ -1,10 +1,6 @@
-# This will give the correct structure as a stand alone process
-packageDir <- system.file("extdata", package = "ngsReports")
-fileList <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:2]
-fdl <- FastqcDataList(fileList)
 
 #test dataset
-df <- getModule(fdl, "Sequence_Length_Distribution")
+df <- getModule(fdl[1:2], "Sequence_Length_Distribution")
 cols <- c("Filename", "Lower", "Count")
 
 #cluster the data

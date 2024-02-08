@@ -1,12 +1,3 @@
-## This just perfoms generic tests for the correct objects for each function
-packageDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)[1:2]
-# Load the FASTQC data as a FastqcDataList object
-fdl <- FastqcDataList(fl)
-
-fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
-fp <- FastpData(fl)
-fpl <- FastpDataList(path(fp))
 
 test_that("plotKmers outputs correct objects", {
 

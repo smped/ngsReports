@@ -1,7 +1,3 @@
-packageDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(packageDir, pattern = "fastp.json.gz", full.names = TRUE)
-fp <- FastpData(fl)
-fpl <- FastpDataList(path(fp))
 
 test_that("Basic FastpData Plots work", {
   p <- plotInsertSize(fp)

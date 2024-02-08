@@ -1,7 +1,3 @@
-packageDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
-# Load the FASTQC data as a FastqcDataList object
-fdl <- FastqcDataList(fl)
 
 test_that(".prepHeatmap errors correctly", {
   expect_error(.prepHeatmap(""), 'is\\(x, "gg"\\) is not TRUE')

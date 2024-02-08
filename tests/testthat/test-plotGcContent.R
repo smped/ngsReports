@@ -1,9 +1,3 @@
-## This just perfoms generic tests for the correct objects for each function
-packageDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
-# Load the FASTQC data as a FastqcDataList object
-fdl <- FastqcDataList(fl)
-
 
 test_that("plotGcContent outputs correct objects", {
 

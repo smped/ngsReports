@@ -1,8 +1,3 @@
-## This just perfoms generic tests for the correct objects for each function
-packageDir <- system.file("extdata", package = "ngsReports")
-fl <- list.files(packageDir, pattern = "fastqc.zip", full.names = TRUE)
-# Load the FASTQC data as a FastqcDataList object
-fdl <- FastqcDataList(fl)
 
 test_that("plotDupLevels outputs correct objects from FastQC", {
 
@@ -28,13 +23,10 @@ test_that("plotDupLevels outputs correct objects from FastQC", {
 })
 
 test_that("plotDupLevels fastp outputs are correct",{
-  fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
-  fp <- FastpData(fl)
   p <- plotDupLevels(fp)
   expect_true(is(p, "gg"))
   p <- plotDupLevels(fp, TRUE)
   expect_true(is(p, "plotly"))
-  fpl <- FastpDataList(fl)
   p <- plotDupLevels(fpl, plotType = "bar")
   expect_true(is(p, "gg"))
   p <- plotDupLevels(fpl, plotType = "heatmap")

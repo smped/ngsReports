@@ -57,7 +57,7 @@ setGeneric(
 #' @aliases fqName<-,FastqcData-method
 #' @rdname fqName-methods
 setReplaceMethod("fqName", signature = "FastqcData", function(object, value){
-    stopifnot(length(value) == 1 | is.character(value))
+    stopifnot(length(value) == 1 & is.character(value))
     n <- nrow(object@Summary)
     object@Summary$Filename <- rep(value, n)
     object@Basic_Statistics$Filename <- value

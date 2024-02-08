@@ -1,6 +1,5 @@
 test_that("TRUE statement from a zipped file",{
-  fl <- system.file("extdata", "ATTG_R1_fastqc.zip", package = "ngsReports")
-  expect_true(isCompressed(fl))
+  expect_true(isCompressed(fl[[1]]))
 })
 
 test_that("FALSE statement from a directory",{
