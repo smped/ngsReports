@@ -112,7 +112,7 @@ plotAlignmentSummary <- function(
         "Unmapped_Other"
     )
     df$Type <- factor(df$Type, levels = rev(lv))
-    df$Percent = percent(df$Total / df$Number_Of_Input_Reads)
+    df$Percent <- percent(df$Total / df$Number_Of_Input_Reads)
     df$Reads <- comma(df$Total)
     # Set the defaults
     ylab <- "Total Reads"

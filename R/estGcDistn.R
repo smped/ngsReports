@@ -40,7 +40,7 @@
 #' @export
 #' @rdname estGcDistn
 setGeneric("estGcDistn", function(
-    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
+        x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
     standardGeneric("estGcDistn")
 })
 #' @export
@@ -53,29 +53,28 @@ setMethod("estGcDistn", "ANY", function(x, ...){
 #' @export
 #' @rdname estGcDistn
 #' @aliases estGcDistn
-setMethod("estGcDistn", "character", function(
-    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
+setMethod(
+    "estGcDistn", "character",
+    function(x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
 
-    stopifnot(file.exists(x))
-    errMsg <- "Supplied File not in FASTA format"
-    x <- tryCatch(
-        readDNAStringSet(x, format = "fasta"),
-        error = function(e) {stop(errMsg)}
-    )
-    estGcDistn(x, n, rl, fl, fragSd, bins)
-})
+        stopifnot(file.exists(x))
+        errMsg <- "Supplied File not in FASTA format"
+        x <- tryCatch(
+            readDNAStringSet(x, format = "fasta"),
+            error = function(e) {stop(errMsg)}
+        )
+        estGcDistn(x, n, rl, fl, fragSd, bins)
+    })
 #' @export
 #' @rdname estGcDistn
 #' @aliases estGcDistn
 setMethod("estGcDistn", "DNAStringSet", function(
-    x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
+        x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
 
-    if (!requireNamespace("truncnorm", quietly = TRUE)){
+    if (!requireNamespace("truncnorm", quietly = TRUE)) {
         stop(
-            paste(
-                "The package truncnorm is required for this function.",
-                "Please install it using BiocManager::install('truncnorm')"
-            )
+            "The package truncnorm is required for this function.\n",
+            "Please install it using BiocManager::install('truncnorm')"
         )
     }
 

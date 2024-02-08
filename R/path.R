@@ -55,5 +55,5 @@ setMethod("path", "FastpData", function(object){object@path})
 #' @aliases path,FastpDataList-method
 #' @export
 setMethod("path", "FastpDataList", function(object){
-  vapply(object@.Data, path, character(1))
+    vapply(object@.Data, path, character(1))
 })

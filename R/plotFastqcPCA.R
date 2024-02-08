@@ -96,7 +96,7 @@ setMethod(
     "plotFastqcPCA", signature = "FastqcDataList",
     function(
         x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels,
-        pattern = ".(fast|fq|bam).*", sz = 4, groups, pc = 1:2, ...
+        pattern = ".(fast|fq|bam).*", sz = 4, groups, pc = c(1, 2), ...
     ){
 
         availMods <- c(

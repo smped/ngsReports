@@ -71,9 +71,7 @@ writeHtmlReport <- function(
     stopifnot(file.exists(file2Knit))
 
     ## Define the output directory
-    if (missing(outDir)) {
-        outDir <- fastqcDir
-    }
+    if (missing(outDir))  outDir <- fastqcDir
     stopifnot(dir.exists(outDir))
 
     ## Export targets.csv from targets data.frame if supplied
@@ -86,6 +84,8 @@ writeHtmlReport <- function(
         )
         if (all(chk)) {
             message("Exporting targets.csv")
+          if (!requireNamespace('readr', quietly = TRUE))
+            stop("Please install 'readr' to setup the targets file.")
             ## This needs to be in the same directory as the template (for now)
             readr::write_csv(
                 targetsDF, file.path(fastqcDir, "targets.csv"), append = FALSE
@@ -109,7 +109,7 @@ writeHtmlReport <- function(
 
     ## Compile the document in the directory
     htmlOut <- file.path(outDir, gsub(".Rmd$", ".html", basename(template)))
-    message(paste("Generating", htmlOut, "from template..."))
+    message("Generating ", htmlOut, "from template...")
     rmarkdown::render(
         file2Knit,
         output_format = "html_document",
