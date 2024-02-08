@@ -31,11 +31,10 @@ reference:
     - plotInsertSize
     - plotKmers
     - plotNContent
-    - plotOverrep
+    - ends_with("Overrep")
     - plotReadTotals
     - plotFastqcPCA
     - starts_with("plotSeq")
-    - summariseOverrep
     - writeHtmlReport
     - maxAdapterContent
     - fqName
