@@ -1,0 +1,9 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.travis\.yml$
+^TODO.md$
+^testing.R$
+^temp/*$
+^BiocTODO.md$
+^.github
+^_pkgdown.yml$

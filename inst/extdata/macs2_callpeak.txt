@@ -1,0 +1,139 @@
+INFO  @ Wed, 31 Mar 2021 23:41:36:
+# Command line: callpeak -t ~/bam/T47D_1_mapped_reads.bam ~/bam/T47D_2_mapped_reads.bam ~/bam/T47D_3_mapped_reads.bam -c ~/bam/T47D_Pooled_input_mapped_reads.bam -f BAM -g hs --keep-dup all -n TF --bdg --SPMR --outdir ~/macs2/
+# ARGUMENTS LIST:
+# name = TF
+# format = BAM
+# ChIP-seq file = ['~/bam/T47D_1_mapped_reads.bam', '~/bam/T47D_2_mapped_reads.bam', '~/bam/T47D__3_mapped_reads.bam']
+# control file = ['~/bam/T47D_Pooled_input_mapped_reads.bam']
+# effective genome size = 2.70e+09
+# band width = 300
+# model fold = [5, 50]
+# qvalue cutoff = 5.00e-02
+# The maximum gap between significant sites is assigned as the read length/tag size.
+# The minimum length of peaks is assigned as the predicted fragment length "d".
+# Larger dataset will be scaled towards smaller dataset.
+# Range for calculating regional lambda is: 1000 bps and 10000 bps
+# Broad region calling is off
+# Paired-End mode is off
+# MACS will save fragment pileup signal per million reads
+
+INFO  @ Wed, 31 Mar 2021 23:41:36: #1 read tag files...
+INFO  @ Wed, 31 Mar 2021 23:41:36: #1 read treatment tags...
+INFO  @ Wed, 31 Mar 2021 23:41:37:  1000000
+INFO  @ Wed, 31 Mar 2021 23:41:39:  2000000
+INFO  @ Wed, 31 Mar 2021 23:41:41:  3000000
+INFO  @ Wed, 31 Mar 2021 23:41:42:  4000000
+INFO  @ Wed, 31 Mar 2021 23:41:44:  5000000
+INFO  @ Wed, 31 Mar 2021 23:41:46:  6000000
+INFO  @ Wed, 31 Mar 2021 23:41:48:  7000000
+INFO  @ Wed, 31 Mar 2021 23:41:49:  8000000
+INFO  @ Wed, 31 Mar 2021 23:41:51:  9000000
+INFO  @ Wed, 31 Mar 2021 23:41:53:  10000000
+INFO  @ Wed, 31 Mar 2021 23:41:54:  11000000
+INFO  @ Wed, 31 Mar 2021 23:41:56:  12000000
+INFO  @ Wed, 31 Mar 2021 23:41:58:  13000000
+INFO  @ Wed, 31 Mar 2021 23:41:59:  14000000
+INFO  @ Wed, 31 Mar 2021 23:42:01:  15000000
+INFO  @ Wed, 31 Mar 2021 23:42:02:  16000000
+INFO  @ Wed, 31 Mar 2021 23:42:03: 16557413 reads have been read.
+INFO  @ Wed, 31 Mar 2021 23:42:05:  1000000
+INFO  @ Wed, 31 Mar 2021 23:42:07:  2000000
+INFO  @ Wed, 31 Mar 2021 23:42:08:  3000000
+INFO  @ Wed, 31 Mar 2021 23:42:10:  4000000
+INFO  @ Wed, 31 Mar 2021 23:42:12:  5000000
+INFO  @ Wed, 31 Mar 2021 23:42:14:  6000000
+INFO  @ Wed, 31 Mar 2021 23:42:15:  7000000
+INFO  @ Wed, 31 Mar 2021 23:42:17:  8000000
+INFO  @ Wed, 31 Mar 2021 23:42:19:  9000000
+INFO  @ Wed, 31 Mar 2021 23:42:20:  10000000
+INFO  @ Wed, 31 Mar 2021 23:42:22:  11000000
+INFO  @ Wed, 31 Mar 2021 23:42:24:  12000000
+INFO  @ Wed, 31 Mar 2021 23:42:25:  13000000
+INFO  @ Wed, 31 Mar 2021 23:42:27:  14000000
+INFO  @ Wed, 31 Mar 2021 23:42:29:  15000000
+INFO  @ Wed, 31 Mar 2021 23:42:30:  16000000
+INFO  @ Wed, 31 Mar 2021 23:42:32:  17000000
+INFO  @ Wed, 31 Mar 2021 23:42:32: 17148158 reads have been read.
+INFO  @ Wed, 31 Mar 2021 23:42:34:  1000000
+INFO  @ Wed, 31 Mar 2021 23:42:36:  2000000
+INFO  @ Wed, 31 Mar 2021 23:42:38:  3000000
+INFO  @ Wed, 31 Mar 2021 23:42:39:  4000000
+INFO  @ Wed, 31 Mar 2021 23:42:41:  5000000
+INFO  @ Wed, 31 Mar 2021 23:42:43:  6000000
+INFO  @ Wed, 31 Mar 2021 23:42:44:  7000000
+INFO  @ Wed, 31 Mar 2021 23:42:46:  8000000
+INFO  @ Wed, 31 Mar 2021 23:42:48:  9000000
+INFO  @ Wed, 31 Mar 2021 23:42:49:  10000000
+INFO  @ Wed, 31 Mar 2021 23:42:51:  11000000
+INFO  @ Wed, 31 Mar 2021 23:42:53:  12000000
+INFO  @ Wed, 31 Mar 2021 23:42:55:  13000000
+INFO  @ Wed, 31 Mar 2021 23:42:56:  14000000
+INFO  @ Wed, 31 Mar 2021 23:42:58:  15000000
+INFO  @ Wed, 31 Mar 2021 23:43:00:  16000000
+INFO  @ Wed, 31 Mar 2021 23:43:01:  17000000
+INFO  @ Wed, 31 Mar 2021 23:43:03: 17870625 reads have been read.
+INFO  @ Wed, 31 Mar 2021 23:43:04: #1.2 read input tags...
+INFO  @ Wed, 31 Mar 2021 23:43:06:  1000000
+INFO  @ Wed, 31 Mar 2021 23:43:07:  2000000
+INFO  @ Wed, 31 Mar 2021 23:43:09:  3000000
+INFO  @ Wed, 31 Mar 2021 23:43:11:  4000000
+INFO  @ Wed, 31 Mar 2021 23:43:12:  5000000
+INFO  @ Wed, 31 Mar 2021 23:43:14:  6000000
+INFO  @ Wed, 31 Mar 2021 23:43:15:  7000000
+INFO  @ Wed, 31 Mar 2021 23:43:17:  8000000
+INFO  @ Wed, 31 Mar 2021 23:43:19:  9000000
+INFO  @ Wed, 31 Mar 2021 23:43:20:  10000000
+INFO  @ Wed, 31 Mar 2021 23:43:22:  11000000
+INFO  @ Wed, 31 Mar 2021 23:43:24:  12000000
+INFO  @ Wed, 31 Mar 2021 23:43:25:  13000000
+INFO  @ Wed, 31 Mar 2021 23:43:27:  14000000
+INFO  @ Wed, 31 Mar 2021 23:43:28:  15000000
+INFO  @ Wed, 31 Mar 2021 23:43:30:  16000000
+INFO  @ Wed, 31 Mar 2021 23:43:32:  17000000
+INFO  @ Wed, 31 Mar 2021 23:43:33:  18000000
+INFO  @ Wed, 31 Mar 2021 23:43:35:  19000000
+INFO  @ Wed, 31 Mar 2021 23:43:37:  20000000
+INFO  @ Wed, 31 Mar 2021 23:43:38:  21000000
+INFO  @ Wed, 31 Mar 2021 23:43:40:  22000000
+INFO  @ Wed, 31 Mar 2021 23:43:41:  23000000
+INFO  @ Wed, 31 Mar 2021 23:43:43:  24000000
+INFO  @ Wed, 31 Mar 2021 23:43:45:  25000000
+INFO  @ Wed, 31 Mar 2021 23:43:46:  26000000
+INFO  @ Wed, 31 Mar 2021 23:43:48:  27000000
+INFO  @ Wed, 31 Mar 2021 23:43:50:  28000000
+INFO  @ Wed, 31 Mar 2021 23:43:51:  29000000
+INFO  @ Wed, 31 Mar 2021 23:43:53:  30000000
+INFO  @ Wed, 31 Mar 2021 23:43:55:  31000000
+INFO  @ Wed, 31 Mar 2021 23:43:56:  32000000
+INFO  @ Wed, 31 Mar 2021 23:43:58:  33000000
+INFO  @ Wed, 31 Mar 2021 23:43:59:  34000000
+INFO  @ Wed, 31 Mar 2021 23:44:01:  35000000
+INFO  @ Wed, 31 Mar 2021 23:44:03:  36000000
+INFO  @ Wed, 31 Mar 2021 23:44:04:  37000000
+INFO  @ Wed, 31 Mar 2021 23:44:05: 37464498 reads have been read.
+INFO  @ Wed, 31 Mar 2021 23:44:05: #1 tag size is determined as 75 bps
+INFO  @ Wed, 31 Mar 2021 23:44:05: #1 tag size = 75.0
+INFO  @ Wed, 31 Mar 2021 23:44:05: #1  total tags in treatment: 51576196
+INFO  @ Wed, 31 Mar 2021 23:44:05: #1  total tags in control: 37464498
+INFO  @ Wed, 31 Mar 2021 23:44:05: #1 finished!
+INFO  @ Wed, 31 Mar 2021 23:44:05: #2 Build Peak Model...
+INFO  @ Wed, 31 Mar 2021 23:44:05: #2 looking for paired plus/minus strand peaks...
+INFO  @ Wed, 31 Mar 2021 23:44:10: #2 number of paired peaks: 15690
+INFO  @ Wed, 31 Mar 2021 23:44:10: start model_add_line...
+INFO  @ Wed, 31 Mar 2021 23:44:11: start X-correlation...
+INFO  @ Wed, 31 Mar 2021 23:44:11: end of X-cor
+INFO  @ Wed, 31 Mar 2021 23:44:11: #2 finished!
+INFO  @ Wed, 31 Mar 2021 23:44:11: #2 predicted fragment length is 179 bps
+INFO  @ Wed, 31 Mar 2021 23:44:11: #2 alternative fragment length(s) may be 179 bps
+INFO  @ Wed, 31 Mar 2021 23:44:11: #2.2 Generate R script for model : ~/macs2/TF_model.r
+INFO  @ Wed, 31 Mar 2021 23:44:11: #3 Call peaks...
+INFO  @ Wed, 31 Mar 2021 23:44:11: #3 Pre-compute pvalue-qvalue table...
+INFO  @ Wed, 31 Mar 2021 23:46:43: #3 In the peak calling step, the following will be performed simultaneously:
+INFO  @ Wed, 31 Mar 2021 23:46:43: #3   Write bedGraph files for treatment pileup (after scaling if necessary)... TF_treat_pileup.bdg
+INFO  @ Wed, 31 Mar 2021 23:46:43: #3   Write bedGraph files for control lambda (after scaling if necessary)... TF_control_lambda.bdg
+INFO  @ Wed, 31 Mar 2021 23:46:43: #3   --SPMR is requested, so pileup will be normalized by sequencing depth in million reads.
+INFO  @ Wed, 31 Mar 2021 23:46:43: #3 Call peaks for each chromosome...
+INFO  @ Wed, 31 Mar 2021 23:49:10: #4 Write output xls file... ~/macs2/TF_peaks.xls
+INFO  @ Wed, 31 Mar 2021 23:49:10: #4 Write peak in narrowPeak format file... ~/macs2/TF_peaks.narrowPeak
+INFO  @ Wed, 31 Mar 2021 23:49:10: #4 Write summits bed file... ~/macs2/TF_summits.bed
+INFO  @ Wed, 31 Mar 2021 23:49:10: Done!

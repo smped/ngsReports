@@ -1,0 +1,120 @@
+Changes in version 2.5.2
++ Added `summariseOverrep()`
+
+Changes in version 2.5.1
++ Changed method for setting default theme using plotTheme
++ Set factor levels for plotSeqContent for FastpDataList
++ Added line & cumulative plotTypes for plotInsertSize
+
+Changes in version 2.3.5
++ added support for rnaseqc metrics files
+
+Changes in version 2.1.5
++ Added FastpData and FastpDataList classes for working with fastp reports
+
+Changes in version 2.1.4
++ Added umi_tools dedup to importNgsLogs
+
+Changes in version 2.1.3
++ Bugfix when importing duplicationMetrics
+
+Changes in version 2.0.0
++ Added status bar to all plots from FastQC reports using pachwork
+
+Changes in version 1.13.3
++ Bug fix for importing macs2 logs
+
+Changes in version 1.13.2
++ Bug fix for importing DuplicationMetrics
+
+Changes in version 1.13.1
++ Bug fixes for importing macs2 logs
++ Bug fixes for importing bowtie2 logs
+
+Changes in version 1.9.3
++ Bug fixes for importing macs2 logs
+
+Changes in version 1.9.2
++ Bug fixes for later versions of ggplot2
+
+Changes in version 1.8.1
++ Bug fix in .makeSidebar
+
+Changes in version 1.7.3
++ Simplifed version of plotFastqcPCA. Now groups are an optional factor. No clustering is performed
+
+Changes in version 1.7.2
++ Deprecated runFastQC
+
+Changes in version 1.7.1
++ Added macs2 callpeak logs to importNgsLogs
+
+Changes in version 1.6.1
++ Added asPercent to plotAlignmentSummary
++ Added the ability to assign new values via fqName<-
+
+Changes in version 1.5.5
++ Added importSJ for importing SJ.out.tab files from the aligner STAR
+
+Changes in version 1.5.5
++ Added plotType = "residuals" for plotSeqContent()
+
+Changes in version 1.5.4
++ Allowed for ignoring basename() calls in all importNgsLogs functions
++ Added cumulative GC plot to plotGcContent() as plotType = "cdf"
++ Changed plotting option name from cumulative to cdf for plotSeqLengthDistn()
++ Announced deprecation of runFastQC()
+
+Changes in version 1.5.3
++ Fixed bug in plotOverrep
+
+Changes in version 1.3.4
++ Fixed bug in cutadapt import
+
+Changes in version 1.3.3
++ Added line plot to plotDupLevels()
+
+Changes in version 1.3.2
++ Changed default template to use DT instead of kable for tables and removed kableExtra dependency
++ Added outputDir as an argument to writeHtmlReport()
+
+Changes in version 1.1.4
++ added updated vignette
+
+Changes in version 1.1.1
++ Added plotAlignmentSummary()
++ Added plotFastqcPCA()
++ Added quast, busco, cutadapt, featureCounts, trimmomatic, flagstats & AdapterRemoval support to importNgsLogs()
++ Enabled auto detection for report type for importNgsLogs()
+
+Changes in version 1.0.2
++ Added Transcriptomic GC Content for A.thaliana to default gcTheoretical object
+
+Changes in version 1.0.1
++ Table in default FastQC template now scroll for larger datasets
++ Kmers removed from default FastQC template
++ Typos in vignette corrected, seperate LICENSE file added & dplyr updates corrected
++ Corrected dependencies for writeHtmlReport
+
+Changes in version 1.0.0
++ Initial Bioconductor release version
+
+Changes in version 0.99.8 (2019-04-03)
++ **This is a breaking change!** Significant changes to most functions have been implemented
++ Extracting modules is no longer performed by individual functions, but is now performed using the function getModule
++ FastqcFileLists objects are no longer defined and the class FastqcFile has been made into the private class .FastqcFile
++ FastqcDataList objects have names attributes and can now be subset using names
++ The function fileName has been renamed as fqName to clarify that it refers to the underlying Fastq file for a Fastqc report
++ All log file imports are now handled by the single function importNgsLogs
++ Most plot functions have been renamed with shorter names, e.g. plotOverrepresentedSequences is now plotOverrep
++ The FastQC version is now obtained using fqcVersion not Version
++ The functions genomes() and transcriptomes() have been removed and this information is now obtained using gcAvail(object, type)
++ The function getGcDistn() has been renamed as estGcDistn() to avoid any confusion with getGC() which works on TheoreticalGC objects.
+
+Changes in version 0.99.1 (2019-02-03)
++ Removed Remotes from DESCRIPTION
++ Added getGcDistribution to enable calculation of GC Content Distributions from FastaFiles
+
+Changes in version 0.99.0 (2019-02-01)
++ Submitted to Bioconductor
++ Shiny App has been moved to a separate package, located at https://github.com/UofABioinformaticsHub/shinyNgsReports

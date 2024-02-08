@@ -1,0 +1,12 @@
+PASS	Basic Statistics	exampleRNASeq_R1.fastq.gz
+PASS	Per base sequence quality	exampleRNASeq_R1.fastq.gz
+FAIL	Per tile sequence quality	exampleRNASeq_R1.fastq.gz
+PASS	Per sequence quality scores	exampleRNASeq_R1.fastq.gz
+FAIL	Per base sequence content	exampleRNASeq_R1.fastq.gz
+WARN	Per sequence GC content	exampleRNASeq_R1.fastq.gz
+PASS	Per base N content	exampleRNASeq_R1.fastq.gz
+PASS	Sequence Length Distribution	exampleRNASeq_R1.fastq.gz
+WARN	Sequence Duplication Levels	exampleRNASeq_R1.fastq.gz
+FAIL	Overrepresented sequences	exampleRNASeq_R1.fastq.gz
+PASS	Adapter Content	exampleRNASeq_R1.fastq.gz
+FAIL	Kmer Content	exampleRNASeq_R1.fastq.gz

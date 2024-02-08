@@ -1,0 +1,82 @@
+template:
+  params:
+    bootswatch: simplex
+
+authors:
+  Stephen Pederson:
+    href: https://github.com/smped
+  Thu-Hien To:
+    href: https://github.com/tothuhien
+  Christopher Ward:
+    href: https://github.com/CMWbio
+
+reference:
+
+- title: Object Classes
+  contents:
+      - starts_with("Fastqc")
+      - starts_with("Fastp")
+      - ends_with("class")
+
+- title: Working With FastQC or Fastp Reports
+  contents:
+    - getModule
+    - getSummary
+    - contains("Totals")
+    - plotSummary
+    - plotAdapterContent
+    - plotBaseQuals
+    - plotDupLevels
+    - plotGcContent
+    - plotInsertSize
+    - plotKmers
+    - plotNContent
+    - plotOverrep
+    - plotReadTotals
+    - plotFastqcPCA
+    - starts_with("plotSeq")
+    - writeHtmlReport
+    - maxAdapterContent
+    - fqName
+    - fqcVersion
+
+- title: Working With Other NGS Tools
+  contents:
+    - starts_with("import")
+    - plotAlignmentSummary
+    - plotAssemblyStats
+
+- title: Utility Functions
+  contents:
+    - estGcDistn
+    - gcAvail
+    - getGC
+    - contains("Colours")
+    - overRep2Fasta
+    - isCompressed
+    - path
+    - mData
+
+- title: Data Objects
+  contents:
+    - gcTheoretical
+    - pwf
+
+- title: All Methods
+  contents:
+    - ends_with("method")
+
+navbar:
+  type: default
+  left:
+  - text: Reference
+    href: reference/index.html
+  - text: Vignettes
+    menu:
+    - text: An Introduction to ngsReports
+      href: articles/ngsReportsIntroduction.html
+  - text: News
+    href: news/index.html
+  right:
+  - icon: fa-github fa-lg
+    href: https://github.com/smped/ngsReports

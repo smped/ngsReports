@@ -1,0 +1,118 @@
+Package: ngsReports
+Version: 2.5.2
+Date: 2024/02/02
+Title: Load FastqQC reports and other NGS related files
+Authors@R: c(
+    person("Stevie", "Pederson", 
+        email = "stephen.pederson.au@gmail.com", role = c("aut", "cre"),
+        comment = c(ORCID = "0000-0001-8197-3303")
+        ),
+    person("Christopher", "Ward", 
+        email = "christopher.ward@adelaide.edu.au", role = c("aut")),
+    person("Thu-Hien", "To", email = "tothuhien@gmail.com", role = c("aut"))
+    )
+Description: This package provides methods and object classes for parsing 
+    FastQC reports and output summaries from other NGS tools into R.
+    As well as parsing files, multiple plotting methods have been implemented 
+    for visualising the parsed data.
+    Plots can be generated as static ggplot objects or interactive plotly 
+    objects.
+URL: https://github.com/smped/ngsReports
+BugReports: https://github.com/smped/ngsReports/issues
+License: file LICENSE
+Encoding: UTF-8
+Depends:
+  R (>= 4.2.0),
+  BiocGenerics,
+  ggplot2 (>= 3.4.0),
+  patchwork (>= 1.1.1),
+  tibble (>= 1.3.1)
+Imports:
+    Biostrings,
+    checkmate,
+    dplyr (>= 1.1.0),
+    forcats,
+    ggdendro,
+    grDevices (>= 3.6.0),
+    grid,
+    jsonlite,
+    lifecycle,
+    lubridate,
+    methods,
+    plotly (>= 4.9.4),
+    readr,
+    reshape2,
+    rlang,
+    rmarkdown,
+    scales,
+    stats,
+    stringr,
+    tidyr,
+    tidyselect (>= 0.2.3),
+    utils,
+    zoo
+LazyData: true
+RoxygenNote: 7.3.0
+Collate: 
+    'AllGenerics.R'
+    'validationFunctions.R'
+    'FastpData.R'
+    'FastpDataList.R'
+    'FastpFile.R'
+    'FastqcData.R'
+    'FastqcDataList.R'
+    'FastqcFile.R'
+    'PwfCols.R'
+    'S4coercion.R'
+    'TheoreticalGC.R'
+    'aaa.R'
+    'data.R'
+    'errMsg.R'
+    'estGcDistn.R'
+    'extract.R'
+    'fqName.R'
+    'fqcVersion.R'
+    'getColours.R'
+    'getGC.R'
+    'getModule.R'
+    'getSummary.R'
+    'helpers.R'
+    'importNgsLogs.R'
+    'importSJ.R'
+    'isCompressed.R'
+    'maxAdapterContent.R'
+    'ngsReports-package.R'
+    'overRep2Fasta.R'
+    'path.R'
+    'plotAdapterContent.R'
+    'plotAlignmentSummary.R'
+    'plotAssemblyStats.R'
+    'plotBaseQuals.R'
+    'plotDupLevels.R'
+    'plotFastqcPCA.R'
+    'plotGcContent.R'
+    'plotInsertSize.R'
+    'plotKmers.R'
+    'plotNContent.R'
+    'plotOverrep.R'
+    'plotReadTotals.R'
+    'plotSeqContent.R'
+    'plotSeqLengthDistn.R'
+    'plotSeqQuals.R'
+    'plotSummary.R'
+    'pwf.R'
+    'readTotals.R'
+    'summariseOverrep.R'
+    'writeHtmlReport.R'
+VignetteBuilder: knitr
+Suggests: 
+  BiocStyle, 
+  Cairo,
+  DT,
+  knitr,
+  pander,
+  testthat,
+  truncnorm
+biocViews: QualityControl, ReportWriting
+RdMacros: lifecycle
+Roxygen: list(markdown = TRUE)

@@ -1,0 +1,27 @@
+#' @title Theoretical GC content
+#'
+#' @description This object contains the theoretical GC content for each
+#' provided species, for both the genome and transcriptome, where available.
+#'
+#' @details The object is defined with the S4 class `TheoreticalGC`.
+#' Species for which information is available can be found using
+#' the command `gcAvail(gcTheoretical)` and selecting the appropriate type.
+#'
+#' Metadata is accessible using `mData(gcTheoretical)`.
+#'
+#' All GC content was calculated using code from
+#' https://github.com/mikelove/fastqcTheoreticalGC using BSgenome packages.
+#' This provides a default set of GC content data for common organisms
+#' generated using 100bp reads/fragments and 1e6 reads.
+#'
+#' @seealso gcAvail
+#'
+#' @examples
+#' ## Check which genomes are included
+#' gcAvail(gcTheoretical, "Genome")
+#'
+#' ## Check which transcriptomes are included
+#' gcAvail(gcTheoretical, "Transcriptome")
+#'
+#'
+"gcTheoretical"
