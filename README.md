@@ -1,7 +1,7 @@
 # ngsReports <img id="ngsreports_logo" src="man/figures/ngsReports.png" align="right" width = "125" />
 
 <!-- badges: start -->
-[![Build Status](https://github.com/smped/ngsReports/workflows/R-CMD-check-bioc/badge.svg)](https://github.com/smped/ngsReports/actions)
+[![Build Status](https://github.com/smped/ngsReports/workflows/R-CMD-check-bioc/badge.svg?branch=gh-actions)](https://github.com/smped/ngsReports/actions)
 [![Repo Status](https://img.shields.io/badge/repo%20status-Active-green.svg)](https://shields.io/)
 [![Codecov test coverage](https://codecov.io/gh/smped/ngsReports/branch/gh-actions/graph/badge.svg)](https://codecov.io/gh/smped/ngsReports?branch=gh-actions)
 <!-- badges: end -->
