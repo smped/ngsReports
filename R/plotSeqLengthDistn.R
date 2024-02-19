@@ -77,17 +77,13 @@
 #' @export
 setGeneric(
     "plotSeqLengthDistn",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotSeqLengthDistn")
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...) standardGeneric("plotSeqLengthDistn")
 )
 #' @rdname plotSeqLengthDistn-methods
 #' @export
 setMethod(
     "plotSeqLengthDistn", signature = "ANY",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        .errNotImp(x)
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){.errNotImp(x)}
 )
 #' @rdname plotSeqLengthDistn-methods
 #' @export

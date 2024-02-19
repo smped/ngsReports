@@ -72,17 +72,14 @@
 #' @export
 setGeneric(
     "plotReadTotals",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotReadTotals")
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...) standardGeneric("plotReadTotals")
 )
 #' @rdname plotReadTotals-methods
 #' @export
 setMethod(
     "plotReadTotals", signature = "ANY",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        .errNotImp(x)
-    })
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){.errNotImp(x)}
+)
 #' @importFrom scales comma
 #' @rdname plotReadTotals-methods
 #' @export

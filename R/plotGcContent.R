@@ -91,16 +91,13 @@
 #' @export
 setGeneric(
     "plotGcContent",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotGcContent")
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...) standardGeneric("plotGcContent")
 )
 #' @rdname plotGcContent-methods
 #' @export
-setMethod("plotGcContent", signature = "ANY", function(
-        x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",  ...){
-    .errNotImp(x)
-}
+setMethod(
+    "plotGcContent", signature = "ANY",
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*",  ...){.errNotImp(x)}
 )
 #' @rdname plotGcContent-methods
 #' @export

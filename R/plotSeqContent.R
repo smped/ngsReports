@@ -89,17 +89,13 @@
 #' @export
 setGeneric(
     "plotSeqContent",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotSeqContent")
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...) standardGeneric("plotSeqContent")
 )
 #' @rdname plotSeqContent-methods
 #' @export
 setMethod(
     "plotSeqContent", signature = "ANY",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        .errNotImp(x)
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){.errNotImp(x)}
 )
 #' @importFrom scales label_percent
 #' @rdname plotSeqContent-methods

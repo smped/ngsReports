@@ -38,9 +38,9 @@
 #' @rdname overRep2Fasta-methods
 #' @export
 setGeneric("overRep2Fasta", function(
-    x, path, n = 10, labels, noAdapters = TRUE, ...){
-    standardGeneric("overRep2Fasta")
-})
+    x, path, n = 10, labels, noAdapters = TRUE, ...
+    ) standardGeneric("overRep2Fasta")
+)
 #' @rdname overRep2Fasta-methods
 #' @export
 setMethod("overRep2Fasta", signature = "ANY", function(

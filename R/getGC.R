@@ -17,12 +17,10 @@
 #' @export
 #' @name getGC
 #' @rdname getGC
-setGeneric("getGC", function(object, name, type){standardGeneric("getGC")})
+setGeneric("getGC", function(object, name, type) standardGeneric("getGC"))
 #' @export
 #' @rdname getGC
-setMethod("getGC", "ANY", function(object, type){
-    .errNotImp(object)
-})
+setMethod("getGC", "ANY", function(object, type){.errNotImp(object)})
 #' @importFrom methods slot
 #' @rdname getGC
 #' @export

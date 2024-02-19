@@ -25,7 +25,7 @@
 #'
 #' @export
 #' @rdname fqName-methods
-setGeneric("fqName", function(object){standardGeneric("fqName")})
+setGeneric("fqName", function(object) standardGeneric("fqName"))
 #' @export
 #' @rdname fqName-methods
 setMethod("fqName", "ANY", function(object){

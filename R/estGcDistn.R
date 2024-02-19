@@ -39,10 +39,12 @@
 #'
 #' @export
 #' @rdname estGcDistn
-setGeneric("estGcDistn", function(
-        x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...) {
-    standardGeneric("estGcDistn")
-})
+setGeneric(
+    "estGcDistn",
+    function(
+        x, n = 1e6, rl = 100, fl = 200, fragSd = 30, bins = 101, ...
+    ) standardGeneric("estGcDistn")
+)
 #' @export
 #' @rdname estGcDistn
 #' @aliases estGcDistn

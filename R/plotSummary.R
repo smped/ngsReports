@@ -46,19 +46,21 @@
 #' @name plotSummary
 #' @rdname plotSummary-methods
 #' @export
-setGeneric("plotSummary", function(
-        x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
-        ...){
-    standardGeneric("plotSummary")
-}
+setGeneric(
+    "plotSummary",
+    function(
+        x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
+        dendrogram = FALSE, ...
+    ) standardGeneric("plotSummary")
 )
 #' @rdname plotSummary-methods
 #' @export
-setMethod("plotSummary", signature = "ANY", function(
-        x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE, dendrogram = FALSE,
-        ...){
-    .errNotImp(x)
-}
+setMethod(
+    "plotSummary", signature = "ANY",
+    function(
+        x, usePlotly = FALSE, labels, pwfCols, cluster = FALSE,
+        dendrogram = FALSE, ...
+    ){.errNotImp(x)}
 )
 #' @rdname plotSummary-methods
 #' @export

@@ -62,9 +62,7 @@ setGeneric(
     function(
         x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels,
         pattern = ".(fast|fq|bam).*", sz = 4, groups, ...
-    ){
-        standardGeneric("plotFastqcPCA")
-    }
+    ) standardGeneric("plotFastqcPCA")
 )
 #' @rdname plotFastqcPCA-methods
 #' @export
@@ -73,9 +71,7 @@ setMethod(
     function(
         x, module = "Per_sequence_GC_content", usePlotly = FALSE, labels,
         pattern = ".(fast|fq|bam).*", sz = 4, groups, ...
-    ){
-        .errNotImp(x)
-    }
+    ){.errNotImp(x)}
 )
 #' @rdname plotFastqcPCA-methods
 #' @export

@@ -76,16 +76,13 @@
 #' @export
 setGeneric(
     "plotDupLevels",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotDupLevels")
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...) standardGeneric("plotDupLevels")
 )
 #' @rdname plotDupLevels-methods
 #' @export
 setMethod(
     "plotDupLevels", signature = "ANY",
-    function(
-        x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
         .errNotImp(x)
     }
 )
