@@ -90,9 +90,9 @@
 #' @export
 setGeneric(
     "plotBaseQuals",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotBaseQuals")
-    }
+    function(
+        x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...
+    ) standardGeneric("plotBaseQuals")
 )
 #' @rdname plotBaseQuals-methods
 #' @export

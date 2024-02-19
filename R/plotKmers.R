@@ -78,16 +78,13 @@
 #' @export
 setGeneric(
     "plotKmers",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotKmers")
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...) standardGeneric("plotKmers")
 )
 #' @rdname plotKmers-methods
 #' @export
-setMethod("plotKmers", signature = "ANY", function(
-        x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-    .errNotImp(x)
-}
+setMethod(
+    "plotKmers", signature = "ANY",
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){.errNotImp(x)}
 )
 #' @rdname plotKmers-methods
 #' @export

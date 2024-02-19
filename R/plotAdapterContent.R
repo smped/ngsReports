@@ -92,9 +92,9 @@
 #' @export
 setGeneric(
     "plotAdapterContent",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotAdapterContent")
-    }
+    function(
+        x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...
+    ) standardGeneric("plotAdapterContent")
 )
 #' @rdname plotAdapterContent-methods
 #' @export

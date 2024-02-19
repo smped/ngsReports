@@ -46,9 +46,7 @@
 #' @export
 setGeneric(
     "plotInsertSize",
-    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-        standardGeneric("plotInsertSize")
-    }
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...) standardGeneric("plotInsertSize")
 )
 #' @importFrom tidyr unnest
 #' @importFrom rlang sym !!

@@ -51,8 +51,7 @@
 #' @rdname summariseOverrep-methods
 #' @export
 setGeneric(
-    "summariseOverrep",
-    function(x, ...) standardGeneric("summariseOverrep")
+    "summariseOverrep", function(x, ...) standardGeneric("summariseOverrep")
 )
 #' @rdname summariseOverrep-methods
 #' @importFrom dplyr bind_rows if_all

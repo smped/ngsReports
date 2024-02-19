@@ -69,9 +69,7 @@ setGeneric(
     "plotOverrep",
     function(
         x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols, ...
-    ){
-        standardGeneric("plotOverrep")
-    }
+    ) standardGeneric("plotOverrep")
 )
 #' @rdname plotOverrep-methods
 #' @export
@@ -79,9 +77,7 @@ setMethod(
     "plotOverrep", signature = "ANY",
     function(
         x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols, ...
-    ){
-        .errNotImp(x)
-    }
+    ){ .errNotImp(x)}
 )
 #' @rdname plotOverrep-methods
 #' @export

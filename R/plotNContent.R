@@ -70,17 +70,15 @@
 #' @name plotNContent
 #' @rdname plotNContent-methods
 #' @export
-setGeneric("plotNContent", function(
-        x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-    standardGeneric("plotNContent")
-}
+setGeneric(
+    "plotNContent",
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...) standardGeneric("plotNContent")
 )
 #' @rdname plotNContent-methods
 #' @export
-setMethod("plotNContent", signature = "ANY", function(
-        x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){
-    .errNotImp(x)
-}
+setMethod(
+    "plotNContent", signature = "ANY",
+    function(x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", ...){.errNotImp(x)}
 )
 #' @rdname plotNContent-methods
 #' @export

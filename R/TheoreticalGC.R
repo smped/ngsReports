@@ -50,7 +50,7 @@ setValidity("TheoreticalGC", .isValidTheoreticalGC)
 #' @export
 #' @name mData
 #' @rdname mData
-setGeneric("mData", function(object){standardGeneric("mData")})
+setGeneric("mData", function(object) standardGeneric("mData"))
 
 #' @importFrom methods slot
 #' @export
@@ -78,7 +78,7 @@ setMethod("mData", "TheoreticalGC", function(object){object@mData})
 #' gcAvail(gcTheoretical, "Genome")
 #'
 #' @export
-setGeneric("gcAvail", function(object, type){standardGeneric("gcAvail")})
+setGeneric("gcAvail", function(object, type) standardGeneric("gcAvail"))
 
 
 #' @importFrom methods slot

@@ -72,9 +72,7 @@ setGeneric(
     "plotSeqQuals",
     function(
         x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols, ...
-    ){
-        standardGeneric("plotSeqQuals")
-    }
+    ) standardGeneric("plotSeqQuals")
 )
 #' @rdname plotSeqQuals-methods
 #' @export
@@ -82,9 +80,7 @@ setMethod(
     "plotSeqQuals", signature = "ANY",
     function(
         x, usePlotly = FALSE, labels, pattern = ".(fast|fq|bam).*", pwfCols, ...
-    ){
-        .errNotImp(x)
-    }
+    ){.errNotImp(x)}
 )
 #' @rdname plotSeqQuals-methods
 #' @export
