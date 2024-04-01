@@ -58,48 +58,6 @@
     <loc>/reference/dot-hidePWFRects.html</loc>
   </url>
   <url>
-    <loc>/reference/dot-isValidAdapterRemovalLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidBowtieLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidBuscoLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidCutadaptLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidDuplicationMetricsLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidFeatureCountsLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidFlagstatLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidHisat2Log.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidMacs2CallpeakLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidQuastLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidRnaseqcMetricsLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidStarLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidTrimmomaticLog.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dot-isValidUmitoolsDedupLog.html</loc>
-  </url>
-  <url>
     <loc>/reference/dot-makeDendro.html</loc>
   </url>
   <url>
@@ -143,6 +101,12 @@
   </url>
   <url>
     <loc>/reference/dot-parseRnaseqcMetricsLogs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-parseSalmonLibFormatCountsLogs.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dot-parseSalmonMetaInfoLogs.html</loc>
   </url>
   <url>
     <loc>/reference/dot-parseStarLogs.html</loc>

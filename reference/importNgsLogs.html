@@ -19,7 +19,7 @@ stderr."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mat
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.5.4</span>
       </span>
     </div>
 
@@ -81,7 +81,8 @@ same type. Duplicate file paths will be silently ignored.</p></dd>
 <dd><p><code>character</code>. The type of file being imported. Can be one of
 <code>bowtie</code>, <code>bowtie2</code>, <code>hisat2</code>, <code>star</code>, <code>flagstat</code>,
 <code>featureCounts</code>, <code>duplicationMetrics</code>, <code>cutadapt</code>, <code>umitoolsDedup</code>,
-<code>macs2Callpeak</code>, <code>adapterRemoval</code>, <code>rnaseqcMetrics</code>, <code>quast</code> or <code>busco</code>
+<code>macs2Callpeak</code>, <code>adapterRemoval</code>, <code>rnaseqcMetrics</code>, <code>quast</code>,
+<code>salmonLibFormatCounts</code>, <code>salmonMetaInfo</code> or <code>busco</code>.
 Defaults to <code>type = "auto"</code> which will automatically detect the file
 type for all implemented types.</p></dd>
 
@@ -108,8 +109,8 @@ but have been modified for easier handling under R naming conventions.</p>
     <div id="details">
     <h2>Details</h2>
     <p>Imports one or more log files as output by tools such as:
-<code>bowtie</code>, <code>bowtie2</code>, <code>featureCounts</code>, <code>Hisat2</code>,
-<code>STAR</code>, <code>picard MarkDuplicates</code>, <code>cutadapt</code>, <code>flagstat</code>, <code>macs2Callpeak</code>
+<code>bowtie</code>, <code>bowtie2</code>, <code>featureCounts</code>, <code>Hisat2</code>, <code>STAR</code>, <code>salmon</code>
+<code>picard MarkDuplicates</code>, <code>cutadapt</code>, <code>flagstat</code>, <code>macs2Callpeak</code>,
 <code>Adapter Removal</code>, <code>trimmomatic</code>, <code>rnaseqcMetrics</code>, <code>quast</code> or <code>busco</code>.
 <code>autoDetect</code> can be used to detect the log type by parsing the file.</p>
 <p>The featureCounts log file corresponds to the <code>counts.out.summary</code>,
