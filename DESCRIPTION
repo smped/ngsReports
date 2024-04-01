@@ -1,5 +1,5 @@
 Package: ngsReports
-Version: 2.5.3
+Version: 2.5.4
 Date: 2024/02/02
 Title: Load FastqQC reports and other NGS related files
 Authors@R: c(
@@ -24,7 +24,7 @@ Encoding: UTF-8
 Depends:
   R (>= 4.2.0),
   BiocGenerics,
-  ggplot2 (>= 3.4.0),
+  ggplot2 (>= 3.5.0),
   patchwork (>= 1.1.1),
   tibble (>= 1.3.1)
 Imports:
@@ -51,7 +51,7 @@ Imports:
     utils,
     zoo
 LazyData: true
-RoxygenNote: 7.3.0
+RoxygenNote: 7.3.1
 Collate: 
     'AllGenerics.R'
     'validationFunctions.R'

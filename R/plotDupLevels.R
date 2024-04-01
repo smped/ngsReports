@@ -164,7 +164,8 @@ setMethod(
             guides(fill = "none") +
             theme_bw() +
             theme(
-                legend.position = c(1, 1), legend.justification = c(1, 1),
+                legend.position = "inside", legend.position.inside = c(1, 1),
+                legend.justification.inside = c(1, 1),
                 legend.background = element_rect(
                     colour = "black", linewidth = 0.2
                 )

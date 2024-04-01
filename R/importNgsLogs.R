@@ -6,8 +6,8 @@
 #' stderr.
 #'
 #' @details Imports one or more log files as output by tools such as:
-#' `bowtie`, `bowtie2`, `featureCounts`, `Hisat2`,
-#' `STAR`, `picard MarkDuplicates`, `cutadapt`, `flagstat`, `macs2Callpeak`
+#' `bowtie`, `bowtie2`, `featureCounts`, `Hisat2`, `STAR`, `salmon`
+#' `picard MarkDuplicates`, `cutadapt`, `flagstat`, `macs2Callpeak`,
 #' `Adapter Removal`, `trimmomatic`, `rnaseqcMetrics`, `quast` or `busco`.
 #' `autoDetect` can be used to detect the log type by parsing the file.
 #'
@@ -38,7 +38,8 @@
 #' @param type `character`. The type of file being imported. Can be one of
 #' `bowtie`, `bowtie2`, `hisat2`, `star`, `flagstat`,
 #' `featureCounts`, `duplicationMetrics`, `cutadapt`, `umitoolsDedup`,
-#' `macs2Callpeak`, `adapterRemoval`, `rnaseqcMetrics`, `quast` or `busco`
+#' `macs2Callpeak`, `adapterRemoval`, `rnaseqcMetrics`, `quast`,
+#' `salmonLibFormatCounts`, `salmonMetaInfo` or `busco`.
 #' Defaults to `type = "auto"` which will automatically detect the file
 #' type for all implemented types.
 #' @param which Which element of the parsed object to return. Ignored in all
@@ -81,6 +82,8 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         "macs2Callpeak",
         "rnaseqcMetrics",
         "quast",
+        "salmonLibFormatCounts",
+        "salmonMetaInfo",
         "star",
         "trimmomatic",
         "umitoolsDedup"
@@ -170,13 +173,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     type
 }
 
-#' @title Check for correct structure of supplied Bowtie log files
-#' @description Check for correct structure of supplied Bowtie log files after
-#' reading in using readLines.
-#' @details Checks for all the required fields in the lines provided
-#' @param x Character vector as output when readLines to a supplied log file
-#' @return logical(1)
-#' @keywords internal
+
 .isValidBowtieLog <- function(x){
     nLines <- length(x)
     fields <- c(
@@ -193,12 +190,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(chk)
 }
 
-#' @title Check for a valid Hisat2 log
-#' @description Checks internal structure of the parsed log file
-#' @param x Character vector containing parsed log file using the function
-#' readLines
-#' @return logical(1)
-#' @keywords internal
 .isValidHisat2Log <- function(x){
     n <- length(x)
     chkLen <- length(x) > 0
@@ -211,12 +202,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 }
 .isValidBowtie2Log <- .isValidHisat2Log
 
-#' @title Check for a valid Star Alignment log
-#' @description Checks internal structure of the parsed log file
-#' @param x Character vector containing parsed log file using the function
-#' readLines
-#' @return logical(1)
-#' @keywords internal
 .isValidStarLog <- function(x){
     ## Just check for the key fields
     chkStart <- grepl("Started job on", x[1])
@@ -226,12 +211,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(chkStart, chkUniq, chkMulti, chkUnmapped)
 }
 
-#' @title Check for a valid Duplication Metrics log
-#' @description Checks internal structure of the parsed log file
-#' @param x Character vector containing parsed log file using the function
-#' readLines
-#' @return logical(1)
-#' @keywords internal
 .isValidDuplicationMetricsLog <- function(x){
 
     ## Check the METRICS CLASS data
@@ -265,12 +244,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
 }
 
-#' @title Check for a valid AdapterRemoval log
-#' @description Checks internal structure of the parsed log file
-#' @param x Character vector containing parsed log file using the function
-#' readLines
-#' @return logical(1)
-#' @keywords internal
 .isValidAdapterRemovalLog <- function(x){
 
     ## Check the first line begins with AdapterRemoval
@@ -289,12 +262,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(checkAR, checkModNames)
 }
 
-#' @title Check for a valid cutadapt log
-#' @description Checks internal structure of the parsed log file
-#' @param x Character vector containing parsed log file using the function
-#' readLines
-#' @return logical(1)
-#' @keywords internal
 .isValidCutadaptLog <- function(x){
 
     ## These can take two forms, minimal & full
@@ -331,12 +298,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
 }
 
-#' @title Check for a valid featureCounts Summary
-#' @description Checks internal structure of the parsed file
-#' @param x Character vector containing parsed log file using the function
-#' readLines
-#' @return logical(1)
-#' @keywords internal
 .isValidFeatureCountsLog <- function(x){
 
     if (all(grepl("\t", x))) { ### check all lines have a tab,
@@ -369,13 +330,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 
 }
 
-#' @title Check for correct structure of supplied BUSCO log files
-#' @description Check for correct structure of supplied BUSCO log files after
-#' reading in using readLines.
-#' @details Checks for all the required fields in the lines provided
-#' @param x Character vector as output when readLines to a supplied log file
-#' @return logical(1)
-#' @keywords internal
 .isValidBuscoLog <- function(x){
 
     fields <- c(
@@ -389,13 +343,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(chk)
 }
 
-#' @title Check for correct structure of supplied Trimmomatic log files
-#' @description Check for correct structure of supplied Trimmomatic log files
-#' after reading in using readLines.
-#' @details Checks for all the required fields in the lines provided
-#' @param x Character vector as output when readLines to a supplied log file
-#' @return logical(1)
-#' @keywords internal
 .isValidTrimmomaticLog <- function(x){
     n <- length(x)
     checkL1 <- grepl("Trimmomatic[PS]E: Started with arguments", x[[1]])
@@ -404,13 +351,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(checkL1, checkMain, checkLast)
 }
 
-#' @title Check for correct structure of supplied Quast log files
-#' @description Check for correct structure of supplied Quast log files after
-#' reading in using readLines.
-#' @details Checks for all the required fields in the lines provided
-#' @param x Character vector as output when readLines to a supplied log file
-#' @return logical(1)
-#' @keywords internal
 .isValidQuastLog <- function(x){
 
     fields <- c(
@@ -427,12 +367,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(chk)
 }
 
-#' @title Check for correct structure of supplied flagstat
-#' @description Check for correct structure of supplied flagstat files
-#' @details Checks for all the required fields in the lines provided
-#' @param x Character vector as output when readLines to a supplied file
-#' @return logical(1)
-#' @keywords internal
 .isValidFlagstatLog <- function(x){
 
     ## Every line must have a '+' symbol
@@ -443,12 +377,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(allPlus, firstLine)
 }
 
-#' @title Check for correct structure of macs2 callpeak log
-#' @description Check for correct structure of macs2 callpeak log
-#' @details Checks for all the required fields in the lines provided
-#' @param x Character vector as output when readLines to a supplied file
-#' @return logical(1)
-#' @keywords internal
 .isValidMacs2CallpeakLog <- function(x){
     hasCmd <- grepl("callpeak", x[[2]])
     hasArgs <- any(grepl("ARGUMENTS LIST", x))
@@ -458,12 +386,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(hasCmd, hasArgs, hasBlankSep, hasTagSize, hasFragLength)
 }
 
-#' @title Check for correct structure of umi_tools --dedup log
-#' @description Check for correct structure of umi_tools --dedup log
-#' @details Checks for all the required fields in the lines provided
-#' @param x Character vector as output when readLines to a supplied file
-#' @return logical(1)
-#' @keywords internal
 .isValidUmitoolsDedupLog <- function(x){
     isUmiTools <- grepl("UMI-tools", x[[1]])
     isDedup <- grepl("output generated by dedup", x[[2]])
@@ -473,12 +395,6 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     all(isUmiTools, isDedup, isComplete, hasData)
 }
 
-#' @title Check for correct structure of rnaseqc metrics
-#' @description Check for correct structure of rnaseqc metrics files
-#' @details Checks for all the required fields in the lines provided
-#' @param x Character vector as output when readLines to a supplied file
-#' @return logical(1)
-#' @keywords internal
 .isValidRnaseqcMetricsLog <- function(x){
     ## Just check some key fields which should distinguish these files
     hasSampleFirst <- which(grepl("Sample", x)) == 1
@@ -488,6 +404,27 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     tot_pattern <- "Total (Bases|Reads|Mapped)"
     hasAllTotals <- sum(grepl(tot_pattern, x)) == 3
     all(hasSampleFirst, hasAllRates, hasAllHQRates, hasAllTotals)
+}
+
+.isValidSalmonLibFormatCountsLog <- function(x){
+    ## Check a few key columns
+    has_read_files <- any(grepl("read_files", x))
+    has_format <- any(grepl("expected_format", x))
+    has_comp_frags <- sum(grepl("compatible_frag", x)) == 2
+    has_sfr <- sum(grepl("[MOI]S[FR]", x)) >= 6
+    has_assigned <- any(grepl("assigned_frag", x))
+    all(has_format, has_read_files, has_sfr, has_comp_frags, has_assigned)
+}
+
+.isValidSalmonMetaInfoLog <- function(x){
+    ## Check a few key columns
+    has_vers <- any(grepl("salmon_version", x))
+    frag_len <- sum(grepl("frag_length", x)) == 2
+    has_libtype <- any(grepl("library_types", x))
+    has_bias <- sum(grepl("bias", x)) == 3
+    has_hash <- sum(grepl("hash", x)) == 6
+    has_time <- sum(grepl("time", x)) == 2
+    all(has_vers, frag_len, has_libtype, has_bias, has_hash, has_time)
 }
 
 #' @title Parse data from Bowtie log files
@@ -1580,4 +1517,51 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
     tbl[i] <- lapply(tbl[i], as.numeric)
     tbl
 
+}
+
+#' @title Parse data from salmon lib_format_counts.json files
+#' @description Parse data from salmon lib_format_counts.json files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
+#' @return data.frame
+#' @keywords internal
+.parseSalmonLibFormatCountsLogs <- function(data, ...){
+
+    js_list <- lapply(data, jsonlite::fromJSON)
+    tbl_list <- lapply(js_list, tibble::as_tibble)
+    tbl <- dplyr::bind_rows(tbl_list, .id = "Filename")
+    tbl$read_files <- strsplit(
+        gsub("(^\\[ |\\]$)", "", tbl$read_files), ", "
+    )
+    tbl
+}
+
+#' @title Parse data from salmon meta_info.json files
+#' @description Parse data from salmon meta_info.json files
+#' @details Checks for structure will have been performed
+#' @param data List of lines read using readLines on one or more files
+#' @param ... Not used
+#' @return data.frame
+#' @keywords internal
+.parseSalmonMetaInfoLogs <- function(data, ...){
+
+    js_list <- lapply(data, jsonlite::fromJSON)
+    ## Remove any missing columns & tidy up other problematic columns
+    js_list <- lapply(
+        js_list,
+        \(x) {
+            ln <- vapply(x, length, integer(1))
+            x[ln > 1] <- lapply(x[ln > 1], list)
+            x[ln > 0]
+        }
+    )
+    tbl_list <- lapply(js_list, tibble::as_tibble)
+    tbl <- dplyr::bind_rows(tbl_list, .id = "Filename")
+    time_cols <- grepl("time$", names(tbl))
+    tbl[time_cols] <- lapply(
+        tbl[time_cols], lubridate::as_datetime,
+        format = "%a %b %d %H:%M:%S %Y", tz = Sys.timezone()
+    )
+    tbl
 }

@@ -54,8 +54,8 @@
 #'   fp, pattern = "_001.+",
 #'   moduleBy = "colour", scaleColour = scale_colour_brewer(palette = "Set1"),
 #'   plotTheme = theme(
-#'     legend.position = c(0.99, 0.99), legend.justification = c(1, 1),
-#'     plot.title = element_text(hjust = 0.5)
+#'     legend.position = 'inside', legend.position.inside = c(0.99, 0.99),
+#'     legend.justification = c(1, 1), plot.title = element_text(hjust = 0.5)
 #'   )
 #' )
 #'

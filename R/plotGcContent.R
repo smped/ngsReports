@@ -214,8 +214,8 @@ setMethod(
             ggtitle(label = labels, subtitle = subTitle) +
             theme_bw() +
             theme(
-                legend.position = c(1, 1),
-                legend.justification = c(1, 1),
+                legend.position = "inside", legend.position.inside = c(1, 1),
+                legend.justification.inside = c(1, 1),
                 legend.background = element_rect(
                     colour = "grey20", linewidth = 0.2
                 ),
