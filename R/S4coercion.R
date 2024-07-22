@@ -291,11 +291,11 @@ setAs(".FastpFile", "FastpData", function(from){
 
     if (comp) {
 
-        ## Get the internal path within the zip archive
-        fl <- file.path(gsub(".zip$", "", basename(path)), "fastqc_data.txt")
-
-        ## Check the required file exists within the file
+        ## Get the list of files within the zip archive
         allFiles <- unzip(path, list = TRUE)$Name
+        ## Check 'fastqc_data.txt' exists within the file
+        subdir <- gsub(".zip$", "", basename(allFiles[1]))
+        fl <- file.path(subdir, "fastqc_data.txt")
         stopifnot(fl %in% allFiles)
 
         ## # Open the connection & read the 12 lines
