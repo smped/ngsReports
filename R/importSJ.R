@@ -16,8 +16,6 @@
 #' @param stripPaths logical(1) Remove directory prefixes from the file paths
 #' in x
 #'
-#' @author Stephen Pederson <stephen.pederson@@adelaide.edu.au>
-#'
 #' @examples
 #' sjFiles <- system.file("extdata", "SJ.out.tab", package = "ngsReports")
 #' # Import leaving the complete file path in the column Filename

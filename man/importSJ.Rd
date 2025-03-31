@@ -32,6 +32,3 @@ sjFiles <- system.file("extdata", "SJ.out.tab", package = "ngsReports")
 df <- importSJ(sjFiles, stripPaths = FALSE)
 
 }
-\author{
-Stephen Pederson \href{mailto:stephen.pederson@adelaide.edu.au}{stephen.pederson@adelaide.edu.au}
-}
