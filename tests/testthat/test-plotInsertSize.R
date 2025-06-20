@@ -14,18 +14,22 @@ test_that("Basic FastpDataList Plots work", {
   ## Heatmaps
   p <- plotInsertSize(fpl)
   expect_true(is(p, "gg"))
+
+  ## Check labels
   expect_equal(
-    p$labels,
-    list(title = "Insert Size Distribution", x = "Insert Size", y = "Filename",
-         fill = "Frequency", perc = "%", total = "Total")
+    vapply(p@mapping, as_label, character(1)),
+    c(x = "Insert Size", y = "Filename", fill = "Frequency", perc = "%",total = "Total")
   )
+  expect_equal(p@labels$title, "Insert Size Distribution")
+
   p <- plotInsertSize(fp, TRUE)
   expect_true(is(p, "plotly"))
   ## Lines
   p <- plotInsertSize(fpl, plotType = "l")
   expect_true(is(p, "gg"))
   expect_equal(
-    p$labels, list(x = "Insert Size", y = "Frequency", colour = "Filename")
+    vapply(c(p@mapping, p@layers$geom_line$mapping), as_label, character(1)),
+    c(x = "Insert Size", y = "Frequency", colour = "Filename")
   )
   p <- plotInsertSize(fpl, plotType = "l", usePlotly = TRUE)
   expect_true(is(p, "plotly"))
@@ -33,8 +37,8 @@ test_that("Basic FastpDataList Plots work", {
   p <- plotInsertSize(fpl, plotType = "c")
   expect_true(is(p, "gg"))
   expect_equal(
-    p$labels,
-    list(x = "Insert Size", y = "Cumulative Frequency", colour = "Filename")
+    vapply(c(p@mapping, p@layers$geom_line$mapping), as_label, character(1)),
+    c(x = "Insert Size", y = "Cumulative Frequency", colour = "Filename")
   )
   p <- plotInsertSize(fpl, plotType = "c", usePlotly = TRUE)
   expect_true(is(p, "plotly"))
