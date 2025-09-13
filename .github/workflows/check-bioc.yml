@@ -54,8 +54,8 @@ jobs:
         config:
           - { os: ubuntu-latest, r: 'next', bioc: 'devel', cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
           ## Dockers for macOS and Windows can't handle r: 'next' at this stage
-          - { os: macOS-latest, r: '4.4', bioc: '3.20'}
-          - { os: windows-latest, r: '4.4', bioc: '3.20'}
+          - { os: macOS-latest, r: '4.5', bioc: '3.21'}
+          - { os: windows-latest, r: '4.5', bioc: '3.21'}
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       RSPM: ${{ matrix.config.rspm }}
@@ -133,7 +133,7 @@ jobs:
           brew install imagemagick@6
 
           ## For textshaping, required by ragg, and required by pkgdown
-          brew install harfbuzz fribidi
+          ## brew install harfbuzz fribidi
 
           ## For installing usethis's dependency gert
           brew install libgit2
