@@ -94,7 +94,7 @@
 #'
 .emptyPlot <- function(x){
     ggplot() +
-        geom_text(aes(x = 0.5, y = 0.8, label = x)) +
+        geom_text(aes(x = 0.5, y = 0.8), label = x) +
         theme_void() +
         xlim(c(0, 1)) +
         ylim(c(0, 1))
@@ -130,8 +130,10 @@
     cols <- c(rowVal, colVal, value)
     stopifnot(all(cols %in% names(df)))
     df <- df[cols]
-    fm <- as.formula(paste0("`", rowVal, "`~`", colVal, "`"))
-    mat <- reshape2::acast(df, fm, value.var = value)
+    # fm <- as.formula(paste0("`", rowVal, "`~`", colVal, "`"))
+    # mat <- reshape2::acast(df, fm, value.var = value)
+    fm <- as.formula(paste0(value, " ~ `", rowVal, "` +`", colVal, "`"))
+    mat <- stats::xtabs(fm, data = df)
     mat[is.na(mat)] <- 0
     clust <- hclust(dist(mat), method = "ward.D2")
     as.dendrogram(clust)

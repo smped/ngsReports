@@ -101,11 +101,17 @@ test_that("plotSummary works", {
 
 test_that(".updateThemeFromDots works", {
   p <- ggplot()
-  expect_equal(p$theme, list())
-  expect_equal(.updateThemeFromDots(p)$theme, list())
-  p <- .updateThemeFromDots(p, a = "a")
-  expect_equal(.updateThemeFromDots(p)$theme, list())
+  expect_equal(
+    .updateThemeFromDots(p)@theme, p@theme
+  )
 
+  ## Check invalid arguments aren't added
+  p <- .updateThemeFromDots(p, a = "a")
+  expect_equal(
+    .updateThemeFromDots(p)@theme, p@theme
+  )
+
+  ## Check the valid arguments aren't added
   p <- .updateThemeFromDots(p, plot.title = element_blank())
-  expect_true(is(p$theme$plot.title, "element_blank"))
+  expect_true(is(p@theme$plot.title, "ggplot2::element_blank"))
 })

@@ -5,18 +5,20 @@ test_that("plot can be printed", {
 })
 
 test_that("plot is ggplot",{
-    expect_true(is.ggplot(p))
+    expect_true(is_ggplot(p))
 })
 
 test_that("theme_void() is applied",{
-    expect_equal(p$theme, theme_void())
+    expect_equal(p@theme, theme_void())
 })
 
 test_that("data is empty",{
-    expect_equal(p$data, structure(list(), class = "waiver"))
+    expect_equal(p@data, structure(list(), class = "waiver"))
+    expect_equal(
+        p@layers$geom_text$aes_params$label, "test"
+    )
 })
 
-test_that("correct aesthetics",{
-    l <- list(x = "x", y = "y", label = "x")
-    expect_equal(p$labels, l)
+test_that("Empty labels",{
+    expect_true(length(p@labels) == 0)
 })
