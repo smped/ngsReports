@@ -1,12 +1,12 @@
 test_that("plotOverrep outputs correct objects", {
 
   p <- plotOverrep(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotOverrep(fdl[[1]], TRUE)
   expect_true(is(p, "plotly"))
 
   p <- plotOverrep(fdl, showPwf = FALSE)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotOverrep(fdl)
   expect_true(is(p, "patchwork"))
@@ -24,16 +24,16 @@ test_that("plotOverrep outputs correct objects", {
 test_that("plotSeqLengthDistn outputs correct objects", {
 
   p <- plotSeqLengthDistn(path(fdl[[1]]))
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqLengthDistn(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqLengthDistn(fdl[[1]], counts = FALSE)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqLengthDistn(fdl[[1]], plotType = "cdf")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqLengthDistn(fdl[[1]], TRUE)
   expect_true(is(p, "plotly"))
@@ -45,10 +45,10 @@ test_that("plotSeqLengthDistn outputs correct objects", {
   expect_true(is(p, "plotly"))
 
   p <- plotSeqLengthDistn(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqLengthDistn(fdl, plotType = "cdf")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqLengthDistn(fdl, dendrogam = TRUE)
   expect_true(is(p, "patchwork"))
@@ -61,13 +61,13 @@ test_that("plotSeqLengthDistn outputs correct objects", {
 test_that("plotSeqQuals outputs correct objects", {
 
   p <- plotSeqQuals(path(fdl[[1]]))
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqQuals(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqQuals(fdl[[1]], counts = TRUE)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqQuals(fdl[[1]], TRUE)
   expect_true(is(p, "plotly"))
@@ -76,10 +76,10 @@ test_that("plotSeqQuals outputs correct objects", {
   expect_true(is(p, "patchwork"))
 
   p <- plotSeqQuals(fdl, showPwf = FALSE)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqQuals(fdl, plotType = "line")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotSeqQuals(fdl, TRUE, plotType = "line")
   expect_true(is(p, "plotly"))
 
@@ -93,7 +93,7 @@ test_that("plotSeqQuals outputs correct objects", {
 
 test_that("plotSummary works", {
   p <- plotSummary(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotSummary(fdl, usePlotly = TRUE)
   expect_true(is(p, "plotly"))
 })
@@ -101,17 +101,11 @@ test_that("plotSummary works", {
 
 test_that(".updateThemeFromDots works", {
   p <- ggplot()
-  expect_equal(
-    .updateThemeFromDots(p)@theme, p@theme
-  )
-
-  ## Check invalid arguments aren't added
+  expect_equal(unlist(p@theme), NULL)
+  expect_equal(unlist(.updateThemeFromDots(p)@theme), NULL)
   p <- .updateThemeFromDots(p, a = "a")
-  expect_equal(
-    .updateThemeFromDots(p)@theme, p@theme
-  )
+  expect_equal(unlist(.updateThemeFromDots(p)@theme), NULL)
 
-  ## Check the valid arguments aren't added
   p <- .updateThemeFromDots(p, plot.title = element_blank())
-  expect_true(is(p@theme$plot.title, "ggplot2::element_blank"))
+  expect_true(is(p@theme$plot.title, "element_blank"))
 })

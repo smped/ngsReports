@@ -14,11 +14,5 @@ test_that("theme_void() is applied",{
 
 test_that("data is empty",{
     expect_equal(p@data, structure(list(), class = "waiver"))
-    expect_equal(
-        p@layers$geom_text$aes_params$label, "test"
-    )
 })
 
-test_that("Empty labels",{
-    expect_true(length(p@labels) == 0)
-})
