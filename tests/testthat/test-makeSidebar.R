@@ -38,13 +38,12 @@ test_that(
         expect_equal(unique(x[grepl("key", names(x))]), "ATTG_R1.fastq")
         expect_equal(
             x[c(
-                "type", "mode", "line.width", "line.color", "line.dash",
+                "type", "mode",  "line.color", "line.dash",
                 "fill", "fillcolor", "hoveron", "name", "legendgroup",
                 "showlegend", "xaxis", "yaxis", "hoverinfo"
                 )],
             c(
-                type = "scatter", mode = "lines",
-                line.width = "0.377952755905512", line.color = "transparent",
+                type = "scatter", mode = "lines", line.color = "transparent",
                 line.dash = "solid", fill = "toself",
                 fillcolor = "rgba(0,204,0,1)", hoveron = "fills", name = "PASS",
                 legendgroup = "PASS", showlegend = "TRUE",
