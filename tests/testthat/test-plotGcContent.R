@@ -2,19 +2,19 @@
 test_that("plotGcContent outputs correct objects", {
 
   p <- plotGcContent(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotGcContent(fdl[[1]], usePlotly = TRUE)
   expect_true(is(p, "plotly"))
 
   p <- plotGcContent(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotGcContent(fdl, plotType = "line")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotGcContent(fdl, plotType = "cdf")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotGcContent(fdl, dendrogam = TRUE)
   expect_true(is(p, "patchwork"))
@@ -33,9 +33,9 @@ test_that("plotGcContent works for Fastp structures", {
   fpl <- FastpDataList(fl)
 
   p <- plotGcContent(fpl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotGcContent(fpl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotGcContent(fpl[[1]], usePlotly = TRUE)
   expect_true(is(p, "plotly"))

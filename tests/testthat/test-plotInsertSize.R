@@ -1,9 +1,9 @@
 
 test_that("Basic FastpData Plots work", {
   p <- plotInsertSize(fp)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotInsertSize(fp, plotType = "cumulative")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotInsertSize(fp, TRUE)
   expect_true(is(p, "plotly"))
   p <- plotInsertSize(fp, TRUE, plotType = "cumulative")
@@ -13,7 +13,7 @@ test_that("Basic FastpData Plots work", {
 test_that("Basic FastpDataList Plots work", {
   ## Heatmaps
   p <- plotInsertSize(fpl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   ## Check labels
   expect_equal(
@@ -26,7 +26,7 @@ test_that("Basic FastpDataList Plots work", {
   expect_true(is(p, "plotly"))
   ## Lines
   p <- plotInsertSize(fpl, plotType = "l")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   expect_equal(
     vapply(c(p@mapping, p@layers$geom_line$mapping), as_label, character(1)),
     c(x = "Insert Size", y = "Frequency", colour = "Filename")
@@ -35,7 +35,7 @@ test_that("Basic FastpDataList Plots work", {
   expect_true(is(p, "plotly"))
   ## Cumulative
   p <- plotInsertSize(fpl, plotType = "c")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   expect_equal(
     vapply(c(p@mapping, p@layers$geom_line$mapping), as_label, character(1)),
     c(x = "Insert Size", y = "Cumulative Frequency", colour = "Filename")

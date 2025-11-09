@@ -2,15 +2,15 @@
 test_that("plotDupLevels outputs correct objects from FastQC", {
 
   p <- plotDupLevels(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotDupLevels(fdl[[1]], TRUE)
   expect_true(is(p, "plotly"))
 
   p <- plotDupLevels(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotDupLevels(fdl, plotType = "line")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotDupLevels(fdl, TRUE, plotType = "line")
   expect_true(is(p, "plotly"))
 
@@ -24,13 +24,13 @@ test_that("plotDupLevels outputs correct objects from FastQC", {
 
 test_that("plotDupLevels fastp outputs are correct",{
   p <- plotDupLevels(fp)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotDupLevels(fp, TRUE)
   expect_true(is(p, "plotly"))
   p <- plotDupLevels(fpl, plotType = "bar")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotDupLevels(fpl, plotType = "heatmap")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotDupLevels(fpl, TRUE, plotType = "bar")
   expect_true(is(p, "plotly"))
   p <- plotDupLevels(fpl, TRUE, plotType = "heatmap")

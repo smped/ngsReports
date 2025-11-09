@@ -2,18 +2,18 @@
 test_that("plotSeqContent outputs correct objects", {
 
   p <- plotSeqContent(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotSeqContent(fdl[[1]], TRUE)
   expect_true(is(p, "plotly"))
 
   p <- plotSeqContent(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqContent(fdl, plotType = "line")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqContent(fdl, plotType = "residuals")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotSeqContent(fdl, dendrogam = TRUE)
   expect_true(is(p, "patchwork"))
@@ -25,20 +25,20 @@ test_that("plotSeqContent outputs correct objects", {
 
 test_that("plotSeqContent(FastpData) works", {
   p <- plotSeqContent(fp)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotSeqContent(fp, TRUE)
   expect_true(is(p, "plotly"))
 })
 
 test_that("plotSeqContent(FastpDataList) works", {
   p <- plotSeqContent(fpl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotSeqContent(fpl, showPwf = TRUE)
   expect_true(is(p, "patchwork"))
   p <- plotSeqContent(fpl, readsBy = "line", plotType = "line")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotSeqContent(fpl, readsBy = "line", plotType = "resid")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotSeqContent(fpl, TRUE)
   expect_true(is(p, "plotly"))
 })

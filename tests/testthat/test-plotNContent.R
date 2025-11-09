@@ -2,9 +2,9 @@
 test_that("plotNContent outputs correct objects", {
 
   p <- plotNContent(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotNContent(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotNContent(fdl[[1]], dendrogam = TRUE, usePlotly = TRUE)
   expect_true(is(p, "plotly"))
@@ -15,7 +15,7 @@ test_that("plotNContent outputs correct objects", {
 
 test_that("plotNContent works for all variations of FastpData params", {
   p <- plotNContent(fp)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotNContent(fp, TRUE)
   expect_true(is(p, "plotly"))
 })
@@ -23,7 +23,7 @@ test_that("plotNContent works for all variations of FastpData params", {
 test_that("plotNContent works for all variations of FastpDataList params", {
   fpl <- FastpDataList(path(fp))
   p <- plotNContent(fpl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   expect_message(
     plotNContent(fpl, dendrogram = TRUE), "Cannot cluster.+"
   )
