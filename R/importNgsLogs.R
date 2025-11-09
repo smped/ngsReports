@@ -284,9 +284,9 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         status = any(grepl("Finished in", x)),
         in_reads = any(grepl("Total (reads|read pairs) processed", x)),
         in_bp = any(grepl("Total basepairs processed", x)),
-        too_short = any(grepl("(Reads|Pairs) that were too short", x)),
-        ## Too long may not be in the file
-        too_many_n = any(grepl("(Reads|Pairs) with too many N", x)),
+        ## Too short & too_many_n will only be present if the parameters are set
+        ## too_short = any(grepl("(Reads|Pairs) that were too short", x)),
+        ## too_many_n = any(grepl("(Reads|Pairs) with too many N", x)),
         out_reads = any(
             grepl("(Reads|Pairs) written \\(passing filters\\)", x)
         ),
@@ -823,7 +823,7 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
 #' @keywords internal
 #' @importFrom tidyselect everything
 #' @importFrom dplyr mutate_at mutate_if
-#' @importFrom stringr str_replace_all str_remove_all str_extract
+#' @importFrom stringr str_replace_all str_remove_all str_extract str_split_fixed
 .parseCutadaptLogs <- function(data, which = 1){
 
     ## Possible module names vary depending on PE/SE reads and the adapter
@@ -878,25 +878,26 @@ importNgsLogs <- function(x, type = "auto", which, stripPaths = TRUE) {
         out <- vector("list", length(x) - 1)
         names(out) <- names(x)[-1]
 
-        ## Start with the summary (i.e. minimal). Values then names
-        vals <- str_replace_all(x$summary, ".+ +([0-9,]+).+", "\\1")
-        vals <- str_remove_all(vals, ",")
-        vals <- as.numeric(vals)
-        nm <- str_trim(
-            str_replace_all(x$summary, "(.+):.+", "\\1")
-        )
+        # Restructure the output names & values for the summary
+        summary_vals <- str_trim(x$summary[grepl(":", x$summary)])
+        val_mat <- str_split_fixed(summary_vals, ": *", n = 2)
+        vals <- str_extract(val_mat[,2], "[0-9,]+")
+        vals <- as.numeric(str_remove_all(vals, ","))
+        nm <- val_mat[,1]
+
         ## If this is paired end, some of these will be nested and need to be
         ## handled correctly. The first two will be processed bp, whilst
-        ## the next two will be written bp. Using the above code, they should
-        ## just appear as Read 1 and Read 2 for each set.
+        ## the next will be 'trimmed' or written' bp. Using the above code,
+        ## they should just appear as Read 1 and Read 2 for each set.
+        opts <- str_extract(nm, "processed|trimmed|filtered")[-1]
+        opts <- opts[!is.na(opts)]
         dups <- grepl("^Read [12]$", nm)
         nm[dups] <- paste(
-            nm[dups], "basepairs",
-            rep(c("processed", "written"), each = sum(dups)/2)
+            nm[dups], "basepairs", rep(opts, each = length(unique(nm[dups])))
         )
         nm <- tolower(nm)
         nm <- str_remove_all(nm, "[\\(\\)]")
-        nm <- str_replace_all(nm, " ", "_")
+        nm <- str_replace_all(nm, " |-", "_")
         names(vals) <- nm
         out[["summary"]] <- as_tibble(as.list(vals))
         out[["summary"]][["header"]] <- list(hdr)
