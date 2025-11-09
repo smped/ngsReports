@@ -2,16 +2,16 @@
 test_that("plotBaseQuals (FastQC) outputs correct objects", {
 
   p <- plotBaseQuals(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotBaseQuals(fdl[[1]], TRUE)
   expect_true(is(p, "plotly"))
 
   p <- plotBaseQuals(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotBaseQuals(fdl, plotType = "boxplot")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotBaseQuals(fdl, dendrogam = TRUE)
   expect_true(is(p, "patchwork"))
@@ -26,13 +26,13 @@ test_that("plotBaseQuals (FastQC) outputs correct objects", {
 
 test_that("plotBaseQuals (Fastp) output correct objects",{
   p <- plotBaseQuals(fp)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotBaseQuals(fp, TRUE)
   expect_true(is(p, "plotly"))
 
   fpl <- FastpDataList(path(fp))
   p <- plotBaseQuals(fpl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotBaseQuals(fpl, TRUE)
   expect_true(is(p, "plotly"))
 

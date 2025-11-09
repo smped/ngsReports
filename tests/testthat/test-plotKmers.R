@@ -2,11 +2,11 @@
 test_that("plotKmers outputs correct objects", {
 
   p <- plotKmers(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotKmers(fdl[[1]], TRUE)
   expect_true(is(p, "plotly"))
   p <- plotKmers(fdl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotKmers(fdl, TRUE)
   expect_true(is(p, "plotly"))
 
@@ -19,9 +19,9 @@ test_that("plotKmers outputs correct objects", {
 
 test_that("FastpData objects plot correctly", {
   p <- plotKmers(fp)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotKmers(fp, readsBy = "mean")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotKmers(fp, TRUE)
   expect_true(is(p, "plotly"))
 })

@@ -2,7 +2,7 @@
 test_that("plotAdapterContent outputs correct object classes", {
 
   p <- plotAdapterContent(fdl[[1]])
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotAdapterContent(fdl[[1]], TRUE)
   expect_true(is(p, "plotly"))
@@ -11,7 +11,7 @@ test_that("plotAdapterContent outputs correct object classes", {
   expect_true(is(p, "patchwork"))
 
   p <- plotAdapterContent(fdl, plotType = "line")
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
 
   p <- plotAdapterContent(fdl, usePlotly = TRUE)
   expect_true(is(p, "plotly"))
@@ -30,7 +30,7 @@ test_that("FastpData plots correctly", {
   fl <- system.file("extdata", "fastp.json.gz", package = "ngsReports")
   fp <- FastpData(fl)
   p <- plotAdapterContent(fp)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotAdapterContent(fp, TRUE)
   expect_true(is(p, "plotly"))
   expect_true(length(p$x$data) == 2)
@@ -43,7 +43,7 @@ test_that("FastpDataList plots correctly", {
   fp <- FastpData(fl)
   fpl <- FastpDataList(path(fp))
   p <- plotAdapterContent(fpl)
-  expect_true(is(p, "gg"))
+  expect_true(is_ggplot(p))
   p <- plotAdapterContent(fpl, TRUE, dendrogram = TRUE, showPwf = TRUE)
   expect_true(is(p, "plotly"))
   expect_true(length(p$x$data) == 5)
