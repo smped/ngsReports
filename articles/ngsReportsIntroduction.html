@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ngsReports</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.10.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.13.0</span>
       </span>
     </div>
 
@@ -304,7 +304,7 @@ each module. This plot can be simply generated using
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSummary-methods.html">plotSummary</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/plotSummary-1.png" alt="Default summary of FastQC flags." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/plotSummary-1.png" class="r-plt" alt="Default summary of FastQC flags." width="700"><p class="caption">
 Default summary of FastQC flags.
 </p>
 </div>
@@ -319,7 +319,7 @@ module are shown, but this can be disabled by setting
 <code>duplicated = FALSE</code>.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotReadTotals-methods.html">plotReadTotals</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-7-1.png" width="700"></p>
+<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" width="700"></p>
 <p>As these are <code>ggplot2</code> objects, the output can be modified
 easily using conventional <code>ggplot2</code> syntax. Here we’ll move
 the legend to the top right as an example.</p>
@@ -330,7 +330,7 @@ the legend to the top right as an example.</p>
 <span>        legend.justification <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>        legend.background <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_rect</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"black"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span></code></pre></div>
-<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="per-base-sequence-qualities">Per Base Sequence Qualities<a class="anchor" aria-label="anchor" href="#per-base-sequence-qualities"></a>
@@ -344,7 +344,7 @@ plots from a FastQC report.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotBaseQuals-methods.html">plotBaseQuals</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-9-1.png" alt="Example showing the Per_base_sequence_quality plot for a single FastqcData object." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="Example showing the Per_base_sequence_quality plot for a single FastqcData object." width="700"><p class="caption">
 Example showing the Per_base_sequence_quality plot for a single
 FastqcData object.
 </p>
@@ -354,7 +354,7 @@ heatmap using the mean quality score at each position.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotBaseQuals-methods.html">plotBaseQuals</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-10-1.png" alt="Example showing the Mean Per Base Squence Qualities for a set of FastQC reports." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="Example showing the Mean Per Base Squence Qualities for a set of FastQC reports." width="700"><p class="caption">
 Example showing the Mean Per Base Squence Qualities for a set of FastQC
 reports.
 </p>
@@ -365,7 +365,7 @@ reports.
 datasets with a large number of libraries.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotBaseQuals-methods.html">plotBaseQuals</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, plotType <span class="op">=</span> <span class="st">"boxplot"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="mean-sequence-quality-per-read">Mean Sequence Quality Per Read<a class="anchor" aria-label="anchor" href="#mean-sequence-quality-per-read"></a>
@@ -376,7 +376,7 @@ from the <code>FastqcDataList</code> object.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSeqQuals-methods.html">plotSeqQuals</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-12-1.png" alt="Example plot showing Per_sequence_quality_scores for an individual file." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="Example plot showing Per_sequence_quality_scores for an individual file." width="700"><p class="caption">
 Example plot showing Per_sequence_quality_scores for an individual file.
 </p>
 </div>
@@ -385,7 +385,7 @@ multiple reports.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSeqQuals-methods.html">plotSeqQuals</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-13-1.png" alt="Example heatmaps showing Per_sequence_quality_scores for a set of files." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="Example heatmaps showing Per_sequence_quality_scores for a set of files." width="700"><p class="caption">
 Example heatmaps showing Per_sequence_quality_scores for a set of files.
 </p>
 </div>
@@ -396,7 +396,7 @@ samples.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">r2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/BiocGenerics/man/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"R2"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotSeqQuals-methods.html">plotSeqQuals</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[</span><span class="va">r2</span><span class="op">]</span>, plotType <span class="op">=</span> <span class="st">"line"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
+<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="per-base-sequence-content">Per Base Sequence Content<a class="anchor" aria-label="anchor" href="#per-base-sequence-content"></a>
@@ -407,7 +407,7 @@ FastQC.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSeqContent-methods.html">plotSeqContent</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-15-1.png" alt="Individual Per_base_sequence_content plot" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="Individual Per_base_sequence_content plot" width="700"><p class="caption">
 Individual Per_base_sequence_content plot
 </p>
 </div>
@@ -419,7 +419,7 @@ respectively.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSeqContent-methods.html">plotSeqContent</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-16-1.png" alt="Combined Per_base_sequence_content plot" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="Combined Per_base_sequence_content plot" width="700"><p class="caption">
 Combined Per_base_sequence_content plot
 </p>
 </div>
@@ -434,7 +434,7 @@ to <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class
 determine the number of columns in the final plot.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotSeqContent-methods.html">plotSeqContent</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>, plotType <span class="op">=</span> <span class="st">"line"</span>, nc <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" width="700"></p>
 </div>
 <div class="section level4">
 <h4 id="adapter-content">Adapter Content<a class="anchor" aria-label="anchor" href="#adapter-content"></a>
@@ -444,7 +444,7 @@ for an individual file.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotAdapterContent-methods.html">plotAdapterContent</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span> </span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-18-1.png" alt="Adapter Content plot for a single FastQC report" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="Adapter Content plot for a single FastQC report" width="700"><p class="caption">
 Adapter Content plot for a single FastQC report
 </p>
 </div>
@@ -454,7 +454,7 @@ adapter types.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotAdapterContent-methods.html">plotAdapterContent</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-19-1.png" alt="Heatmap showing Total Adapter Content by position across a set of FastQC reports" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="Heatmap showing Total Adapter Content by position across a set of FastQC reports" width="700"><p class="caption">
 Heatmap showing Total Adapter Content by position across a set of FastQC
 reports
 </p>
@@ -468,7 +468,7 @@ be replicated for an individual file.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotDupLevels-methods.html">plotDupLevels</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-20-1.png" alt="Example Sequence Duplication Levels plot for an individual file." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-20-1.png" class="r-plt" alt="Example Sequence Duplication Levels plot for an individual file." width="700"><p class="caption">
 Example Sequence Duplication Levels plot for an individual file.
 </p>
 </div>
@@ -484,7 +484,7 @@ as the larger red blocks.</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotDupLevels-methods.html">plotDupLevels</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-21-1.png" alt="Sequence Duplication Levels for multiple files" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-21-1.png" class="r-plt" alt="Sequence Duplication Levels for multiple files" width="700"><p class="caption">
 Sequence Duplication Levels for multiple files
 </p>
 </div>
@@ -531,7 +531,7 @@ determined content is shown as the Theoretical GC content line.</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotGcContent-methods.html">plotGcContent</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, species <span class="op">=</span> <span class="st">"Hsapiens"</span>, gcType <span class="op">=</span> <span class="st">"Transcriptome"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-23-1.png" alt="Example GC Content plot using the Hsapiens Transcriptome for the theoretical distribution." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="Example GC Content plot using the Hsapiens Transcriptome for the theoretical distribution." width="700"><p class="caption">
 Example GC Content plot using the Hsapiens Transcriptome for the
 theoretical distribution.
 </p>
@@ -542,7 +542,7 @@ observed and the theoretical GC content.</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotGcContent-methods.html">plotGcContent</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-24-1.png" alt="Example GC content showing the difference between observed and theoretical GC content across multiple files." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-24-1.png" class="r-plt" alt="Example GC content showing the difference between observed and theoretical GC content across multiple files." width="700"><p class="caption">
 Example GC content showing the difference between observed and
 theoretical GC content across multiple files.
 </p>
@@ -552,7 +552,7 @@ totals displayed as percentages instead of raw counts.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotGcContent-methods.html">plotGcContent</a></span><span class="op">(</span><span class="va">fdl</span>, plotType <span class="op">=</span> <span class="st">"line"</span>,  gcType <span class="op">=</span> <span class="st">"Transcriptome"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-25-1.png" alt="Example GC content plot represented as a line plot instead of a heatmap." width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-25-1.png" class="r-plt" alt="Example GC content plot represented as a line plot instead of a heatmap." width="700"><p class="caption">
 Example GC content plot represented as a line plot instead of a heatmap.
 </p>
 </div>
@@ -574,13 +574,13 @@ by their possible source, and coloured based on their
 <code>WARN/FAIL</code> status.</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotOverrep-methods.html">plotOverrep</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-27-1.png" width="700"></p>
+<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-27-1.png" class="r-plt" width="700"></p>
 <p>When applying this across multiple files, instead of identifying
 common sequences across a set of libraries, overrepresented sequences
 are summarised by their possible source as defined by FastQC.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotOverrep-methods.html">plotOverrep</a></span><span class="op">(</span><span class="va">fdl</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-28-1.png" width="700"></p>
+<p><img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-28-1.png" class="r-plt" width="700"></p>
 <p>In addition to the above, the most abundant <code>n</code>
 overrepresented sequences can be exported as a FASTA file for easy
 submission to <code>blast</code>.</p>
@@ -872,14 +872,14 @@ plot using the function <code>plotAlignemntSummary()</code>.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotAlignmentSummary.html">plotAlignmentSummary</a></span><span class="op">(</span><span class="va">bowtieLogs</span>, type <span class="op">=</span> <span class="st">"bowtie"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-39-1.png" alt="Example Bowtie logs for PE and SE sequencing" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-39-1.png" class="r-plt" alt="Example Bowtie logs for PE and SE sequencing" width="700"><p class="caption">
 Example Bowtie logs for PE and SE sequencing
 </p>
 </div>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotAlignmentSummary.html">plotAlignmentSummary</a></span><span class="op">(</span><span class="va">starLog</span>, type <span class="op">=</span> <span class="st">"star"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-40-1.png" alt="Example STAR aligner logs" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-40-1.png" class="r-plt" alt="Example STAR aligner logs" width="700"><p class="caption">
 Example STAR aligner logs
 </p>
 </div>
@@ -895,7 +895,7 @@ tools BUSCO and quast can also be plot using the function
 <code class="sourceCode R"><span><span class="va">buscoLog</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"short_summary_Dmelanogaster_Busco.txt"</span>, package <span class="op">=</span> <span class="st">"ngsReports"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotAssemblyStats.html">plotAssemblyStats</a></span><span class="op">(</span><span class="va">buscoLog</span>, type <span class="op">=</span> <span class="st">"busco"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-41-1.png" alt="Example plot after running BUSCO v3 on the Drosophila melanogaster reference genome" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-41-1.png" class="r-plt" alt="Example plot after running BUSCO v3 on the Drosophila melanogaster reference genome" width="700"><p class="caption">
 Example plot after running BUSCO v3 on the Drosophila melanogaster
 reference genome
 </p>
@@ -905,14 +905,14 @@ reference genome
 <span><span class="va">quastLog</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="va">fls</span>, package <span class="op">=</span> <span class="st">"ngsReports"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plotAssemblyStats.html">plotAssemblyStats</a></span><span class="op">(</span><span class="va">quastLog</span>, type <span class="op">=</span> <span class="st">"quast"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-42-1.png" alt="Example plot after running quast on two shortread assemblies" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-42-1.png" class="r-plt" alt="Example plot after running quast on two shortread assemblies" width="700"><p class="caption">
 Example plot after running quast on two shortread assemblies
 </p>
 </div>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plotAssemblyStats.html">plotAssemblyStats</a></span><span class="op">(</span><span class="va">quastLog</span>, type <span class="op">=</span> <span class="st">"quast"</span>, plotType <span class="op">=</span> <span class="st">"paracoord"</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-43-1.png" alt="Example parallel coordinate plot after running quast on two shortread assemblies" width="700"><p class="caption">
+<img src="ngsReportsIntroduction_files/figure-html/unnamed-chunk-43-1.png" class="r-plt" alt="Example parallel coordinate plot after running quast on two shortread assemblies" width="700"><p class="caption">
 Example parallel coordinate plot after running quast on two shortread
 assemblies
 </p>
@@ -922,7 +922,7 @@ assemblies
 <div class="section level2">
 <h2 class="unnumbered" id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
-<pre><code><span><span class="co">## R version 4.5.1 (2025-06-13)</span></span>
+<pre><code><span><span class="co">## R version 4.5.2 (2025-10-31)</span></span>
 <span><span class="co">## Platform: x86_64-pc-linux-gnu</span></span>
 <span><span class="co">## Running under: Ubuntu 24.04.3 LTS</span></span>
 <span><span class="co">## </span></span>
@@ -945,35 +945,34 @@ assemblies
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] pander_0.6.6        dplyr_1.1.4         ngsReports_2.10.1  </span></span>
+<span><span class="co">## [1] pander_0.6.6        dplyr_1.1.4         ngsReports_2.13.0  </span></span>
 <span><span class="co">## [4] tibble_3.3.0        patchwork_1.3.2     ggplot2_4.0.0      </span></span>
-<span><span class="co">## [7] BiocGenerics_0.54.0 generics_0.1.4      BiocStyle_2.36.0   </span></span>
+<span><span class="co">## [7] BiocGenerics_0.56.0 generics_0.1.4      BiocStyle_2.38.0   </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
-<span><span class="co">##  [1] gtable_0.3.6            xfun_0.53               bslib_0.9.0            </span></span>
-<span><span class="co">##  [4] htmlwidgets_1.6.4       lattice_0.22-7          vctrs_0.6.5            </span></span>
-<span><span class="co">##  [7] tools_4.5.1             stats4_4.5.1            pkgconfig_2.0.3        </span></span>
-<span><span class="co">## [10] data.table_1.17.8       RColorBrewer_1.1-3      S7_0.2.0               </span></span>
-<span><span class="co">## [13] desc_1.4.3              S4Vectors_0.46.0        lifecycle_1.0.4        </span></span>
-<span><span class="co">## [16] GenomeInfoDbData_1.2.14 compiler_4.5.1          farver_2.1.2           </span></span>
-<span><span class="co">## [19] stringr_1.5.2           textshaping_1.0.3       Biostrings_2.76.0      </span></span>
-<span><span class="co">## [22] GenomeInfoDb_1.44.2     htmltools_0.5.8.1       sass_0.4.10            </span></span>
-<span><span class="co">## [25] yaml_2.3.10             lazyeval_0.2.2          plotly_4.11.0          </span></span>
-<span><span class="co">## [28] pillar_1.11.0           pkgdown_2.1.3           crayon_1.5.3           </span></span>
-<span><span class="co">## [31] jquerylib_0.1.4         tidyr_1.3.1             MASS_7.3-65            </span></span>
-<span><span class="co">## [34] cachem_1.1.0            tidyselect_1.2.1        digest_0.6.37          </span></span>
-<span><span class="co">## [37] stringi_1.8.7           reshape2_1.4.4          purrr_1.1.0            </span></span>
-<span><span class="co">## [40] bookdown_0.44           labeling_0.4.3          forcats_1.0.0          </span></span>
-<span><span class="co">## [43] fastmap_1.2.0           grid_4.5.1              cli_3.6.5              </span></span>
-<span><span class="co">## [46] magrittr_2.0.4          utf8_1.2.6              withr_3.0.2            </span></span>
-<span><span class="co">## [49] scales_1.4.0            UCSC.utils_1.4.0        lubridate_1.9.4        </span></span>
-<span><span class="co">## [52] timechange_0.3.0        rmarkdown_2.29          XVector_0.48.0         </span></span>
-<span><span class="co">## [55] httr_1.4.7              ragg_1.5.0              zoo_1.8-14             </span></span>
-<span><span class="co">## [58] evaluate_1.0.5          knitr_1.50              IRanges_2.42.0         </span></span>
-<span><span class="co">## [61] viridisLite_0.4.2       rlang_1.1.6             ggdendro_0.2.0         </span></span>
-<span><span class="co">## [64] Rcpp_1.1.0              glue_1.8.0              BiocManager_1.30.26    </span></span>
-<span><span class="co">## [67] jsonlite_2.0.0          plyr_1.8.9              R6_2.6.1               </span></span>
-<span><span class="co">## [70] systemfonts_1.2.3       fs_1.6.6</span></span></code></pre>
+<span><span class="co">##  [1] gtable_0.3.6        xfun_0.54           bslib_0.9.0        </span></span>
+<span><span class="co">##  [4] htmlwidgets_1.6.4   lattice_0.22-7      vctrs_0.6.5        </span></span>
+<span><span class="co">##  [7] tools_4.5.2         stats4_4.5.2        pkgconfig_2.0.3    </span></span>
+<span><span class="co">## [10] data.table_1.17.8   RColorBrewer_1.1-3  S7_0.2.0           </span></span>
+<span><span class="co">## [13] desc_1.4.3          S4Vectors_0.48.0    lifecycle_1.0.4    </span></span>
+<span><span class="co">## [16] compiler_4.5.2      farver_2.1.2        stringr_1.6.0      </span></span>
+<span><span class="co">## [19] textshaping_1.0.4   Biostrings_2.78.0   Seqinfo_1.0.0      </span></span>
+<span><span class="co">## [22] htmltools_0.5.8.1   sass_0.4.10         yaml_2.3.10        </span></span>
+<span><span class="co">## [25] lazyeval_0.2.2      plotly_4.11.0       pillar_1.11.1      </span></span>
+<span><span class="co">## [28] pkgdown_2.2.0       crayon_1.5.3        jquerylib_0.1.4    </span></span>
+<span><span class="co">## [31] tidyr_1.3.1         MASS_7.3-65         cachem_1.1.0       </span></span>
+<span><span class="co">## [34] tidyselect_1.2.1    digest_0.6.37       stringi_1.8.7      </span></span>
+<span><span class="co">## [37] purrr_1.2.0         bookdown_0.45       labeling_0.4.3     </span></span>
+<span><span class="co">## [40] forcats_1.0.1       fastmap_1.2.0       grid_4.5.2         </span></span>
+<span><span class="co">## [43] cli_3.6.5           magrittr_2.0.4      utf8_1.2.6         </span></span>
+<span><span class="co">## [46] withr_3.0.2         scales_1.4.0        lubridate_1.9.4    </span></span>
+<span><span class="co">## [49] timechange_0.3.0    rmarkdown_2.30      XVector_0.50.0     </span></span>
+<span><span class="co">## [52] httr_1.4.7          ragg_1.5.0          zoo_1.8-14         </span></span>
+<span><span class="co">## [55] evaluate_1.0.5      knitr_1.50          IRanges_2.44.0     </span></span>
+<span><span class="co">## [58] viridisLite_0.4.2   rlang_1.1.6         ggdendro_0.2.0     </span></span>
+<span><span class="co">## [61] Rcpp_1.1.0          glue_1.8.0          BiocManager_1.30.26</span></span>
+<span><span class="co">## [64] jsonlite_2.0.0      R6_2.6.1            systemfonts_1.3.1  </span></span>
+<span><span class="co">## [67] fs_1.6.6</span></span></code></pre>
 </div>
 <div class="footnotes footnotes-end-of-document">
 <hr>
@@ -998,7 +997,7 @@ assemblies
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
